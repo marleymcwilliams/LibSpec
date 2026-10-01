@@ -1,0 +1,149 @@
+
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{mathtools,amssymb,amsmath,amsthm}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{csquotes}
+\usepackage{ragged2e}
+\setlength{\emergencystretch}{2em}
+\microtypesetup{protrusion=true,expansion=true}
+\usepackage{hyperref}
+\hypersetup{hidelinks, colorlinks=true, linkcolor=blue, citecolor=blue, urlcolor=blue}
+\pdfstringdefDisableCommands{%
+  \def\to{→}%
+  \def\Wtwo{W2}%
+  \def\stl{STL}%
+  \def\smt{SMT}%
+  \def\cbor{CBOR}%
+  \def\cose{COSE}%
+  \def\ensuremath#1{#1}%
+  \def\texttt#1{#1}%
+}
+\newcommand{\SC}[1]{\textsc{#1}}
+\newcommand{\SCbf}[1]{\textbf{\SC{#1}}}
+\usepackage[framemethod=default]{mdframed}
+\newmdenv[
+  linewidth=0.6pt,
+  roundcorner=2pt,
+  backgroundcolor=gray!6,
+  linecolor=black!70,
+  skipabove=8pt,skipbelow=8pt,
+  innertopmargin=6pt,innerbottommargin=6pt,
+  innerleftmargin=8pt,innerrightmargin=8pt
+]{auditbox}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit}
+\setlist[itemize]{leftmargin=1.2em}
+\setlist[enumerate]{leftmargin=1.4em}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\ReceiptHeader}[4]{%
+\begin{auditbox}
+\textbf{#1} \hfill \SC{verdict:} \textbf{#2}\\
+\SC{prev:} \texttt{#3}\\
+\SC{payload-root:} \texttt{#4}
+\end{auditbox}
+}
+\newcommand{\ProofSurfaceFigure}[2]{%
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[node distance=8mm, every node/.style={font=\small}]
+  \tikzset{leaf/.style={draw,rounded corners=2pt,inner sep=3pt,fill=gray!10}}
+  \tikzset{node/.style={draw,rounded corners=2pt,inner sep=3pt,fill=gray!6}}
+  \tikzset{edge/.style={-Latex,thin}}
+  \node[leaf] (r1) {#1$_1$};
+  \node[leaf, right=of r1] (r2) {#1$_2$};
+  \node[leaf, right=of r2] (r3) {#1$_3$};
+  \node[leaf, right=of r3] (r4) {#1$_4$};
+  \node[node, above=of $(r1)!0.5!(r2)$] (n12) {$H(#1_1\|#1_2)$};
+  \node[node, above=of $(r3)!0.5!(r4)$] (n34) {$H(#1_3\|#1_4)$};
+  \node[node, above=12mm of $(n12)!0.5!(n34)$] (root) {\textbf{#2}};
+  \draw[edge] (r1) -- (n12);
+  \draw[edge] (r2) -- (n12);
+  \draw[edge] (r3) -- (n34);
+  \draw[edge] (r4) -- (n34);
+  \draw[edge] (n12) -- (root);
+  \draw[edge] (n34) -- (root);
+\end{tikzpicture}
+\caption{Proof surface: Merkle root over canonical receipt headers (not payloads).}
+\label{fig:proof-surface}
+\end{figure}
+}
+\newcommand{\RailGauge}[3]{%
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+  \draw[fill=green!35,draw=black!60] (0,0) rectangle (3,0.5);
+  \draw[fill=orange!35,draw=black!60] (3,0) rectangle (6,0.5);
+  \draw[fill=red!35,draw=black!60] (6,0) rectangle (9,0.5);
+  \draw[very thick] (#1, -0.2) -- (#1,0.7);
+  \node[below] at (1.5,-0.2) {\small Green};
+  \node[below] at (4.5,-0.2) {\small Amber};
+  \node[below] at (7.5,-0.2) {\small Red};
+  \node[above] at (#1,0.7) {\small \textbf{#2}};
+\end{tikzpicture}
+\caption{Clamp state for #3 (needle position is illustrative).}
+\end{figure}
+}
+\title{\vspace{-6pt}A Normalized Architecture for Verifiable Computation\\[2pt]
+\large Safety--First Theoretical Program (Research--Neutral Draft)}
+\author{}
+\date{\today}
+\begin{document}
+\maketitle
+\begin{abstract}
+\noindent \textbf{Trust through verifiability.} This draft proposes a research--neutral, safety--first architecture for verifiable computation. Every step produces a typed, canonical receipt; aggregates form a header--only proof surface that can be checked from bytes. Determinism is ensured via canonical encodings and domain--separated hashing; governance is monotone and mechanized; control is formulated as distributionally robust optimization (DRO) with first--order optimality receipts and cache--admitted second--order stability certificates. Receipts support selective disclosure without breaking chain integrity. The aim is accessibility without compromising rigor.
+\end{abstract}
+\section{Objectives and Positioning}
+\noindent We formalize an auditable, \emph{verifiable} notion of trust without presupposing any downstream domain. Core objectives: (i) compositional evidence with byte--level verification, (ii) determinism by design, (iii) mechanized monotone governance, (iv) transparent control with explicit certification, and (v) selective disclosure with intact chain integrity.
+\section{Acceptance Algebra and Aggregation}
+Let $Q=\prod_i Q_i$ be acceptance coordinates with preorder (larger=worse). Split coordinates into max--channels and sum--channels; define aggregation $\wedge$ as coordinatewise $\max$ on max--channels and $+$ on sum--channels, with fail--closed absorbers for unknowns.
+\begin{definition}[Adapters and Unknowns]
+Adapters $g:\mathrm{Raw}\to Q$ are monotone homomorphisms satisfying $g(r\oplus r')=g(r)\wedge g(r')$, $g(\varnothing)=\top_{\mathrm{unk}}$. Sum--coordinates may use capped unknowns $\top_{\mathrm{unk}}^{(\beta)}$ under window caps with run--scope ledgers.
+\end{definition}
+\section{Receipts, Proof Surface, and Selective Disclosure}
+Headers (schema id, predicate id, verdict, prev\_digest, payload\_root, env lock, hash suite) are encoded in deterministic CBOR; digests use domain--separated hashing. The proof surface is the Merkle root over canonical headers.
+\begin{definition}[Selective Disclosure]
+Receipts commit to payload Merkle roots; a reveal discloses only requested fields with inclusion proofs. Chain integrity uses header digests, so redaction does not alter the proof surface.
+\end{definition}
+\ProofSurfaceFigure{r}{\texttt{ROOT\_HASH}}
+\ReceiptHeader{DRO\_KKT\_OK/v1}{PASS}{\texttt{prev: 9c2…}}{\texttt{root: 51a…}}
+\begin{auditbox}
+\textbf{Audit Hook.} Any single--byte mutation in a header flips the Merkle root; payload redactions keep the root unchanged when proofs verify against the committed payload root.
+\end{auditbox}
+\section{Norms: STL and the SMT Gate}
+Norms are expressed in Signal Temporal Logic (STL) with quantitative semantics; bounded monitors unroll to SMT--LIB (QF\_LRA) for CI gating. Dense--time semantics are approximated via robust--satisfaction intervals; the lower bound is enforced.
+\section{Control as Distributionally Robust Optimization}
+We cast inverse control as a distributionally robust program over a Wasserstein ball. Runtime receipts log (i) ambiguity radii and convex class, (ii) KKT residuals and dual gaps (first--order), (iii) optional positive--real / input--to--state stability admission (second--order) from a revocation--checked cache.
+\section{Mechanized Governance (Monotone Safety)}
+The must--fail set in the active norms bundle is monotone under versioning; deltas are checked mechanically in CI. Optional entailment between STL versions may be discharged via SMT. Epoch summaries periodically Merkle--commit prior receipts for archival without breaking verification.
+\section{Ethics Rails and Clamp States}
+Rails provide banded operating regions (Green/Amber/Red) with hysteresis and dwell; sentinel thresholds and mirror gaps enforce conservative transitions. Policies are expressed as typed receipts with selective disclosure.
+\RailGauge{4.2}{GOVERN}{Golden--Rule margin}
+\section{Trust Scoring (Transparent, Calibrated)}
+A transparent trust score aggregates evaluator utility, robustness, anomaly EWMA, safety margins, certificate status, and clamp state; it is cached and periodically calibrated (e.g., isotonic regression) against independent audits. Stale inputs widen intervals and raise uncertainty flags.
+\section{Threats and Mitigations (At a Glance)}
+\begin{itemize}
+  \item Supply chain / environment drift: deterministic builds and environment locks by digest.
+  \item Ledger tampering: header--only proof surface with domain--separated hashing.
+  \item Signature malleability: normative COSE profile over deterministic CBOR.
+  \item Denial via growth: batching, epoch summaries, rate limits in the norms bundle.
+  \item Privacy: selective disclosure with minimal proofs; headers suffice for chain checks.
+\end{itemize}
+\section{Evaluation Program (Safety Before Scale)}
+E1 Determinism across platforms (equal roots). E2 Tamper detection (bit flips change root). E3 First--order certification efficacy (violations detected). E4 Governance monotonicity (CI blocks regressions). E5 Calibration validity (predictive trust vs.\ audits).
+\section{Conclusion}
+Verifiable behavior is treated as a computable property: formal norms, deterministic execution, compositional receipts, and transparent control close the loop, enabling byte--level audit without dependence on narrative claims.
+\end{document}

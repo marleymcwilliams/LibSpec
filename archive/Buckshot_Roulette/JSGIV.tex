@@ -1,0 +1,2297 @@
+\documentclass[10pt]{article}
+
+% ===== Core packages =========================================================
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{bm}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{mathtools}   % extensible arrows, etc.
+\usepackage{tikz-cd}     % categorical diagrams
+
+% ===== Hyperref (load before xr-hyper) ======================================
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black,
+  pdfauthor={},
+  pdftitle={JSG + Category Theory: Compositional Safety by Construction},
+  pdfborder={0 0 0}
+}
+
+% ===== External cross-document labels (graceful if AUX files not present) ===
+% NOTE: xr-hyper must be loaded *after* hyperref.
+\usepackage{xr-hyper}
+\makeatletter
+\IfFileExists{JSGI.aux}{\externaldocument[JSGI-]{JSGI}}{}
+\IfFileExists{JSGII.aux}{\externaldocument[JSGII-]{JSGII}}{}
+\IfFileExists{JSGIII.aux}{\externaldocument[JSGIII-]{JSGIII}}{}
+\IfFileExists{JSGIV.aux}{\externaldocument[JSGIV-]{JSGIV}}{}
+\makeatother
+
+% ===== mdframed boxes (rules / standing constants / ledger) ==================
+\usepackage{mdframed}
+
+% Rule box
+\definecolor{rulebg}{RGB}{248,248,250}
+\definecolor{ruleframe}{RGB}{165,165,165}
+\newmdenv[
+  linecolor=ruleframe, linewidth=0.6pt, roundcorner=4pt,
+  backgroundcolor=rulebg, innertopmargin=6pt, innerbottommargin=6pt,
+  innerleftmargin=8pt, innerrightmargin=8pt, skipabove=8pt, skipbelow=8pt
+]{rulebox}
+\newenvironment{rulex}[1]{\begin{rulebox}\noindent\textbf{Rule (#1).}\ }{\end{rulebox}}
+
+% Constants box
+\definecolor{constbg}{RGB}{246,249,255}
+\definecolor{constframe}{RGB}{140,160,190}
+\newmdenv[
+  linecolor=constframe, linewidth=0.6pt, roundcorner=4pt,
+  backgroundcolor=constbg, innertopmargin=6pt, innerbottommargin=6pt,
+  innerleftmargin=8pt, innerrightmargin=8pt, skipabove=10pt, skipbelow=10pt
+]{constbox}
+
+% Ledger box
+\definecolor{ledgerbg}{RGB}{255,251,235}
+\definecolor{ledgerframe}{RGB}{230,200,120}
+\newmdenv[
+  linecolor=ledgerframe, linewidth=0.6pt, roundcorner=4pt,
+  backgroundcolor=ledgerbg, innertopmargin=6pt, innerbottommargin=6pt,
+  innerleftmargin=8pt, innerrightmargin=8pt, skipabove=8pt, skipbelow=8pt
+]{ledgerbox}
+
+% ===== Code listings (APIs) ==================================================
+\definecolor{codebg}{RGB}{248,248,250}
+\definecolor{codeframe}{RGB}{180,180,180}
+\definecolor{codekw}{RGB}{0,0,160}
+\definecolor{codestr}{RGB}{120,50,0}
+\definecolor{codecm}{RGB}{90,90,90}
+
+\lstdefinestyle{apicode}{%
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single, rulecolor=\color{codeframe}, frameround=tttt,
+  columns=flexible, keepspaces=true, showstringspaces=false,
+  keywordstyle=\color{codekw}\bfseries,
+  stringstyle=\color{codestr}, commentstyle=\color{codecm}\itshape,
+  tabsize=2, belowskip=0.6\baselineskip, aboveskip=0.6\baselineskip,
+  numbersep=6pt, numbers=left, numberstyle=\tiny\color{codecm},
+  language=Python
+}
+\lstset{style=apicode}
+
+% Optional: lightweight JSON lexer for schema/code excerpts (no deps)
+\lstdefinelanguage{json}{
+    basicstyle=\ttfamily\small,
+    morestring=[b]",
+    stringstyle=\color{codestr},
+    comment=[l]{//}, commentstyle=\color{codecm}\itshape,
+    morecomment=[s]{/*}{*/},
+    showstringspaces=false,
+    literate=
+     *{:}{{\color{codekw}{:}}}{1}
+      {,}{{\color{codekw}{,}}}{1}
+      {\{}{{\color{codekw}{\{}}}{1}
+      {\}}{{\color{codekw}{\}}}}{1}
+      {[}{{\color{codekw}{[}}}{1}
+      {]}{{\color{codekw}{]}}}{1},
+}
+
+% ===== Shorthand / helpers ===================================================
+\newcommand{\FIM}{\mathrm{FIM}}
+\newcommand{\normFIM}[1]{\left\|#1\right\|_{\FIM^{-1}}}
+\newcommand{\uses}[1]{\par\smallskip\noindent\textit{Uses: }#1.\par\smallskip}
+\newcommand{\layertag}[1]{\textsf{\footnotesize[\,#1\,]}}
+
+\newenvironment{proofsketch}{\begin{proof}[Proof sketch]}{\end{proof}}
+
+% Standing absolute-constant macro (namespaced)
+\newcommand{\absconst}[1]{c_{#1}}
+
+% Common task symbols
+\newcommand{\anglesep}{\theta_{\min}}
+\newcommand{\cutq}{q}
+\newcommand{\cont}{{\mathrm{cont}}}
+\newcommand{\atom}{{\mathrm{atom}}}
+
+% Math operators and tiny helpers
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\newcommand{\logR}{\log \hat R_t} % numerically stable range KPI
+
+% ===== Safe cross-ref helpers (NEVER print "??" silently) ====================
+\makeatletter
+% Generic dual-source (local or external) resolver with doc prefix fallback.
+\newcommand{\JSGxrefDual}[3]{% #1=docprefix (JSGI/JSGII/JSGIII/JSGIV), #2=printed kind, #3=label
+  \@ifundefined{r@#3}{%
+    \@ifundefined{r@#1-#3}{\textbf{[#2 ??]}}{#2~\ref{#1-#3}}%
+  }{#2~\ref{#3}}%
+}
+\newcommand{\jsgiLem}[1]{\JSGxrefDual{JSGI}{JSGI Lemma}{#1}}
+\newcommand{\jsgiThm}[1]{\JSGxrefDual{JSGI}{JSGI Theorem}{#1}}
+\newcommand{\jsgiDef}[1]{\JSGxrefDual{JSGI}{JSGI Definition}{#1}}
+\newcommand{\jsgiSec}[1]{\JSGxrefDual{JSGI}{JSGI §}{#1}}
+\newcommand{\jsgiiLem}[1]{\JSGxrefDual{JSGII}{JSGII Lemma}{#1}}
+\newcommand{\jsgiiThm}[1]{\JSGxrefDual{JSGII}{JSGII Theorem}{#1}}
+\newcommand{\jsgiiDef}[1]{\JSGxrefDual{JSGII}{JSGII Definition}{#1}}
+\newcommand{\jsgiiSec}[1]{\JSGxrefDual{JSGII}{JSGII §}{#1}}
+\newcommand{\jsgiiiLem}[1]{\JSGxrefDual{JSGIII}{JSGIII Lemma}{#1}}
+\newcommand{\jsgiiiThm}[1]{\JSGxrefDual{JSGIII}{JSGIII Theorem}{#1}}
+\newcommand{\jsgiiiDef}[1]{\JSGxrefDual{JSGIII}{JSGIII Definition}{#1}}
+\newcommand{\jsgiiiSec}[1]{\JSGxrefDual{JSGIII}{JSGIII §}{#1}}
+\newcommand{\jsgivLem}[1]{\JSGxrefDual{JSGIV}{JSGIV Lemma}{#1}}
+\newcommand{\jsgivThm}[1]{\JSGxrefDual{JSGIV}{JSGIV Theorem}{#1}}
+\newcommand{\jsgivDef}[1]{\JSGxrefDual{JSGIV}{JSGIV Definition}{#1}}
+\newcommand{\jsgivSec}[1]{\JSGxrefDual{JSGIV}{JSGIV §}{#1}}
+
+% Safe §-ref inside this paper
+\newcommand{\JSGxref}[2]{% #1 prefix text, #2 label
+  \@ifundefined{r@#2}{\textbf{[#1 ??]}}{#1~\ref{#2}}}
+\newcommand{\secref}[1]{\JSGxref{§}{#1}}
+\makeatother
+
+% ===== Label catalog (EDIT RHS if you change upstream labels) ================
+% (These map human-readable keys to actual labels used in JSGI–IV.)
+\def\lblNoZeno{lem:no-zeno}
+\def\lblJacobiDefect{lem:jacobi-defect}
+\def\lblISS{thm:iss-passivity}
+\def\lblEFradius{thm:ef-kl-cumulant}
+\def\lblDROenv{thm:dro-envelope}
+\def\lblQuarantine{def:window-quarantine}
+\def\lblMTC{def:mtc}
+\def\lblIVbadge{def:iv-badge}
+\def\lblSaltation{lem:numeric-saltation}
+\def\lblCBFfrontier{lem:frontier-cbf}
+\def\lblGapGate{lem:gap-gate}
+\def\lblSwitchStab{thm:switching-stability}
+\def\lblSchemas{sec:artifact-schemas}
+\def\lblCoverage{sec:coverage-kpi}
+
+% ===== Constant registry access =============================================
+% \constref{foo} prints \constsymfoo if defined, else a bold "[C-foo ??]".
+\makeatletter
+\newcommand{\constref}[1]{%
+  \@ifundefined{constsym#1}{\textbf{[C-#1 ??]}}{\csname constsym#1\endcsname}}
+\makeatother
+
+% ===== Acceptance checks (mdframed-aware, with robust fallback) ==============
+\makeatletter
+\@ifundefined{mdframed}{
+  \newenvironment{acceptchecks}{\par\medskip\noindent\textbf{Acceptance checks.}\begin{enumerate}[leftmargin=*]}{\end{enumerate}\medskip}
+}{
+  \newenvironment{acceptchecks}{\begin{mdframed}\textbf{Acceptance checks.}\begin{enumerate}[leftmargin=*]}{\end{enumerate}\end{mdframed}}
+}
+\makeatother
+
+% ===== Listings style (optional generic style) ===============================
+\makeatletter
+\@ifundefined{lstdefinestyle}{}{%
+  \lstdefinestyle{jsg}{
+    basicstyle=\ttfamily\small, numbers=left, numberstyle=\tiny,
+    frame=single, breaklines=true, tabsize=2, keepspaces=true
+  }
+}
+\makeatother
+
+% ===== Minimal symbol helpers (provide-only, no redefs) ======================
+\providecommand{\constsymnuhat}{\widehat{\nu}_{\min}}
+\providecommand{\constsympgraze}{p_{\mathrm{graze}}}
+\providecommand{\constsympthr}{p_{\mathrm{thr}}}
+\providecommand{\constsymgammadwell}{\gamma_{\mathrm{dwell}}}
+\providecommand{\constsymsalt}{C_{\mathrm{salt}}}
+\providecommand{\constsymHol}{\mathrm{Hol}}
+\providecommand{\constsymHarm}{\mathrm{HarmMass}}
+\providecommand{\constsymPRmargin}{\varepsilon_{\mathrm{PR}}}
+\providecommand{\constsymomegal}{\omega_{\ell}}
+\providecommand{\constsymomegau}{\omega_{u}}
+
+% ===== KPI & clamp shorthand =================================================
+\newcommand{\RegretM}{\mathrm{Regret}_M}
+\newcommand{\Hol}{\mathrm{Hol}}
+\newcommand{\Res}{\mathrm{Res}}
+\newcommand{\Lat}{\mathrm{Lat}}
+\newcommand{\cgreen}{\chi_{\mathrm{green}}}
+\newcommand{\calarm}{\chi_{\mathrm{alarm}}}
+\newcommand{\cclear}{\chi_{\mathrm{clear}}}
+
+% ===== Theorems ==============================================================
+\newtheorem{assumption}{Assumption}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{corollary}{Corollary}
+% NOTE: Do not define a theorem named 'rulex' — reserved above.
+
+% ===== Symbol Definitions for Constants (C1–C12 + extras) ====================
+\newcommand{\constsymSmax}{S_{\max}}
+\newcommand{\constsymGmax}{G_{\max}}
+\newcommand{\constsymkappamax}{\kappa_{\max}}
+\newcommand{\constsymthetamin}{\theta_{\min}}
+\newcommand{\constsymLF}{L_{\mathrm F}}
+\newcommand{\constsymrtube}{r_{\mathrm{tube}}}
+\newcommand{\constsymtaumin}{\tau_{\min}}
+\newcommand{\constsymLpsi}{L_\psi}
+\newcommand{\constsymF}{F}
+\newcommand{\constsymchi}{\chi}
+% --- EF/PR epsilon disambiguation (addresses prior collision) ---
+\newcommand{\constsymEFeps}{\varepsilon_{\mathrm{EF}}} % EF-locality tolerance
+\let\constsymepsilon\constsymEFeps                     % back-compat alias
+\newcommand{\epsEF}{\constsymEFeps}
+\newcommand{\epsPR}{\constsymPRmargin}
+% ---------------------------------------------------------------
+\newcommand{\constsymrho}{\rho}
+\newcommand{\constsymtau}{\tau}
+\newcommand{\constsymetastar}{\eta^\star}
+\newcommand{\constsymchiG}{\chi_{\mathrm{green}}}
+% Unify "Yellow"/"Amber" globally via a single symbol; keep back-compat.
+\newcommand{\constsymchiY}{\chi_{\mathrm{amber}}}
+\newcommand{\constsymchiR}{\chi_{\mathrm{red}}}
+
+% ====== Category Theory Notation (added) =====================================
+\DeclareMathOperator{\Ob}{Ob}
+\DeclareMathOperator{\Hom}{Hom}
+\newcommand{\id}{\mathrm{id}}
+\newcommand{\op}{\mathrm{op}}
+\newcommand{\xto}[1]{\xrightarrow{#1}}
+\newcommand{\Cat}{\mathbf{Cat}}
+\newcommand{\Set}{\mathbf{Set}}
+\newcommand{\Top}{\mathbf{Top}}
+\newcommand{\Sh}{\mathbf{Sh}}
+\newcommand{\Dyn}{\mathsf{Dyn}}
+\newcommand{\Arch}{\mathsf{Arch}}
+\newcommand{\Stoch}{\mathsf{Stoch}}
+\newcommand{\Safe}{\mathsf{Safe}}
+\newcommand{\Expl}{\mathsf{Expl}}
+\newcommand{\Oprd}{\mathsf{Oprd}}
+\newcommand{\Cospan}{\mathsf{Cospan}}
+\newcommand{\Alg}{\mathsf{Alg}}
+\newcommand{\Span}{\mathsf{Span}}
+\let\CSpan\Cospan % back-compat alias
+\newcommand{\Evid}{\mathsf{Evid}} % evidence double category (added)
+
+% ===== Additional operators for stats/metrics (added) ========================
+\DeclareMathOperator{\KL}{KL}
+\DeclareMathOperator{\HSIC}{HSIC}
+\DeclareMathOperator{\MMD}{MMD}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\trace}{tr}
+
+% ===== Runtime contract shorthands (added) ===================================
+\newcommand{\Omegawc}{\Omega_{\mathrm{wc}}}
+\newcommand{\SISS}{S_{\mathrm{ISS}}}
+\newcommand{\OmegawcAlias}{\Omegawc} % backward-safe alias
+\newcommand{\Bad}{\textsf{Bad}}
+
+% ===== Determinism tolerances (provide-only; used in §Evidence) ==============
+\providecommand{\AbsTol}{10^{-12}}
+\providecommand{\RelTol}{10^{-9}}
+
+% ======== Hash & identity hygiene (NEW; default = BLAKE3-256) ================
+% Domain-separated hash helpers for equations and prose; version is explicit.
+\newcommand{\HashAlgo}{\mathrm{BLAKE3\mbox{-}256}}
+\newcommand{\HashVersion}{v1}
+\newcommand{\HashFn}{H_{\HashAlgo}^{\langle\HashVersion\rangle}}
+\newcommand{\HashCtx}[1]{H_{\HashAlgo}^{\langle #1;\HashVersion\rangle}}
+\newcommand{\hashconcat}{\mathbin{\|}} % visual for concatenation in hashes
+
+% Canonical minute-bucket for window identity (UTC, floor to minute).
+\newcommand{\UTCmin}{\lfloor t\!:\!\mathrm{UTC}\rfloor_{\mathrm{min}}}
+
+% ======== Clamp naming (NEW; unified text macros + back-compat) ==============
+% Use \ClampGreen, \ClampAmber, \ClampRed in prose; \ClampYellow kept as alias.
+\newcommand{\ClampGreen}{\textsf{Green}}
+\newcommand{\ClampAmber}{\textsf{Amber}}
+\newcommand{\ClampRed}{\textsf{Red}}
+\let\ClampYellow\ClampAmber % back-compat alias for legacy "Yellow"
+
+% ======== Proof-print naming (NEW; consistent spelling) ======================
+\newcommand{\proofprintname}{\emph{proof-print}}       % prose term
+\newcommand{\proofprint}{\texttt{proof\_print}}         % field/key spelling
+
+% ===== Title =================================================================
+\title{JSG + Category Theory:\\
+\large Compositional Safety by Construction (ACT Bridge Draft~2)}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\setcounter{tocdepth}{2}
+\tableofcontents
+\bigskip
+
+
+\section{Map \& Build Philosophy}
+\label{sec:map}
+
+\paragraph{Scope.}
+This section fixes the \emph{runtime macro-structure}: a single-threaded logical pipeline that ingests each KPI row in a \emph{fixed guard order}, emits a \emph{deterministic evidence record} (the Transport Pack), and advances the $\omega$-monitor. Later sections (\secref{sec:cat-grammar}, \secref{sec:jsg-layers}, \secref{sec:evidence}) refine these contracts but may not reorder them. Unless stated otherwise, clamp colors are \ClampGreen/\ClampAmber/\ClampRed (legacy “Yellow” aliases to \ClampAmber).
+
+\paragraph{Fixed guard order (per window).}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{EF locality (two-channel gate).} Compute $r=\epsEF/\constref{Lpsi}$ and certify both channels at designed $(\alpha,1{-}\beta)$: (i) a KL--Fisher \emph{quadratic sandwich} with CI-guarded bounds using $\kappa(\constref{F})$; (ii) a \emph{proxy-free} kernel test against the Green reference (HSIC with wild/bootstrap; linear-time MMD optional). Log \emph{method metadata}: estimator, resampling method (and \texttt{block\_len} if serial dependence is detected), replicate count $B$, random seed, effective sample size $n$, and a \emph{VC-selection breadcrumb} (\texttt{vc\_selection}: bin/index or interpolation for $(n,\kappa(\constref{F}))$). Drive the clamp FSM \layertag{R1, R5}.
+  \item \textbf{DRO envelope.} Validate soft-transport sensitivity: finite-difference $\partial_\rho\!\mathbb{E}[\varphi_\eta]\approx\eta^\star$ with a logged CI and \emph{adaptive step policy} $h$ (policy-ID and parameters recorded; one/two-sided; optional Richardson); enforce a \emph{dual-gap ceiling} (solver p99 $\le 10^{-4}$); else set \texttt{quarantine\_bit} and reason code \layertag{R4}.
+  \item \textbf{PR/GKYP witness.} Check band-limited passivity on $\Omega$ with margin $\epsPR$; allow only hitmap-sanctioned retunes and \emph{require a \texttt{hitmap\_id}} \layertag{R4}.
+  \item \textbf{CBF tube audit (frontier-aware).} Enforce dwell/hysteresis, check one-step residual lower bounds in tubes, and bound saltation replay by $\constref{salt}$; maintain ISS-style \emph{ledger feasibility}. Log tube-membership test and crossing IDs \layertag{R2, R6}.
+  \item \textbf{$\omega$-automata verdict.} Run safety and bounded-response liveness over KPI row-hashes; record the first counterexample if any \layertag{Tier-4}.
+\end{enumerate}
+
+\begin{rulex}{Clamp FSM (leakage-aware)}
+\textbf{\ClampGreen} if $\chi \le \constref{chiG}$;\;
+\textbf{\ClampAmber} if $\constref{chiG}<\chi\le\constref{chiR}$ $\Rightarrow$ shrink $r$, enlarge $\rho_t$, freeze \emph{new} operad edges;\;
+\textbf{\ClampRed} if $\chi>\constref{chiR}$ $\Rightarrow$ disable Fisher proxies, switch to $\Omega_{\mathrm{wc}}$, and require two consecutive \ClampGreen\ windows before re-enabling.
+\end{rulex}
+
+\paragraph{Acceptance criteria (per window, pass/fail; \emph{fail-closed}).}
+Each stage has \emph{explicit} pass conditions and emitted evidence IDs. A window \emph{passes} iff all stages pass. In addition, the following \emph{hard safety floors} apply across stages and cause immediate rejection on breach:
+
+\begin{acceptchecks}
+  \item \textbf{Clock \& windowing (fail-closed).} \emph{Precondition for all guards.} The minute-bucketed UTC time $\UTCmin$ is derived from an NTP/chrony-disciplined clock with skew $\le 200\,\mathrm{ms}$ over the window; a monotone logical counter backs off on out-of-tolerance or leap corrections. Any non-monotone $\UTCmin$, missing sync proof, or skew breach $\Rightarrow$ \texttt{E\_WINDOW\_CLOCK\_DRIFT} and window rejection. The recorded $\constref{tau}$ must satisfy $\constref{tau}>2\,\constref{taumin}$ (precondition for the $\omega$ bound; see below).
+  \item \textbf{Safety floors (apply globally).}
+    \begin{itemize}
+      \item \emph{No-Zeno dwell (hard):} inter-switch time $\ge \constref{taumin}$ (cf.\ \jsgiLem{\lblNoZeno}); enforced and evidenced in the CBF audit.
+      \item \emph{Saltation replay (hard):} $\|K_{\mathrm{obs}}-I\|\le\constref{salt}$; else mark tube-ID suspect and avoid frontier until recalibration.
+      \item \emph{Ledger feasibility (hard):} $C_{\mathrm{fr}}^{+}\le \SISS$ at window end; equality checked against the ISS supply ledger (cf.\ \jsgiiiLem{\lblCBFfrontier}).
+      \item \emph{Rights-plane tail risk (hard):} $\mathrm{CVaR}_{0.95}$ of barrier slack within budget using the Rockafellar--Uryasev empirical estimator; when serial dependence is present, use a circular block bootstrap (log \texttt{block\_len}, $B$, seed) for the CI. Any breach \emph{rejects} and triggers deterministic degrade.
+    \end{itemize}
+
+  \item \textbf{EF locality (two-channel).}
+    \begin{itemize}
+      \item Compute $r=\epsEF/\constref{Lpsi}$; log $(\epsEF,\widehat L_\psi,r,\kappa(\constref{F}))$, target $(\alpha,1{-}\beta)$, resampling method (and \texttt{block\_len} if used), and \texttt{vc\_selection} describing the EF-VC lookup/interpolation for $(n,\kappa(\constref{F}))$.
+      \item \emph{Parametric:} KL quadratic sandwich holds with CI-guarded bounds (uses $\kappa(\constref{F})$).
+      \item \emph{Proxy-free:} HSIC (wild bootstrap by default; MMD if configured) against the Green reference does not reject at designed power $1{-}\beta$ (calibration VC provides achieved power). \emph{Log} estimator, resampling method, $B$, $n$, seed.
+      \item Emit \texttt{ef\_guard\_id} \emph{including} \texttt{calib\_vc\_id}, \texttt{vc\_selection}, and EF-method metadata; set clamp $\in\{\ClampGreen,\ClampAmber,\ClampRed\}$.
+    \end{itemize}
+
+  \item \textbf{DRO envelope (robust).}
+    \begin{itemize}
+      \item Sensitivity: $|\widehat{\partial_\rho}-\eta^\star|\le 0.05\cdot\|\eta^\star\|$ with a reported CI for $\widehat{\partial_\rho}$; log adaptive FD policy-ID and $h$ (one/two-sided, optional Richardson).
+      \item Convergence: solver dual gap p99 $\le 10^{-4}$; otherwise fail regardless of sensitivity match.
+      \item On failure: set \texttt{quarantine\_bit=1} with reason $\in\{\texttt{sensitivity\_mismatch},\texttt{dual\_gap},\texttt{both}\}$ and block promotions.
+      \item Emit \texttt{dvdrho\_id} and $(\eta^\star,\rho_t,h,\text{CI}[\widehat{\partial_\rho}],\text{dual\_gap},\texttt{reason})$.
+    \end{itemize}
+
+  \item \textbf{PR/GKYP witness.}
+    \begin{itemize}
+      \item Valid certificate on $[\constref{omegal},\constref{omegau}]$ with margin $\ge\constref{PRmargin}$.
+      \item Any retune must lie on the certified hitmap; \emph{\texttt{hitmap\_id} is REQUIRED}. Else revert to last valid $(P,Q)$ and shrink $\Omega$.
+      \item Emit \texttt{pr\_witness\_id} with $(\Omega,P,Q,\constref{PRmargin},\texttt{hitmap\_id})$.
+    \end{itemize}
+
+  \item \textbf{CBF tube audit (frontier-aware).}
+    \begin{itemize}
+      \item For each barrier $h_i$, residual lower bound $LB_i:=h_i^+{-}h_i^-{+}\sigma_i \ge 0$ within tubes radius $\constref{rtube}$; \emph{log} tube-membership test and frontier IDs.
+      \item Dwell $\ge\constref{taumin}$ and symmetric hysteresis around $S(x)=0$ are enforced (\jsgiLem{\lblNoZeno}).
+      \item Saltation replay: $\|K_{\mathrm{obs}}-I\|\le\constref{salt}$; else \ClampAmber\ and frontier avoidance until recalibration.
+      \item Ledger feasibility: $C_{\mathrm{fr}}^{+}\le \SISS$ over the window (units consistent with ISS supply).
+      \item Rights-plane tail: $\mathrm{CVaR}_{0.95}$ within budget; record estimator, bootstrap $B$, \texttt{block\_len} (if used), seed, VaR/CI.
+      \item Emit \texttt{cbf\_audit\_id} with per-constraint $LB_i$, saltation stats, dwell log, $(\Delta C_{\mathrm{fr}},\SISS)$, and CVaR summary.
+    \end{itemize}
+
+  \item \textbf{$\omega$-automata.}
+    \begin{itemize}
+      \item \emph{Precondition:} $\constref{tau}>2\,\constref{taumin}$ must hold (recorded in Tier-2); else reject as \texttt{E\_OMEGA\_PRECONDITION}.
+      \item Safety monitors never visit \Bad; bounded-response liveness $\varphi_N$ holds (cf.\ \secref{sec:omega-appendix}).
+      \item \emph{Bounded detection contract:} $K=\max\!\{\;N,\ \lceil 2\,\constref{tau}/\constref{taumin}\rceil\;\}$ is logged with \texttt{omega\_trace\_id}. The monitor records the \emph{first counterexample} hash if rejecting.
+      \item Emit \texttt{omega\_trace\_id} and (if rejecting) the first counterexample hash.
+    \end{itemize}
+
+  \item \textbf{Determinism \& replay adequacy.}
+    \begin{itemize}
+      \item Transport Pack includes: PRNG seeds, library/device hashes (BLAS/CUDA/etc.), numeric tolerances, WCET traces, device IDs, and ordered KPI row-hashes.
+      \item \emph{Replay adequacy:} recomputing with the envelope reproduces all IDs and the $\omega$ verdict, with numeric fingerprints within \emph{AbsTol} $=\AbsTol$ or \emph{RelTol} $=\RelTol$.
+      \item Emit \proofprint{} := $\HashFn\!\big(\texttt{ef\_guard\_id}\hashconcat\texttt{dvdrho\_id}\hashconcat\texttt{pr\_witness\_id}\hashconcat\texttt{cbf\_audit\_id}\hashconcat\texttt{omega\_trace\_id}\big)$ with domain separation (tier/context tags recorded). A \texttt{ReplayAdequacy} artifact (diffs, vendor-drift note if any) is produced and stored.
+    \end{itemize}
+\end{acceptchecks}
+
+\begin{ledgerbox}
+\textbf{Transport Pack (Tier-1, canonical fields).}
+\texttt{window\_id}; clamp state $(\chi,r,\cutq)$; EF $(\epsEF,\widehat L_\psi,\kappa(\constref{F}),\texttt{calib\_vc\_id},\texttt{vc\_selection},\texttt{ef\_method\_meta})$; DRO $(\eta^\star,\rho_t,h,\text{CI}[\widehat{\partial_\rho}],\text{dual\_gap},\texttt{reason})$; PR $(\Omega,P,Q,\constref{PRmargin},\texttt{hitmap\_id})$; CBF residuals \& saltation stats; ISS ledger $(\Delta C_{\mathrm{fr}},\SISS)$; rights-plane tail summary $(\widehat{\mathrm{VaR}}_{0.95},\widehat{\mathrm{CVaR}}_{0.95},\texttt{bootstrap\_meta})$; solver KPIs (KKT p99, WCET); determinism envelope; \proofprint{} (hash algo=\HashAlgo, version=\HashVersion).
+\end{ledgerbox}
+
+\paragraph{Window identity (canonical).}
+To eliminate replay ambiguity, define
+\[
+\texttt{window\_id} := \HashCtx{window}\!\left(\UTCmin\ \big|\ \texttt{git\_head\_SHA}\ \big|\ \texttt{ci\_run\_seq}\ \big|\ \texttt{repo\_path\_hash}\right),
+\]
+and \emph{fail-closed} (\texttt{E\_WINDOW\_UNVERIFIED}) if the repo is dirty outside a tagged CI context. Additionally, \emph{forbid reuse} of a prior \texttt{window\_id} if Tier-2 device/driver hashes change between consecutive windows (\texttt{E\_WINDOW\_VENDOR\_DRIFT}). Any loss of NTP/chrony lock or non-monotone minute-buckets raises \texttt{E\_WINDOW\_CLOCK\_DRIFT}.
+
+\paragraph{Design $\Rightarrow$ evidence (informal theorem map).}
+The ACT layer (\secref{sec:cat-grammar}) fixes operads/cospans/sheaves and functors into $\Dyn,\Stoch,\Safe$; the runtime compiles them to governed interfaces, frontiers, and invariants. A \emph{double-category of evidence} makes guard acceptance a commuting 2-cell (Soundness). Completeness is stated up to locality $r$ with a concrete detection-latency bound
+\[
+K \;=\; \max\!\left\{\,N,\ \left\lceil \tfrac{2\,\constref{tau}}{\constref{taumin}} \right\rceil \right\},
+\]
+so any $r$-local violation that persists for at least one window is rejected within $K$ windows (cf.\ \secref{sec:omega-appendix}, \secref{sec:vnv}). Frontier spend is a symmetric-monoidal invariant; replay equality follows from coherence and stable serialization (cf.\ \secref{sec:evidence}). The \proofprint{} uses $\HashFn$ with domain separation to bind order and context.
+
+\paragraph{CI reference integrity (build hygiene).}
+All external results are referenced via the safe macros \verb|\jsgi*|/\verb|\jsgii*|/\verb|\jsgiii*|/\verb|\jsgiv*| defined in the preamble. The build \emph{must fail} if any bold ``\textbf{[??]}'' appears in the PDF; the CI enforces this rule and emits a master resolution table artifact. CI also enforces a \emph{term dictionary}: \ClampAmber\ (no “Yellow” in body text) and the hyphenated \proofprintname{} spelling.
+
+\medskip
+\noindent\textit{Takeaway.} Everything above is \emph{operational}: per-window checks with method metadata (including EF \texttt{vc\_selection} and DRO step-policy ID), explicit artifacts (Transport Pack, \proofprint{}, ReplayAdequacy), and deterministic replay with tight tolerances. The rest of the paper refines these contracts and supplies the proofs and implementations behind each acceptance line.
+
+
+% ==== Symbol Registry (one page) ============================================
+% ==== Symbol Registry (one page) ============================================
+\section*{Symbol Registry (standing constants and moduli)}
+\noindent\emph{Scope and auditability.}
+Constants below are \emph{standing} (uniform on compact Lyapunov sublevel sets) and versioned by policy;
+codes C1–C12 are treated as \emph{stable interfaces}. Any change to their configured values requires a
+ThresholdChange VC (cf.\ \secref{sec:governance}) and is reflected in Tier-3.
+Disambiguation: $\constref{EFeps}$ (EF locality) vs.\ $\constref{PRmargin}$ (PR/GKYP margin).
+Calibration digests (e.g., EF power/$\delta$-tables; sheaf thresholds) are \emph{VC-bound artifacts}
+and not part of C-codes but are referenced via \texttt{calib\_vc\_id} with an explicit
+\texttt{vc\_selection} breadcrumb (bin/interpolation policy for $(n,\kappa(\constref{F}))$).
+Numeric replay tolerances (not part of C-codes): \texttt{AbsTol}=$\AbsTol$, \texttt{RelTol}=$\RelTol$.
+Rights-plane tail risk uses the Rockafellar--Uryasev empirical CVaR estimator; when serial dependence
+is present a \emph{circular block bootstrap} is used for the CI (Tier-1 logs \texttt{block\_len}, $B$, and seed).
+A breach of the configured CVaR budget is a \emph{hard trigger}: the window is rejected and degraded deterministically.
+Clamp colors are \textsf{Green}/\textsf{Amber}/\textsf{Red} (legacy “Yellow’’ is aliased to \textsf{Amber} only in code comments).
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{} c >{}c<{} >{\raggedright\arraybackslash}X @{}}
+\toprule
+\textbf{Code} & \textbf{Symbol(s)} & \textbf{Meaning / where used} \\
+\midrule
+C1 & \constref{kappamax}, \constref{thetamin}, \constref{rtube} &
+Frontier geometry: curvature, incidence-angle floor, tube radius. Used by frontier/tube calculus, saltation replay, and CBF audit (R2/R6; \secref{sec:jsg-layers}).\\
+C2 & \constref{Smax}, \constref{Gmax}, $\SISS$ &
+Uniform bounds for decision/environment fields near frontiers and the ISS supply budget $\SISS$ over a window (ledger feasibility; \secref{sec:jsg-layers}).\\
+C3 & \constref{LF}, \constref{taumin} &
+One-sided Lipschitz (Filippov) and \emph{hard} minimum dwell; No-Zeno and symmetric hysteresis (R6; \jsgiLem{\lblNoZeno}).\\
+C4 & \constref{tau}, \constref{rho} &
+Window length \& DRO radius. Operational constraint used by the latency bound: enforce $\constref{tau}>2\,\constref{taumin}$ (cf.\ \secref{sec:omega-appendix}); DRO sensitivity step-size policy binds to $h$ in evidence (\secref{sec:evidence}).\\
+C5 & \constref{F}, \constref{chi}, \constref{Lpsi} &
+Fisher objects; leakage metric $\chi$; EF radius $r=\epsEF/\constref{Lpsi}$. Drives EF gate/clamp FSM (R1/R5; \secref{sec:cat-grammar}).\\
+C6 & \constref{EFeps} &
+EF locality tolerance $\epsEF$ (two-channel EF gate; VC-bound power curve; \secref{sec:evidence}).\\
+C7 & \constref{etastar} &
+Soft-transport KKT optimizer $\eta^\star$ (DRO envelope; sensitivity match and dual-gap ceiling; \secref{sec:jsg-layers}).\\
+C8 & \constref{nuhat}, \constref{pgraze}, \constref{pthr}, \constref{gammadwell} &
+Grazing/dwell escalation parameters (R6: grazing-aware dwell amplification in frontier discipline).\\
+C9 & \constref{Hol}, \constref{Harm}, $\eta_{\mathrm{cal}}$ &
+Holonomy/harmonic-mass budgets and calibration slack (spectral drift sentinels; \secref{sec:jsg-layers}, \secref{sec:evidence}).\\
+C10 & \constref{chiG}, \constref{chiY}, \constref{EFeps} &
+Clamp thresholds (\textsf{Green}/\textsf{Amber}/\textsf{Red}) \& EF radius; governs proxy enable/disable and degrade policy (FSM; \secref{sec:jsg-layers}).\\
+C11 & \constref{salt}, $\mathrm{CVaR}_{0.95}$, LB &
+Saltation bound; rights-plane tail-risk budget; residual lower bounds $LB_i$ in tubes. CVaR uses Rockafellar--Uryasev estimator with block-bootstrap CI when dependent (log \texttt{block\_len}/$B$/seed); any budget breach is \emph{fail-closed} (CBF audit; \secref{sec:jsg-layers}).\\
+C12 & \constref{omegal},\ \constref{omegau},\ \constref{PRmargin} &
+PR band endpoints \& minimum margin (GKYP witness); retunes must be hitmap-sanctioned (require \texttt{hitmap\_id}) and preserve CBF tube feasibility (\secref{sec:omega-contract}, \secref{sec:jsg-layers}).\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section*{ACT Notation Quick Reference}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.26\textwidth} X @{}}
+\textbf{Objects, morphisms} &
+Components are objects; processes are morphisms; identities $\id$; associative composition $\circ$.
+Design-time composition is mirrored at runtime by \texttt{compose\_ev} on evidence in the double category $\Evid$ (see last row).\\[6pt]
+
+\textbf{Operad \Oprd \& algebra \Alg} &
+Syntax of legal multi-port compositions (ports/types/units/rates). An algebra interprets this syntax into concrete ports with \emph{guard hooks}: EF-locality radius $r=\epsEF/\constref{Lpsi}$; leakage clamp (\textsf{Green}/\textsf{Amber}/\textsf{Red}); handles for PR/CBF certificates. The EF gate is \emph{two-channel}: (i) KL–Fisher quadratic sandwich (parametric) and (ii) proxy-free kernel test (HSIC by default; linear-time MMD optional). The emitted \texttt{ef\_guard\_id} \emph{must} carry \texttt{calib\_vc\_id}, \texttt{vc\_selection} (bin/index or interpolation policy for $(n,\kappa(\constref{F}))$), and method metadata (estimator, resampling/bootstrapping kind, $B$, \texttt{block\_len} if dependent, $n$, seed).\\[6pt]
+
+\textbf{Structured cospans} &
+Open systems wired via $L(a)\to x \leftarrow L(b)$; pushouts compose systems. Interfaces realize \emph{frontiers} with budgets $(\constref{kappamax},\constref{thetamin},\constref{rtube})$, ISS-linked defect ledger $C_{\mathrm{fr}}$, saltation/reset spend subject to $\constref{salt}$, and a rights-plane tail check using the Rockafellar--Uryasev CVaR estimator (CI via circular block bootstrap when serial dependence is present; \texttt{block\_len}/$B$/seed logged).\\[6pt]
+
+\textbf{Sheaves on a cover} &
+Local data with restriction maps on overlaps; global sections capture fused state. The sheaf Laplacian energy $E(s)=s^\top L_{\mathcal F}s$ detects cross-modal inconsistency. Thresholds $(\epsilon,\tau_{\mathrm{iou}},\tau_{\mathrm{imu}},\tau_{\mathrm{hsic}})$ are \emph{dataset-calibrated} with FDR control (Benjamini–Yekutieli at level $q$ or Bonferroni at $\alpha/k$) and bound by a calibration VC; the digest appears in evidence when thresholds are exercised.\\[6pt]
+
+\textbf{Functors $F:\Arch\to\Dyn,\Stoch,\Safe$} &
+Structure-preserving maps from design syntax to dynamics, stochastic kernels, and safety obligations. At runtime, witnesses are published in fixed order EF $\rightarrow$ DRO $\rightarrow$ PR $\rightarrow$ CBF $\rightarrow \omega$ (no reordering). DRO includes $(\eta^\star,\rho_t)$ with sensitivity CI, adaptive FD policy ID/step $h$, and dual-gap p99; PR/GKYP includes $(\Omega,P,Q,\constref{PRmargin},\texttt{hitmap\_id})$ from an offline certificate (with \texttt{valid\_until}, retune hitmap).\\[6pt]
+
+\textbf{Evidence double category $\Evid$} &
+\emph{Objects (0-cells):} compiled open systems $x$ with interface typing.\newline
+\emph{Horizontal 1-cells:} structured cospans (wirings); horizontal composition = pushout; monoidal product = disjoint sum.\newline
+\emph{Vertical 1-cells:} the typed, \emph{ordered} guard pipeline $m_x:x\Rightarrow\mathrm{Ev}(x)$, where $\mathrm{Ev}(x)$ contains (in canonical order) witness IDs (EF, DRO, PR, CBF, $\omega$), clamp state, determinism-envelope digest, and required governance/calibration digests (\texttt{calib\_vc\_id}, \texttt{hitmap\_id}, policy digest).\newline
+\emph{2-cells:} commuting “compile-and-monitor’’ squares proving that acceptance \emph{respects pushouts} (soundness). The map \texttt{compose\_ev} on evidence mirrors wiring; the \texttt{proof\_print} hashes EF$\|\,$DRO$\|\,$PR$\|\,$CBF$\|\,$$\omega$ in that order, making acceptance \emph{auditably order-stable} and replay-pure.
+\end{tabularx}
+
+\section{Categorical Grammar for Safe Composition}
+\label{sec:cat-grammar}
+
+\subsection{Semantic substrate (fixed throughout)}
+We make explicit the design- and evidence-level semantics that the compiler targets.
+
+\paragraph{Design categories.}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Architecture} \Arch: objects are typed interfaces; morphisms are \emph{structured cospans}
+  $L(a)\to x \leftarrow L(b)$ whose apex $x$ is an open system; composition is by pushout.
+  \item \textbf{Semantics} $F_{\Dyn}:\Arch\to\Dyn$, $F_{\Stoch}:\Arch\to\Stoch$, $F_{\Safe}:\Arch\to\Safe$:
+  functors interpreting designs as dynamics, stochastic kernels, and safety obligations.
+\end{itemize}
+
+\paragraph{Evidence double category.}
+Let $\Evid$ be a symmetric-monoidal double category with:
+\begin{itemize}[leftmargin=*]
+  \item \emph{Objects (0-cells):} compiled open systems $x$ (apexes) together with their interface typing.
+  \item \emph{Horizontal 1-cells:} structured cospans (wirings) $L(a)\to x \leftarrow L(b)$; horizontal composition is pushout; monoidal product is disjoint sum.
+  \item \emph{Vertical 1-cells:} the fixed guard pipeline as a \emph{typed} morphism
+  \[
+    m_x:\ x\ \Rightarrow\ \mathrm{Ev}(x),
+  \]
+  where $\mathrm{Ev}(x)$ is the typed \emph{evidence object} containing (in canonical order) witness IDs EF$\to$DRO$\to$PR$\to$CBF$\to\omega$, the clamp state, determinism-envelope digest, and the necessary governance/calibration digests (e.g., \texttt{calib\_vc\_id}, \texttt{hitmap\_id}, policy digest).
+  \item \emph{2-cells:} commuting “compile-and-monitor’’ squares relating wiring of systems to composition of evidence. The horizontal monoidal structure on $\Evid$ tracks independent subsystems; vertical composition is the window-wise execution of guards in fixed order.
+\end{itemize}
+\begin{tikzcd}[ampersand replacement=\&]
+L(a) \arrow[r] \arrow[d, equal] \& x \arrow[d, "m_x" left] \& \arrow[l] L(b) \arrow[d, equal] \\
+L(a) \arrow[r] \& x' \& \arrow[l] L(b)
+\end{tikzcd}
+\quad
+\begin{tikzcd}[ampersand replacement=\&]
+x \arrow[r, "\text{wire}"] \arrow[d, "m_x" left] \& y \arrow[d, "m_y"] \\
+\mathrm{Ev}(x) \arrow[r, "\text{compose\_ev}" below] \& \mathrm{Ev}(y)
+\end{tikzcd}
+
+\begin{theorem}[Runtime soundness as a 2-cell]
+\label{thm:soundness-square}
+There exists a symmetric-monoidal compilation functor
+$F_{\mathrm{impl}}:\Arch\to \Ob(\Evid)$ and, for every pushout $c:a\to b$ in \Arch, a monitor $m_c$ and a 2-cell in $\Evid$ witnessing
+\[
+\mathrm{Ev}\!\left(F_{\mathrm{impl}}(a)\mathop{\sqcup}\limits_{F_{\mathrm{impl}}(L)}F_{\mathrm{impl}}(b)\right)
+\;\cong\;
+\mathrm{compose\_ev}\!\big(\mathrm{Ev}(F_{\mathrm{impl}}(a))\otimes \mathrm{Ev}(F_{\mathrm{impl}}(b))\big).
+\]
+In particular, acceptance of $m_c$ on every window implies satisfaction of $F_{\Safe}(c)$ on that window, and evidence \emph{composes with wiring}. The construction is stable under pushouts and symmetric-monoidal reassociation.
+\end{theorem}
+
+\begin{proofsketch}
+(i) \emph{Frontier functoriality:} pushouts in \Arch determine frontiers and budget ledgers whose updates are additive under composition; this yields a symmetric-monoidal functor into a \textsf{Budgets} category (cf.\ R2 and Lemma~\jsgiiiLem{\lblCBFfrontier}).\\
+(ii) \emph{Determinism envelope:} Tier-2 completeness (\secref{sec:evidence}) fixes seeds, library/device hashes, numeric tolerances, scheduling, and data order, so $m_x$ is a pure function of the wired state and envelope.\\
+(iii) \emph{Hash coherence:} $\texttt{proof\_print}=H(\texttt{ef}\|\texttt{dro}\|\texttt{pr}\|\texttt{cbf}\|\omega)$ is domain-separated and order-fixed; composing evidence after separate monitoring equals monitoring after wiring because both compute the same ordered tuple before hashing. Monoidality handles independent subsystems.
+\end{proofsketch}
+
+\begin{remark}[Completeness up to locality with a latency bound]
+There exists $K=\max\!\{\,N,\ \lceil 2\,\constref{tau}/\constref{taumin}\rceil\}$ such that any $r$-local violation
+($r=\epsEF/\constref{Lpsi}$) that persists for at least one window is detected by the $\omega$-monitor within $K$ windows
+(cf.\ acceptance in \secref{sec:evidence} and monitor in \secref{sec:omega-appendix}). 
+\end{remark}
+
+\subsection{Rules R1–R9: ACT$\to$JSG compiler surface}
+Each rule is \emph{executable}: it constrains construction and emits evidence hooks.
+
+\begin{rulex}{R1 (Operad $\Rightarrow$ governed interface)}
+An operadic operation $o\!:\!(t_1,\dots,t_k)\!\to t$ emits a governed port schema (types, units, frames, rates) with EF-local validity:
+set $r=\epsEF/\constref{Lpsi}$, require leakage $\chi\le\constref{chiG}$ in \textsf{Green}, and attach certificate handles ($\Omega$-ID, CBF handles). 
+Two-channel gate: (i) KL–Fisher quadratic sandwich at level $\alpha$ with CI-guarded bounds using $\kappa(\constref{F})$; 
+(ii) proxy-free kernel test (HSIC or linear-time MMD) at designed power $1{-}\beta$ against the Green reference, with \emph{method metadata} (estimator choice, resampling/bootstrapping method, $B$, \texttt{block\_len} if dependent, $n$, seed) bound into the emitted witness.
+Emit \texttt{ef\_guard\_id} with \texttt{calib\_vc\_id} (EF $\delta$-table) and a deterministic \texttt{vc\_selection} breadcrumb (see EF-VC policy below).
+\uses{C5, C6, C10, C12}
+\end{rulex}
+
+\begin{rulex}{R2 (Cospan pushout $\Rightarrow$ frontier with budgets)}
+Each pushout wire instantiates a frontier~$\Sigma$ with budgets $(\constref{kappamax},\constref{thetamin},\constref{rtube})$, a freeze-on-crossing projection $\Pi$, and a \emph{defect ledger} $C_{\mathrm{fr}}$ that accumulates saltation/reset costs. Ledger feasibility is checked against ISS supply $\SISS$ over the window, and the rights-plane tail risk (Rockafellar--Uryasev CVaR$_{0.95}$ with block-bootstrap CI when serial dependence is present; log \texttt{block\_len}/$B$/seed) is treated as a hard trigger.
+\uses{C1, C2, C11}
+\end{rulex}
+
+\begin{rulex}{R3 (Sheaf cover $\Rightarrow$ cross-modal invariants)}
+Fix a sensing cover $\mathcal U$ and data sheaf $\mathcal F$ with restriction maps. Define the \emph{consistency energy} $E(s)=\|\delta s\|^2=s^\top L_{\mathcal F}s$.
+Calibrate thresholds $(\epsilon,\tau_{\mathrm{iou}},\tau_{\mathrm{imu}},\tau_{\mathrm{hsic}})$ via a dataset-backed VC with stated \emph{multiple-testing control} (Benjamini–Yekutieli at level $q$, or Bonferroni at $\alpha/k$); record dataset splits, resampling method, and the realized $\delta$ (with CI). Require that $E(s)>\epsilon$ implies (w.p.\ $\ge 1{-}\delta$) at least one guard fires (IoU$\downarrow$, IMU residual$\uparrow$, or cross-HSIC$\uparrow$). Emit the calibration VC digest.
+\uses{C4, C5}
+\end{rulex}
+
+\begin{rulex}{R4 (Functorial semantics $\Rightarrow$ published witnesses)}
+Per window, publish (in order) the witness tuple:
+(i) EF $(\epsEF,\widehat L_\psi,r,\kappa(\constref{F}),\texttt{calib\_vc\_id},\texttt{vc\_selection},\texttt{method\_meta})$,
+(ii) DRO $(\eta^\star,\rho_t)$ with $\partial_\rho\!\mathbb{E}[\varphi_\eta]\approx\eta^\star$ and \emph{log CI + adaptive FD policy ID + step $h$},
+(iii) PR/GKYP $(\Omega,P,Q,\constref{PRmargin},\texttt{hitmap\_id})$,
+(iv) CBF-QP numerics (residuals/latency/ledger, CVaR summary and CI),
+(v) $\omega$-automata traces (first counterexample if rejecting).
+\uses{C4, C5, C11, C12}
+\end{rulex}
+
+\begin{rulex}{R5 (Leakage clamp FSM)}
+\textbf{Green}: $\chi\le\constref{chiG}$.
+\textbf{Amber}: $\constref{chiG}<\chi\le\constref{chiR}$ $\Rightarrow$ shrink $r$, enlarge $\rho_t$, freeze \emph{new} operad edges.
+\textbf{Red}: $\chi>\constref{chiR}$ $\Rightarrow$ disable Fisher proxies and switch to $\Omegawc$; require two \textsf{Green} windows to re-enable.
+\uses{C4, C5, C10}
+\end{rulex}
+
+\begin{rulex}{R6 (Switching discipline at frontiers)}
+Enforce \emph{hard} dwell $\ge\constref{taumin}$ and symmetric hysteresis around $S(x)=0$; apply grazing-aware dwell escalation $(\constref{nuhat},\constref{pgraze},\constref{pthr},\constref{gammadwell})$. Saltation replay over tubes: $\|K_{\mathrm{obs}}{-}I\|\le\constref{salt}$; else mark tube-id suspect and avoid frontier until recalibration.
+\uses{C1, C3, C8, C11}
+\end{rulex}
+
+\begin{rulex}{R7 ($\Omega$ as a contract; offline certification \& non-expansion)}
+$\Omega$ is versioned offline with $(\Omega,P,Q,\constref{PRmargin},\texttt{valid\_until},\texttt{hitmap})$; runtime may \emph{not} expand $\Omega$. Every retune must carry a valid \texttt{hitmap\_id}, lie on the certified hitmap, \emph{and preserve tube-feasible CBF residual LBs}. Otherwise revert to the last valid $(P,Q)$ and shrink $\Omega$.
+\uses{C12}
+\end{rulex}
+
+\begin{rulex}{R8 (Kernel numerics as health signals)}
+Treat the control kernel’s outputs as monitored quantities: sustained $\omega^\star>\omega_{\mathrm{crit}}$ $\Rightarrow$ \textsf{Amber} and planner retune; p99 KKT residual $>\varepsilon_{\mathrm{kkt}}$ or WCET overrun $\Rightarrow$ \textsf{Red} and engage $\pi_{\mathrm{brake}}$.
+\uses{C11}
+\end{rulex}
+
+\begin{rulex}{R9 (Graceful degradation)}
+Any cross-modal failure (R3) $\Rightarrow$ \textsf{Amber} and switch to pre-certified degraded profiles $\Omega_{\text{vision-only}}$ or $\Omega_{\text{lidar-only}}$ within the Eyes-Closed kernel; recover within $N$ windows or escalate \textsf{Red}.
+\uses{C12}
+\end{rulex}
+
+% ---- EF VC selection policy (normative) -------------------------------------
+\begin{ledgerbox}
+\textbf{EF-VC selection policy (deterministic, conservative).}
+Given realized $(n,\kappa(\constref{F}))$ for the window, select a calibration-table entry as follows:
+\begin{enumerate}[leftmargin=*]
+  \item Quantile binning: let $q^\star$ be the smallest tabulated $\kappa$-quantile upper edge with $\kappa(\constref{F})\le q^\star$.
+  \item Sample-size rounding: let $n^\star$ be the largest tabulated size with $n^\star\le n$.
+  \item If $(n^\star,q^\star)$ is missing, step to \emph{more conservative} entries by decreasing $n^\star$ and/or increasing the quantile (move southwest-to-northeast), stopping at the first present cell; else \emph{fail-closed} with reason \texttt{vc\_hole}.
+  \item Serial dependence: if dependence is flagged (e.g., Ljung–Box $p{<}0.05$ on residuals or $|\rho(1)|{>}\rho_{\min}$), enforce \texttt{resample}=\texttt{wild\_bootstrap} with \texttt{block\_len}$=\lceil 2\,n^{1/3}\rceil$ (logged).
+\end{enumerate}
+Record the decision path as \texttt{vc\_selection} inside \texttt{ef\_guard\_id}.
+\end{ledgerbox}
+
+\subsection{Acceptance slice (section-local checks)}
+\begin{acceptchecks}
+  \item \textbf{Cospan wiring.} A pushout diagram is emitted for each wire; the resulting frontier carries budgets $(\constref{kappamax},\constref{thetamin},\constref{rtube})$, an initialized $C_{\mathrm{fr}}$ ledger with $\SISS$ binding, and a rights-plane CVaR summary (estimator kind, $B$, CI, and \texttt{block\_len} if dependent).
+  \item \textbf{Sheaf calibration.} The cover $\mathcal U$, restriction maps, and Laplacian $L_{\mathcal F}$ are serialized; thresholds $(\epsilon,\tau_{\mathrm{iou}},\tau_{\mathrm{imu}},\tau_{\mathrm{hsic}})$ are bound to a dataset-backed calibration VC with the chosen FDR/FWER method, dataset splits, resampling method, and realized $\delta$ (with CI) logged.
+  \item \textbf{$\Omega$ immutability.} Any change to $\Omega$ during runtime must match an offline certificate (hash-addressed, valid \texttt{hitmap\_id}); otherwise revert to the last valid witness and shrink $\Omega$.
+  \item \textbf{EF $\delta$-binding, method meta, \& VC selection.} \texttt{ef\_guard\_id} must include \texttt{calib\_vc\_id}, \texttt{method\_meta} (estimator, bootstrap/resampling info, $B$, \texttt{block\_len} if dependent, $n$, seed), and a \texttt{vc\_selection} breadcrumb that satisfies the EF-VC policy above; replays verify the selected table cell against $(n,\kappa(\constref{F}))$.
+  \item \textbf{Ordering.} Evidence witnesses are emitted strictly in EF$\to$DRO$\to$PR$\to$CBF$\to\omega$ order for hashing into the proof-print.
+\end{acceptchecks}
+
+\subsection{Worked wiring diagram (pushout = frontier)}
+\[
+\begin{tikzcd}[column sep=large, row sep=large]
+L(b) \arrow[r, "i_Y"] \arrow[d, "i_X"'] & Y \arrow[d] \\
+X \arrow[r] & X \mathop{\sqcup}\limits_{L(b)} Y
+\end{tikzcd}
+\]
+\noindent The pushout apex is the composed open system; the interface $L(b)$ becomes a \emph{frontier} with budget tuple (C1). The compiler registers the freeze-on-crossing projection $\Pi$, initializes the saltation replay constraints (C11), binds the rights-plane CVaR estimator/CI (with \texttt{block\_len} if applicable), and attaches the ISS ledger binding $\SISS$.
+
+\subsection{Notes to the reader}
+R1–R9 here define the \emph{surface} of the compiler; their operational checks and evidence emissions are consumed by the runtime pipeline in \secref{sec:evidence} and enforced by the guard layers in \secref{sec:jsg-layers}. Governance (R10) appears in \secref{sec:governance}; proofs strengthening soundness/completeness and calibration protocols materialize in \secref{sec:compiler} and \secref{sec:vnv}. Clamp color terminology is unified as \textsf{Green}/\textsf{Amber}/\textsf{Red} throughout this paper (legacy “Yellow’’ is aliased to \textsf{Amber} only in code comments).
+
+\section{JSG Runtime Layers}
+\label{sec:jsg-layers}
+
+\paragraph{Overview.}
+The runtime is a \emph{single-threaded logical pipeline} with three cooperating layers:
+\emph{Geometric} (frontiers \& hybrid discipline), \emph{Information-theoretic} (EF locality \& DRO),
+and \emph{Control/Verification} (PR/GKYP, CBF, and $\omega$-monitors). Each layer exposes
+explicit \emph{fail-closed} acceptance checks and emits evidence consumed by the Transport Pack
+(\secref{sec:evidence}). Ordering is fixed by \secref{sec:map} and may not be altered.
+
+% -------------------- GEOMETRIC LAYER --------------------
+\subsection*{Geometric layer: frontiers, dwell, saltation, and spend}
+Frontiers implement the structured-cospan interfaces of \secref{sec:cat-grammar} (R2):
+they carry budgets $(\constref{kappamax},\constref{thetamin},\constref{rtube})$,
+enforce \emph{hard} dwell $\ge\constref{taumin}$ and symmetric hysteresis around $S(x)=0$,
+and ledger \emph{defect spend} from resets/saltation against an ISS-style supply $\SISS$.
+No-Zeno dwell is bound to \jsgiLem{\lblNoZeno}; frontier feasibility and tube calculus
+are tied to \jsgiiiLem{\lblCBFfrontier}.
+
+\begin{rulex}{G1 (Frontier spend \& replay invariance)}
+On each crossing of frontier $\Sigma$, update the ledger
+\[
+C_{\mathrm{fr}}^{+} \;=\; C_{\mathrm{fr}} \;+\; \phi_{\text{salt}}(K_{\mathrm{obs}};\constref{salt}) \;+\; \phi_{\text{reset}}(\mathrm{reset\_jac}) ,
+\]
+with $\phi_{\text{salt}}$ nondecreasing in $\|K_{\mathrm{obs}}{-}I\|$ and $\phi_{\text{reset}}$ nondecreasing in $\|\mathrm{reset\_jac}{-}I\|$.
+Require $C_{\mathrm{fr}}^{+}\le \SISS$ (supply) for feasibility. Under deterministic replay
+(\secref{sec:evidence}), the \emph{total} frontier spend over a window is invariant.
+\uses{C1, C2, C11}
+\end{rulex}
+
+\begin{rulex}{G2 (Dwell, hysteresis, grazing-aware escalation)}
+Enforce dwell $\ge\constref{taumin}$ and symmetric hysteresis; if grazing probability $\constref{pgraze}$ or low normal speed $\constref{nuhat}$ is detected, escalate dwell by factor $\constref{gammadwell}$ until $\constref{pgraze}<\constref{pthr}$ or tube exit.
+\uses{C3, C8}
+\end{rulex}
+
+\begin{acceptchecks}
+  \item \textbf{Dwell/hysteresis (fail-closed).} Inter-switch time $\ge\constref{taumin}$ and sign of $S(x)$ respects hysteresis bands (\jsgiLem{\lblNoZeno}); else the \emph{window fails}.
+  \item \textbf{Saltation replay (fail-closed).} $\|K_{\mathrm{obs}}{-}I\|\le\constref{salt}$ in tubes of radius $\constref{rtube}$; else mark tube-id suspect, avoid $\Sigma$ until recalibration, and \emph{fail} the window.
+  \item \textbf{Ledger feasibility (fail-closed).} $C_{\mathrm{fr}}^{+}\le \SISS$ (units matched to ISS supply); otherwise \emph{reject} window. Record $(C_{\mathrm{fr}},\SISS)$ deltas, crossing ID, and the contributing $\phi_{\text{salt}},\phi_{\text{reset}}$.
+\end{acceptchecks}
+
+\paragraph{Emission.}
+\texttt{cbf\_audit\_id} carries per-frontier tube residual LBs, saltation stats, dwell logs, $(\Delta C_{\mathrm{fr}},\SISS)$, and crossing IDs.
+It also summarizes the rights-plane tail-estimator configuration when exercised (CVaR$_{0.95}$ kind = Rockafellar--Uryasev; bootstrap $B$; CI; and \texttt{block\_len} if a dependent stream is detected).
+
+% -------------------- INFORMATION-THEORETIC LAYER --------------------
+\subsection*{Information-theoretic layer: EF locality, clamps, DRO}
+This layer certifies that \emph{parametric} Fisher proxies are locally valid and gates any learning
+or distributional update by a sensitivity \& convergence check.
+
+\begin{rulex}{I1 (Two-channel EF locality gate)}
+Set $r=\epsEF/\constref{Lpsi}$; require (i) a KL--Fisher quadratic sandwich with CI-guarded bounds
+(using $\kappa(\constref{F})$) and (ii) a proxy-free kernel test (HSIC by default; linear-time MMD optional) that does not reject at designed power $1{-}\beta$.
+Drive the clamp FSM: \textsf{Green} $\Rightarrow$ proxies allowed; \textsf{Amber} $\Rightarrow$ shrink $r$, enlarge $\rho_t$, freeze \emph{new} operad edges; \textsf{Red} $\Rightarrow$ disable proxies and switch to $\Omegawc$, re-enable only after \emph{two} consecutive \textsf{Green} windows (\secref{sec:map}).
+Emit \texttt{calib\_vc\_id}, \texttt{vc\_selection} (EF-VC decision path; \secref{sec:cat-grammar}), and \texttt{method\_meta} (estimator, resampling, $B$, \texttt{block\_len} if dependent, $n$, seed).
+\uses{C5, C6, C10}
+\end{rulex}
+
+\begin{rulex}{I2 (DRO envelope \& quarantine; robust numerics)}
+Validate soft-transport sensitivity: finite-difference $\partial_\rho\!\mathbb{E}[\varphi_\eta]\approx\eta^\star$
+within tolerance, and \emph{also} require a solver dual-gap $\le 10^{-4}$.
+Use an \emph{adaptive FD policy} with ID \texttt{fd\_policy\_id} (stored) that chooses a safeguarded step $h$
+via a curvature probe and backtracking; log $(h,\texttt{fd\_policy\_id})$ and a CI for $\widehat{\partial_\rho}$.
+On any failure, set \texttt{quarantine\_bit=1}, record a reason code 
+(\texttt{sensitivity\_mismatch}, \texttt{dual\_gap}, or \texttt{both}), and block promotions until agreement is restored.
+\uses{C4, C7}
+\end{rulex}
+
+\begin{rulex}{I2.1 (Adaptive finite-difference step policy)}
+Choose $h$ by a curvature probe with safeguards; emit a policy digest.
+\begin{lstlisting}[language=Python,basicstyle=\ttfamily\small]
+def pick_fd_step(obj, rho, h_min, h_max, c_shrink=0.5):
+    # Curvature probe
+    h = (h_min + h_max)/2
+    g1 = ghat(obj, rho+h) - ghat(obj, rho-h)   # centered diff numerator
+    g2 = ghat(obj, rho+2*h) - 2*ghat(obj, rho) + ghat(obj, rho-2*h)
+    while h > h_min and abs(g2) > tau_curv:
+        h *= c_shrink
+        g2 = ghat(obj, rho+2*h) - 2*ghat(obj, rho) + ghat(obj, rho-2*h)
+    return clamp(h, h_min, h_max)
+\end{lstlisting}
+\emph{Emission.} Add \texttt{fd\_policy\_id} and \texttt{fd\_policy\_digest} to \texttt{dvdrho\_id}.
+\end{rulex}
+
+\begin{rulex}{I3 (Spectral drift sentinels)}
+Monitor calibration-plane stability via holonomy/harmonic mass budgets: sustained increase in $\constref{Hol}$ or $\constref{Harm}$ beyond calibrated bands raises \textsf{Amber} and freezes promotions; sharp excursions raise \textsf{Red} and disable proxies (\S\ref{sec:evidence} Tier-3 binds the thresholds VC).
+\uses{C9, C10}
+\end{rulex}
+
+\begin{acceptchecks}
+  \item \textbf{Locality (fail-closed).} Log $(\epsEF,\widehat L_\psi,r,\kappa(\constref{F}),\alpha,1{-}\beta,\texttt{calib\_vc\_id},\texttt{vc\_selection},\texttt{method\_meta})$; both channels must pass at configured levels, else \emph{reject} window.
+  \item \textbf{Clamp discipline.} State $\in\{\textsf{Green,Amber,Red}\}$ consistent with $\chi$ thresholds (\secref{sec:map}); \textsf{Red}$\to$proxy re-enable only after \emph{two} \textsf{Green} windows.
+  \item \textbf{DRO sensitivity (fail-closed).} $|\widehat{\partial_\rho}-\eta^\star|\le 0.05\,\|\eta^\star\|$ with CI reported \emph{and} dual-gap $\le 10^{-4}$; else set \texttt{quarantine\_bit=1} and \emph{reject} promotions in this window. \emph{Log} \texttt{fd\_policy\_id} and realized $h$.
+  \item \textbf{Spectral health.} Sheaf/plane thresholds bound $\constref{Hol}$ and $\constref{Harm}$; excursions escalate clamp per policy and must be evidenced by a calibration VC digest.
+  \item \textbf{FD policy binding.} \texttt{dvdrho\_id} carries \texttt{fd\_policy\_id} and \texttt{fd\_policy\_digest}; replays reproduce $h$ from the policy.
+\end{acceptchecks}
+
+\paragraph{Emission.}
+\texttt{ef\_guard\_id} \emph{(locality metrics, clamp, \texttt{calib\_vc\_id}, \texttt{vc\_selection}, \texttt{method\_meta})};
+\texttt{dvdrho\_id} $(\eta^\star,\rho_t,\texttt{fd\_policy\_id},h,\text{CI}[\widehat{\partial_\rho}],\text{dual\_gap},\texttt{quarantine\_bit},\texttt{reason})$.
+
+% -------------------- CONTROL / VERIFICATION LAYER --------------------
+\subsection*{Control/verification layer: PR/GKYP, CBF-QP, $\omega$-monitors}
+This layer ensures band-limited passivity, tube-safe barrier feasibility, and liveness/safety monitoring.
+
+\begin{rulex}{C1 (PR/GKYP with adaptive hitmaps)}
+Hold a valid PR certificate $(\Omega,P,Q,\constref{PRmargin})$; any retune must lie on a pre-certified hitmap over uncertainty sets and carry a \texttt{hitmap\_id}. If the margin crowds $\constref{PRmargin}$, auto-shrink $\Omega$ and revert to last valid $(P,Q)$.
+\uses{C12}
+\end{rulex}
+
+\begin{rulex}{C2 (CBF-QP feasibility under frontier awareness)}
+For each barrier $h_i$, require one-step residual lower bound $LB_i:=h_i^+{-}h_i^-{+}\sigma_i \ge 0$ inside tubes of radius $\constref{rtube}$. If any $LB_i<0$, fail-closed and engage $\pi_{\mathrm{brake}}$; record the offending constraints and frontier IDs.
+\uses{C1, C11}
+\end{rulex}
+
+\begin{rulex}{C3 (Kernel numerics as health signals)}
+Treat $\omega^\star$ and solver KKT residuals/WCET as first-class: sustained $\omega^\star>\omega_{\mathrm{crit}}$ $\Rightarrow$ \textsf{Amber} and planner retune; p99 KKT $>\varepsilon_{\mathrm{kkt}}$ or WCET overrun $\Rightarrow$ \textsf{Red} and $\pi_{\mathrm{brake}}$.
+\uses{C11}
+\end{rulex}
+
+\begin{rulex}{C4 ($\omega$ monitors with bounded response)}
+Run safety monitors and bounded-response liveness $\varphi_N$ (\secref{sec:omega-appendix}) over ordered KPI row-hashes and clamp letters.
+Configure the bound
+\[
+K \;=\; \max\!\left\{\,N,\ \left\lceil \tfrac{2\,\constref{tau}}{\constref{taumin}} \right\rceil \right\}
+\]
+and \emph{reject the window} if a persistent $r$-local violation (cf.\ Lemma~\jsgivLem{\lblGapGate}) is not detected within $K$ windows. First counterexample hash is mandatory on rejection.
+\uses{C4}
+\end{rulex}
+
+\begin{rulex}{C5 (Rights-plane tail risk = hard trigger)}
+If $\mathrm{CVaR}_{0.95}$ of barrier slacks breaches budget, \emph{fail-closed} the window, enter Freeze{+}Dwell, and degrade $\Omega$ deterministically; log reason \texttt{cvar\_breach}.
+Estimator: Rockafellar--Uryasev. Bootstrap default for serial data: \emph{circular block bootstrap} with
+$b=\max\{1,\lfloor c_{\mathrm{cbb}}\,N^{1/3}\rfloor\}$ (record $c_{\mathrm{cbb}}$), and fields
+\texttt{block\_kind="cbb"}, \texttt{block\_len=b}, \texttt{seed}. IID data uses $b{=}1$.
+\end{rulex}
+
+\begin{acceptchecks}
+  \item \textbf{PR witness (fail-closed).} Valid $(\Omega,P,Q)$ with margin $\ge\constref{PRmargin}$; any update includes a valid \texttt{hitmap\_id} and matches the hitmap; else revert and shrink $\Omega$ and \emph{reject} window.
+  \item \textbf{CBF residuals (fail-closed).} $LB_i\ge 0$ for all active $i$; tube membership logged; saltation bounds honored; frontier IDs attached to near-violations. Any $LB_i<0$ \emph{rejects} the window and engages $\pi_{\mathrm{brake}}$.
+  \item \textbf{Tail risk (fail-closed).} $\mathrm{CVaR}_{0.95}$ within budget with estimator/CI recorded (and \texttt{block\_len} if dependent); else immediate rejection with Freeze{+}Dwell (\texttt{cvar\_breach}).
+  \item \textbf{Numerics/Scheduling.} p99 KKT $\le \varepsilon_{\mathrm{kkt}}$; WCET $\le$ budget; otherwise deterministic fail-closed per cookbook.
+  \item \textbf{$\omega$ precondition (fail-closed).} Enforce $\constref{tau}\ge 2\,\constref{taumin}$ at runtime; if violated, \emph{reject} the window with reason \texttt{omega\_precond} (prevents out-of-spec latency claims).
+  \item \textbf{$\omega$ bounded response.} Persistent $r$-local violations are detected within $K$ windows; else \emph{meta-monitor failure} and window rejection; first counterexample hash required (\secref{sec:omega-appendix}, \secref{sec:vnv}).
+  \item \textbf{Tail risk (fail-closed).} $\mathrm{CVaR}_{0.95}$ within budget; \texttt{block\_kind}, \texttt{block\_len}, $B$, CI, and seed are recorded (with CBB defaults if serial dependence).
+\end{acceptchecks}
+
+\paragraph{Emission.}
+\texttt{pr\_witness\_id} $(\Omega,P,Q,\constref{PRmargin},\texttt{hitmap\_id})$,
+\texttt{cbf\_audit\_id} (residuals/latency/ledger, CVaR kind, $B$, CI, optional \texttt{block\_len}),
+\texttt{omega\_trace\_id} (state trace, computed $K$, and first counterexample if any).
+
+% -------------------- SCHEDULING / DETERMINISM HOOKS --------------------
+\subsection*{Scheduling \& determinism hooks (layer-internal)}
+All guards execute in-order within a per-window budget. The determinism envelope (\secref{sec:evidence})
+must bind: PRNG seeds, library hashes, numeric tolerances (\texttt{AbsTol}=$\AbsTol$, \texttt{RelTol}=$\RelTol$), device IDs, WCET traces,
+and the ordered KPI row-hashes consumed by the monitors.
+
+\begin{rulex}{S1 (Budget guard)}
+If on-time ratio $<99\%$ over the last $W$ windows or queue depth $>1$ window, enter conservative mode:
+skip noncritical solvers, freeze promotions, and raise \textsf{Amber} until recovery.
+\end{rulex}
+
+\begin{acceptchecks}
+  \item \textbf{Envelope completeness (fail-closed).} All determinism fields present; \texttt{proof\_print} reproducible with numeric fingerprints within \texttt{AbsTol}/\texttt{RelTol}; else \emph{reject} window.
+  \item \textbf{Budget adherence.} No deadline misses; if missed, cookbook response invoked (\secref{sec:governance}).
+  \item \textbf{Clock discipline.} Minute-bucketed UTC and a monotone logical clock are present in Tier-2; if invalid or backward, \emph{reject} window with \texttt{clock\_fault}.
+\end{acceptchecks}
+
+\paragraph{Layer interplay (summary).}
+EF locality (I1) gates use of Fisher proxies and bounds the DRO sensitivity (I2); spectral drift sentinels (I3) provide back-pressure on calibration planes.
+PR/GKYP (C1) is retuned only within hitmaps that preserve CBF feasibility (C2); rights-plane tail risk (C5) is a global hard trigger.
+Frontier spend (G1) is accounted before CBF residuals are evaluated; $\omega$-monitors (C4) consume the ordered evidence IDs to produce a replayable verdict within $K$.
+All emissions flow into the Transport Pack in the fixed order of \secref{sec:evidence}.
+
+\section{$\Omega$ as a Contract (Offline) with Online Enforcement}
+\label{sec:omega-contract}
+
+% --- Compatibility shim (safe if already defined) ---
+\providecommand{\Omegawc}{\Omega_{\mathrm{wc}}}
+
+\subsection*{What $\Omega$ is (profile schema)}
+An \emph{$\Omega$-profile} is a versioned, offline-certified contract for a controller stack with its
+validity domain and witnesses:
+\begin{definition}[$\Omega$-profile]
+\label{def:omega-profile}
+\[
+\Omega \;=\;
+\big(
+\texttt{omega\_id},\
+[\constref{omegal},\constref{omegau}],\
+(P,Q),\ \constref{PRmargin},\
+\texttt{valid\_until},\
+\texttt{hitmap\_id},\
+\texttt{degraded\_set},\
+\texttt{issuer\_VC}
+\big)
+\]
+where $(P,Q)$ and $\constref{PRmargin}$ certify band-limited passivity (GKYP) on $[\constref{omegal},\constref{omegau}]$;
+\texttt{hitmap\_id} names a pre-certified retune hitmap over uncertainty sets; \texttt{degraded\_set} lists
+pre-certified profiles (e.g.\ $\Omegawc$, $\Omega_{\text{vision-only}}$) with an \emph{offline ranking};
+and \texttt{issuer\_VC}$=$signed, hash-addressed certificate (Tier-3).
+\end{definition}
+
+\begin{remark}[Horizon alignment: $N_\Omega \equiv N$]
+\label{rem:horizon-alignment}
+We use a single bounded-response horizon $N$ for (i) recovery from a degraded profile (Rule~O5) and
+(ii) the $\omega$-monitor property $\varphi_N$ (\secref{sec:omega-appendix}). Runtime records a single
+field \texttt{recovery\_horizon} $=N$ in Tier-4 alongside the monitor config. A mismatch would be ambiguous,
+so acceptance below \emph{fails-closed} if any component proposes $N_\Omega\ne N$.
+\end{remark}
+
+\subsection*{Lawful transforms and non-expansion}
+\begin{rulex}{O1 (Non-expansion; offline issuance only)}
+Runtime may \emph{not} create or expand $\Omega$. Only offline issuance adds new $\Omega$ with a fresh \texttt{issuer\_VC}.
+At runtime, the lawful transforms are \emph{monotone} ones: shrinking frequency bands,
+tightening $\constref{PRmargin}$, or switching to members of \texttt{degraded\_set}.
+\uses{C12}
+\end{rulex}
+
+\begin{definition}[Hitmap-sanctioned retune morphism]
+\label{def:retune-morphism}
+A retune $(P,Q,\Omega)\mapsto(P',Q',\Omega')$ is \emph{lawful} iff
+(i) $[\constref{omegal}',\constref{omegau}']\subseteq[\constref{omegal},\constref{omegau}]$ and $\constref{PRmargin}'>0$,
+(ii) the induced plant-uncertainty set $\Theta'$ satisfies $\Theta'\subseteq \Theta_{\mathrm{CBF}}$ (tube-feasible),
+and (iii) $(P',Q',\Omega')$ belongs to the certified hitmap named by \texttt{hitmap\_id}.
+\end{definition}
+
+\begin{theorem}[Closure \& conservativity of retunes]
+\label{thm:retune-closure}
+The class of hitmap-sanctioned retune morphisms (Def.~\ref{def:retune-morphism}) is closed under composition.
+Compositions remain monotone in the PR preorder and preserve CBF tube feasibility $\Theta'\subseteq\Theta_{\mathrm{CBF}}$.
+\end{theorem}
+
+\subsection*{In-domain admission and runtime checks}
+\begin{rulex}{O2 (Two-channel admission + certificate validity)}
+Each window performs admission via:
+(i) EF locality gate (\secref{sec:jsg-layers}, I1): compute $r=\epsEF/\constref{Lpsi}$ and require \emph{both}
+channels (parametric KL–Fisher at level $\alpha$ and proxy-free kernel test at power $1{-}\beta$) to pass; record in the admission
+record the EF calibration digest \texttt{calib\_vc\_id}, the \texttt{vc\_selection} decision path, and \texttt{method\_meta} (estimator, resampling/$B$, \texttt{block\_len} if dependent, $n$, seed); and
+(ii) certificate validity: $\texttt{valid\_until}\ge \lfloor t{:}\mathrm{UTC}\rfloor$ and a verified signature chain to \texttt{issuer\_VC}.
+On any failure: deny admission and transition to a degraded $\Omega$ deterministically (O4/O5).
+\uses{C6, C10, C12}
+\end{rulex}
+
+\begin{rulex}{O3 (Safety over performance)}
+If PR margin crowds $\constref{PRmargin}$ or any CBF tube residual LB approaches zero,
+\emph{tighten} (shrink $\Omega$, increase required margin) rather than relaxing guards.
+Rights-plane tail risk breach (\S\ref{sec:jsg-layers}, C5) triggers deterministic degrade.
+\uses{C11, C12}
+\end{rulex}
+
+\subsection*{Degraded profiles and controlled transitions}
+\begin{rulex}{O4 (Deterministic degrade)}
+On \textsf{Red} clamp, DRO quarantine, admission failure, PR/CBF violation, tail-risk breach, or budget-guard action:
+transition to the best-ranked member of \texttt{degraded\_set} whose admission (O2) passes.
+Ranking is fixed offline and serialized in \texttt{issuer\_VC}. Emit a \texttt{degrade\_event} with reason code.
+\uses{C4, C10, C11, C12}
+\end{rulex}
+
+\begin{rulex}{O5 (Bounded recovery)}
+A degraded profile must recover to the parent $\Omega$ within $N$ windows if admission and all guards pass
+(\emph{recall Remark~\ref{rem:horizon-alignment}}).
+Otherwise escalate to a safer profile (e.g.\ $\Omegawc$) and raise a governance alert.
+\uses{C12}
+\end{rulex}
+
+\subsection*{Composition and modularity}
+\begin{rulex}{O6 ($\Omega$ product for composed systems)}
+For a pushout of components with profiles $\Omega_1,\Omega_2$,
+define the composed profile $\Omega_{12}$ via a conservative product:
+frequency band $[\max\{\omega_{\ell,i}\},\min\{\omega_{u,i}\}]$ and margin
+$\min\{\epsPR^{(i)}\}$; hitmaps compose by intersection; degraded sets by product order.
+If the resulting band is empty or the margin nonpositive, admission fails and the compiler registers a required degrade path.
+This product is associative and commutative up to the canonical band-intersection isomorphism.
+\uses{C12}
+\end{rulex}
+
+\begin{proofsketch}
+(For O6.) The GKYP/PR preorder orders certificates by \emph{narrower bands and larger margins}.
+Intersection of frequency bands is a meet w.r.t.\ inclusion, and $\min$ of margins is monotone in that order.
+Intersecting hitmaps preserves the \emph{lawful-retune} predicate (Def.~\ref{def:retune-morphism}) and thus feasibility in
+$\Theta_{\mathrm{CBF}}$ (Theorem~\ref{thm:retune-closure}). Associativity/commutativity follow from associativity/commutativity
+of set intersection and of $\min$; feasibility is preserved componentwise inside tubes (cf.\ \secref{sec:jsg-layers}).
+\end{proofsketch}
+
+\subsection*{Certificate and governance bindings}
+\begin{ledgerbox}
+\textbf{OmegaCertificate VC (offline).}
+Fields: \texttt{omega\_id}, $[\constref{omegal},\constref{omegau}]$,
+$(P,Q)$ digests, $\constref{PRmargin}$, \texttt{valid\_until}, \texttt{hitmap\_id}, \texttt{degraded\_set\_ids},
+issuer signature, policy digest. Runtime binds the \texttt{OmegaCertificate VC} into Tier-3 of the Provenance Ladder and
+\emph{rejects} any ThresholdChange or profile swap without a matching governance VC (\secref{sec:governance}).
+\end{ledgerbox}
+
+\subsection*{Acceptance checks (section-local)}
+\begin{acceptchecks}
+  \item \textbf{Certificate integrity (fail-closed).} \texttt{issuer\_VC} verifies; \texttt{valid\_until} not expired; policy digest matches governance state (\secref{sec:governance}); else deny admission and degrade (O4).
+  \item \textbf{Admission (fail-closed).} Two-channel EF locality passes at configured $(\alpha,1{-}\beta)$ with \texttt{calib\_vc\_id}, \texttt{vc\_selection}, and \texttt{method\_meta} logged; GKYP holds on the current band with $\ge\constref{PRmargin}$; if retuned, retune $\in$ the certified hitmap (\texttt{hitmap\_id}); else reject window and degrade.
+  \item \textbf{Non-expansion.} Any runtime modification only tightens: bands do not widen; $\constref{PRmargin}$ not decreased below certified minimum.
+  \item \textbf{Degrade/recover.} On fail, deterministic transition to the top-ranked admissible degraded profile; recovery within $N$ windows (Remark~\ref{rem:horizon-alignment}) or escalate alert.
+  \item \textbf{Horizon equality (fail-closed).} The recorded \texttt{recovery\_horizon} equals the monitor horizon $N$; else reject window with reason \texttt{horizon\_mismatch}.
+  \item \textbf{Composition.} For composed systems, $\Omega_{12}$ computed conservatively (O6); if infeasible, compiler demands per-subsystem degrade paths.
+\end{acceptchecks}
+
+\subsection*{Emissions (evidence bindings)}
+This section contributes to the Transport Pack:
+\begin{itemize}[leftmargin=*]
+  \item \texttt{pr\_witness\_id} with $(\Omega,P,Q,\constref{PRmargin},\texttt{hitmap\_id})$ and any retune breadcrumb (old/new digests).
+  \item \texttt{admission\_id} with two-channel pass bits (and EF calibration digest + \texttt{vc\_selection} + \texttt{method\_meta}), \texttt{valid\_until}, $\Omega$ version, certificate verification status, \texttt{recovery\_horizon}$=N$, and reason code on failure.
+  \item Optional \texttt{degrade\_event} with source/target \texttt{omega\_id}, reason code (\texttt{admission\_fail}, \texttt{margin\_crowd}, \texttt{cvar\_breach}, \texttt{quarantine}, \texttt{budget\_guard}), and first admissible profile scan.
+\end{itemize}
+
+\subsection*{Notes.}
+The non-expansion principle aligns with the clamp FSM: when uncertainty rises (Amber/Red), $\Omega$ \emph{tightens or degrades}, never expands.
+Hitmaps define a morphism class (Def.~\ref{def:retune-morphism}) closed under composition (Thm.~\ref{thm:retune-closure}), preserving $\epsPR>0$
+and CBF tube feasibility (\secref{sec:jsg-layers}). All changes are bound to governance artifacts (\secref{sec:governance}) and are replayable through the Ladder (\secref{sec:evidence}).
+
+\section{Evidence Architecture}
+\label{sec:evidence}
+
+% --- Compatibility shims (safe if already defined upstream) ---
+\providecommand{\AbsTol}{10^{-12}}
+\providecommand{\RelTol}{10^{-9}}
+\providecommand{\Bad}{\textsf{Bad}}
+\providecommand{\SISS}{S_{\mathrm{ISS}}}
+
+\paragraph{Purpose.}
+This section fixes the \emph{evidence contract}: what is logged per window, in what order, how it is
+hash-bound (\emph{proof-print}), and what constitutes a \emph{determinism envelope} sufficient for
+bit-identical replay. All guards (\secref{sec:jsg-layers}, \secref{sec:omega-contract}) must emit to this contract.
+It also promotes \emph{ReplayAdequacy} to a first-class artifact for CI and audit.
+
+% -------------------- OBJECTS --------------------
+\subsection*{Objects: Transport Pack, Ladder, and ReplayAdequacy}
+
+\begin{definition}[Transport Pack (per-window evidence record)]
+\label{def:transport-pack}
+A Transport Pack $T_t$ is a JSON object with canonical ordering of keys:
+\begin{align*}
+T_t := \{\;
+&\texttt{window\_id},\
+\texttt{kpi\_row\_hash},\
+\texttt{clamp},\
+\texttt{ef\_guard\_id},\
+\texttt{dvdrho\_id},\
+\texttt{pr\_witness\_id},\
+\texttt{cbf\_audit\_id},\
+\texttt{omega\_trace\_id},\\
+&\texttt{determinism\_envelope},\
+\texttt{proof\_print}\;\}.
+\end{align*}
+The keys appear in \emph{exactly} the above order; values are typed and schema-validated.
+\end{definition}
+
+\begin{definition}[Provenance Ladder (tiered, hash-chained)]
+\label{def:ladder}
+A Ladder $L_t$ consists of four tiers with Merkle roots $(\mathsf{Tier}_k)$ and a chain pointer
+to $L_{t-1}$:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Tier-1 (Transport).} The canonical serialization of $T_t$.
+  \item \textbf{Tier-2 (Determinism envelope).} Seeds, library/device hashes, numeric tolerances, WCET traces, device/driver IDs, compiler flags, and ordered KPI row-hashes (see \S\ref{sec:evidence:detenv}).
+  \item \textbf{Tier-3 (Coupling \& certificates).} MTC/IV badges, OmegaCertificate VCs (\secref{sec:omega-contract}), calibration VCs (EF $\delta$-table; sheaf thresholds), policy digests (\secref{sec:governance}), and (nightly) \texttt{GovernanceFold} artifact digest.
+  \item \textbf{Tier-4 (Automata).} Accepting/rejecting traces with first-counterexample hash, monitor config (including $N$ and $K$), and \texttt{recovery\_horizon}$=N$ (Remark~\ref{rem:horizon-alignment}).
+\end{itemize}
+The root $\mathsf{TierRoot} := H_\mathsf{TierRoot}(\mathsf{Tier}_1 \| \cdots \| \mathsf{Tier}_4)$ is chained to the previous root.
+\end{definition}
+
+\begin{definition}[ReplayAdequacy (per-window audit artifact)]
+\label{def:replay-adequacy}
+Given $(T_t,L_t)$ and a reference environment, the \emph{ReplayAdequacy} artifact $R_t$ records:
+\begin{itemize}[leftmargin=*]
+  \item Boolean \texttt{ids\_match} (all IDs and \texttt{proof\_print} match).
+  \item \texttt{missing\_fields} (Tier-2 completeness gaps, if any).
+  \item \texttt{numeric\_diffs}: max absolute/relative fingerprint deltas, keyed by field; pass iff $\le(\AbsTol,\RelTol)$.
+  \item \texttt{vendor\_drift\_notes}: list of changed library/device hashes with names.
+  \item \texttt{hash\_suite}: $(\texttt{name}=\texttt{BLAKE3-256},\ \texttt{version}=\texttt{H\_v1})$ echoed from Tier-1.
+  \item Summary of \texttt{clock\_discipline} (NTP offset, monotone counter status) used for \texttt{window\_id}.
+\end{itemize}
+CI must persist $R_t$ alongside $T_t$; auditors recompute $R_t$ byte-for-byte from $(T_t,L_t)$.
+\end{definition}
+
+\begin{ledgerbox}
+\textbf{Hash discipline (explicit).}
+All tiered hashes use a domain-separated hash $H_\text{ctx}$ with an \emph{explicit} algorithm tag.
+Default: \emph{BLAKE3-256} (32 bytes). Every evidence-bearing object carries
+\texttt{hash\_version="blake3-256@v1"} and a domain label (e.g., \texttt{tier1}, \texttt{tier2}, \texttt{proof\_print}).
+Serialization is stable (sorted keys; UTF-8; fixed float formats); NaN/Inf are forbidden; endianness is fixed (little-endian) for all numerics.
+Changing the hash algorithm requires a ThresholdChange VC and bumps \texttt{hash\_version}.
+\end{ledgerbox}
+
+
+% -------------------- ORDERING / TABLE --------------------
+\subsection*{Consumption order (fixed)}
+Evidence is \emph{consumed and emitted} in this order (no reordering):
+\begin{center}
+\renewcommand{\arraystretch}{1.18}
+\begin{tabularx}{\textwidth}{@{} l X X @{}}
+\toprule
+\textbf{Stage} & \textbf{Emits (ID and content)} & \textbf{Acceptance summary} \\
+\midrule
+EF locality & \texttt{ef\_guard\_id}: $(\epsEF,\widehat L_\psi,r,\kappa(\constref{F}),\chi,\textsf{clamp},\texttt{calib\_vc\_id},\texttt{method\_meta},\texttt{vc\_selection})$
+& Two-channel pass at $(\alpha,1{-}\beta)$; clamp set (Green/Amber/Red). \\
+DRO envelope & \texttt{dvdrho\_id}: $(\eta^\star,\rho_t,h,\widehat{\partial_\rho},\text{CI},\text{dual\_gap},\texttt{quarantine\_bit},\texttt{reason})$
+& $|\widehat{\partial_\rho}-\eta^\star|\le 0.05\|\eta^\star\|$; CI logged; dual gap $\le 10^{-4}$ or quarantine with reason. \\
+PR/GKYP & \texttt{pr\_witness\_id}: $(\Omega,P,Q,\constref{PRmargin},\texttt{hitmap\_id},\texttt{retune\_crumb})$
+& Valid band, $\ge\constref{PRmargin}$; retunes in certified hitmap (\texttt{hitmap\_id}). \\
+CBF audit & \texttt{cbf\_audit\_id}: $(LB_i$ list, saltation stats, dwell log, $\Delta C_{\mathrm{fr}},\SISS,$ optional \texttt{sheaf\_calib\_vc\_id}$)$
+& $LB_i\ge0$; $\|K_{\mathrm{obs}}-I\|\le\constref{salt}$; dwell $\ge\constref{taumin}$; ledger feasible $C_{\mathrm{fr}}^{+}\le\SISS$. \\
+$\omega$-automata & \texttt{omega\_trace\_id}: (state trace, first counterexample if any, $N$, computed $K$)
+& No visit to \Bad (safety, bounded-response); $K$ computed from Tier-2 $\constref{tau},\constref{taumin}$. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% -------------------- DETERMINISM ENVELOPE --------------------
+\subsection*{Determinism envelope (Tier-2)}
+\label{sec:evidence:detenv}
+The envelope contains everything needed to reproduce guard numerics and the automata verdict:
+
+\begin{rulex}{E1 (Envelope completeness)}
+Tier-2 must include
+\begin{itemize}[leftmargin=*]
+  \item \emph{Seeds \& clocks:} PRNG seeds; \textbf{clock discipline} with both the bucketed UTC minute and a monotone logical counter. Record NTP source, last sync time, and measured offset.
+  \item \emph{Libraries/Device:} Hashes/versions of BLAS/LAPACK, GPU kernels (e.g., CUDA), solver libs, OS build; CPU/GPU model \& driver IDs.
+  \item \emph{Numerics:} FP mode (round-to-nearest), solver tolerances (KKT, line-search, CG tol), max iterations; numeric fingerprint tolerances \texttt{AbsTol} and \texttt{RelTol}.
+  \item \emph{Scheduling:} Thread pinning/affinity, queue limits, per-guard WCET budgets and measured WCET trace.
+  \item \emph{Data order:} Canonicalized order of KPI rows; per-row \texttt{kpi\_row\_hash} digests.
+  \item \emph{Code state:} \texttt{git\_head\_SHA}, compiler flags, container image digest, environment var whitelist.
+  \item \emph{Runtime preconditions:} The configured window length $\constref{tau}$ and dwell floor $\constref{taumin}$.
+\end{itemize}
+Missing any field is \textsf{Red}: the window is non-replayable.
+\end{rulex}
+
+\paragraph{Tier-2 manifest (REQUIRED keys).}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l X @{}}
+\toprule
+\textbf{Key.path} & \textbf{Type / format} & \textbf{Pass/Fail semantics} \\
+\midrule
+\texttt{seeds.master} & uint64 & Present $\land$ nonzero; else \textsf{Red}. \\
+\texttt{seeds.components[\*]} & array<uint64> & Length $\ge1$; deterministically ordered. \\
+\texttt{clocks.window\_utc\_min} & RFC3339 string & Minute-bucketed; tz=UTC; else \textsf{Red}. \\
+\texttt{clocks.ntp\_offset\_ms} & float & $|\cdot|\le250$ms; else \texttt{E\_WINDOW\_CLOCK\_DRIFT}. \\
+\texttt{clocks.monotone\_counter} & uint64 & Strictly increasing; else \textsf{Red}. \\
+\texttt{libs.blas.hash}, \texttt{libs.lapack.hash} & hex(256) & If changed vs $t{-}1$, emit vendor-drift note. \\
+\texttt{libs.cuda.version}, \texttt{libs.cuda.hash} & semver, hex & Same as above. \\
+\texttt{solver.kkt\_tol}, \texttt{solver.max\_iters} & float, int & $>0$; recorded exactly. \\
+\texttt{numerics.fp\_mode} & enum & \{RN, RZ, RP, RM\}; must be RN. \\
+\texttt{numerics.AbsTol}, \texttt{numerics.RelTol} & float & Equal to $\AbsTol$, $\RelTol$; else \textsf{Red}. \\
+\texttt{sched.wcet\_budget[\*]} & ms (float) & Per-guard; $>$0; \texttt{sched.wcet\_trace} present. \\
+\texttt{data.kpi\_row\_hashes[\*]} & array<hex> & Stable order; no duplicates; nonempty. \\
+\texttt{code.git\_head\_SHA} & hex(160) & Matches repo; dirty repo $\Rightarrow$ \texttt{E\_WINDOW\_UNVERIFIED}. \\
+\texttt{code.container\_digest} & sha256 & Required; else \textsf{Red}. \\
+\texttt{device.cpu\_model}, \texttt{device.gpu\_driver\_hash} & string, hex & Present; change $\Rightarrow$ vendor-drift note. \\
+\texttt{env.whitelist[\*]} & array<string> & Only keys in whitelist may affect numerics. \\
+\texttt{runtime.tau}, \texttt{runtime.taumin} & float, float & Must satisfy $\texttt{runtime.tau}\ge 2\cdot\texttt{runtime.taumin}$; else \texttt{E\_OMEGA\_PRECOND}. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Canonical JSON Schema (excerpt).}
+\begin{lstlisting}[language=json,basicstyle=\ttfamily\small,caption={Tier-1/2 canonical schema (excerpt)}]
+{
+  "$id": "https://jsg.dev/schemas/transport-pack-v1.json",
+  "type": "object",
+  "required": ["window_id","kpi_row_hash","clamp",
+               "ef_guard_id","dvdrho_id","pr_witness_id",
+               "cbf_audit_id","omega_trace_id",
+               "determinism_envelope","proof_print","hash_suite"],
+  "properties": {
+    "hash_suite": {
+      "type":"object",
+      "required":["name","version"],
+      "properties": {
+        "name":{"const":"BLAKE3-256"},
+        "version":{"const":"H_v1"}
+      }
+    },
+    "determinism_envelope": {
+      "type":"object",
+      "required": ["seeds","clocks","libs","device","numerics",
+                   "sched","data","code","env","runtime"],
+      "properties": {
+        "clocks": {
+          "type":"object",
+          "required":["window_utc_min","ntp_offset_ms","monotone_counter"]
+        },
+        "runtime": {
+          "type":"object",
+          "required":["tau","taumin"]
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}
+\end{lstlisting}
+
+\begin{rulex}{E2 (Stable serialization)}
+Serialize JSON deterministically (sorted keys, UTF-8, fixed number formats). Prohibit platform-dependent
+structures (unordered maps) in evidence payloads; emit arrays with explicit index order. \emph{Disallow} NaN/Inf; require explicit endianness for binary digests.
+\end{rulex}
+
+\begin{rulex}{E3 (Numeric fingerprint matching)}
+A replay is \emph{adequate} iff all guard IDs and the \texttt{proof\_print} match and every numeric fingerprint in those artifacts agrees within \texttt{AbsTol} $=\AbsTol$ or \texttt{RelTol} $=\RelTol$. Deviations beyond these tolerances require a \emph{vendor drift note} in Tier-2 naming the changed library/hardware hashes and appear in \texttt{numeric\_diffs} of $R_t$.
+\end{rulex}
+
+% -------------------- PROOF-PRINT --------------------
+\subsection*{Proof-print (versioned)}
+\begin{definition}[Proof-print]
+\label{def:proof-print}
+$\texttt{proof\_print}_t := H_{\mathsf{ProofPrint}}\!\big(\texttt{ef\_guard\_id}\,\|\,\texttt{dvdrho\_id}\,\|\,\texttt{pr\_witness\_id}\,\|\,\texttt{cbf\_audit\_id}\,\|\,\texttt{omega\_trace\_id}\big)$
+with context tag \texttt{"ProofPrint@H\_v1"}. Any bit-change in the listed IDs \emph{must} change the proof-print.
+\end{definition}
+
+\paragraph{Hash version binding.}
+The \texttt{proof\_print} and all Tier roots record \texttt{hash\_version}; any change in algorithm bumps \texttt{hash\_version} and invalidates equality checks across runs.
+
+\begin{acceptchecks}
+  \item \textbf{Monotonicity.} If any upstream artifact differs, the new \texttt{proof\_print} differs.
+  \item \textbf{Hash versioning.} \texttt{hash\_suite.version} is \texttt{H\_v1}; mixed versions between consecutive windows are \emph{rejected} unless a governance VC authorizes a migration window.
+  \item \textbf{Chain binding.} $\mathsf{TierRoot}_t$ references $\mathsf{TierRoot}_{t-1}$; the hash suite is recorded in Tier-1.
+\end{acceptchecks}
+
+% -------------------- WINDOW ID --------------------
+\subsection*{Window identity and clock discipline (fail-closed)}
+Define
+\[
+\texttt{window\_id} := H_{\mathsf{Tier1}}\!\left(\lfloor t\!:\!\mathrm{UTC}\rfloor_{\mathrm{min}}\ \big|\ \texttt{git\_head\_SHA}\ \big|\ \texttt{ci\_run\_seq}\ \big|\ \texttt{repo\_path\_hash}\right).
+\]
+Reject (\texttt{E\_WINDOW\_UNVERIFIED}) if the repo is dirty outside a tagged CI context.
+
+\paragraph{Clock discipline.}
+Record \texttt{clocks.ntp\_offset\_ms} (NTP/chrony) and enforce $|\texttt{ntp\_offset\_ms}|\le 250$\,ms.
+If violated, either (i) open a fresh minute-bucket after resync or (ii) \emph{fail-closed} with \texttt{E\_WINDOW\_CLOCK\_DRIFT}.
+A strictly increasing monotone logical counter (\texttt{clocks.monotone\_counter}) guards against time regress.
+
+\paragraph{Context-change barrier.}
+If any Tier-2 device/driver hash changes between consecutive windows, either (i) open a fresh minute-bucket and recompute \texttt{window\_id}, or (ii) fail-closed with \texttt{E\_WINDOW\_CONTEXT\_SWITCH}.
+
+% -------------------- REPLAY ADEQUACY --------------------
+\subsection*{Replay adequacy (formal statement \& artifact)}
+\begin{theorem}[Replay Adequacy]
+\label{thm:replay-adequacy}
+Let $T_t$ be a Transport Pack and $L_t$ its Ladder with a complete determinism envelope.
+Then the $\omega$-verdict $V_t$ and all guard IDs are deterministic functions of $(T_t,L_t)$.
+In particular, a re-execution in an environment matching $L_t$ reproduces every ID in $T_t$ and the final verdict $V_t$.
+\end{theorem}
+
+\begin{proofsketch}
+The guard pipeline is single-threaded in fixed order (\secref{sec:map}); every randomness source,
+library/kernel, tolerance, and data order influencing numerics is bound in Tier-2; certificates/policies
+are bound in Tier-3; the automata consume only ordered KPI row-hashes and guard IDs (Tier-1).
+Thus, $\Phi:\ (T_t,L_t)\mapsto(\texttt{ef\_guard\_id},\dots,\texttt{omega\_trace\_id},V_t)$ is well-defined and insensitive to
+external state not present in $L_t$. Any deviation changes some Tier-2 field, hence TierRoot and \texttt{proof\_print}.
+\end{proofsketch}
+
+\paragraph{Replay harness (pseudo-API) → \texttt{ReplayAdequacy}.}
+\begin{lstlisting}[language=Python,caption={Deterministic re-monitoring and ReplayAdequacy artifact},label={lst:replay}]
+def verify_window(T, L):
+    assert is_complete_envelope(L.tier2)
+    env = pin_environment(L.tier2)  # seeds, libs, device, fp-mode, WCET budgets, clocks
+    ids = []
+    ids.append(run_ef_guard(T.kpi_row_hash, env))        # ef_guard_id
+    ids.append(run_dro_envelope(T.kpi_row_hash, env))    # dvdrho_id
+    ids.append(run_pr_gkyp(T.kpi_row_hash, env))         # pr_witness_id
+    ids.append(run_cbf_audit(T.kpi_row_hash, env))       # cbf_audit_id
+    ids.append(run_omega_monitor(T.kpi_row_hash, env))   # omega_trace_id
+    pp = hash_concat(ids, suite=T.hash_suite)
+    diffs = fingerprint_diffs(ids, tol=(L.tier2.AbsTol, L.tier2.RelTol))
+    notes = vendor_drift(L.tier2, L_prev=L.prev.tier2 if L.prev else None)
+    R = {
+      "ids_match": (pp == T.proof_print) and diffs.within_tol,
+      "missing_fields": envelope_gaps(L.tier2),
+      "numeric_diffs": diffs.summary,
+      "vendor_drift_notes": notes,
+      "hash_suite": T.hash_suite,
+      "clock_discipline": {
+        "ntp_offset_ms": L.tier2.clocks.ntp_offset_ms,
+        "monotone_ok": is_monotone(L.tier2.clocks.monotone_counter)
+      }
+    }
+    assert R["ids_match"]
+    return ids, pp, R
+\end{lstlisting}
+
+\paragraph{ReplayAdequacy artifact (CI/test).}
+\begin{ledgerbox}
+\textbf{ReplayAdequacy (Tier-4 adjunct, CI/shadow only).}
+Schema (canonical JSON):\\
+\texttt{\{} \\
+\quad \texttt{"hash\_version": "blake3-256@v1"},\\
+\quad \texttt{"ids"}: \texttt{[\{"name":"ef\_guard\_id","digest":"…"\}, …]},\\
+\quad \texttt{"numeric\_deltas"}: \texttt{[\{"name":"ef\_guard\_id","max\_abs":…, "max\_rel":…\}, …]},\\
+\quad \texttt{"vendor\_drift\_notes"}: \texttt{[\,…\,]},\\
+\quad \texttt{"AbsTol": \AbsTol, "RelTol": \RelTol},\\
+\quad \texttt{"pass"}: \texttt{true|false} \\
+\texttt{\}}\\
+\emph{Acceptance (P1.1).} CI/shadow runs must emit a \texttt{ReplayAdequacy} artifact with \texttt{pass=true};
+if any numeric delta exceeds \texttt{AbsTol}/\texttt{RelTol}, include a \texttt{vendor\_drift\_note}.
+\end{ledgerbox}
+
+\paragraph{Clock discipline (minute buckets).}
+Record \texttt{clocks.source} $\in$\{\texttt{ntp},\texttt{chrony},\texttt{local}\} and an estimated \texttt{clocks.skew\_ms}.
+Require a monotone logical clock; if \texttt{skew\_ms} $>250$ or the logical clock regresses within a window,
+reject with \texttt{E\_WINDOW\_CLOCK\_DRIFT}. Tier-2 must include these fields.
+
+// Top-level additions:
+"required": ["window_id","kpi_row_hash","clamp",
+             "ef_guard_id","dvdrho_id","pr_witness_id",
+             "cbf_audit_id","omega_trace_id",
+             "determinism_envelope","proof_print","hash_version"],
+"properties": {
+  "hash_version": {"type":"string"} ,
+  …
+}
+
+// Tier-2 envelope additions:
+"determinism_envelope": {
+  "type":"object",
+  "required": ["seeds","clocks","libs","device","numerics",
+               "sched","data","code","env","hash_version"],
+  "properties": {
+    "hash_version":{"type":"string"},
+    …
+  }
+}
+
+
+% -------------------- ACCEPTANCE (SECTION-LOCAL) --------------------
+\subsection*{Acceptance checks (section-local)}
+\begin{acceptchecks}
+  \item \textbf{Ordering.} Evidence appears and is hashed in EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow\omega$ order.
+  \item \textbf{Schema validity.} $T_t$ validates against the canonical JSON Schema (ports typed; no NaN/Inf); \texttt{hash\_suite} is present and equals \texttt{BLAKE3-256}/\texttt{H\_v1}.
+  \item \textbf{Envelope completeness.} Tier-2 includes all fields of E1 and REQUIRED keys in the manifest table; missing fields $\Rightarrow$ \textsf{Red}.
+  \item \textbf{Runtime precondition (fail-closed).} $\texttt{runtime.tau}\ge 2\cdot\texttt{runtime.taumin}$ is recorded in Tier-2; else \texttt{E\_OMEGA\_PRECOND} and the window \emph{rejects}.
+  \item \textbf{Clock discipline.} $|\texttt{clocks.ntp\_offset\_ms}|\le 250$\,ms and a strictly increasing \texttt{monotone\_counter} are recorded; else \texttt{E\_WINDOW\_CLOCK\_DRIFT}.
+  \item \textbf{Calibration bindings.} \texttt{ef\_guard\_id} carries an EF \texttt{calib\_vc\_id} and \texttt{vc\_selection}; \texttt{cbf\_audit\_id} carries \texttt{sheaf\_calib\_vc\_id} when R3 thresholds are exercised; both VCs exist in Tier-3.
+  \item \textbf{ReplayAdequacy artifact.} CI must produce $R_t$ (Def.~\ref{def:replay-adequacy}) with \texttt{ids\_match}=\texttt{true}; \texttt{numeric\_diffs} within \texttt{AbsTol}/\texttt{RelTol}; any vendor drift is enumerated.
+  \item \textbf{Chain integrity.} $\mathsf{TierRoot}_t$ references $\mathsf{TierRoot}_{t-1}$; issuer signatures verify for all VCs; \texttt{GovernanceFold} digest (if present) matches the nightly fold.
+  \item \textbf{ReplayAdequacy artifact.} CI/shadow runs include a \texttt{ReplayAdequacy} artifact with \texttt{pass=true}.
+\end{acceptchecks}
+
+% -------------------- PRIVACY / REDACTION --------------------
+\subsection*{Privacy-aware redaction (auditable)}
+If evidence contains personally identifiable or export-controlled data, replace payloads with salted digests and store a
+\texttt{redaction\_map} (hash$\rightarrow$origin metadata) in a sealed enclave. The Tier-2 determinism envelope \emph{still} carries
+all numerics necessary for replay on privileged hardware; Tier roots remain verifiable by external auditors. Payloads may be redacted,
+but \emph{hashes and numerics} required for Replay Adequacy must remain present.
+
+% -------------------- NOTES --------------------
+\subsection*{Notes and interactions}
+\begin{itemize}[leftmargin=*]
+  \item The clamp FSM (\secref{sec:map}) and degraded $\Omega$ transitions (\secref{sec:omega-contract}) are logged in $T_t$; cookbook responses (\secref{sec:governance}) are triggered by failed acceptance checks herein.
+  \item Frontier spend deltas from the geometric layer (\secref{sec:jsg-layers}) are logged inside \texttt{cbf\_audit\_id} and included in Tier-1; invariance under replay follows from stable serialization plus the determinism envelope.
+  \item Calibration artifacts for EF and sheaf thresholds are referenced via VC digests in Tier-3 and embedded in the corresponding IDs; changing them requires governance approval (\secref{sec:governance}).
+  \item The \texttt{ReplayAdequacy} artifact closes the audit loop: it summarizes numeric agreement, hash-suite versioning, vendor drift, and clock health for each window, and is itself a deterministic function of $(T_t,L_t)$.
+\end{itemize}
+
+\section{ACT$\to$JSG Compiler: Rule Elaboration}
+\label{sec:compiler}
+
+\paragraph{Aim.}
+Make the R1–R9 surface (\secref{sec:cat-grammar}) \emph{constructive}: specify the mathematical
+objects each rule creates, the invariants they must satisfy, and the per-window evidence they emit.
+All results below assume the fixed guard order of \secref{sec:map} and emit artifacts that bind into
+the Evidence Architecture (\secref{sec:evidence}) with numeric fingerprint tolerances
+\texttt{AbsTol}/\texttt{RelTol}. This section also fixes the EF-VC selection policy, the DRO
+finite-difference (FD) step policy, and the rights-plane bootstrap discipline so CI and replay can
+reproduce decisions bit-for-bit.
+
+\begin{remark}[Horizon alignment: recovery vs.\ monitor]
+\label{rem:horizon-alignment}
+We tie the degraded-profile recovery horizon in O5 to the monitor horizon: \emph{$N_{\Omega}\equiv N_{\omega}{=:}N$}.
+Tier-4 records $N$ and the computed $K=\max\{N,\lceil 2\,\constref{tau}/\constref{taumin}\rceil\}$; the Ladder stores
+\texttt{recovery\_horizon}$=N$ for audit.
+\end{remark}
+
+% ---------------------------------------------------------------------------
+\subsection*{R1 \& R5 — Operads $\Rightarrow$ governed interfaces with a \emph{two-channel} EF gate}
+
+\paragraph{Construction.}
+Each operadic op $o:(t_1,\dots,t_k)\!\to t$ yields a governed port schema
+$\mathsf{Port}(o)$ (types, units, frames, rates) and \emph{locality guards}
+\[
+r := \epsEF/\constref{Lpsi},\qquad
+\text{clamp} \in \{\textsf{Green,Amber,Red}\}.
+\]
+Two channels must agree inside radius $r$:
+(i) a KL–Fisher quadratic sandwich at level $\alpha$ with CI-guarded bounds using $\kappa(\constref{F})$;
+(ii) a \emph{proxy-free} kernel test against the Green reference at designed power $1{-}\beta$.
+
+\paragraph{Calibration VC (REQUIRED fields for channel (ii)).}
+The EF calibration VC referenced by \texttt{calib\_vc\_id} must serialize:
+\begin{itemize}[leftmargin=*]
+  \item \texttt{test} $\in$ \{\texttt{MMD\_u}, \texttt{HSIC}\}; \texttt{resample} $\in$ \{\texttt{wild\_bootstrap}, \texttt{permute}\};
+  \item \texttt{block\_length} (if serial dependence), \texttt{subsample\_rate}, \texttt{min\_n};
+  \item \texttt{power\_target} $=1{-}\beta$, \texttt{power\_estimate} with 95\% CI on held-out traces indexed by $n$ and $\kappa(\constref{F})$ quantiles;
+  \item \texttt{multiple\_testing}: \texttt{BY@q} or \texttt{Bonferroni@$\alpha/k$}.
+\end{itemize}
+
+\begin{rulex}{EF–VC selection algorithm (runtime binding)}
+Given the window’s $(n,\ \hat\kappa:=\kappa(\constref{F}))$:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Locate bin(s).} Find all VC table cells whose $(n,\kappa)$ intervals contain $(n,\hat\kappa)$.
+  \item \textbf{Conservative tie-break.} If multiple cells match, select the one with the \emph{largest} realized $\delta$ (most conservative).
+  \item \textbf{Missing cell.} If no cell contains $(n,\hat\kappa)$, choose the nearest \emph{worse} $\kappa$ bin (higher quantile) and the nearest \emph{lower} $n$ bin; if still missing, \emph{fail-closed} with \texttt{E\_EFVC\_LOOKUP\_MISS}.
+  \item \textbf{Dependence policy.} If serial dependence is detected (e.g., ACF$_1>\tau_{\mathrm{acf}}$ or Ljung–Box $p<\alpha_{\mathrm{LB}}$), set resampling=\texttt{wild\_bootstrap} and record a block length policy (see CVaR bootstrap policy); else use the configured IID method.
+  \item \textbf{Bind row.} Emit \texttt{calib\_row\_id} (row digest) inside \texttt{ef\_guard\_id}.
+\end{enumerate}
+\end{rulex}
+
+\begin{proposition}[Locality Adequacy]
+\label{prop:locality-adequacy}
+Fix significance $\alpha$ for (i) and power $1{-}\beta$ for (ii). If both channels pass on a window,
+then using Fisher proxies within $r=\epsEF/\constref{Lpsi}$ is $\delta$-sound: the probability that
+parametric proxies mischaracterize a true $r$-local departure is $\le \delta(\alpha,\beta,n,\kappa(\constref{F}))$,
+retrieved via the selection policy with 95\% CI and monotone in $(n,\kappa)$. 
+\end{proposition}
+
+\emph{Emission.} \texttt{ef\_guard\_id} with $(\epsEF,\widehat L_\psi,r,\kappa(\constref{F}),\alpha,1{-}\beta,\chi,\textsf{clamp},\texttt{calib\_vc\_id},\texttt{vc\_selection},\texttt{method\_meta})$.
+
+% ---------------------------------------------------------------------------
+\subsection*{R2 \& R6 — Cospans $\Rightarrow$ frontiers with budgets and replay-invariant spend}
+
+\paragraph{Construction.}
+Each pushout wire defines a frontier $\Sigma$ with budgets $(\constref{kappamax},\constref{thetamin},\constref{rtube})$,
+hard dwell $\ge\constref{taumin}$ (cf.\ \jsgiLem{\lblNoZeno}), symmetric hysteresis, and a \emph{defect ledger} $C_{\mathrm{fr}}$
+updated by saltation/reset costs inside tubes.
+
+\paragraph{Atomic crossing packet (REQUIRED).}
+For every $\Sigma$ crossing, emit an atomic packet bound into \texttt{cbf\_audit\_id}:
+\[
+\big(\texttt{crossing\_id},\ \|K_{\mathrm{obs}}{-}I\|,\ \|\mathrm{reset\_jac}{-}I\|,\ \phi_{\text{salt}},\ \phi_{\text{reset}},\ \Delta C_{\mathrm{fr}},\ \SISS\big),
+\]
+where $\phi_{\text{salt}}$ is nondecreasing in $\|K_{\mathrm{obs}}{-}I\|$ and $\phi_{\text{reset}}$ in $\|\mathrm{reset\_jac}{-}I\|$.
+
+\begin{lemma}[Frontier Spend Invariance]
+\label{lem:frontier-invariance}
+There exists a symmetric monoidal functor $C:\Arch\to\mathsf{Budgets}$ such that the total frontier spend $C_{\mathrm{fr}}$
+over any execution trace factored into cospan compositions is invariant under reassociation; with a complete determinism
+envelope (\secref{sec:evidence}), the per-window spend is identical on replay.
+\end{lemma}
+
+\emph{Emission.} \texttt{cbf\_audit\_id} includes tube residual LBs, saltation stats, dwell logs, $(\Delta C_{\mathrm{fr}},\SISS)$,
+and crossing packets.
+
+% ---------------------------------------------------------------------------
+\subsection*{R3 \& R9 — Sheaves $\Rightarrow$ cross-modal invariants and bounded degrade}
+
+\paragraph{Construction.}
+Fix a sensing cover $\mathcal U$ and data sheaf $\mathcal F$ with restriction maps; define
+$E(s)=s^\top L_{\mathcal F}s=\|\delta s\|^2$.
+
+\paragraph{Calibration VC (REQUIRED).}
+The sheaf VC must serialize: the cover $\mathcal U$, restriction maps, Laplacian $L_{\mathcal F}$ digest,
+$(\epsilon,\tau_{\mathrm{iou}},\tau_{\mathrm{imu}},\tau_{\mathrm{hsic}})$, FDR choice (\texttt{BY@q} or \texttt{Bonferroni@$\alpha/k$}),
+and realized $\delta$ (95\% CI) on a held-out set with drift guards (train/val/test split hashes).
+
+\begin{theorem}[Sheaf$\Rightarrow$Guard $(\tau,\delta)$-Exactness]
+\label{thm:sheaf-exact}
+There exist thresholds such that if $E(s)>\epsilon$ on a window then, with probability $\ge1{-}\delta$,
+at least one guard fires: IoU$<\tau_{\mathrm{iou}}$, IMU residual$>\tau_{\mathrm{imu}}$, or cross-HSIC$>\tau_{\mathrm{hsic}}$.
+\end{theorem}
+
+\emph{Emission.} \texttt{cbf\_audit\_id} (with optional \texttt{sheaf\_calib\_vc\_id}); degraded-profile events per O4/O5 in \secref{sec:omega-contract}.
+
+% ---------------------------------------------------------------------------
+\subsection*{R4 \& R8 — Functorial semantics $\Rightarrow$ published witnesses \& kernel health}
+
+\paragraph{Publish order.}
+Emit (in order) EF, DRO, PR/GKYP, CBF-QP, and $\omega$ traces; treat kernel numerics as health signals.
+
+\paragraph{DRO envelope (normative numerics \& adaptive FD step).}
+We use a curvature-aware, safeguarded step policy; all choices are logged.
+
+\begin{rulex}{DRO FD step selection (safeguarded, deterministic)}
+Given $\rho_t$, objective $\mathbb E[\varphi_\eta]$, and policy bounds $h_{\min}\le h\le h_{\max}$:
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Probe curvature:} estimate $\widehat c=\|\nabla^2_{\rho}\mathbb E[\varphi_\eta]\|_{\mathrm{op}}$ by a two-point secant on a coarse step $h_{\text{probe}}$ (logged).
+  \item \textbf{Initial step:} set $h_0=\mathrm{clip}\big(\gamma/\max\{\widehat c,\epsilon_c\},\ h_{\min},\ h_{\max}\big)$ with policy $\gamma,\epsilon_c$.
+  \item \textbf{Refine (one shot):} if Richardson extrapolation is enabled and $h_0/2\ge h_{\min}$, compute centered FD at $h_0$ and $h_0/2$ and apply second-order correction; else use centered FD at $h_0$ (fallback to one-sided if bounds hit).
+  \item \textbf{CI:} compute a CI for $\widehat{\partial_\rho}$ (wild bootstrap or delta-method per policy) and \emph{log} $(h_{\text{probe}},h_0,\texttt{richardson\_on})$.
+\end{enumerate}
+Require \emph{both}: sensitivity match $|\widehat{\partial_\rho}-\eta^\star|\le 0.05\,\|\eta^\star\|$ \emph{and} solver dual-gap $\le 10^{-4}$; otherwise set \texttt{quarantine\_bit}=1 with reason.
+\end{rulex}
+
+\paragraph{Rights-plane tail risk (hard trigger; dependent data).}
+Estimate $\mathrm{CVaR}_{0.95}$ of barrier slacks; for serial dependence, use a \emph{circular block bootstrap} with policy
+\[
+b \;=\; \max\{2,\ \lfloor c\,N^{1/3}\rfloor\},\quad c\in[1.2,2.0]\ \text{(Tier-3 policy)},
+\]
+else IID percentile bootstrap. \emph{Log} \texttt{block\_length}$=b$ when dependence is detected (also surfaced in \texttt{vc\_selection}); any budget breach is fail-closed with reason \texttt{cvar\_breach}.
+
+\begin{theorem}[Evidence Naturality]
+\label{thm:evid-naturality}
+Guard acceptance on a composed system equals acceptance after composing evidence along its cospans; the
+\texttt{proof\_print} of the composed run equals the composition of \texttt{proof\_print}s.
+\end{theorem}
+
+\emph{Emission.} \texttt{dvdrho\_id}, \texttt{pr\_witness\_id}, \texttt{cbf\_audit\_id} (with CVaR CI and \texttt{block\_length} if used),
+\texttt{omega\_trace\_id}; all feed the \texttt{proof\_print}.
+
+% ---------------------------------------------------------------------------
+\subsection*{R7 — $\Omega$ contract interacts safely with CBF feasibility}
+
+\paragraph{Construction.}
+$\Omega$ is issued offline with $(\Omega,P,Q,\constref{PRmargin},\texttt{valid\_until},\texttt{hitmap\_id})$; runtime
+retunes must keep $\constref{PRmargin}{>}0$, lie on the certified hitmap, and preserve CBF-QP feasibility.
+
+\begin{definition}[Hitmap-sanctioned retune morphism]
+\label{def:retune-morphism}
+A retune $(P,Q,\Omega)\mapsto(P',Q',\Omega')$ is \emph{lawful} iff
+(i) $[\constref{omegal}',\constref{omegau}']\subseteq[\constref{omegal},\constref{omegau}]$ and $\constref{PRmargin}'>0$,
+(ii) the induced uncertainty $\Theta'$ satisfies $\Theta'\subseteq \Theta_{\mathrm{CBF}}$ (tube-feasible),
+(iii) $(P',Q',\Omega')$ belongs to the certified hitmap named by \texttt{hitmap\_id}.
+\end{definition}
+
+\begin{theorem}[Closure \& conservativity of retunes]
+\label{thm:retune-closure}
+Hitmap-sanctioned retunes are closed under composition, monotone in the PR preorder, and preserve CBF tube feasibility.
+\end{theorem}
+
+\begin{theorem}[Safe Adaptation (PR$\leadsto$CBF feasibility)]
+\label{thm:safe-adapt}
+For a control-affine plant $\dot x=f(x,\theta)+g(x,\theta)u$, if a lawful retune yields
+$(P,Q,\constref{PRmargin}{>}0)$ on $[\constref{omegal},\constref{omegau}]$ and
+\[
+\forall \theta\in\Theta'\ \exists u\in\mathcal U_{\mathrm{GKYP}}:\;
+L_f h(x,\theta)+L_g h(x,\theta)u \ge -\alpha(h(x,\theta)),
+\]
+then the CBF-QP remains feasible in tubes of radius $\constref{rtube}$; $\Omega$ retuning cannot create barrier infeasibility.
+\end{theorem}
+
+\begin{remark}[Product of profiles (O6) preserves monotonicity (sketch)]
+Let $\Omega_{12}$ be defined by intersecting bands and taking the minimum certified margin.
+Band intersection is associative/commutative; GKYP feasibility is order-monotone in both the band and margin.
+Thus the product inherits the PR preorder and, since tube feasibility constraints are respected componentwise,
+$\Theta'_{12}\subseteq \Theta'_{1}\cap \Theta'_{2}\subseteq \Theta_{\mathrm{CBF}}$.
+\end{remark}
+
+\emph{Emission.} \texttt{pr\_witness\_id} includes \texttt{hitmap\_id} and retune breadcrumbs (old/new digests).
+
+% ---------------------------------------------------------------------------
+\subsection*{Bounded-latency completeness (bridge to $\omega$-monitor)}
+\begin{lemma}[Bounded-latency completeness]
+\label{lem:bounded-latency}
+Let $r=\epsEF/\constref{Lpsi}$ and window length $\constref{tau}$ with $\constref{tau}>2\,\constref{taumin}$.
+If an $r$-local violation persists for at least one window, the $\omega$-monitor detects it within
+\[
+K \;=\; \max\!\big\{\,N,\ \lceil 2\,\constref{tau}/\constref{taumin}\rceil \big\}
+\]
+windows, where $N$ is the bounded-response horizon (\secref{sec:omega-appendix}).
+\end{lemma}
+
+\begin{proofsketch}
+Amber-driven streaks reach \Bad in $N{+}1$ steps; otherwise freeze-and-dwell creates observable segments
+of width $\ge\constref{taumin}$ so within two windows of length $\constref{tau}$ the persistent failure is surfaced,
+logged, and rejected (\jsgivLem{\lblGapGate}).
+\end{proofsketch}
+
+% ---------------------------------------------------------------------------
+\subsection*{Worked micro-example (one pushout, one guard chain)}
+Let $o:(t_1,t_2)\!\to t$ generate ports with $r=\epsEF/\constref{Lpsi}$.
+Wire $x_1:L(t_1)\!\to X\!\leftarrow L(b)$ and $x_2:L(b)\!\to Y\!\leftarrow L(t_2)$; pushout yields $X\sqcup_{L(b)}Y$.
+EF passes (\textsf{Green}) with \texttt{vc\_selection} recorded; DRO emits $(\eta^\star,\rho_t,h,\text{CI},\text{dual\_gap}\!\le\!10^{-4})$ using the safeguarded step;
+PR is valid on $[\constref{omegal},\constref{omegau}]$ with a \texttt{hitmap\_id};
+CBF residual LBs are nonnegative in tubes and $\mathrm{CVaR}_{0.95}$ (block bootstrap) is within budget; the $\omega$-monitor accepts.
+The Transport Pack carries the ordered IDs; Lemma~\ref{lem:frontier-invariance} guarantees replay-equal frontier spend.
+
+% ---------------------------------------------------------------------------
+\subsection*{Acceptance checks (section-local)}
+\begin{acceptchecks}
+  \item \textbf{Operad$\to$ports.} Every op has a governed schema with $r=\epsEF/\constref{Lpsi}$; two-channel EF configured and bound to a calibration VC; \texttt{vc\_selection} is present and valid per the policy (bin, floor, serial-dependence default).
+  \item \textbf{Frontier budgets.} Every pushout registers $(\constref{kappamax},\constref{thetamin},\constref{rtube})$, initializes $C_{\mathrm{fr}}$, and emits atomic crossing packets; replay reproduces $\Delta C_{\mathrm{fr}}$.
+  \item \textbf{Sheaf calibration.} $(\epsilon,\tau_{\mathrm{iou}},\tau_{\mathrm{imu}},\tau_{\mathrm{hsic}})$ tied to a dataset-backed VC (FDR method, splits); violations trigger bounded degrade (\secref{sec:omega-contract}).
+  \item \textbf{DRO quarantine.} The FD step policy fields \texttt{(h\_probe, h\_0, richardson\_on)} are logged; $|\widehat{\partial_\rho}-\eta^\star|\le 0.05\,\|\eta^\star\|$ \emph{and} dual-gap $\le 10^{-4}$; else \texttt{quarantine\_bit=1} and promotions are blocked with a reason code.
+  \item \textbf{PR$\to$CBF safety.} Any $\Omega$ retune must include a hitmap proof (\texttt{hitmap\_id}), remain monotone, and preserve tube-feasible CBF residual LBs (\autoref{thm:safe-adapt}); retune morphisms compose (\autoref{thm:retune-closure}); product semantics obey O6 (remark above).
+  \item \textbf{Tail trigger.} $\mathrm{CVaR}_{0.95}$ estimator and CI logged; if serial dependence, \texttt{block\_length}$=b$ is recorded; any breach yields deterministic fail-closed \texttt{cvar\_breach}.
+  \item \textbf{Naturality.} For composed systems, evidence IDs compose in the same order as guards; \autoref{thm:evid-naturality} holds.
+  \item \textbf{Latency bound \& horizon alignment.} Tier-2 records $\constref{tau},\constref{taumin}$ with $\constref{tau}\ge2\,\constref{taumin}$; Tier-4 records $N$ and $K$; recovery horizon satisfies $N_{\Omega}\equiv N_{\omega}$ (Remark~\ref{rem:horizon-alignment}).
+  \item \textbf{EF–VC binding.} Each \texttt{ef\_guard\_id} includes \texttt{calib\_row\_id} selected by the EF–VC algorithm; any lookup miss is \emph{fail-closed}.
+\end{acceptchecks}
+
+% ---------------------------------------------------------------------------
+\subsection*{Notes}
+This section finalizes operational policies requested in audit: (i) EF-VC selection (\texttt{vc\_selection}) to bind runtime
+to calibration VCs deterministically; (ii) a deterministic, curvature-aware FD step policy for DRO; and
+(iii) a time-series bootstrap default for rights-plane tails (with \texttt{block\_length} logged).
+Together with the new \texttt{ReplayAdequacy} artifact (\secref{sec:evidence}), these policies make guard decisions
+\emph{replay-complete} and resistant to silent configuration drift.
+
+\section{Governance as Code}
+\label{sec:governance}
+
+\paragraph{Purpose.}
+Bind all mutable thresholds, profiles, and calibration artifacts to \emph{lawful} changes that are
+explicit, auditable, compositional, \emph{expire}, and are \emph{replay-complete}. Governance artifacts
+live in Tier-3 of the Provenance Ladder (\secref{sec:evidence}) and gate runtime behavior in
+\secref{sec:jsg-layers} and \secref{sec:omega-contract}. This section (i) fixes refusal semantics,
+(ii) defines a reproducible \textbf{GovernanceFold} artifact for nightly risk aggregation,
+and (iii) specifies \emph{break-glass} (Emergency VC) rules with short expiry and quorum.
+
+% -------------------- POLICY CATEGORY --------------------
+\subsection*{Policy objects, preorder, and lawful morphisms}
+
+\begin{definition}[Policy object]
+\label{def:policy-object}
+A policy $P$ is a versioned tuple of guard parameters with a safety preorder $\succeq$:
+\[
+P := \big(\tau_{\min},\ \epsilon_{\mathrm{EF}},\ (\chi_G,\chi_R),\ \varepsilon_{\mathrm{kkt}},\ \mathrm{CVaR}_{0.95},\ \text{IoU/IMU/HSIC thresholds},\ [\omega_\ell,\omega_u],\ \epsPR,\ N,\ \ldots\big)_{\texttt{version}}
+\]
+We write $P_2\succeq P_1$ if $P_2$ is \emph{no weaker} than $P_1$ on every coordinate (e.g., larger dwell, tighter margins).
+\end{definition}
+
+\begin{definition}[Lawful policy morphism]
+\label{def:policy-morphism}
+A morphism $m:P_1\to P_2$ is a signed \emph{ThresholdChange VC} carrying:
+(i) a \emph{delta} $\Delta$ (typed changeset + justifications), (ii) a \emph{risk bound} $\mathcal R(\Delta)$,
+(iii) \emph{dual approvals} via blinded channels, (iv) a \emph{valid\_until} timestamp, and
+(v) an \texttt{aggregator\_digest} (hash of the aggregation rule and its parameters).
+A morphism is \emph{monotone} if $P_2\succeq P_1$; otherwise it is a \emph{bounded weakening}
+if $\neg(P_2\succeq P_1)$ but $\mathcal R(\Delta)\le \rho_{\max}$ and \texttt{valid\_until} is short-lived.
+\end{definition}
+
+\paragraph{Explicit aggregator for risk composition.}
+We compose risk bounds across sequential changes with a \emph{capped min-plus} rule and optional
+\emph{emergency penalty} $\phi\ge 1$:
+\[
+\mathcal R(\Delta_1)\ \oplus\ \mathcal R(\Delta_2)
+\;:=\;
+\min\!\big\{R_{\max},\ \mathcal R(\Delta_1)+\lambda\,\phi^{\mathbb{I}[\text{E-VC of }\Delta_2]}\,\mathcal R(\Delta_2)\big\},
+\quad \lambda\ge 1 .
+\]
+The tuple $(\lambda, R_{\max}, \phi)$ and the precise algebra are recorded in \texttt{aggregator\_digest}
+so auditors and replays can recompute aggregate risk exactly.
+
+\begin{lemma}[Monotone, capped min-plus aggregator]
+\label{lem:agg}
+For fixed $\lambda\!\ge\!1$, $R_{\max}{>}0$, and $\phi\!\ge\!1$,
+$x\oplus y=\min\{R_{\max},x+\lambda\,\phi^{\mathbb{I}[\text{E-VC}]}\,y\}$ is monotone in each argument and
+yields a deterministic chronological fold for sequences $(\Delta_i)_{i=1}^n$ via
+$R_{1:n}:=\big(\cdots((\mathcal R(\Delta_1)\oplus \mathcal R(\Delta_2))\oplus\cdots)\oplus \mathcal R(\Delta_n)\big)$.
+Moreover, $R_{1:n}$ is nondecreasing in $n$ and bounded by $R_{\max}$.
+\end{lemma}
+
+\begin{theorem}[Policy Composition Conservativity]
+\label{thm:policy-conservativity}
+Let $m_1:P_1\!\to\!P_2$ and $m_2:P_2\!\to\!P_3$ be lawful morphisms with risk bounds
+$\mathcal R(\Delta_1),\mathcal R(\Delta_2)$. Then the chronological composite $m_2\!\circ\! m_1:P_1\!\to\!P_3$ is lawful with
+aggregated bound $\mathcal R(\Delta_2\!\circ\!\Delta_1)\le \mathcal R(\Delta_1)\oplus \mathcal R(\Delta_2)$ (by \autoref{lem:agg});
+and if both are monotone then $P_3\succeq P_1$ (no net weakening).
+For any bounded weakening, expiry of either VC reverts to the prior monotone policy $P^\star$ unless a fresh VC is issued.
+\end{theorem}
+
+\begin{remark}[Non-normalization-of-deviance]
+A sequence of individually “minor” weakenings cannot silently accumulate: composition is \emph{monotone}, capped at $R_{\max}$,
+penalizes emergency changes by $\phi$, and is recorded with an \texttt{aggregator\_digest}; chronological folding prevents order ambiguity.
+\end{remark}
+
+% -------------------- EMERGENCY (BREAK-GLASS) --------------------
+\subsection*{Break-glass semantics (Emergency VC)}
+
+\begin{definition}[Emergency VC (E-VC)]
+\label{def:evc}
+An E-VC is a short-lived, \emph{bounded weakening} VC with:
+(i) \texttt{valid\_until} $\le$ $T_{\mathrm{max}}^{\mathrm{emer}}$ from issuance,
+(ii) \emph{$m$-of-$n$} quorum approvals ($m\!\ge\!2$, $n\!\ge\!3$) on independent channels,
+(iii) an explicit reason code and evidence pointer (Tier-1/2/4 digests),
+(iv) \emph{scope} limited to a named canary subset (not global) unless elevated by a second quorum, and
+(v) emergency penalty factor $\phi\!>\!1$ in the aggregator.
+E-VCs may \emph{never} expand $\Omega$ (\secref{sec:omega-contract}) or weaken hard safety floors.
+\end{definition}
+
+% -------------------- NORMATIVE RUNTIME GATE --------------------
+\subsection*{Normative runtime gate (refusal semantics)}
+
+\begin{rulex}{G1 (VC ingress and verification)}
+Before each window, ingest candidate governance artifacts; verify signatures, issuer chains, \texttt{valid\_until},
+quorum (for E-VCs), and \texttt{aggregator\_digest}. Unverifiable, expired, or malformed VCs are \emph{ignored};
+a governance alert is logged. No parameter changes apply.
+\end{rulex}
+
+\begin{rulex}{G2 (Policy cache and expiry)}
+Maintain an \emph{active policy cache} keyed by VC digest. On expiry, \emph{deterministically revert}
+to the last monotone policy $P^\star$ (the maximal $\succeq$ element among unexpired policies) and log the reversion in Tier-3.
+\end{rulex}
+
+\begin{rulex}{G3 (Bundle rejection and fail-closed)}
+Any incoming config bundle that attempts to modify governed parameters without an accompanying, valid VC
+is \emph{rejected}. The runtime remains on $P^\star$ and enters \textsf{Amber} if the attempted change would reduce safety margins.
+\end{rulex}
+
+\begin{rulex}{G4 (Canary discipline and graduation)}
+Every ThresholdChange VC specifies a \emph{canary scope} and \emph{tests\_ex\_ante}. The change is confined to canary scope until
+all tests pass for $W$ windows and the $\omega$-monitor never rejects. Only then may the change graduate to global scope.
+\end{rulex}
+
+\begin{rulex}{G5 (Auditability and Ladder binding)}
+All admitted VCs (ThresholdChange, OmegaCertificate, Emergency) are serialized into Tier-3 with their digests and \texttt{aggregator\_digest}.
+Any guard decision referencing a governed parameter must record the active policy digest in the corresponding evidence ID.
+\end{rulex}
+
+\begin{rulex}{G6 (Emergency path)}
+E-VCs apply only within declared scope; they \emph{must} expire or be superseded by a monotone ThresholdChange VC within $T_{\mathrm{max}}^{\mathrm{emer}}$.
+Until then, the runtime enforces $\phi{>}1$ in aggregation, freezes promotions across scopes, and logs an \texttt{EmergencyMode} Tier-3 flag.
+\end{rulex}
+
+\begin{rulex}{R10 (Anti-normalization-of-deviance)}
+Any relaxation (e.g., $\tau_{\mathrm{iou}}$, $\epsEF$, $\varepsilon_{\mathrm{kkt}}$, $\mathrm{CVaR}_{0.95}$ budget) requires:
+(i) a structured risk memo (includes \emph{ex ante} tests to be run),
+(ii) blinded dual approvals (or $m$-of-$n$ quorum for E-VC),
+(iii) an expiring VC with explicit $(\lambda,R_{\max},\phi)$.
+CI and the live config plane both reject updates without a valid VC.
+\end{rulex}
+
+% -------------------- OPS CHECKLIST --------------------
+\subsection*{Operator-facing checklist (green/red), per deploy}
+\begin{ledgerbox}
+\textbf{Ops Checklist (must all be \textsf{Green} before enable).}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Governance VCs present \& valid:} ThresholdChange/OmegaCertificate/E-VC verify; unexpired; \texttt{aggregator\_digest} matches toolchain.
+  \item \textbf{Policy digest bound:} Active policy $P^\star$ digest appears in \texttt{ef\_guard\_id}, \texttt{cbf\_audit\_id}, and \texttt{pr\_witness\_id}.
+  \item \textbf{Non-expansion:} Any online $\Omega$ change \emph{tightens} bands/margins only; hitmap proof attached (\texttt{hitmap\_id}).
+  \item \textbf{Rights-plane risk:} $\mathrm{CVaR}_{0.95}$ budget configured and below threshold on the last shadow-prod window.
+  \item \textbf{Ordering \& determinism:} EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow\omega$ visible in dashboards; \texttt{proof\_print} non-null.
+  \item \textbf{K-bound harness:} Latency-injection (B8) enabled for this rollout; last run $\le K$ with first-counterexample recorded.
+  \item \textbf{Emergency mode (if applicable):} E-VC scope limited; expiry $<T_{\mathrm{max}}^{\mathrm{emer}}$; promotions frozen across scopes; \texttt{EmergencyMode} flag present.
+\end{enumerate}
+\end{ledgerbox}
+
+\begin{ledgerbox}
+\textbf{GovernanceFold artifact (nightly).}
+Canonical JSON:\\
+\texttt{\{} \\
+\quad \texttt{"hash\_version": "blake3-256@v1"},\\
+\quad \texttt{"aggregator\_digest": "…"},\\
+\quad \texttt{"lambda": …, "R\_max": …},\\
+\quad \texttt{"items": [\{"vc\_digest":"…","risk\_bound":…,"issued\_at":"…"\},…]},\\
+\quad \texttt{"folded\_value": …},\\
+\quad \texttt{"timestamp": "…"}\\
+\texttt{\}}\\
+\emph{Acceptance.} Nightly job emits \texttt{GovernanceFold}; auditors can recompute the fold and verify \texttt{folded\_value}\,$\le R_{\max}$.
+\end{ledgerbox}
+
+% -------------------- VC SCHEMAS --------------------
+\subsection*{Governance artifacts (VC schemas)}
+
+\begin{ledgerbox}
+\textbf{ThresholdChange VC (Tier-3).}
+\begin{itemize}[leftmargin=*]
+  \item \texttt{policy\_from}, \texttt{policy\_to} (digests); \texttt{delta} (structured, typed).
+  \item \texttt{risk\_bound} $\mathcal R(\Delta)$; \texttt{aggregator} spec $(\lambda,R_{\max},\phi)$ and \texttt{aggregator\_digest}.
+  \item \texttt{tests\_ex\_ante} (suite IDs); \texttt{canary\_scope}; \texttt{valid\_until}.
+  \item \texttt{approver\_A}, \texttt{approver\_B} (blinded channels); issuer signature; policy digest chain.
+\end{itemize}
+\end{ledgerbox}
+
+\begin{ledgerbox}
+\textbf{Emergency VC (Tier-3).}
+\begin{itemize}[leftmargin=*]
+  \item All \emph{ThresholdChange VC} fields, plus: \texttt{quorum} ($m$ of $n$), \texttt{reason\_code}, \texttt{scope} (canary-only unless elevated),
+        \texttt{EmergencyMode}=true, and \texttt{valid\_until}$\le T_{\mathrm{max}}^{\mathrm{emer}}$.
+\end{itemize}
+\end{ledgerbox}
+
+\begin{ledgerbox}
+\textbf{OmegaCertificate VC (Tier-3, recap).}
+Contains $\texttt{omega\_id}$, $[\omega_\ell,\omega_u]$, $(P,Q)$ digests, $\epsPR$, \texttt{valid\_until},
+\texttt{hitmap\_id}, \texttt{degraded\_set\_ids}, issuer signature (\secref{sec:omega-contract}).
+\end{ledgerbox}
+
+% -------------------- FOLD ARTIFACT --------------------
+\subsection*{GovernanceFold artifact (nightly, reproducible)}
+\begin{ledgerbox}
+\textbf{GovernanceFold (Tier-3).}
+Fields: \texttt{fold\_time\_utc}, \texttt{aggregator\_digest}, ordered list of \texttt{vc\_digests} with \texttt{risk\_bound}s and E-VC marks,
+the folded value $R_{1:n}$, and a \texttt{replay\_digest} (hash of inputs). Auditors recompute $R_{1:n}$ offline; values must match and be $\le R_{\max}$.
+\end{ledgerbox}
+
+% -------------------- RUNTIME GATE (ALGO) --------------------
+\subsection*{Runtime gate (algorithmic form)}
+
+\begin{lstlisting}[language=Python,caption={Policy gate for incoming config changes (normative, with Emergency VC)},label={lst:policy-gate}]
+def apply_policy_change(current_P, vc, now):
+    # 1) Verify VC + aggregator + (if E-VC) quorum and scope
+    if not verify_signature(vc) or now > vc.valid_until: 
+        log_alert("VC_INVALID_OR_EXPIRED", vc.digest); return current_P
+    if not verify_aggregator(vc.aggregator_digest):
+        log_alert("AGGREGATOR_UNVERIFIED", vc.digest); return current_P
+    if vc.kind == "E-VC":
+        if not verify_quorum(vc.quorum) or not is_scoped(vc.scope):
+            log_alert("EVC_SCOPE_OR_QUORUM_FAIL", vc.digest); return current_P
+    # 2) Run ex-ante tests (CI + shadow-prod)
+    if not (ci_passed(vc.tests_ex_ante) and shadow_passed(vc.tests_ex_ante)):
+        log_alert("VC_TESTS_NOT_PASSED", vc.digest); return current_P
+    # 3) Canary discipline
+    if not canary_completed(vc.canary_scope, windows=W, no_rejects=True):
+        return current_P  # confined to canary scope only
+    # 4) Monotone vs bounded weakening
+    if is_monotone(vc.delta):
+        P2 = update(current_P, vc.delta)
+        record_tier3_binding(vc.digest, P2.digest, vc.aggregator_digest)
+        return P2
+    else:
+        # bounded weakening (includes E-VC)
+        rb = vc.risk_bound
+        if vc.kind == "E-VC":
+            rb = emergency_penalize(rb)  # applies factor phi>1 in aggregator
+        if rb > RHO_MAX or not short_lived(vc.valid_until):
+            log_alert("VC_WEAKENING_OUT_OF_BOUNDS", vc.digest); return current_P
+        P2 = update(current_P, vc.delta)
+        record_tier3_binding(vc.digest, P2.digest, vc.aggregator_digest, emergency=(vc.kind=="E-VC"))
+        return P2
+\end{lstlisting}
+
+\noindent \textit{Pre-window check \& expiry.} Before each window $t$, the runtime:
+(i) evicts expired VCs, (ii) recomputes $P^\star$ as the maximal $\succeq$-policy among unexpired entries, and
+(iii) updates guard parameters atomically. Any \emph{missing} VC for an on-disk policy causes an immediate reversion to $P^\star$.
+
+% -------------------- FAILURE COOKBOOK BINDINGS --------------------
+\subsection*{Failure cookbook bindings (deterministic responses)}
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{} l l X @{}}
+\toprule
+\textbf{Trigger} & \textbf{Immediate Action} & \textbf{Governance Binding} \\
+\midrule
+Clamp \textsf{Amber} & Shrink $r$, lower BY level $q$; freeze promotions. & No policy change; log \texttt{ClampAmberEvent}. \\
+Clamp \textsf{Red} & Fail-closed; switch to $\Omega_{\mathrm{wc}}$; freeze promotions. & Any threshold edits require ThresholdChange VC (R10). \\
+DRO envelope fail & \texttt{quarantine\_bit=1}; block updates/promotions. & Changing DRO radius bounds requires VC; canary-only first. \\
+PR margin crowding & Auto-shrink $\Omega$; revert $(P,Q)$. & Retune VC (hitmap proof); short expiry. \\
+CBF residual LB $<0$ & Engage $\pi_{\mathrm{brake}}$; avoid frontier. & Frontier thresholds cannot relax without VC; include replayed counterexample. \\
+CVaR$_{0.95}$ breach & Freeze+extend dwell; degrade profile deterministically. & Tail budget edits require VC; include tail-run digest in VC memo. \\
+Budget guard timeout & Conservative mode; skip noncritical solvers. & Any WCET budget change needs VC + schedulability proof. \\
+Sheaf inconsistency & Degrade modality; bounded recovery. & Calibration thresholds tied to dataset-backed VC; edits include power analysis. \\
+Emergency declared & Enter \texttt{EmergencyMode}; freeze cross-scope promotions. & E-VC with quorum; expiry $<T_{\mathrm{max}}^{\mathrm{emer}}$; $\phi>1$ in fold. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% -------------------- ACCEPTANCE --------------------
+\subsection*{Acceptance checks (section-local)}
+\begin{acceptchecks}
+  \item \textbf{VC integrity.} All governance VCs verify (signatures, chains), are unexpired, include a valid \texttt{aggregator\_digest}; Tier-3 matches the active runtime config.
+  \item \textbf{Refusal semantics.} Any un-VC’d change is rejected; runtime remains on $P^\star$; a Tier-3 alert is logged.
+  \item \textbf{Monotone default.} If a change is not provably monotone, it must be treated as a bounded weakening with explicit $\mathcal R(\Delta)$, $(\lambda,R_{\max},\phi)$, and short expiry.
+  \item \textbf{Canary graduation.} No global rollout unless canary scope passes the \emph{ex ante} tests for $W$ windows and the $\omega$-monitor never rejects.
+  \item \textbf{Emergency discipline.} E-VCs have quorum, limited scope, expiry $\le T_{\mathrm{max}}^{\mathrm{emer}}$, and incur $\phi>1$ in aggregation; \texttt{EmergencyMode} flag present while active.
+  \item \textbf{Rollback.} On expiry or failed tests, the runtime deterministically reverts to $P^\star$ and logs a governance alert; guards see the new digest next window.
+  \item \textbf{Ops checklist bound.} All items in the Ops Checklist are \textsf{Green} prior to enable; checklist snapshot is stored in Tier-3 alongside active VC digests.
+  \item \textbf{Nightly fold test.} A scheduled job emits a \textbf{GovernanceFold} artifact (Tier-3) and recomputes the aggregated risk by chronologically folding all active VCs with $\oplus$; the folded value and inputs must be reproducible and $\le R_{\max}$.
+  \item \textbf{GovernanceFold artifact.} Nightly fold test emits a \texttt{GovernanceFold} artifact with \texttt{folded\_value}\,$\le R_{\max}$ and a valid \texttt{aggregator\_digest}.
+\end{acceptchecks}
+
+% -------------------- NOTES --------------------
+\subsection*{Notes and interactions}
+\begin{itemize}[leftmargin=*]
+  \item Governance artifacts are part of the \emph{evidence}: Tier-3 hashes bind policy, $\Omega$ certificates, and emergency states; replay reproduces guard behavior under the recorded policy (\secref{sec:evidence}).
+  \item The conservativity theorem (\autoref{thm:policy-conservativity}) instantiates the aggregator and ensures that lawful compositions of changes do not erode safety beyond declared envelopes; E-VCs are penalized by $\phi$ and cannot weaken hard floors.
+  \item Refusal semantics are \emph{fail-closed}: the absence, invalidity, or expiry of a VC can never weaken safety—only revert to the last monotone $P^\star$.
+\end{itemize}
+
+\section{Verification \& Validation Roadmap \& Benchmarks}
+\label{sec:vnv}
+
+\paragraph{Objective.}
+Turn the guard topology and evidence contract into \emph{checkable properties} that run in CI,
+shadow-prod, and on replay harnesses. Every test emits Transport Packs and Provenance Ladder
+entries (\secref{sec:evidence}) so auditors can recompute verdicts, compare \texttt{proof\_print}s,
+and confirm numeric-fingerprint agreement within \texttt{AbsTol}/\texttt{RelTol}. We elevate two
+validation artifacts to \emph{first-class}: (i) a \textbf{ReplayAdequacy} report for each run, and
+(ii) a \textbf{LatencyCDF} artifact for the $\omega$-bound harness on B8. Canary graduation requires
+adverse-injection coverage, and the monitor precondition $\constref{tau}\!\ge\!2\,\constref{taumin}$
+is enforced as a runtime acceptance check.
+
+% -------------------- PROPERTY SUITE --------------------
+\subsection*{Property suite (what we prove by test)}
+\begin{enumerate}[leftmargin=*]
+  \item[\textbf{P0}] \textbf{Clock \& minute-bucket discipline.} Window UTC minute-bucketed time, NTP/chrony sync sanity, and a monotone logical clock; tolerance $\le\!100$\,ms drift/window. Vendor-drift context switch (\secref{sec:evidence}) respected.
+  \item[\textbf{P1}] \textbf{Ordering \& determinism.} Fixed order EF$\!\rightarrow$DRO$\!\rightarrow$PR$\!\rightarrow$CBF$\!\rightarrow\omega$; replays reproduce all IDs/verdicts and match numeric fingerprints within \texttt{AbsTol}/\texttt{RelTol} (Replay Adequacy, Thm.~\ref{thm:replay-adequacy}; E1–E3).
+  \item[\textbf{P1.1}] \textbf{ReplayAdequacy artifact.} Each run outputs \texttt{ReplayAdequacy.json} (schema below) with per-ID diffs, a vendor-drift note if any Tier-2 hashes changed, and a single pass/fail bit.
+  \item[\textbf{P2}] \textbf{Locality adequacy.} Two-channel EF gate achieves declared $(\alpha,1{-}\beta)$ with CI-guarded power curves; clamp FSM transitions match $\chi$ thresholds (\secref{sec:compiler}, Prop.~\ref{prop:locality-adequacy}).
+  \item[\textbf{P3}] \textbf{Frontier calculus.} No-Zeno (dwell $\ge\constref{taumin}$), bounded saltation ($\le\constref{salt}$), and \emph{replay-invariant} frontier spend (Lemma~\ref{lem:frontier-invariance}); ledger feasibility $C_{\mathrm{fr}}^{+}\le\SISS$.
+  \item[\textbf{P4}] \textbf{Rights-plane tails.} CVaR$_{0.95}$ of barrier slack respects the configured budget; any breach triggers \emph{Freeze+Dwell} and a rejecting $\omega$-run as a global invariant (\secref{sec:jsg-layers}, \secref{sec:governance}).
+  \item[\textbf{P5}] \textbf{Sheaf$\Rightarrow$guard.} Large sheaf Laplacian energy forces at least one R3 trigger within calibrated $(\tau,\delta)$ (Thm.~\ref{thm:sheaf-exact}); FDR method (BY or Bonferroni) logged in the calibration VC.
+  \item[\textbf{P6}] \textbf{$\Omega$ safety.} Hitmap retunes preserve $\epsPR>0$ and CBF tube feasibility (Thm.~\ref{thm:safe-adapt}); non-expansion and admission (O1–O4).
+  \item[\textbf{P7}] \textbf{Bounded-latency completeness.} Persistent $r$-local violations are detected within
+        $K=\max\{N,\lceil 2\constref{tau}/\constref{taumin}\rceil\}$ windows (Lemma~\ref{lem:bounded-latency}; \secref{sec:omega-appendix}).
+  \item[\textbf{P7.1}] \textbf{LatencyCDF artifact \& dominance.} The B8 harness emits an empirical CDF with confidence bands; requirement: median time-to-detection $\le K$ and 0.95-quantile $\le K{+}1$ (windows).
+  \item[\textbf{P8}] \textbf{DRO robustness.} Sensitivity match holds, dual gap $\le 10^{-4}$, adaptive FD step $h$ with CI logged; failure $\Rightarrow$ quarantine and blocked promotions.
+  \item[\textbf{P9}] \textbf{Governance pipeline.} Only valid, unexpired VCs alter policy; canary graduation and rollback obey refusal semantics; nightly governance \emph{fold test} reproduces aggregated risk $R_{1:n}\le R_{\max}$ (Rules G1–G6, R10; \secref{sec:governance}).
+  \item[\textbf{P9.1}] \textbf{Emergency VC discipline.} E-VCs: quorum, limited scope, $\phi>1$ penalty in fold, expiry $\le T_{\mathrm{max}}^{\mathrm{emer}}$; \texttt{EmergencyMode} flag set while active.
+  \item[\textbf{P10}] \textbf{Window identity hygiene.} \texttt{window\_id} uniqueness; no reuse within a minute-bucket on device/driver-hash churn; fail-closed on missing Tier-2 fields; hash algorithm/version recorded (default: BLAKE3-256) for all domain-separated hashes.
+\end{enumerate}
+
+% -------------------- TEST MATRIX --------------------
+\subsection*{Test matrix (what runs where)}
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\textwidth}{@{} l l X X @{}}
+\toprule
+\textbf{ID} & \textbf{Stage} & \textbf{Property} & \textbf{Environments} \\
+\midrule
+P0 & Time/ID & Clock \& minute-bucket discipline; vendor-drift gate & CI (per-PR), nightly \\
+P1 & Core loop & Ordering \& replay determinism (E1–E3) & CI (per-PR), nightly, replay node \\
+P1.1 & Evidence & \texttt{ReplayAdequacy.json} present \& Green & CI (per-PR), nightly \\
+P2 & EF gate & $(\alpha,1{-}\beta)$ pass rates; clamp FSM & CI canary, shadow-prod \\
+P3 & Frontier & Dwell/hysteresis; saltation bound; spend invariance; $C_{\mathrm{fr}}^{+}\le\SISS$ & HIL rig, shadow-prod \\
+P4 & Rights-plane & CVaR$_{0.95}$ breach $\Rightarrow$ freeze+dwell+reject & Shadow-prod, replay node \\
+P5 & Sheaf & $(\tau,\delta)$-exactness; degraded recovery $\le N$ & Dataset bench, shadow-prod \\
+P6 & PR/CBF & $\epsPR$ margins; tube LB $\ge 0$; hitmap-lawful retunes & HIL, field A/B canary \\
+P7 & $\Omega$/$\omega$ & Non-expansion; latency bound $K$ & CI, replay node \\
+P7.1 & $\omega$ & \texttt{LatencyCDF.(png|json)} median $\le K$, q95 $\le K{+}1$ & CI, nightly \\
+P8 & DRO & Sensitivity match, dual gap, FD step CI; quarantine propagation & CI, shadow-prod \\
+P9 & Governance & VC integrity; canary graduation; rollback; refusal semantics; fold reproducibility & CI, config plane \\
+P9.1 & Governance (E-VC) & Quorum, scope, expiry, $\phi>1$ fold penalty & CI drills, tabletop \\
+P10 & Window-ID & Minute-bucket + vendor-drift hygiene; hash alg versioning & CI/nightly, replay node \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% -------------------- BENCHMARKS --------------------
+\subsection*{Benchmarks (deterministic recipes)}
+\paragraph{B0: Negative control (no spurious couplings).}
+Static scene; sensors mutually consistent; expect \textsf{Green}, PR margin stable, CBF LBs $\ge0$, automata accept; replay matches within \texttt{AbsTol}/\texttt{RelTol}.
+
+\paragraph{B1: Frontier grazing stress.}
+High-frequency boundary crossings near $S(x){=}0$ with small normal velocity; expect dwell enforcement, $\|K{-}I\|\le\constref{salt}$, no Zeno; spend ledger matches replay.
+
+\paragraph{B2: Degeneracy collapse (HarmMass rise).}
+Induce rank collapse to raise \constref{Harm}; EF proxy disabled (\textsf{Red}); non-parametric sensing maintains rights-plane safety; recovery requires two \textsf{Green} windows.
+
+\paragraph{B3: Confounded instruments (IV-Badge denied).}
+Inject confounders violating instrument validity; expect MTC/IV badges to block promotions; DRO quarantines until restored agreement; \texttt{quarantine\_bit} propagates via Ladder Tier-1/3.
+
+\paragraph{B4: Model drift (PR crowding).}
+Shift dynamics so GKYP margin approaches \epsPR; runtime auto-shrinks $\Omega$, reverts $(P,Q)$; CBF LBs remain $\ge0$; hitmap proof recorded.
+
+\paragraph{B5: Sheaf inconsistency suite (cover gluing failures).}
+Overlapping sensor views with IoU drop, IMU–odometry mismatch, high cross-HSIC.
+Expect $E(s)$ high, at least one R3 trigger, degrade to modality-specific $\Omega$, recover within $N$ windows.
+
+\paragraph{B6: Metamorphic drift test (invariance).}
+Apply symmetry-preserving transforms (e.g., frame rotation with consistent re-expression).
+Expect identical \texttt{proof\_print} and verdict; PR/CBF witnesses transform covariantly.
+
+\paragraph{B7: Budget guard timeout (schedulability).}
+Synthetically overload CPU; expect conservative mode, skip noncritical solvers, \textsf{Amber} until on-time ratio $\ge99\%$ for $W$ windows.
+
+\paragraph{B8: Latency injection (empirical $K$-bound).}
+Inject a persistent $r$-local violation spanning at least one full window and persisting for $K{+}1$ windows;
+ensure $\constref{tau}\!\ge\!2\,\constref{taumin}$. Expect rejection within $K$ windows and the \emph{first counterexample} hash (\secref{sec:omega-appendix}).
+Emit a \textbf{LatencyCDF} artifact (median $\le K$, q95 $\le K{+}1$) with confidence bands.
+
+\paragraph{B9: Clock discipline \& minute-bucket hygiene.}
+Jitter the system clock within permissible bounds while maintaining NTP/chrony sync; verify window bucketing, \texttt{window\_id} regeneration on vendor drift, and precondition enforcement (reject if $\constref{tau}\!<\!2\constref{taumin}$).
+
+\paragraph{B10: Canary adverse-injection battery.}
+Run $M_{\mathrm{inj}}$ distinct adverse B8 variants during canary; graduation requires all pass artifacts and no $\omega$ rejects in scope.
+
+% -------------------- ARTIFACT SCHEMAS --------------------
+\subsection*{Validation artifacts (schemas/excerpts)}
+\paragraph{ReplayAdequacy (per run).}
+\begin{lstlisting}[language=json,basicstyle=\ttfamily\small,caption={ReplayAdequacy artifact (excerpt)}]
+{
+  "run_digest": "sha256:…",
+  "ids": [
+    {"name":"ef_guard_id","match":true,"absdiff":0.0,"reldiff":0.0},
+    {"name":"dvdrho_id","match":true,"absdiff":2.1e-12,"reldiff":8.4e-10},
+    {"name":"pr_witness_id","match":true},
+    {"name":"cbf_audit_id","match":true},
+    {"name":"omega_trace_id","match":true,"first_counterexample":"<hash-or-null>"}
+  ],
+  "proof_print_match": true,
+  "vendor_drift_note": null,  // or object naming changed hashes
+  "pass": true
+}
+\end{lstlisting}
+
+\paragraph{LatencyCDF (B8).}
+\begin{lstlisting}[language=json,basicstyle=\ttfamily\small,caption={LatencyCDF artifact (excerpt)}]
+{
+  "K": 7,
+  "samples": [5,6,7,7,6,5,7,6,7,5, ...],
+  "ecdf_points": [[0,0.00],[5,0.31],[6,0.72],[7,1.00]],
+  "ci": {"method":"BCa","level":0.95,"bands":[[5,[0.20,0.45]], [6,[0.60,0.80]], [7,[0.95,1.00]]]},
+  "median": 6,
+  "q95": 7,
+  "constraints": {"median_le_K": true, "q95_le_K_plus_1": true},
+  "pass": true
+}
+\end{lstlisting}
+
+% -------------------- HARNESSes \& KPIs --------------------
+\subsection*{Harnesses and KPIs}
+\paragraph{Replay harness.}
+Given $(T_t,L_t)$, reconstruct env (Tier-2), recompute guard IDs in order, compare \texttt{proof\_print}
+(Alg.~\ref{lst:replay}); KPI: \emph{replay match rate} (target: $100\%$), \emph{fingerprint agreement} within \texttt{AbsTol}/\texttt{RelTol}, and \textbf{ReplayAdequacy}=\textsf{Green}.
+
+\paragraph{EF gate power.}
+False-accept/false-reject against labeled shifts; report $\kappa(\constref{F})$ quantiles and $r$ distribution; bind $\delta$ from the VC table.
+
+\paragraph{Frontier KPIs.}
+No-Zeno rate ($\uparrow$ better), saltation bound violations (zero), average spend/window (stable), spend \emph{drift} CI slope (nonpositive), ledger feasibility rate ($C_{\mathrm{fr}}^{+}\le\SISS$).
+
+\paragraph{Rights-plane KPIs.}
+CVaR$_{0.95}$ budget headroom ($\ge 0$), number of \emph{Freeze+Dwell} triggers (zero nominal),
+and rejection correlation with tail breaches (unity within tolerance on B4/B5).
+
+\paragraph{PR/CBF KPIs.}
+Margin headroom ($\epsPR$ minus observed), tube LB p01 ($\ge 0$), KKT p99 ($\le \varepsilon_{\mathrm{kkt}}$), WCET headroom ($\ge 0$).
+
+\paragraph{$\Omega$/$\omega$ KPIs.}
+\emph{Latency distribution:} median $\le K$, q95 $\le K{+}1$ (from \textbf{LatencyCDF}); safety reject rate ($0$ nominal);
+time-to-detection CDF dominates the $K$ bound; first-counterexample hash logged and stable on replay.
+
+\paragraph{DRO KPIs.}
+Sensitivity error $\|\widehat{\partial_\rho}-\eta^\star\|/\|\eta^\star\|$, dual-gap p99, fraction quarantined, promotion blocks honored.
+
+\paragraph{Governance KPIs.}
+Folded risk $R_{1:n}$ (nightly) $\le R_{\max}$ with inputs/digests reproducible; VC verification rate ($100\%$); canary graduation latency; E-VC scope/expiry conformance; \texttt{EmergencyMode} duration.
+
+\paragraph{Window-ID/Clock KPIs.}
+Rate of \texttt{window\_id} regeneration on vendor drift (nonzero when Tier-2 changes); zero collisions; minute-bucket integrity; drift/window $\le 100$\,ms.
+
+% -------------------- CI SCHEDULE --------------------
+\subsection*{CI schedule and graduation}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Per-PR (fast).} P0, P1, P1.1, P6 (small $N$) on B0, B6; schema checks; Tier-2 completeness; numeric fingerprint check (E3); \textbf{ReplayAdequacy}=\textsf{Green}.
+  \item \textbf{Nightly.} P0–P10 incl.\ P1.1 \& P7.1 on B0–B9; metamorphic invariance; replay on previous night’s artifacts; update EF \& sheaf calibration VCs; verify $\constref{tau}\!\ge\!2\,\constref{taumin}$; emit \textbf{LatencyCDF}; governance \textbf{GovernanceFold} recorded in Tier-3.
+  \item \textbf{Weekly HIL.} P3, P6 with field-like traces; $\Omega$ admission/retune drills; ledger feasibility audits; emergency tabletop (P9.1).
+  \item \textbf{Canary $\to$ prod.} Require $W$ green windows, \underline{$M_{\mathrm{inj}}$ B8 variants passed} (with \textbf{LatencyCDF} artifacts),
+        zero safety rejects, latency bound $K$ observed, and no Tier-2 holes before promotion (\secref{sec:governance}).
+\end{itemize}
+
+% -------------------- ARTIFACTS --------------------
+\subsection*{Artifacts}
+Each run exports: ordered Transport Packs, Ladder roots, calibration VCs, governance VCs (with \texttt{aggregator\_digest}),
+\textbf{ReplayAdequacy.json}, \textbf{LatencyCDF.(png|json)} for B8, numeric fingerprint diffs (if any, with vendor drift notes),
+and a \texttt{run\_digest} binding code state, datasets, and seeds (Tier-2/3).
+
+\paragraph{Additional artifacts.}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{LatencyCDF} (from B8): empirical CDF of time-to-detection with seeded bootstrap bands + metadata (N, K, seeds).
+  \item \textbf{GovernanceFold} (nightly): aggregator inputs and folded value (see \secref{sec:governance}).
+\end{itemize}
+
+% -------------------- ACCEPTANCE --------------------
+\subsection*{Acceptance checks (section-local)}
+\begin{acceptchecks}
+  \item \textbf{Precondition for $\omega$.} Configuration satisfies $\constref{tau}\!\ge\!2\,\constref{taumin}$; else \emph{reject} window and log a precondition breach.
+  \item \textbf{Completeness.} P0–P10 implemented; each emits required artifacts (ReplayAdequacy, LatencyCDF for B8) and Tier-2 envelopes.
+  \item \textbf{Determinism.} Replay harness reproduces all IDs and \texttt{proof\_print}s; numeric fingerprints meet \texttt{AbsTol}/\texttt{RelTol}; \textbf{ReplayAdequacy}=\textsf{Green}.
+  \item \textbf{Latency distribution.} For B8, \textbf{LatencyCDF} satisfies median $\le K$ and q95 $\le K{+}1$; confidence bands included; constraint flags are \textsf{true}.
+  \item \textbf{Safety margins.} No nominal test exhibits PR margin $<\epsPR$ or tube LB $<0$; ledger feasibility holds; rights-plane tail risk never breaches budget in B0/B6.
+  \item \textbf{Calibration linkage.} EF and sheaf guards reference valid calibration VCs; CI tables include rows matching current $(n,\kappa(\constref{F}))$ and chosen FDR method.
+  \item \textbf{Governance.} Any parameter change during tests is backed by a valid VC (with \texttt{aggregator\_digest}); canary graduation requires $M_{\mathrm{inj}}$ adverse injections; refusal semantics exercised; nightly \textbf{GovernanceFold} recorded and $\le R_{\max}$.
+  \item \textbf{Window identity \& clock.} No \texttt{window\_id} reuse under device/driver-hash churn; minute-bucket integrity passes; drift/window $\le 100$\,ms; fail-closed on missing Tier-2 fields.
+  % Add to §V&V Acceptance checks
+    \item \textbf{LatencyCDF present.} B8 emits a \texttt{LatencyCDF} artifact; median detection time $\le K$ and CDF stochastically dominates the $K$ bound within bands.
+    \item \textbf{GovernanceFold present.} Nightly runs include a \texttt{GovernanceFold} artifact with recomputable fold.
+\end{acceptchecks}
+
+% -------------------- NOTES --------------------
+\subsection*{Notes}
+The suite operationalizes the paper’s guarantees: locality adequacy, frontier spend invariance,
+rights-plane tail triggers, sheaf-to-guard exactness, safe $\Omega$ adaptation, bounded-latency completeness (with B8),
+and replay adequacy. Failures produce first-class artifacts (counterexamples, diffs, VCs, and CDFs)
+that are auditable and reproducible, and can be folded into governance risk via \textbf{GovernanceFold}.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+\paragraph{What we showed.}
+We specified a \emph{compilation path} from ACT designs to a JSG runtime that is
+(1) \emph{sound by construction} via a commuting 2-cell in an evidence double category
+(\secref{sec:cat-grammar}, \autoref{thm:soundness-square});
+(2) \emph{operational} as a fixed-order guard pipeline with fail-closed acceptance
+(\secref{sec:jsg-layers}, \secref{sec:omega-contract}); and
+(3) \emph{auditable \& replayable} through a Transport Pack and Provenance Ladder
+with a complete determinism envelope (\secref{sec:evidence}).
+Two first-class validation artifacts make these guarantees checkable in CI and replay:
+\textbf{ReplayAdequacy} (per-run, ID-by-ID diffs and vendor-drift note) and
+\textbf{LatencyCDF} (empirical detection-time CDF for the $\omega$-bound harness; \secref{sec:vnv}).
+
+\paragraph{Hardened guarantees (paper-level).}
+Five central results connect the categorical grammar to runtime artifacts:
+\emph{Locality Adequacy} (Prop.~\ref{prop:locality-adequacy}),
+\emph{Frontier Spend Invariance} (Lemma~\ref{lem:frontier-invariance}),
+\emph{Sheaf$\Rightarrow$Guard $(\tau,\delta)$-Exactness} (Thm.~\ref{thm:sheaf-exact}),
+\emph{Safe Adaptation} for $\Omega$ retunes (Thm.~\ref{thm:safe-adapt}),
+and \emph{Bounded-Latency Completeness} (Lemma~\ref{lem:bounded-latency}).
+Two runtime hardeners are explicit and testable:
+(i) \emph{frontier invariants as pass/fail}: dwell $\ge\constref{taumin}$, saltation replay
+$\|K_{\mathrm{obs}}{-}I\|\le\constref{salt}$, and ledger feasibility $C_{\mathrm{fr}}^{+}\le\SISS$
+(\secref{sec:jsg-layers});
+(ii) \emph{bounded-response $K$} with an enforced precondition $\constref{tau}\!\ge\!2\,\constref{taumin}$
+and empirical validation via latency injection (\secref{sec:vnv}, \secref{sec:omega-appendix}).
+
+\paragraph{Design $\Rightarrow$ evidence, summarized.}
+Operads become governed interfaces with a \emph{two-channel EF gate} (parametric + proxy-free) and a VC-bound
+$\delta$ table; cospan pushouts become frontiers with budgets and \emph{replay-invariant spend};
+sheaves yield cross-modal invariants with dataset-backed thresholds (BY/Bonferroni FDR) and bounded degrade;
+functorial semantics yields \emph{published witnesses} whose acceptance composes with wiring.
+$\Omega$ is a \emph{non-expanding} offline contract with hitmap-guarded retunes that preserve PR margin
+and CBF feasibility. Evidence is emitted \emph{strictly} in EF$\to$DRO$\to$PR$\to$CBF$\to\omega$ order,
+hashed into the \texttt{proof\_print}, and chained in the Ladder. All tier hashes are
+domain-separated and versioned (default hash: \emph{BLAKE3-256}, recorded in Tier-1/2); minute-bucketed
+window identity is bound to clock discipline and vendor-drift hygiene (\secref{sec:evidence}, \secref{sec:vnv}).
+
+\paragraph{Operational discipline.}
+Every window executes EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow\omega$;
+each stage emits a typed ID and must pass its acceptance slice. The clamp FSM uses the unified
+\emph{Green/Amber/Red} terminology and drives deterministic degraded-$\Omega$ transitions.
+The determinism envelope binds seeds, numerics, code/library/device hashes, scheduling, and data order,
+with numeric fingerprint tolerances (\texttt{AbsTol}/\texttt{RelTol}, Rules~E1–E3). The \textbf{ReplayAdequacy}
+artifact certifies that replays reproduce all IDs and the \texttt{proof\_print}; the \textbf{LatencyCDF}
+artifact certifies that the empirical detection-time distribution respects the $K$-bound.
+Rights-plane tail risk (CVaR$_{0.95}$ of barrier slacks) is a hard trigger that induces
+Freeze{+}Dwell and a rejecting $\omega$-run in the same window (\secref{sec:jsg-layers}, \secref{sec:vnv}).
+Governance VCs (R10) prevent normalization-of-deviance via monotone defaults, bounded weakenings with explicit risk
+and expiry, canarying with adverse injections, and a conservative risk fold whose inputs are recorded
+and reproducible.
+
+\paragraph{Limitations and scope.}
+Completeness is bounded \emph{up to locality} $r=\epsEF/\constref{Lpsi}$ and a latency
+$K=\max\{N,\lceil 2\constref{tau}/\constref{taumin}\rceil\}$; out-of-locality pathologies trigger
+non-parametric sensing and degraded $\Omega$ profiles. GKYP guarantees are band-limited; broader
+robust-performance contracts and synthesis-on-sheaves are future work. Sheaf thresholds rely on calibration VCs;
+distribution shift beyond those sets degrades by design. The DRO dual-gap ceiling and finite-difference policy
+are conservative to protect against silent numeric agreement. Our determinism model assumes faithfully recorded
+library/driver hashes and disciplined clocks; we treat vendor drift and clock faults as fail-closed conditions.
+
+\paragraph{Engineering next steps.}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Prototype slice.} Implement R1–R4 for a single pushout and cover; ship the full evidence loop, \textbf{ReplayAdequacy}, and the replay harness.
+  \item \textbf{Hitmap tooling.} Offline $\Omega$ issuance with automated retune search that enforces $\Theta'\subseteq\Theta_{\mathrm{CBF}}$ and records \texttt{hitmap\_id}.
+  \item \textbf{Calibration CI.} Dataset-backed VCs for EF and sheaf thresholds with power/FDR dashboards; bind realized $\delta$ tables into Tier-3.
+  \item \textbf{Governance fold.} Nightly recomputation of aggregated risk from admitted VCs; store the \textbf{GovernanceFold} inputs and result in Tier-3.
+  \item \textbf{Cookbook-as-tests.} Materialize \secref{sec:vnv} as property tests in CI, HIL, and shadow-prod; gate promotion on frontier invariants, $K$-bounded detection (\textbf{LatencyCDF}), E1–E3 completeness, and refusal semantics.
+  \item \textbf{Clock discipline.} Hardening around minute-bucket rollovers (NTP/chrony audits) and explicit drift alarms tied to window admission.
+\end{itemize}
+
+\paragraph{Takeaway.}
+ACT provides the \emph{grammar} for composition; JSG provides the \emph{governor} and the \emph{evidence}.
+By coupling a double-category of systems-and-witnesses to a deterministic evidence architecture with
+fail-closed runtime invariants, safety is \emph{preserved by construction}, \emph{challengeable by replay},
+and \emph{governed by code}. The added validation artifacts and governance fold turn these claims into
+\emph{standing tests} that can be rerun, audited, and evolved without weakening safety.
+
+\section{Appendix: $\omega$-Automata Example and Acceptance Trace}
+\label{sec:omega-appendix}
+
+\subsection{Bounded-response liveness as a \emph{safety} monitor}
+We encode the bounded-response requirement
+\[
+  \varphi_N \;:=\; \mathbf{G}\Big(\textsf{Amber} \rightarrow \mathbf{F}_{\le N}(\neg\textsf{Amber})\Big),
+\]
+i.e., \emph{whenever the clamp enters \textsf{Amber}, it must leave \textsf{Amber} within $N$ windows (to either \textsf{Green} or \textsf{Red}).}
+Although $\mathbf{F}_{\le N}$ is a bounded (metric) operator, $\varphi_N$ admits a deterministic \emph{safety} monitor over infinite traces:
+runs are accepted iff a rejecting sink is never visited.
+
+\paragraph{Deterministic safety automaton.}
+Let $\Sigma=\{\;\textsf{Amber},\ \overline{\textsf{Amber}}\;\}$ where $\overline{\textsf{Amber}}:=\textsf{Green}\,\lor\,\textsf{Red}$.
+Define $\mathcal{A}_N = (Q,\Sigma,\delta,q_0,F)$ with
+\[
+Q=\{\textsf{Safe}\}\cup\{\textsf{A}[i]\}_{i=0}^{N-1}\cup\{\textsf{Bad}\},\quad
+q_0=\textsf{Safe},\quad F=Q\setminus\{\textsf{Bad}\},
+\]
+and transition function $\delta$:
+\[
+\begin{aligned}
+\delta(\textsf{Safe},\overline{\textsf{Amber}})&=\textsf{Safe}, &
+\delta(\textsf{Safe},\textsf{Amber})&=\textsf{A}[0],\\
+\delta(\textsf{A}[i],\overline{\textsf{Amber}})&=\textsf{Safe}\quad(0\le i\le N{-}1),\qquad &
+\delta(\textsf{A}[i],\textsf{Amber})&=
+\begin{cases}
+\textsf{A}[i{+}1], & 0\le i<N{-}1,\\
+\textsf{Bad}, & i=N{-}1,
+\end{cases}\\
+\delta(\textsf{Bad},\sigma)&=\textsf{Bad}\quad(\forall \sigma\in\Sigma).&
+\end{aligned}
+\]
+
+\paragraph{Alphabet mapping from evidence (Tier-1 only).}
+For each window $t$, the Transport Pack $T_t$ (\secref{sec:evidence}) defines the letter $a_t\in\Sigma$ by
+\[
+a_t=\begin{cases}
+\textsf{Amber}, & \text{if } T_t.\texttt{clamp}=\texttt{"Amber"},\\
+\overline{\textsf{Amber}}, & \text{if } T_t.\texttt{clamp}\in\{\texttt{"Green"},\texttt{"Red"}\}.
+\end{cases}
+\]
+The monitor consumes the sequence $(a_t)_{t\ge0}$ in order and produces a verdict and state trace.
+Tier-4 stores the accepting/rejecting run together with the ordered KPI row-hashes and the \emph{first counterexample} hash on rejection.
+
+\paragraph{Parameterization and configuration.}
+$N$ is a governed parameter (bounded-response horizon; \secref{sec:governance}) and is recorded in Tier-4 with the monitor config.
+We enforce the runtime \emph{precondition} $\constref{tau}\!\ge\!2\,\constref{taumin}$ so that the latency bound stated below is valid.
+
+\subsection{Latency bound and meta-acceptance}
+With window length $\constref{tau}$ and hard dwell $\constref{taumin}$, any $r$-local violation ($r=\epsEF/\constref{Lpsi}$)
+that persists for at least one window is detected by the $\omega$-monitor within
+\[
+K \;=\; \max\!\Big\{\,N,\ \big\lceil 2\,\constref{tau}/\constref{taumin}\big\rceil\,\Big\}
+\]
+windows (Lemma~\ref{lem:bounded-latency}). This $K$ is \emph{audited} by the latency-injection harness (B8) in \secref{sec:vnv}
+and recorded alongside the monitor config in Tier-4.
+
+\paragraph{Intuition for the $2\,\constref{tau}/\constref{taumin}$ factor (proof sketch).}
+Dwell $\ge\constref{taumin}$ implies every switch into/out of \textsf{Amber} persists for at least $\constref{taumin}$ time.
+If a violation persists for one full window of duration $\constref{tau}$, then within at most \emph{two} consecutive windows the monitor
+must observe a contiguous \textsf{Amber}-streak whose length (in windows) is at least $\lceil 2\,\constref{tau}/\constref{taumin}\rceil$:
+one window to enter and persist, and another to guarantee a dwell-length segment is fully contained in the observed bucketization.
+Thus any violation that would exceed the $N$-step bound must reach \textsf{Bad} within $K=\max\{N,\lceil 2\,\constref{tau}/\constref{taumin}\rceil\}$ windows.
+
+\begin{acceptchecks}
+  \item \textbf{Precondition (fail-closed).} $\constref{tau}\ge 2\,\constref{taumin}$ is enforced; otherwise reject the window with code \texttt{E\_OMEGA\_PRECONDITION} and log $(\constref{tau},\constref{taumin})$ in Tier-2.
+  \item \textbf{Bounded response.} For configured $N$ and recorded $\constref{tau},\constref{taumin}$, any persistent $r$-local violation must be rejected within $K=\max\{N,\lceil 2\,\constref{tau}/\constref{taumin}\rceil\}$ windows (Lemma~\ref{lem:bounded-latency}); failure is a \emph{meta-monitor} error that rejects the window.
+  \item \textbf{Rights-plane tail trigger (hard).} If the rights-plane tail risk (CVaR$_{0.95}$ of barrier slacks) breaches during the window, immediately \emph{reject} and record the \emph{first counterexample} hash (cf.\ \secref{sec:jsg-layers}).
+  \item \textbf{Replay determinism.} The $\omega$ verdict and \texttt{omega\_trace\_id} are deterministic functions of Tier-1/2; replays match within \texttt{AbsTol}=$\AbsTol$ or \texttt{RelTol}=$\RelTol}$ for embedded numerics (Thm.~\ref{thm:replay-adequacy}).
+  \item \textbf{LatencyCDF artifact.} When the B8 harness runs (\secref{sec:vnv}), a \texttt{LatencyCDF} artifact is emitted (empirical CDF and metadata) and archived in Tier-4.
+\end{acceptchecks}
+
+\subsection{Concrete transition table for $N=3$}
+\label{sec:monitor-N3}
+For $N{=}3$, the state set is $\{\textsf{Safe},\textsf{A}[0],\textsf{A}[1],\textsf{A}[2],\textsf{Bad}\}$.
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{0.78\textwidth}{@{} l c c @{}}
+\toprule
+\textbf{From} & \textbf{on $\overline{\textsf{Amber}}$} & \textbf{on \textsf{Amber}} \\
+\midrule
+\textsf{Safe}  & \textsf{Safe} & \textsf{A}[0] \\
+\textsf{A}[0]  & \textsf{Safe} & \textsf{A}[1] \\
+\textsf{A}[1]  & \textsf{Safe} & \textsf{A}[2] \\
+\textsf{A}[2]  & \textsf{Safe} & \textsf{Bad} \\
+\textsf{Bad}   & \textsf{Bad}  & \textsf{Bad} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Proof-carrying acceptance traces (Tier-4 excerpts)}
+Each row shows window index $t$, the \texttt{window\_id} (truncated), the \texttt{kpi\_row\_hash} (truncated), clamp status, and the automaton state $q_t$ after consuming that row. Tier-4 stores full hashes and the \emph{first counterexample} on rejection.
+
+\paragraph{Example A (Accepting; $N{=}3$).} No \textsf{Amber} streak exceeds length 3.
+\begin{center}
+\renewcommand{\arraystretch}{1.10}
+\begin{tabularx}{\textwidth}{@{} r l l l l @{}}
+\toprule
+$\bm{t}$ & \textbf{window\_id} & \textbf{kpi\_row\_hash} & \textbf{clamp} & \textbf{$q_t$} \\
+\midrule
+0 & \texttt{a1e…2c} & \texttt{9a12…e7} & Green & \textsf{Safe} \\
+1 & \texttt{a1e…2c} & \texttt{b4c5…2f} & Amber & \textsf{A}[0] \\
+2 & \texttt{a1e…2c} & \texttt{c8de…91} & Amber & \textsf{A}[1] \\
+3 & \texttt{a1e…2c} & \texttt{aa77…0b} & Amber & \textsf{A}[2] \\
+4 & \texttt{a1e…2c} & \texttt{7f31…d4} & Red   & \textsf{Safe} \\
+5 & \texttt{a1e…2c} & \texttt{1133…af} & Green & \textsf{Safe} \\
+6 & \texttt{a1e…2c} & \texttt{8bd0…42} & Amber & \textsf{A}[0] \\
+7 & \texttt{a1e…2c} & \texttt{55e2…c9} & Green & \textsf{Safe} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+\emph{Verdict:} \textbf{Accept}. The run never reaches \textsf{Bad}. Tier-4 stores the accepting run pointer and the ordered list of consumed row-hashes.
+
+\paragraph{Example B (Rejecting; $N{=}3$).} \textsf{Amber} persists for $4$ consecutive windows.
+\begin{center}
+\renewcommand{\arraystretch}{1.10}
+\begin{tabularx}{\textwidth}{@{} r l l l l @{}}
+\toprule
+$\bm{t}$ & \textbf{window\_id} & \textbf{kpi\_row\_hash} & \textbf{clamp} & \textbf{$q_t$} \\
+\midrule
+0 & \texttt{bb0…f1} & \texttt{41f2…0a} & Green & \textsf{Safe} \\
+1 & \texttt{bb0…f1} & \texttt{d2aa…9e} & Amber & \textsf{A}[0] \\
+2 & \texttt{bb0…f1} & \texttt{e013…71} & Amber & \textsf{A}[1] \\
+3 & \texttt{bb0…f1} & \texttt{fa90…c2} & Amber & \textsf{A}[2] \\
+\rowcolor{rulebg}
+4 & \texttt{bb0…f1} & \texttt{6bc1…5d} & Amber & \textsf{Bad} \;\;(\emph{first counterexample}) \\
+5 & \texttt{bb0…f1} & \texttt{975e…84} & Red   & \textsf{Bad} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+\emph{Verdict:} \textbf{Reject}. Tier-4 records the first-counterexample \texttt{kpi\_row\_hash} (row $t{=}4$) and the rejecting run digest.
+
+\subsection{Deterministic interface \& monitor stub (pseudo-code)}
+The monitor consumes Tier-1 in the fixed guard order (\secref{sec:evidence}) and advances $\mathcal{A}_N$ on the letter induced by \texttt{clamp}. On each window, it emits (i) current state $q_t$, (ii) prefix verdict, and (iii) when rejecting, the first counterexample hash. Seeds, library hashes, scheduling, and serialization are fixed by Tier-2 (determinism envelope; Rules~E1–E3).
+
+\begin{lstlisting}[language=Python,caption={Finite-prefix safety monitor for $\varphi_N$ (counter form)},label={lst:omega-monitor}]
+def monitor_phi_N(transport_packs, N=3):
+    # transport_packs: ordered Tier-1 records for consecutive windows
+    first_bad = None
+    state = "Safe"
+    for T in transport_packs:
+        letter = "Amber" if T["clamp"]=="Amber" else "NonAmber"
+        if state=="Safe":
+            state = "A0" if letter=="Amber" else "Safe"
+        elif state.startswith("A"):
+            i = int(state[1:])
+            if letter=="NonAmber":
+                state = "Safe"
+            else:
+                state = f"A{i+1}" if i < N-1 else "Bad"
+        # sink behaviour
+        if state=="Bad" and first_bad is None:
+            first_bad = T["kpi_row_hash"]
+        yield {
+            "window_id": T["window_id"],
+            "kpi_row_hash": T["kpi_row_hash"],
+            "clamp": T["clamp"],
+            "state": state,
+            "prefix_accept": (state!="Bad"),
+            "first_counterexample": first_bad
+        }
+\end{lstlisting}
+
+\subsection{Acceptance hook and privacy note}
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Acceptance \& K-bound.} For configured $N$ and recorded $\constref{tau},\constref{taumin}$, the runtime logs \texttt{omega\_trace\_id} with the state trace, monitor config (including $N$ and computed $K$), and (if rejecting) the first-counterexample hash; failure to detect a persistent $r$-local violation within $K$ windows is a meta-failure and rejects the window.
+  \item \textbf{Replay adequacy.} The monitor depends only on Tier-1 and Tier-2; replays reproduce the trace and the first counterexample within \texttt{AbsTol}=$\AbsTol$ or \texttt{RelTol}=$\RelTol$ for any embedded aggregates and identical hashes (Thm.~\ref{thm:replay-adequacy}).
+  \item \textbf{Privacy.} Payloads may be redacted, but salted digests and all numerics driving the verdict must remain present to satisfy \secref{sec:evidence}. When B8 is exercised, the \texttt{LatencyCDF} artifact includes only aggregate statistics and seeded bootstrap bands; raw traces remain in Tier-4.
+\end{itemize}
+
+\end{document}

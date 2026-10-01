@@ -1,0 +1,275 @@
+
+% ==============================
+% SIRUS — Operational Playbook (Continuous Thread Edition)
+% ==============================
+% Robust, reproducible, Overleaf-friendly. Works with pdfLaTeX or LuaLaTeX.
+
+\RequirePackage{iftex}
+\ifPDFTeX
+  \documentclass[11pt]{article}
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+\else
+  % LuaLaTeX / XeLaTeX
+  \documentclass[11pt]{article}
+  \usepackage{fontspec}
+  \defaultfontfeatures{Ligatures=TeX}
+\fi
+
+% ---------- Core typography & layout ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{csquotes}
+\usepackage{url}         % provides \path{...}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=blue}
+
+% ---------- Lists, math ----------
+\usepackage{enumitem}
+\setlist{topsep=4pt,itemsep=2pt,parsep=0pt}
+\usepackage{amsmath,amssymb}
+
+% ---------- Tabularray (tables) ----------
+\usepackage{ragged2e}
+\usepackage{booktabs}
+\usepackage{tabularray}
+\UseTblrLibrary{booktabs}
+
+% Column types: L = elastic ragged-right; W{<width>} = fixed-width ragged-right
+\NewColumnType{L}{X}
+\NewColumnType{W}[1]{Q[wd=#1]}
+
+% Project-wide table defaults
+\SetTblrInner{colsep=3pt,rowsep=2pt,stretch=1.05}
+\SetTblrOuter{long}
+\SetTblrStyle{firsthead}{font=\bfseries}
+\SetTblrStyle{caption-tag}{font=\bfseries}
+
+% ---------- Listings (code) ----------
+\usepackage{listings}
+% Minimal JSON language so language=json works on all engines
+\lstdefinelanguage{json}{
+  sensitive=true,
+  morestring=[b]",
+  morecomment=[l]{//},
+  literate=*
+   {:}{{:}}{1}
+   {,}{{,}}{1}
+   {\{}{{\{}}{1}
+   {\}}{{\}}}{1}
+   {[}{{[}}{1}
+   {]}{{]}}{1}
+}
+\ifPDFTeX
+  % UTF-8 compatibility for listings under pdfLaTeX
+  \usepackage{listingsutf8}
+  \lstset{inputencoding=utf8}
+  % Map common Unicode to TeX-safe tokens
+  \lstset{literate=
+    {…}{{\ldots}}1 {–}{{--}}1 {—}{{---}}1
+    {“}{{``}}1 {”}{{''}}1 {‘}{{`}}1 {’}{{'}}1
+  }
+\fi
+\lstdefinestyle{sirus}{
+  basicstyle=\ttfamily\small,
+  numbers=left, numbersep=6pt, stepnumber=1,
+  showstringspaces=false, breaklines=true, breakatwhitespace=false,
+  tabsize=2, upquote=true,
+}
+\lstset{style=sirus}
+
+% ---------- Gentle global line-breaking relief ----------
+\emergencystretch=2em
+
+% ---------- Convenience macros ----------
+\newcommand{\code}[1]{\path{#1}} % semantic alias for path-like identifiers
+
+% ==============================
+% Document
+% ==============================
+\title{SIRUS Operational Playbook\\\large The Continuous Thread: Generation \textrightarrow{} Inversion}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\bigskip
+
+% =====================================================
+\section{North Star}
+\textit{Serve people. Build trustworthy scaffolding. Keep the tail honest. Move.}
+This playbook unifies: (i) a modular composition engine for prompts and artifacts; (ii) a mathematical skeleton for coupled decision--objective spaces; and (iii) governance rails that make moral good enforceable as technical gates.
+
+% =====================================================
+\section{Truth Map (SSOT Discipline)}
+\begin{longtblr}[
+  caption={Where truth lives},
+  label={tab:truth-map}
+]{
+  width=\linewidth, rowhead=1,
+  colspec={ W{3.6cm}, L, W{5.2cm} }
+}
+\toprule
+\textbf{Surface} & \textbf{Role} & \textbf{Key Contract} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Surface} & \textbf{Role} & \textbf{Key Contract} \\
+\midrule\endhead
+SPEC (canon) & Normative definitions; no prose duplication & Anchor by digest; contracts referenced by ID \\
+Living Doc & Descriptive snapshot of reality & Mirrors repo state; no untracked theory \\
+Master Plan & Task-focused now $\rightarrow$ next & Each requirement maps to SPEC/file/test; must-fails mandatory \\
+WorkCards & Executable units (Admits/Emits/Guards/FailFast/Links) & No ambient state; guard-first; receipts required \\
+Evidence Bundle & Append-only ledger & \code{ReceiptEnvelope/v1} with \code{checker_hash}, \code{envlock_digest} \\
+ResearchHub & Prompt composition/orchestration & Snippets, recipes, vars; alignment \& agentic flows \\
+\bottomrule
+\end{longtblr}
+
+% =====================================================
+\section{Continuous Thread (Speed as a Live Metric)}
+We treat Generation and Inversion as endpoints of a single strand with modes:
+\begin{enumerate}
+  \item \textbf{Spark (Propose)}: Compose a proposal; list SPEC anchors to update; enumerate new must-fails with reason codes.
+  \item \textbf{Stabilize (Align)}: Align across Living Doc and Master Plan; ensure SSOT pointers \& coverage entries exist.
+  \item \textbf{Harden (Govern)}: Attach guards, classes, approval chains; wire negative controls; verify Gate-0 \& CI.
+  \item \textbf{Prove (Invert)}: Emit receipts; run negatives; demonstrate replay under EnvLock; show trace reconstruction.
+  \item \textbf{Integrate (Land)}: Small PR; advance phase gate; update snapshots.
+\end{enumerate}
+
+% =====================================================
+\section{Workflow: Recipes \textrightarrow{} Contracts \textrightarrow{} Gates}
+\subsection{Compose with ResearchHub}
+Recipes: alignment, agentic-guided execution, iterative change. Inject scope labels, pre-commit output, and optional repo ZIP. Outputs include SPEC anchors to update and explicit must-fail reason codes.
+
+\subsection{Map to JSGI Layer Contracts (Quick Check)}
+\begin{itemize}
+  \item \textbf{Rep/Alg}: stratified/Filippov setting; budget frontier dwell time $\tau_{\min}$ and defect $C_{\mathrm{fr}}$.
+  \item \textbf{Stoch/Inf}: finite dictionaries within EF radius; whitened cumulants.
+  \item \textbf{Clos}: DRO soft-transport; KKT stationarity; adaptive radius policy.
+  \item \textbf{Ctrl}: Dirac projections; PR checks; ISS margins and freeze windows.
+  \item \textbf{Comp}: non-expansive functors; Lipschitz constants in FIM metric.
+\end{itemize}
+
+\subsection{Land via WorkCards (Guards \& Evidence)}
+Declare precise \textit{Admits/Emits/Guards/FailFast/Links}; evaluate guards over canonical inputs \& policy digests.
+Each execution emits a \code{ReceiptEnvelope/v1} bound by \code{checker_hash} $\in$ EnvLock.
+
+\subsection{Phase Gates (Now \textrightarrow{} Next)}
+\begin{itemize}
+  \item \textbf{PR-D} Saga/Compensation: all side-effecting tools declare compensation; negative \code{tool_missing_compensation}.
+  \item \textbf{PR-E} LLM I/O Envelope: typed envelope, rounding receipts; negatives \code{llm_missing_receipt}, \code{llm_untyped_io}.
+  \item \textbf{PR-F/G/H}: SSOT tooling; UpdateCert generator; formal ResearchLoop with ``ideas-as-prose'' negative.
+\end{itemize}
+
+% =====================================================
+\section{Speed Governance (Adjusting Pace Safely)}
+\subsection{When to Slow}
+Crossing frontiers or changing controller bands: consult $\tau_{\min}$ and $C_{\mathrm{fr}}$; apply freeze windows; verify ISS margins. New approximations: enforce rounding receipts; stay within EF radius; use windowed cumulants for drift.
+\subsection{When to Accelerate}
+SSOT pointers present; Gate-0 clean; negatives failing for intended reasons; receipts reproducible under EnvLock; closure policy certified and composition non-expansive.
+
+% =====================================================
+\section{Checklists}
+\subsection{Proposal (Spark)}
+\begin{itemize}
+  \item Recipe rendered (attach output)
+  \item SPEC anchor(s) to update listed (path/digest)
+  \item New negative(s) + reason\_code(s) enumerated
+\end{itemize}
+\subsection{Alignment (Stabilize)}
+\begin{itemize}
+  \item Living Doc snapshot updated
+  \item Master Plan acceptance bars linked
+  \item SSOT pointers verified (no prose duplication)
+\end{itemize}
+\subsection{Governance (Harden)}
+\begin{itemize}
+  \item WorkCard fields complete
+  \item Governance class \& approval\_chain wired; policy\_version pinned
+  \item Negative(s) created and added to coverage
+\end{itemize}
+\subsection{Proof (Invert)}
+\begin{itemize}
+  \item ReceiptEnvelope/v1 emitted; \code{checker_hash} $\in$ EnvLock
+  \item Negatives fail for intended reasons (Gate-0 \& CI)
+  \item Replay passes under declared portability stance
+\end{itemize}
+\subsection{Land (Integrate)}
+\begin{itemize}
+  \item Small PR only; diffs reference SPEC anchors/tests
+  \item Phase gate progress recorded in Master Plan
+\end{itemize}
+
+% =====================================================
+\section{Templates}
+\subsection{WorkCard Skeleton}
+\begin{lstlisting}[language=json,caption={WorkCard skeleton}]
+{
+  "schema_id": "WorkCard/v1",
+  "meta": { "id": "CARD_ID", "title": "Human-readable" },
+  "Admits":  ["<typed_inputs>"],
+  "Emits":   ["<trace_fields>", "receipt_digest"],
+  "Guards":  ["<checker_ids_or_policies>"],
+  "FailFast":["<reason_codes>"],
+  "Links":   ["<compensation_or_policy_links>"]
+}
+\end{lstlisting}
+
+\subsection{Must-fail Coverage Entry}
+\begin{lstlisting}[language=json,caption={Coverage manifest entry}]
+{
+  "id": "NEGATIVE_ID",
+  "path": "patterns/must-fail/<file>.card.yaml",
+  "reason_code": "<EXPECTED_REASON>"
+}
+\end{lstlisting}
+
+\subsection{Agentic Compose Call (Conceptual)}
+\begin{lstlisting}[language=json,caption={Agentic compose call (concept)}]
+{
+  "recipe": "agentic_guided_execution",
+  "vars": {
+    "scope_label": "PR-D",
+    "zip_path": "SIRUS_CARDED.zip",
+    "precommit_output": "<captured pre-commit run --all-files>"
+  }
+}
+\end{lstlisting}
+
+% =====================================================
+\section{Example Pass: PR-D (Saga/Compensation)}
+\begin{enumerate}
+  \item \textbf{Spark}: add \code{spec/reliability/saga/compensations_template.v1.yaml}; wire compensation links in \code{patterns/tool_use.card.yaml}.
+  \item \textbf{Stabilize}: update Living Doc; add Master Plan acceptance bars.
+  \item \textbf{Harden}: create \code{patterns/must-fail/tool_missing_compensation.card.yaml} and coverage entry.
+  \item \textbf{Prove}: run Gate-0/CI; negative fails for intended reason; emit receipts; show replay under EnvLock.
+  \item \textbf{Integrate}: small PR; advance phase gate PR-D $\rightarrow$ PR-E.
+\end{enumerate}
+
+% =====================================================
+\section{Appendix: Table Patterns}
+\subsection{Truth Map Variant}
+\begin{longtblr}[
+  caption={Truth Map Variant (wider notes)},
+  label={tab:truth-map-2}
+]{
+  width=\linewidth, rowhead=1,
+  colspec={ W{3.2cm}, L, L }
+}
+\toprule
+\textbf{Surface} & \textbf{Do} & \textbf{Don’t} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Surface} & \textbf{Do} & \textbf{Don’t} \\
+\midrule\endhead
+SPEC & Anchor by digest; keep normative canon & Restate theory in prose \\
+Living Doc & Describe actual repo state & Invent future claims without artifacts \\
+Master Plan & Tie every line to SPEC/file/test & Leave out must-fails/coverage \\
+WorkCards & Guard-first; emit receipts & Depend on ambient state \\
+Evidence & Append-only; reproducible replay & Mutable, untethered logs \\
+ResearchHub & Compose/align agentic work & Freeform prompts with no anchors \\
+\bottomrule
+\end{longtblr}
+
+\end{document}

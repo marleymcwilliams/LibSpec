@@ -1,0 +1,226 @@
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Encoding & Fonts ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[final]{microtype}
+
+% ---------- Page & Spacing ----------
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% ---------- Math ----------
+\usepackage{mathtools,amssymb,amsthm}
+\numberwithin{equation}{section}
+
+% ---------- Lists & Tables ----------
+\usepackage{enumitem}
+\setlist{nosep}
+\usepackage{booktabs}
+\usepackage{array}
+
+% ---------- Graphics & Colors ----------
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+
+% ---------- TikZ for figures ----------
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,positioning,fit,shapes.symbols,patterns}
+
+% ---------- Unicode guards (avoid raw Unicode breaking PDF bookmarks) ----------
+\usepackage{newunicodechar}
+\newunicodechar{→}{$\to$}
+\newunicodechar{←}{$\leftarrow$}
+\newunicodechar{↔}{$\leftrightarrow$}
+\newunicodechar{≥}{$\ge$}
+\newunicodechar{≤}{$\le$}
+\newunicodechar{—}{---} % em dash
+\newunicodechar{–}{--}  % en dash
+
+% ---------- Hyperref (no math in metadata; neutral colors) ----------
+\usepackage[unicode=true,colorlinks=true,linkcolor=MidnightBlue,citecolor=ForestGreen,urlcolor=RoyalBlue,psdextra]{hyperref}
+\hypersetup{
+  pdftitle={Normalized, Verifiable Computation: A Safety-First Proposal},
+  pdfauthor={},
+  pdfsubject={},
+  pdfkeywords={}
+}
+
+% ---------- Theorem Styles ----------
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% =====================================================
+% Symbols & Notation (neutral, reusable)
+% =====================================================
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator{\supp}{supp}
+\newcommand{\bbR}{\mathbb{R}}
+\newcommand{\bbP}{\mathbb{P}}
+\newcommand{\calX}{\mathcal{X}}
+\newcommand{\calU}{\mathcal{U}}
+\newcommand{\calN}{\mathcal{N}}
+\newcommand{\calQ}{\mathcal{Q}}  % evidence/receipt set
+\newcommand{\join}{\sqcup}        % lattice join
+\newcommand{\meet}{\sqcap}        % lattice meet
+
+% =====================================================
+% Figure 2 (Clamp Gauge): styles + a single configuration macro
+%   - Minimal, print-clean, accessible
+%   - Math kept out of captions to please hyperref
+% =====================================================
+
+\definecolor{ClampGreen}{RGB}{51,153,102}
+\definecolor{ClampAmber}{RGB}{226,169,0}
+\definecolor{ClampRed}{RGB}{204,68,68}
+\definecolor{ClampGray}{gray}{0.35}
+
+\tikzset{
+  clamp/arc/.style={line cap=round, line join=round},
+  clamp/tick/.style={ClampGray, line width=0.6pt},
+  clamp/label/.style={ClampGray, font=\small},
+  clamp/title/.style={ClampGray, font=\bfseries\footnotesize},
+  clamp/metric/.style={ClampGray, font=\sffamily\scriptsize},
+  clamp/dot/.style={fill=ClampGray, draw=white, line width=0.4pt}
+}
+
+% Args:
+%  #1 outer radius (length, e.g., 3.2cm)
+%  #2 inner radius (length, e.g., 2.1cm)
+%  #3 start angle (deg, e.g., 210)   LEFT
+%  #4 end angle   (deg, e.g., -30)   RIGHT
+%  #5 green fraction in [0,1]
+%  #6 amber fraction in [0,1]
+%  #7 pointer fraction in [0,1]
+\newcommand{\ClampConfig}[7]{%
+  \tikzset{
+    declare function={
+      clampStart   = #3;
+      clampEnd     = #4;
+      clampSpan    = (clampEnd - clampStart);
+      fracGreen    = #5;
+      fracAmber    = #6;
+      fracRed      = max(0,1 - fracGreen - fracAmber);
+      gEnd         = clampStart + clampSpan*fracGreen;
+      aEnd         = gEnd       + clampSpan*fracAmber;
+      pointerAng   = clampStart + clampSpan*#7;
+    }
+  }
+  \def\ClampOuter{#1}%
+  \def\ClampInner{#2}%
+}
+
+\newcommand{\DrawClamp}{%
+  \begin{tikzpicture}[x=1pt,y=1pt]
+    % radii as pt
+    \pgfmathsetmacro{\rOuter}{\ClampOuter/1pt}
+    \pgfmathsetmacro{\rInner}{\ClampInner/1pt}
+
+    % Back arc (light guide)
+    \path[draw=ClampGray!18,line width=8pt,clamp/arc]
+      (0,0) ++(clampStart:\rOuter) arc [start angle=clampStart, end angle=clampEnd, radius=\rOuter];
+
+    % Bands
+    \path[draw=ClampGreen,line width=8pt,clamp/arc]
+      (0,0) ++(clampStart:\rOuter) arc [start angle=clampStart, end angle=gEnd, radius=\rOuter];
+    \path[draw=ClampAmber,line width=8pt,clamp/arc]
+      (0,0) ++(gEnd:\rOuter) arc [start angle=gEnd, end angle=aEnd, radius=\rOuter];
+    \path[draw=ClampRed,line width=8pt,clamp/arc]
+      (0,0) ++(aEnd:\rOuter) arc [start angle=aEnd, end angle=clampEnd, radius=\rOuter];
+
+    % Pointer
+    \draw[ClampGray, line width=1pt]
+      (0,0) -- ++(pointerAng:\rOuter-6);
+    \fill[clamp/dot] (0,0) circle[radius=2.2pt];
+
+    % Boundary ticks
+    \foreach \a in {clampStart,gEnd,aEnd,clampEnd}{
+      \draw[clamp/tick] (0,0) ++(\a:\rOuter+2) -- ++(\a:6);
+    }
+
+    % Outside labels (short, neutral)
+    \node[clamp/label, anchor=south west] at ($(0,0)+(clampStart:\rOuter+14)$) {green};
+    \node[clamp/label, anchor=south]      at ($(0,0)+( (gEnd+aEnd)/2:\rOuter+18)$) {amber};
+    \node[clamp/label, anchor=south east] at ($(0,0)+(clampEnd:\rOuter+14)$) {red};
+
+    % Title + compact legend (no math in caption)
+    \node[clamp/title, anchor=south] at (0,\rOuter+24) {Composite Envelope};
+    \node[clamp/metric, anchor=north] at (0,-0.78*\rOuter)
+      {pointer = normalized state after guards; thresholds from norms; dwell/certs in receipts};
+  \end{tikzpicture}%
+}
+
+% =====================================================
+% Title & Meta
+% =====================================================
+\title{Normalized, Verifiable Computation: A Safety-First Proposal}
+\author{}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We outline a safety-first architecture for verifiable computation that treats trust as a measurable, auditable state instead of an assumption. The design is neutral and modular: norms are specified in a machine-checkable bundle; evidence is composed via an algebra with explicit joins and sequential composition; and runtime behavior is certified through receipts that can be independently verified without revealing sensitive payloads. We emphasize determinism, selective disclosure, and monotone governance so that the system's safety posture does not regress over time. The presentation focuses on theory and rigor; implementation details are intentionally deferred or abstracted when doing so improves safety and clarity.
+\end{abstract}
+
+\section{Motivation and Scope}
+Modern systems operate amid uncertainty and scale. Our goal is a principled baseline: a normalized execution that prioritizes safety, reproducibility, and auditability, enabling independent verification. We pursue:
+(i) formal \emph{norms} that are expressive yet monitorable;
+(ii) a compositional \emph{evidence algebra} for receipts; and
+(iii) deterministic, \emph{selective-disclosure} ledgers that preserve privacy without weakening verification.
+
+\section{Formal Norms (Sketch)}
+Let signals $x:\mathbb{N}\to\bbR^d$ represent system metrics. Safety and progress requirements are specified via temporal constraints with quantitative semantics. For a guard $\varphi$, the robustness $\rho(\varphi,x,t)$ gives a signed margin (positive means satisfied). A \emph{Norms Bundle} is a finite set of such guards plus invariants and budgeted potentials; its evolution is governed by monotone policies (new versions must not remove must-fail cases). Verification obligations can be discharged with bounded SMT encodings.
+
+\section{Compositional Evidence}
+Receipts are signed headers over canonical encodings that reference transcripts and inputs by digest. Let $\calQ$ be the set of valid receipt \emph{chains} (acyclic sequences) plus a failure element $\bot$.
+We use two operations: sequential composition $*$ (link by previous digest) and join $\join$ (Merkle-supremum over sets of chains). The absorber $\bot$ fails closed. Monotonicity ensures that adding sound evidence cannot invert established orderings. Selective disclosure is realized by committing to payload Merkle roots and revealing only necessary paths.
+
+\section{Runtime Certification (Sketch)}
+Level-1 certificates (e.g., KKT residuals for a convex subproblem; conservation balance witnesses) are cheap and always emitted. Level-2 certificates (e.g., cached passivity/ISS margins) are accepted via audited caches with revocation checks. All verdicts surface through receipts; proofs can be recomputed offline from transcripts.
+
+\section{Determinism and Governance}
+Determinism follows from an \emph{envlock} (frozen toolchain), canonical encodings (RFC~8785 for JSON or deterministic CBOR), and explicit PRNG seeding where applicable. Governance is policy-as-code: norms must evolve monotonically; rate limits and archival summaries bound active ledger size; and trust scoring remains transparent and auditable.
+
+\section{Illustrative Visualization}
+Figure~\ref{fig:composite-envelope} provides a neutral, compact visualization of the composite envelope used for high-level monitoring. The diagram carries no sensitive values; those reside in receipts.
+
+\begin{figure}[t]
+  \centering
+  % Configure once for this figure instance:
+  % \ClampConfig{outer radius}{inner radius}{start angle}{end angle}{green frac}{amber frac}{pointer frac}
+  \ClampConfig{3.2cm}{2.1cm}{210}{-30}{0.50}{0.35}{0.62}
+  \DrawClamp
+  \caption{Composite envelope (illustrative). The pointer indicates a normalized state estimate within green/amber/red bands. Thresholds and timers are defined by norms; receipts record decisions and certificates with selective disclosure for privacy.}
+  \label{fig:composite-envelope}
+\end{figure}
+
+\section{Threat Model and Mitigations (Brief)}
+\textbf{Tamper}: hash-chained receipts, Merkle proof surfaces, and signature profiles mitigate mutation. 
+\textbf{Non-determinism}: envlock, canonicalization, and fixed seeds. 
+\textbf{Overload}: rate limits, batching, and periodic summaries. 
+\textbf{Regression}: monotone norms verified in CI. 
+\textbf{Privacy}: commit–reveal with field-level Merkle proofs.
+
+\section{Evaluation Path (Non-exhaustive)}
+Determinism checks across platforms; tamper injection over ledgers; certification efficacy (true/false positive rates); scaling of proof-surface construction; and calibration of trust metrics against independent audits.
+
+\section{Conclusion}
+This proposal centers safety and verifiability. By normalizing execution, encoding norms with quantitative semantics, and treating evidence as a first-class compositional object, we obtain a tractable path to systems whose behavior can be independently checked without sacrificing privacy.
+
+% -----------------------
+% References (optional)
+% -----------------------
+% \bibliographystyle{abbrvnat}
+% \bibliography{refs}
+
+\end{document}

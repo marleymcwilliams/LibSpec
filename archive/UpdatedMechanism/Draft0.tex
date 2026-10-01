@@ -1,0 +1,151 @@
+\documentclass[11pt]{article}
+
+% --- Basic page / fonts / microtype
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% --- Math & theorem environments
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+
+% --- Utilities
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{ragged2e}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue}
+
+% --- Boxes (for audit hooks), conservative
+\usepackage[framemethod=tikz]{mdframed}
+\newmdenv[
+  linewidth=0.6pt,
+  roundcorner=2pt,
+  backgroundcolor=gray!5,
+  linecolor=black,
+  skipabove=8pt,skipbelow=8pt,
+  innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt
+]{auditbox}
+
+% --- Theorem styles
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% --- Shortcuts
+\newcommand{\Qsum}{\ensuremath{Q_{\mathrm{sum}}}}
+\newcommand{\Qmax}{\ensuremath{Q_{\mathrm{max}}}}
+\newcommand{\Wtwo}{\ensuremath{W_2}}
+\newcommand{\cose}{\textsc{COSE}}
+\newcommand{\cbor}{\textsc{CBOR}}
+\newcommand{\stl}{\textsc{STL}}
+\newcommand{\smt}{\textsc{SMT}}
+
+\title{\vspace{-6pt}Inverse Q$\star$ --- Toward a Normalized, Full--Trust Architecture\\[2pt]
+\large A Safety--First, Audit--Ready Theoretical Program}
+\author{Research--Neutral Draft (Good--Faith Demonstration)}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+We present a safety--first theoretical program for \emph{Inverse Q$\star$}, a normalized, full--trust architecture in which every computation is accompanied by a cryptographically verifiable, compositional proof surface. The acceptance layer is a graded algebra that aggregates risk across max-- and sum--channels; governance is monotone and mechanized; control is cast as distributionally robust optimization with first--order (KKT) receipts and cached second--order stability certificates (PR/ISS). Receipts support selective disclosure via Merkle commitments; norms are specified in Signal Temporal Logic and gated by \textsc{smt} checks; determinism is enforced by canonical serialization and domain--separated hashing. We emphasize neutral positioning, formal clarity, and auditable artifacts over implementation detail.
+\end{abstract}
+
+\section{Design Objectives (Research--Neutral)}
+Our aim is a rigorous and \emph{auditable} notion of trust. Concretely:
+\begin{enumerate}[leftmargin=1.3em]
+  \item \textbf{Compositional evidence.} Every step yields a typed receipt; aggregates form a proof surface verifiable from bytes.
+  \item \textbf{Determinism by design.} Canonical encodings and frozen environments make replay bit--stable.
+  \item \textbf{Mechanized governance.} Safety cannot regress; monotonicity is checked automatically on each norms update.
+  \item \textbf{Transparent control.} First--order optimality (KKT) is logged; deeper stability (PR/ISS) is accepted from a revocable cache.
+  \item \textbf{Selective disclosure.} Privacy--respecting verification via Merkle proofs without breaking chain integrity.
+\end{enumerate}
+
+\section{Acceptance Algebra, Effects, and Lax Composition}
+\subsection{Acceptance Algebra}
+Let $Q=\prod_i Q_i$ be a graded carrier with coordinatewise preorder (larger=worse). Partition indices into max--channels $\Qmax$ and sum--channels $\Qsum$. Aggregation $\wedge$ is coordinatewise: maxima on $\Qmax$, summation on $\Qsum$.
+
+\begin{definition}[Adapters and Unknowns Policy]
+Raw evidence is mapped to $Q$ by monotone homomorphisms $g:\mathrm{Raw}\to Q$ satisfying $g(r\oplus r')=g(r)\wedge g(r')$, $g(\varnothing)=\top_{\mathrm{unk}}$. Sum--coordinates may carry a capped unknown $\top^{(\beta)}_{\mathrm{unk}}$; window--level caps and a run--scope $\beta$ ledger enforce fail--closed aggregation.
+\end{definition}
+
+\subsection{Typed Effects and Clamp with Hysteresis}
+Let $\Sigma$ track obligations (e.g., RateLimiter, ShockCap, RequiresDepCert). A three--state clamp (Green $\prec$ Amber $\prec$ Red) uses thresholds $\theta_\downarrow<\theta_\uparrow$; entering Red triggers \emph{FrontierFreeze} and No--Zeno dwell. Proxies are permitted only in Green; any discharge is byte--checked.
+
+\begin{proposition}[Soundness Under Finite Work]
+If each legal discharge strictly decreases $|\Sigma|$, adaptive moves on protected classes are non--expansive, and acceptance is fail--closed, then pass $\Rightarrow \Sigma_{\mathrm{final}}=\varnothing$.
+\end{proposition}
+
+\subsection{Lax Composition and Priced Frontiers}
+Non--commuting reassociations are modeled as frontier crossings that debit only $\Qsum$ by a norm--family cost $\Delta_{\mathrm{fr}}=\|\!F^+-F^-\!\|_{A,p}(1+\mathrm{factors})$. Max--channels are invariant.
+\begin{proposition}[Laxity Lemma]
+For legal $O_1,O_2$, $\Qmax[O_1]\le \Qmax[O_2]$ and $\Qsum[O_1]\le \Qsum[O_2]+\Delta_{\mathrm{fr}}$. Group budgets enforce $\sum_{i\in G}\Delta_{\mathrm{fr}}(c_i)\le \mathrm{budget}(G)$; $\Delta_{\mathrm{fr}}$ is subadditive under merges.
+\end{proposition}
+
+\section{Receipts, Proof Surface, and Selective Disclosure}
+\subsection{Typed Receipts and Determinism Envelope}
+Each receipt header binds: schema id, predicate id, verdict, previous digest, transcript digest(s), environment lock, hash--suite. Headers are encoded in deterministic \cbor; digests use domain--separated hashing. The proof surface is the Merkle root over canonical headers for a run.
+
+\begin{definition}[Selective--Disclosure Receipt]
+A receipt commits to a payload Merkle root; reveal is by inclusion proof for requested fields. Chain links use header digests, preserving end--to--end integrity under redaction.
+\end{definition}
+
+\subsection{First--Order and Second--Order Certificates}
+\textbf{Level--1 (always on):} KKT residuals for convex subproblems (QP/SOCP/SDP), Conservation receipts for budgeted potentials, plus dependency checks (Bridge certs; see below). \textbf{Level--2 (cached):} positive--real / input--to--state stability (PR/ISS) certificates keyed by component digests, admitted from a revocation--checked cache.
+
+\section{Norms: \stl\ Specifications and the \smt\ Gate}
+Norms are written in \stl\ with quantitative semantics; bounded monitors are unrolled to \smt--\textsc{lib} templates in QF\_LRA for CI gating. Dense--time properties are monitored via robust--satisfaction intervals, using the lower bound as the enforcement quantity. Acceptance is fail--closed on any mismatch.
+
+\section{Bridge Library (Tail$\to$Level) and Certificates}
+A metric--agnostic guard (default: CVaR$_{1-\alpha}$) maps tail metrics to level thresholds through radius--binned constants; a \emph{BridgeCert} binds $\{\text{metric id},\alpha,\varepsilon,\text{bin constants},\text{derivation hash}\}$, making the guard byte--replayable. This reduces slack relative to global constants and standardizes auditor flow.
+
+\section{Control as Wasserstein DRO with KKT Receipts}
+We frame inverse control as a distributionally robust program over a Wasserstein ball centered at a nominal disturbance model. Runtime logs:
+(i) the ambiguity radius and cones/class of convexity,
+(ii) primal/dual residuals, complementary slackness, and duality gap (L1),
+(iii) optional PR/ISS admission (L2).
+This yields transparent, replayable \emph{why} for each action.
+
+\section{Monotone Governance and Policy--as--Code}
+\textbf{Monotone safety.} The must--fail set in the active NormsBundle is a monotone sequence under versioning; deltas are checked mechanically (e.g., policy engine) at CI time, and \stl\ entailment may be discharged via \smt. Any regression is a hard reject. Epoch summaries periodically Merkle--commit prior receipts for archival without breaking verification.
+
+\section{Trust Scoring (Transparent, Calibrated)}
+A trust score aggregates: evaluator utility, robustness (win--rate under perturbations), anomaly EWMA, FoS margins, certificate admission state, and clamp state. Scores are cached and periodically calibrated (e.g., isotonic regression) against independent audits; stale inputs widen report intervals and raise an uncertainty flag.
+
+\section{Threat Model and Mitigations (At a Glance)}
+\begin{itemize}[leftmargin=1.3em]
+  \item \emph{Supply chain \& environment drift:} EnvLock digests; deterministic build and runtime.
+  \item \emph{Ledger tampering:} header--only Merkle surface; byte--stable canonical encodings.
+  \item \emph{Signature malleability:} normative \cose\ profile over deterministic \cbor.
+  \item \emph{Denial via growth:} batching; epoch summaries; rate limits in the NormsBundle.
+  \item \emph{Privacy:} selective disclosure with minimal proofs; headers suffice for chain integrity.
+\end{itemize}
+
+\section{Evaluation Program (Safety Before Scale)}
+\textbf{E1 Determinism:} cross--platform replay equality (headers, roots). \textbf{E2 Tamper:} single--byte mutations $\Rightarrow$ root change. \textbf{E3 L1 efficacy:} injected constraint violations detected by KKT and Conservation receipts. \textbf{E4 Governance:} delta violations blocked at CI. \textbf{E5 Calibration:} predictive validity of the trust score vs.\ independent audits.
+
+\section{Research Neutrality and Scope}
+We position this work as an architectural calculus for \emph{verifiable} computation, not a claim about any specific downstream domain. All examples are illustrative; the focus is on formal safety, determinism, and auditability. This neutrality is intentional to maximize constructive, stigma--free reception and facilitate external review.
+
+\section{Related Paradigms (Synthesis, Not Reinvention)}
+Our pipeline synthesizes three mature lines: deterministic supply--chain attestations and reproducible builds; transparent, Merkleized audit logs; and formal control/verification (STL, CBF/CLF, PR/ISS). The novelty is the \emph{evidence algebra} and \emph{mechanized monotone governance} wired into receipts and policy.
+
+\section{Conclusion}
+Inverse Q$\star$ treats trust as a \emph{computable}, \emph{auditable} property. By binding formal norms, deterministic execution, compositional receipts, and transparent control into a single closed loop, the architecture enables byte--level verification of behavior without reliance on narrative alone.
+
+\vspace{6pt}
+\noindent\textbf{Artifacts (for the appendix in a longer version).}
+Stable JSON for \emph{proof\_print} binding the active bridge certificate; canonical schemas for Transport Pack, ExchCert, and BridgeCert; \stl$\to$\smt\ templates; receipt redaction proofs; policy delta checks; determinism harness spec.
+
+\end{document}

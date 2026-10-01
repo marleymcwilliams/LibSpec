@@ -1,0 +1,1939 @@
+\documentclass[10pt]{article}
+
+% --- Common preamble (same as Part A; copy verbatim) -------------------
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{bm}
+\usepackage{fullpage}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{microtype}
+\hypersetup{
+  colorlinks=true, linkcolor=blue!60!black,
+  citecolor=blue!60!black, urlcolor=blue!60!black
+}
+
+% --- mdframed boxes (rules / standing constants) ----------------------------
+\usepackage{mdframed}
+\definecolor{rulebg}{RGB}{248,248,250}
+\definecolor{ruleframe}{RGB}{165,165,165}
+\newmdenv[
+  linecolor=ruleframe, linewidth=0.6pt, roundcorner=4pt,
+  backgroundcolor=rulebg, innertopmargin=6pt, innerbottommargin=6pt,
+  innerleftmargin=8pt, innerrightmargin=8pt, skipabove=8pt, skipbelow=8pt
+]{rulebox}
+\newenvironment{rulex}[1]{\begin{rulebox}\noindent\textbf{Rule (#1).}\ }{\end{rulebox}}
+
+\definecolor{constbg}{RGB}{246,249,255}
+\definecolor{constframe}{RGB}{140,160,190}
+\newmdenv[
+  linecolor=constframe, linewidth=0.6pt, roundcorner=4pt,
+  backgroundcolor=constbg, innertopmargin=6pt, innerbottommargin=6pt,
+  innerleftmargin=8pt, innerrightmargin=8pt, skipabove=10pt, skipbelow=10pt
+]{constbox}
+
+% --- Ledger box (frontier spend / quarantine notices) -----------------------
+\definecolor{ledgerbg}{RGB}{255,251,235}
+\definecolor{ledgerframe}{RGB}{230,200,120}
+\newmdenv[
+  linecolor=ledgerframe, linewidth=0.6pt, roundcorner=4pt,
+  backgroundcolor=ledgerbg, innertopmargin=6pt, innerbottommargin=6pt,
+  innerleftmargin=8pt, innerrightmargin=8pt, skipabove=8pt, skipbelow=8pt
+]{ledgerbox}
+
+% --- Code listings (kept for APIs) ------------------------------------------
+\definecolor{codebg}{RGB}{248,248,250}
+\definecolor{codeframe}{RGB}{180,180,180}
+\definecolor{codekw}{RGB}{0,0,160}
+\definecolor{codestr}{RGB}{120,50,0}
+\definecolor{codecm}{RGB}{90,90,90}
+\lstdefinestyle{apicode}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single, rulecolor=\color{codeframe}, frameround=tttt,
+  columns=flexible, keepspaces=true, showstringspaces=false,
+  keywordstyle=\color{codekw}\bfseries,
+  stringstyle=\color{codestr}, commentstyle=\color{codecm}\itshape,
+  tabsize=2, belowskip=0.6\baselineskip, aboveskip=0.6\baselineskip,
+  numbersep=6pt, numbers=left, numberstyle=\tiny\color{codecm},
+  language=Python
+}
+\lstset{style=apicode}
+
+% --- Shorthand / helpers -----------------------------------------------------
+\newcommand{\FIM}{\mathrm{FIM}}
+\newcommand{\normFIM}[1]{\left\|#1\right\|_{\FIM^{-1}}}
+\newcommand{\uses}[1]{\par\smallskip\noindent\textit{Uses: }#1\par\smallskip}
+\newenvironment{proofsketch}{\begin{proof}[Proof sketch]}{\end{proof}}
+
+\newcommand{\absconst}[1]{c_{#1}}
+\newcommand{\anglesep}{\theta_{\min}}
+\newcommand{\cutq}{q}
+\newcommand{\cont}{{\mathrm{cont}}}
+\newcommand{\atom}{{\mathrm{atom}}}
+\newcommand{\layertag}[1]{\textup{[#1]}}
+\newcommand{\constref}[1]{\hyperref[const:#1]{\ensuremath{\csname constsym#1\endcsname}}}
+
+% KPI & clamp shorthand (optional quality-of-life)
+\newcommand{\RegretM}{\mathrm{Regret}_M}
+\newcommand{\Hol}{\mathrm{Hol}}
+\newcommand{\Res}{\mathrm{Res}}
+\newcommand{\Lat}{\mathrm{Lat}}
+\newcommand{\cgreen}{\chi_{\mathrm{green}}}
+\newcommand{\calarm}{\chi_{\mathrm{alarm}}}
+\newcommand{\cclear}{\chi_{\mathrm{clear}}}
+
+% --- Theorems ---------------------------------------------------------------
+\newtheorem{assumption}{Assumption}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{corollary}{Corollary}
+
+% --- Symbol Definitions for Constants (reuse codes C1–C7) -------------------
+\newcommand{\constsymSmax}{S_{\max}}
+\newcommand{\constsymGmax}{G_{\max}}
+\newcommand{\constsymkappamax}{\kappa_{\max}}
+\newcommand{\constsymthetamin}{\theta_{\min}}
+\newcommand{\constsymLF}{L_{\mathrm F}}
+\newcommand{\constsymrtube}{r_{\mathrm{tube}}}
+\newcommand{\constsymtaumin}{\tau_{\min}}
+\newcommand{\constsymLpsi}{L_\psi}
+\newcommand{\constsymF}{F}
+\newcommand{\constsymchi}{\chi}
+\newcommand{\constsymepsilon}{\epsilon}
+\newcommand{\constsymrho}{\rho}
+\newcommand{\constsymtau}{\tau}
+\newcommand{\constsymetastar}{\eta^\star}
+
+\title{Joint Strategic Geometry II\textemdash B:\\
+\large Control, Diagnostics, and Benchmarks (Populated Draft)}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\setcounter{tocdepth}{2}
+\tableofcontents
+\bigskip
+
+% ==== Symbol Registry (one page) ============================================
+\section*{Symbol Registry (standing constants and moduli)}\label{sec:symbol-registry}
+\noindent\emph{All constants are understood as \textbf{uniform on compact sublevel sets} of the Lyapunov/energy functions in use. Codes C1--C7 are stable across drafts.}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{} c >{}c<{} >{\raggedright\arraybackslash}X @{}}
+\toprule
+\textbf{Code} & \textbf{Symbol(s)} & \textbf{Meaning / where used (this paper)} \\
+\midrule
+C1 & \constref{kappamax}, \constref{thetamin}, \constref{rtube} & Frontier geometry: uniform bound on curvature/defect of frontier tubes; minimum principal-angle separation $\constref{thetamin}$ for transverse crossings; tube radius for freeze \& detection. Used in \S\ref{sec:calc2}, \S\ref{sec:ctrl2}. \label{const:kappamax}\label{const:thetamin}\label{const:rtube}\\
+C2 & \constref{Smax}, \constref{Gmax} & Uniform bounds for decision/environment vector fields on strata: $\|S\|\le \constref{Smax}$ on $\Gamma$, $\|G\|\le \constref{Gmax}$ on $G$. Used in \S\ref{sec:calc2}, \S\ref{sec:ctrl2}. \label{const:Smax}\label{const:Gmax}\\
+C3 & \constref{LF}, \constref{taumin} & One-sided Lipschitz for Filippov extension; minimum dwell time between crossings ensuring No-Zeno. Used in Lem.~\ref{lem:nozeno-impl}, Thm.~\ref{thm:ISS2}. \label{const:LF}\label{const:taumin}\\
+C4 & \constref{tau}, \constref{rho} & Sliding window length and DRO radius (Wasserstein or KL ball). Adaptive policy in \S\ref{sec:closure2}, \S\ref{sec:entropy2}. \label{const:tau}\label{const:rho}\\
+C5 & \constref{F}, \constref{chi}, \constref{Lpsi} & Fisher objects: $\constref{F}$ the (windowed) Fisher information; $\constref{Lpsi}$ Hessian-Lipschitz for log-partition; $\constref{\chi}$ Fisher leakage metric. Used in \S\ref{sec:stoch2}, \S\ref{sec:entropy2}. \label{const:F}\label{const:Lpsi}\label{const:chi}\\
+C6 & \constsymepsilon & PR margin / band for controllers and rights-plane slack; also used as small-equivalence parameter in KL--Fisher bounds. \label{const:epsilon}\\
+C7 & \constsymetastar & Inner dual optimizer for soft-transport DRO; logged for KKT diagnostics and sensitivity. \label{const:etastar}\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+
+
+\begin{abstract}
+Part~II converts the Joint Strategic Geometry program into a \emph{proof-carrying governor}. Every runtime claim about coupling, range, and safety is falsifiable via logged witnesses: (i) KKT traces and dual gaps for soft-transport DRO; (ii) GKYP/LMI feasibility certificates (band endpoints, margin $\constref{epsilon}$, uncertainty set, dual multipliers) for PR; (iii) $\omega$-automata accepting/rejecting runs for LTL specs; and (iv) a hash-chained Provenance Ladder. Two technical closures make the geometry operational: a \emph{saltation--defect} bound parameterized by $(\constref{kappamax},\constref{thetamin},\constref{rtube})$ that `spends' the frontier-defect budget inside the ISS supply rate and sharpens the Decision-Range Conservativity bound; and a \emph{holonomy budget} that limits rotational mass via Davis--Kahan/Wedin plane-drift across crossings.
+
+Sensing is windowed and \emph{identifiable}: Effective Coupling Space $E_t$ is certified by mixed cumulants with FDR control, then stress-tested by \emph{instruments/interventions} on $\Gamma$ or $G$. A \emph{Minimum Transfer Condition (MTC)} promotes a discovery only if it (a) reduces held-out transport error, (b) passes a calibrated SPRT on $M_t$, and (c) preserves Fisher conditioning. The KL--Fisher neighborhood is made \emph{operational} by $r=\varepsilon/\constref{Lpsi}$ with an automatic \emph{leakage clamp} driven by $\constref{chi}(t)$ that shrinks $r$ and freezes new discoveries when conditioning degrades.
+
+Control is a CLF/CBF-QP projected by $\Pi$ with frontier-aware CBF invariance and PR certification on a band; Decision Range $R_t$ is the reported admissible-control volume. A normative dictionary maps legal/fiscal levers (TRO/PI, SLA, anti-commandeering, etc.) to concrete controller contracts. We ship a four-tier artifact (Transport Pack, Provenance Ladder, Coupling ID Sheet with MTC badges, Automata Evidence) and a benchmark suite (negative control, degeneracy stress, formal-spec acceptance). The result is a governor that measurably reduces coupling mass $M_t$, increases decision range $R_t$ subject to I$_5$, and remains auditable end-to-end.
+\end{abstract}
+
+\noindent\textbf{Keywords:} information geometry; Fisher metric; mixed cumulants; DRO; PR control; CBF/CLF-QP; formal methods; $\omega$-automata; provenance; benchmarks.
+
+% ============================================================
+\section{Introduction and Scope}\label{sec:intro2}
+% ============================================================
+
+\paragraph{Purpose (delta from Part I and from the prior draft).}
+This Part~II turns the Part~I geometry into a \emph{proof-carrying governor} with end-to-end, \emph{deterministic, replayable} witnesses. Every claim about coupling ($M_t$), decision range ($R_t$), and safety (I$_1$--I$_5$) is falsifiable via per-window artifacts and acceptance checks. Relative to the previous draft, this revision converts schematic guarantees into \emph{numerical contracts} that auditors can recompute from the Transport Pack + Provenance Ladder alone (no hidden config), and tightens identifiability and control with pre-registered contexts, powered promotions, robust PR certificates, and explicit quarantine/fail-closed policies.
+
+\paragraph{What is new (certificate-first commitments).}
+Each item below has a concrete witness and a pass/fail acceptance check in the windowed pipeline.
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{Numerical saltation contracts \& replay check.} For every frontier tube we now \emph{publish} the evaluated constant $C_{\mathrm{salt}}(\constref{kappamax},\constref{thetamin},\constref{rtube},\hat\nu_{\min},\constref{Smax},\constref{Gmax})$ and ship a \emph{Saltation Calibration} replay that recomputes $\|K{-}I\|$ from logged $(F^\pm,n)$ and asserts $\|K{-}I\|\le C_{\mathrm{salt}}(1{+}0.1)$. Failures raise a Frontier Health alarm. 
+\item \textbf{Grazing detection \& dwell modulation.} We log a grazing probability $p_{\mathrm{graze}}$ from angular margins (empirical $\sin\theta$ vs.\ threshold) and \emph{increase} $\constref{taumin}$ inside tubes when $p_{\mathrm{graze}}$ is high; events are counted in the Frontier Health KPI.
+\item \textbf{Decision-range conservativity, \emph{instantiated}.} We specify a computable loss function $f\!\left(C_{\mathrm{fr}},\constref{taumin},d(x,\partial\mathcal C)\right)$ (declared in Sec.~\ref{sec:ctrl2}) and export a per-window \emph{residual} $\big(R_t{-}R_t'\big)-f(\cdot)$ with CI; any positive residual yields a rejecting \emph{Conservativity Violation} automata run.
+\item \textbf{KL--Fisher radius as a runtime \emph{guard}, not a lemma.} The quadratic proxy is \emph{invoked only if} \texttt{kl\_quad\_bounds} logs $\|\bm\kappa\|_{\FIM^{-1}}\le r=\varepsilon/\widehat{\constref{Lpsi}}$. Else we fail-closed and fall back to nonparametric alarms (HSIC/CVaR). Leakage is handled by a \emph{three-state clamp} (Green/Yellow/Red) with deterministic hysteresis.
+\item \textbf{Identifiability with a \emph{Context Registry} \& \emph{Instrument Map}.} Promotions relying on instruments are blocked unless the instrument/context pair is pre-registered and its invariance tests (BY at level $\cutq$) are non-rejecting in the Map.
+\item \textbf{MTC with power: \emph{MDE-gated} transfer.} Gate (i) of MTC requires that the DRO improvement $\Delta\hat R_{\mathrm{DRO}}$ not only exclude $0$ but also achieve \emph{power} $\ge 0.8$ for a pre-registered minimal detectable effect $\Delta_{\min}$ (HAC variance). Achieved power is logged on the CIS badge.
+\item \textbf{SPRT preconditioned by DRO sensitivity.} Before consuming SPRT outcomes, we check the envelope identity $dv/d\rho=\eta^\star$ by a finite-difference slope vs.\ $\eta^\star$ match ($\le5\%$); failure invalidates the SPRT for that window.
+\item \textbf{Adaptive $K$ (finite-degree cumulants).} Under clamp+high residual HSIC with stagnant $|E_t|$, we escalate to $K{=}4$ (BY-controlled, budgeted); the active $K$ is recorded in the CIS.
+\item \textbf{PR as a \emph{robust} certificate.} GKYP is enforced over an explicit \emph{uncertainty set} (polytopic vertices or LFT). We export band $(\omega_\ell,\omega_u)$, margin $\constref{epsilon}$, $(P,Q)$, vertex/LFT ids, and transcript id.
+\item \textbf{Rights-plane tail protection.} Frontier slack $\sigma_i$ is guarded by a \emph{CVaR}$_{0.95}$ budget; if exceeded, we escalate to freeze+dwell regardless of PR margin.
+\item \textbf{Lever selection as a \emph{safe UCB} bandit.} We replace heuristics with a conservative UCB over levers, hard-constrained by QP safety (\#CBF violations $=0$). We log posteriors/CI per lever and the chosen action.
+\item \textbf{Deterministic Replay Pack \& automata re-monitor.} We ship a pinned container (image SHA), a single replay script, and hashes of consumed KPI rows; a \emph{re-monitor} reproduces automata verdicts exactly from the Provenance Ladder. Any mismatch is a hard failure.
+\item \textbf{New KPIs.} (i) \emph{Coupling Regret} $M_t-M_t^\circ$ vs.\ a decoupled baseline (HAC CI); (ii) \emph{Holonomy per crossing} $\mathrm{Hol}/N_{\mathrm{cross}}$; (iii) \emph{Provenance latency}. A \emph{dual-gap trend} panel alarms if the DRO dual gap plateaus $>10^{-4}$ for $m$ windows.
+\item \textbf{Clamp-policy FDR audit.} Weekly null-stream audits estimate realized FDR; if it exceeds $0.9\cutq$, we tighten to $\cutq\leftarrow 0.9\cutq$ and log “Clamp Policy Evidence.”
+\item \textbf{Frontier Spend Ledger with CIs (fix).} Per crossing we log $C_{\mathrm{salt}}$ constituents $(\hat\nu_{\min},c_\Sigma,\kappa_{\max},\constref{rtube})$ with \emph{MBB CIs} and charge the ISS \emph{frontier-spend} entry; the ledger feeds the Frontier Health panel and I$_4$ accounting.
+\item \textbf{Gap-calibrated plane switching (fix).} Plane updates are \emph{blocked} when the rank-$k$ gap CI for $\Delta\sigma$ contains $0$; the system either escalates $k$ or engages mixed-plane control with a switching-stability witness (CQLF or dwell).
+\item \textbf{Rights-plane residual audit at crossings (fix).} We compute a one-sided CI for $h_i^+-h_i^-+\sigma_i$ per crossing; a negative lower bound triggers a \emph{hard} tube failure and a rejecting automaton run with evidence.
+\item \textbf{IV Badge (fix).} CIS badges now include (i) first-stage relevance with HAC CI and $F\!>\!10$, (ii) BY-vetted exclusion across contexts, and (iii) an observed \emph{drop} in the target $\kappa_{p,q}^{(m)}$ under instrument ablation/micro-intervention.
+\item \textbf{Window quarantine (fix).} If the envelope precondition $dv/d\rho{=}\eta^\star$ fails, the entire window is \emph{quarantined}: no promotions, no model updates, no FDR accounting—monitoring only. Quarantine status and cause are logged in the Ladder.
+\item \textbf{Audit feedback as a state machine (fix).} When realized FDR $>\!0.9\cutq$, we deterministically (i) shrink $r\!\leftarrow\!\gamma_r r$, (ii) tighten $\cutq\!\leftarrow\!0.9\cutq$, and (iii) \emph{freeze} promotions for $m$ windows; all steps are artifacted.
+\item \textbf{PR robustness hitmap \& band retuning (fix).} We export a vertex/extremal \emph{hitmap} showing margin bottlenecks and apply an automatic \emph{band-shrink} rule when sampled margins drift toward $\constref{epsilon}$.
+\item \textbf{Provenance coverage KPI (fix).} Coverage $=$ reproducible\_rows / total\_rows is tracked with alarms; coverage drops trigger clamp tightening and are recorded as policy evidence.
+\item \textbf{Automata $\rightarrow$ KPI row links (fix).} Every rejecting run includes witness traces \emph{and} the exact KPI row hashes it consumed; any mismatch is surfaced in CIS and treated as a hard failure.
+\end{enumerate}
+
+\paragraph{Core objects (operational recap).}
+On each window $[t-\constref{tau},t]$ we compute
+\[
+M_t=\bm\kappa_t^\top \FIM_t^{-1}\bm\kappa_t,\qquad
+E_t=\{(p,q,m): \kappa_{p,q}^{(m)}\neq 0\ \text{post-BY at level }\cutq\ \text{and MTC-passed}\},
+\]
+and report the \emph{Decision Range} $R_t=\mathrm{vol}_r(U_t)$ for the admissible control set (PR margin $\ge\constref{epsilon}$, CBFs satisfied, actuator/venue limits). The EF radius $r=\varepsilon/\widehat{\constref{Lpsi}}$ is enforced by a logged guard; clamps shrink $r$ and discovery level $\cutq$ and freeze promotions in \textsc{Red}. Frontier spending uses a \emph{numerical} $C_{\mathrm{salt}}$ with a replay check and a CI-bounded ledger entry, and the Decision-Range Conservativity bound is instantiated with an explicit $f(\cdot)$ (Sec.~\ref{sec:ctrl2}). Switching across control planes is protected by a \emph{common-$V$} (if feasible) or a minimum dwell certificate with logged dwell; updates respect the \emph{gap-calibrated} gate.
+
+\paragraph{Contributions (audit-ready).}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\item \emph{C-1 (Saltation spending, numerical):} $C_{\mathrm{salt}}$ computed per tube with CI constituents; \emph{Saltation Calibration} replay; Frontier Spend Ledger and Frontier Health KPI with $p_{\mathrm{graze}}$.
+\item \emph{C-2 (Holonomy budget \& switching stability):} DK/Wedin plane-drift with \emph{holonomy per crossing}; mixed-plane control guarded by \emph{common-$V$} or dwell; \emph{gap-calibrated} plane updates.
+\item \emph{C-3 (KL--Fisher radius as a guard):} EF radius from $\widehat{\constref{Lpsi}}$ with \emph{runtime} \texttt{kl\_quad\_bounds}; deterministic clamp policy and weekly realized-FDR audits driving a risk-state machine.
+\item \emph{C-4 (Identifiability beyond correlation):} Context Registry + Instrument Map; invariance tests; micro-interventions; \emph{powered} MTC gate with MDE; \emph{IV Badge} with ablation drop in $\kappa$.
+\item \emph{C-5 (SPRT via DRO dual):} envelope precondition $dv/d\rho=\eta^\star$ before SPRT; \emph{window quarantine} on failure; \emph{dual-gap trend} KPI.
+\item \emph{C-6 (PR witness over uncertainty):} GKYP PR on a band with polytopic/LFT uncertainty; witness export $(P,Q)$, vertices/LFT, transcript id; \emph{hitmap} and \emph{band retuning}.
+\item \emph{C-7 (Rights-plane tail risk):} CBF slack CVaR guard with freeze escalation; one-sided CI residual at crossings.
+\item \emph{C-8 (Curvature per collateral, safely learned):} lever selection via safe UCB with zero-violation constraint; regret logged.
+\item \emph{C-9 (Four-tier artifacts + Replay Pack):} Transport Pack, Provenance Ladder, CIS with MTC \& IV badges, Automata Evidence with \emph{row-hash links} and \emph{re-monitor}; pinned container SHA.
+\item \emph{C-10 (Provenance coverage):} coverage KPI and alarms; clamp coupling on degradation.
+\end{itemize}
+
+\paragraph{Design contracts (runtime).}
+Layer tags \texttt{[Rep/Alg/Stoch/Inf/Clos/Ctrl/Comp]} annotate claims and APIs; each theorem that uses EF quadratic proxies \emph{must} include a passing \texttt{kl\_quad\_bounds} witness in the artifact. Every window logs
+\[
+(\hat L_t,\rho_t,\eta_t^\star,\text{dual gap},M_t,E_t,\text{MTC power/MDE},R_t,\constref{chi}_t,\text{PR cert id},\text{switching cert},\text{automata ids},C_{\mathrm{salt}},p_{\mathrm{graze}},\text{gap-CI},\text{coverage\%},\text{quarantine flag})
+\]
+and the replay manifests (container SHA, solver tolerances, seeds). Acceptance checks are deterministic and fail-closed.
+
+\paragraph{Roadmap.}
+\S\ref{sec:calc2} finalizes the hybrid calculus with \emph{numerical} saltation spending (with CIs), grazing detection, and ISS accounting; \S\ref{sec:stoch2} operationalizes mixed cumulants with \emph{Context Registry}, MDE-powered MTC, SPRT preconditions with \emph{window quarantine}, and $K$-escalation; \S\ref{sec:closure2} details DRO KKT logging, envelope checks, the dual-gap KPI, and the risk-state feedback; \S\ref{sec:entropy2} enforces the EF radius/clamp as a \emph{runtime guard}; \S\ref{sec:ctrl2} exports GKYP/PR witnesses over uncertainty with a \emph{hitmap} and \emph{band retuning}, frontier-aware CBFs with CVaR guards and one-sided crossing residuals, an explicit conservativity $f(\cdot)$, and safe-bandit lever selection; \S\ref{sec:kernels2} provides constrained SVD with \emph{gap-calibrated} switching stability certificates and a holonomy budget; \S\ref{sec:adv-structures2} verifies quasi-shuffle invariants under whitening; \S\ref{sec:stats2} tightens KPIs (including coverage), adds regret/latency panels, and ships automata re-monitor links to KPI row hashes.
+
+% ============================================================
+\section{State Spaces \& Hybrid Calculus: Implementation Notes}\label{sec:calc2}
+% ============================================================
+
+\noindent\textbf{State and dynamics.}
+The joint state is $x_t=(\gamma_t,g_t)\in X=\Gamma\times G$, where $\Gamma$ is a smooth manifold (decisions) and $G$ a Whitney-stratified pseudomanifold (structure).
+Dynamics are Filippov, $\dot x\in \mathcal F(x)$, defined stratum-wise and prolonged across frontiers.
+Frontier neighborhoods are equipped with tubes of radius $\constref{rtube}$; on entry, the Dirac projector $\Pi$ is frozen and a dwell $\ge \constref{taumin}$ is enforced.
+
+\begin{constbox}
+\textbf{System invariants (I$_1$--I$_5$).}
+\begin{itemize}[leftmargin=*]
+\item I$_1$ \emph{No-Zeno}: $N_{\mathrm{cross}}(t_1,t_2)\le (t_2-t_1)/\constref{taumin}$.
+\item I$_2$ \emph{Continuity/provenance}: hash-chained \emph{Provenance Ladder}.
+\item I$_3$ \emph{Capped hidden coupling}: $\mathrm{HSIC}_t(\Gamma,G)\le B_{\mathrm{HSIC}}$ (post-FDR).
+\item I$_4$ \emph{Bounded frontier defects}: $\displaystyle\sum_{\text{cross}\le T}\!\int_{\mathrm{cross}}\|\Delta_{\mathrm{fr}}\|\,dt \le C_{\mathrm{fr}}\,N_{\mathrm{cross}}(0,T)$.
+\item I$_5$ \emph{Rights-plane safety}: $x(t)\in \mathcal C=\{x:h_i(x)\ge 0~\forall i\}$, enforced via CBFs.
+\end{itemize}
+\end{constbox}
+
+% ------------------------------------------------------------
+\paragraph{Frontier calculus primitives.}
+Let $\Sigma$ be a smooth codimension-1 frontier between strata with unit normal $n(x)$ and curvature bounded by $\constref{kappamax}$.
+On a transverse crossing at $x^\times\in\Sigma$, with limiting vector fields $F^\pm(x^\times)$ and $\nu(x^\times):=n(x^\times)^\top F^-(x^\times)>0$, the saltation matrix is
+\[
+K(x^\times) \;=\; I \;+\; \frac{\big(F^+(x^\times)-F^-(x^\times)\big)\,n(x^\times)^\top}{n(x^\times)^\top F^-(x^\times)}.
+\]
+
+% ------------------------------------------------------------
+\begin{lemma}[No-Zeno (implementation guard)]\label{lem:nozeno-impl}
+\emph{\layertag{Rep/Alg/Stoch}}
+If (i) frontiers are crossed with principal-angle separation $\ge \constref{thetamin}$, (ii) $\mathcal F$ is one-sided Lipschitz with $\constref{LF}$ on strata, and (iii) a freeze-and-dwell policy enforces $\constref{taumin}$ inside frontier tubes of radius $\constref{rtube}$, then Zeno executions are excluded and
+$N_{\mathrm{cross}}(t_1,t_2)\le (t_2-t_1)/\constref{taumin}$.
+\begin{proofsketch}
+Transversality prevents grazing; one-sided Lipschitz bounds re-entry speed; freeze-and-dwell lower-bounds inter-event time by $\constref{taumin}$.
+\end{proofsketch}
+\uses{(C1) \constref{rtube}, \constref{thetamin}; (C3) \constref{LF}, \constref{taumin}.}
+\end{lemma}
+
+% ------------------------------------------------------------
+\begin{lemma}[Numeric saltation bound, CIs \& calibration witness]\label{lem:saltation-bound}
+\emph{\layertag{Alg/Ctrl}}
+For each tube $\mathcal T$ we fit a local chart (logged) with curvature $\kappa_{\max}^\mathcal T\!\le\!\constref{kappamax}$ and record the \emph{minimum normal velocity}
+\[
+\hat\nu_{\min}^\mathcal T:=\min_{\text{labeled crossings}}\, n^\top F^-\quad\text{with an MBB 95\% CI }[\underline\nu^\mathcal T,\overline\nu^\mathcal T],
+\]
+and an \emph{estimated normal-variation factor} $c_\Sigma^\mathcal T$ with CI $[\underline c_\Sigma^\mathcal T,\overline c_\Sigma^\mathcal T]$ from the fitted chart.\footnote{Moving-block bootstrap (MBB) uses block length $b$ and $B$ resamples; both are logged (Sec.~\ref{sec:stats2}).}
+Then the saltation gain obeys
+\[
+\|K-I\|\ \le\ \frac{\|F^+-F^-\|}{\nu}\,\bigl(1+c_\Sigma^\mathcal T\,\kappa_{\max}^\mathcal T\,\constref{rtube}\bigr)
+\quad\Rightarrow\quad
+\|K-I\|\ \le\ C_{\mathrm{salt}}^\mathcal T
+:= \frac{2(\constref{Smax}+\constref{Gmax})}{\hat\nu_{\min}^\mathcal T}
+\bigl(1+c_\Sigma^\mathcal T\,\kappa_{\max}^\mathcal T\,\constref{rtube}\bigr).
+\]
+\emph{Calibration replay:} using the stored $(F^\pm,n)$, recompute $K$ and assert
+\(
+\|K-I\|_{\text{obs}}\le \overline C_{\mathrm{salt}}^\mathcal T(1+0.1),
+\)
+where $\overline C_{\mathrm{salt}}^\mathcal T$ evaluates $C_{\mathrm{salt}}^\mathcal T$ at the conservative bounds $(\underline\nu^\mathcal T,\overline c_\Sigma^\mathcal T)$ and $\kappa_{\max}^\mathcal T$.
+Failures raise a Frontier Health alarm, insert a \emph{Frontier Spend Ledger} reject (below), and block conservative claims depending on Lem.~\ref{lem:saltation-bound}.
+\begin{proofsketch}
+As in the prior draft, with denominator control from transversality and numerator bounded by field contrast; chart-induced normal variation yields the $(1+c_\Sigma^\mathcal T\kappa_{\max}^\mathcal T \constref{rtube})$ factor. CIs are propagated by monotonicity.
+\end{proofsketch}
+\uses{(C1) \constref{kappamax}, \constref{thetamin}, \constref{rtube}; (C2) \constref{Smax}, \constref{Gmax}.}
+\end{lemma}
+
+% ------------------------------------------------------------
+\begin{lemma}[Grazing-risk detection \& dwell modulation]\label{lem:grazing}
+\emph{\layertag{Alg/Ctrl}}
+Let $\theta$ be the estimated approach angle w.r.t.\ $n$ on tube entry; define the angular margin statistic $m:=\sin\theta$ and the \emph{grazing probability}
+\[
+p_{\mathrm{graze}}:=\Pr\{\,m<\sin\anglesep\,\mid\,\text{window data}\,\} \;\;\;(\text{HAC CI}).
+\]
+If $p_{\mathrm{graze}}>\,p_{\mathrm{thresh}}$ (pre-registered), \emph{increase} $\constref{taumin}\leftarrow(1+\gamma_{\mathrm{dwell}})\constref{taumin}$ for the next $\ell$ crossings in $\mathcal T$ and log the event.
+\begin{proofsketch}
+Near-tangency ($m\!\downarrow\!0$) increases replay variance of $K$; added dwell enforces separation and improves the denominator margin $n^\top F^-$.
+\end{proofsketch}
+\uses{(C1) \constref{thetamin}, \constref{rtube}.}
+\end{lemma}
+
+% ------------------------------------------------------------
+\begin{theorem}[ISS with frontier spending (operational form)]\label{thm:ISS2}
+\emph{\layertag{Ctrl}}
+Under I$_1$--I$_5$ and Lem.~\ref{lem:saltation-bound}, the closed loop is ISS with respect to frontier defects:
+\[
+V(t)\le \beta\!\left(V(0),t\right)\;+\;\gamma\!\left(\sum_{k\le t/\constref{taumin}}\int_{\mathrm{cross}_k}\!\!\|\Delta_{\mathrm{fr}}\|\,dt\right),
+\]
+and the Decision-Range Conservativity bound holds with an \emph{explicit} function $f$ (Def.~\ref{def:range-f}) and a \emph{logged residual} $\mathsf{Res}_t:=\big(R_t-R_t'\big)-f(\cdot)\le 0$ (CI).
+\begin{proofsketch}
+Between crossings use standard CLF/CBF decay; at crossings charge the $V$-jump by Lem.~\ref{lem:saltation-bound}; aggregate using I$_1$.
+\end{proofsketch}
+\uses{(C3) \constref{taumin}; I$_4$; Lem.~\ref{lem:saltation-bound}.}
+\end{theorem}
+
+% ------------------------------------------------------------
+\begin{definition}[Explicit conservativity function]\label{def:range-f}
+\emph{\layertag{Ctrl}}
+Let $U_t$ be the admissible set (PR margin $\ge\constref{epsilon}$, CBFs, actuator/venue limits).
+We report $R_t=\mathrm{vol}_r(U_t)$ or an ellipsoidal proxy from the top $r$ singular radii of $J_{\mathrm{eff}}=\Pi J$.
+Define
+\[
+f\!\left(C_{\mathrm{fr}},\constref{taumin},d(x,\partial\mathcal C)\right)
+:=\underbrace{C_{R,\mathrm{fr}}\,C_{\mathrm{fr}}}_{\text{frontier spend}} \;+\;
+\underbrace{C_{R,\mathrm{cbf}}\;\frac{h(x)}{\|L_g h(x)\|+\delta}}_{\text{safety tightening}},
+\]
+with $h$ the active CBF (or min over $i$), $\delta>0$ a small guard, and \emph{logged} constants $C_{R,\mathrm{fr}}$, $C_{R,\mathrm{cbf}}$ derived from the CLF/CBF Lipschitz data and the nominal $U_t$ geometry.
+\end{definition}
+
+% ------------------------------------------------------------
+\begin{lemma}[Frontier-aware CBF forward invariance with one-sided CI audit]\label{lem:cbf-frontier}
+\emph{\layertag{Ctrl}}
+Suppose each $h_i$ is $C^1$ on strata with relative degree one and Lipschitz gradient on tubes.
+If (i) $\Pi$ is frozen inside frontier tubes, (ii) the CBF constraint
+$L_f h_i(x)+L_g h_i(x)u \ge -\alpha\,h_i(x)$ is enforced off-tube, and
+(iii) on tubes we enforce the relaxed guard
+$h_i^+\ge h_i^- - \sigma_i$ with $\sigma_i:=L_{h_i}\,C_{\mathrm{salt}}^\mathcal T\,\|\delta x\|$
+(from Lem.~\ref{lem:saltation-bound}),
+then $\mathcal C=\{x:h_i(x)\ge 0,\ \forall i\}$ is forward invariant.
+\emph{Audit (per crossing):} compute the residual
+\(
+R_i:=h_i^+ - h_i^- + \sigma_i
+\)
+and its one-sided (lower) 95\% CI via MBB; if $\underline R_i<0$ for any active $i$, raise a \emph{hard} tube failure and emit a rejecting \textsf{CBF-Residual} automaton run with evidence (resamples, block length, seeds).
+\begin{proofsketch}
+Standard CBF invariance off-frontier; across frontiers, saltation caps the drop in $h_i$, which the relaxation absorbs. One-sided CI provides statistical margin against measurement noise.
+\end{proofsketch}
+\uses{(C1) \constref{rtube}; Lem.~\ref{lem:saltation-bound}.}
+\end{lemma}
+
+% ------------------------------------------------------------
+\begin{proposition}[Holonomy budget for control planes]\label{prop:holonomy}
+\emph{\layertag{Alg/Ctrl}}
+Let $J_{\mathrm{eff}}$ be the effective Jacobian after projection by $\Pi$ and $\mathcal U_k$ the selected $k$-plane.
+If $\Delta J$ is the change across a tube and $\delta_{\mathrm{gap}}$ the spectral gap, then
+\[
+\angle(\mathcal U_k^+,\mathcal U_k^-)
+\;\le\; c_{\mathrm{DK}}\frac{\|\Delta J\|}{\delta_{\mathrm{gap}}}
+\;\le\; c_{\mathrm{DK}}\frac{C_J\,C_{\mathrm{salt}}^\mathcal T}{\delta_{\mathrm{gap}}},
+\]
+and the accumulated holonomy satisfies
+\(
+\mathrm{Hol}(0,T)\le \bar c\, C_{\mathrm{salt}}^\mathcal T\,N_{\mathrm{cross}}(0,T).
+\)
+We report both $\mathrm{Hol}$ and $\mathrm{Hol}/N_{\mathrm{cross}}$ with bootstrap CIs as KPIs.
+\uses{(C1) \constref{kappamax}, \constref{rtube}; Lem.~\ref{lem:saltation-bound}.}
+\end{proposition}
+
+% ------------------------------------------------------------
+\begin{theorem}[Switching stability for mixed-plane control]\label{thm:switching}
+\emph{\layertag{Ctrl}}
+When degeneracy triggers mixed-plane control (convex mixture of QPs), stability is certified by either:
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item a \emph{common quadratic Lyapunov function (CQLF)} $V=x^\top P x$ with $P\succ0$ satisfying $A_i^\top P+P A_i\prec 0$ for all linearized modes $i$ (witness: LMI feasibility and $P$ hash), or
+\item a \emph{minimum dwell} policy: enforce inter-switch dwell $\tau_{\mathrm{sw}}\ge \tau_{\min}^{\mathrm{sw}}$ (logged) that guarantees decay under the measured switch schedule.\footnote{Infeasible CQLF $\Rightarrow$ engage dwell; both are logged as “switching stability witnesses.”}
+\end{enumerate}
+Any non-frontier switch must respect the recorded $\tau_{\min}^{\mathrm{sw}}$ to comply with I$_1$.
+\end{theorem}
+
+% ------------------------------------------------------------
+\subsection*{Frontier Spend Ledger (per-crossing accounting)}\label{subsec:frontier-ledger}
+\noindent
+Each labeled crossing inserts a row into a \emph{Frontier Spend Ledger} used for I$_4$ accounting and ISS charging:
+\begin{center}
+\renewcommand{\arraystretch}{1.06}
+\begin{tabularx}{\textwidth}{@{} l l X @{}}
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Note} \\
+\midrule
+crossing\_id & hash & unique crossing identifier \\
+tube\_id & string & frontier tube label \\
+timestamp & ISO-8601 & wall-clock time \\
+$K$-obs-norm & float & $\|K{-}I\|_{\text{obs}}$ \\
+$C_{\mathrm{salt}}$-pt / UCI & floats & point / upper-CI eval $(\underline\nu,\overline c_\Sigma)$ \\
+$\hat\nu_{\min}$-CI & pair & $[\underline\nu,\overline\nu]$ (MBB) \\
+$c_\Sigma$-CI & pair & $[\underline c_\Sigma,\overline c_\Sigma]$ (MBB) \\
+$\kappa_{\max},\constref{rtube}$ & floats & chart curvature bound, tube radius \\
+spend\_charged & float & contribution to $C_{\mathrm{fr}}$ (ISS charge) \\
+pass\_fail & bool & $\|K{-}I\|\le \overline C_{\mathrm{salt}}(1{+}0.1)$ \\
+mbb\_params & struct & $\{b,B,\text{seed}\}$ for reproducibility \\
+\bottomrule
+\end{tabularx}
+\end{center}
+The ledger feeds the Frontier Health KPI and the ISS budget in Thm.~\ref{thm:ISS2}.
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# Frontier geometry + saltation (with CIs)
+def fit_frontier_chart(traj, tube_id): ...
+def estimate_nu_min_ci(crossings, block_len, B, seed): ...
+def estimate_csigma_ci(points, block_len, B, seed): ...
+def saltation_matrix(F_plus, F_minus, n): ...
+def saltation_constant_ci(Smax, Gmax, nu_ci, kappa_max, r_tube, c_sigma_ci): ...
+def replay_saltation(F_plus, F_minus, n, Csalt_upper, slack=0.10): ...
+
+# Grazing risk + dwell
+def grazing_probability(angles, theta_sep, hac=True): ...
+def modulate_dwell(tau_min, p_graze, p_thresh, gamma, horizon): ...
+
+# Conservativity f(·) + residual
+def conservativity_constants(clf_cbf_lipschitz, U_geom): ...
+def range_conservativity_loss(C_fr, tau_min, h, Lg_h, C_R_fr, C_R_cbf, delta=1e-6): ...
+def conservativity_residual(R, R_prime, loss): ...
+
+# Rights-plane residual CI (one-sided)
+def cbf_crossing_residual_CI(h_minus, h_plus, sigma, block_len, B, side="lower"): ...
+
+# Plane drift / holonomy
+def plane_principal_angle(Uk_prev, Uk_next): ...
+def holonomy_budget(angles): ...
+
+# Switching stability
+def cqlf_lmi(modes_linearized): ...        # returns (feasible, P)
+def enforce_switch_dwell(schedule, tau_min_sw): ...
+
+# Ledger helpers
+def ledger_append(row): ...
+def ledger_charge_spend(C_salt_u, K_norm_obs): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Transversality witness:} estimated $\hat\nu_{\min}^\mathcal T>0$ with 95\% CI and $\ge \|F^-\|\sin\constref{thetamin}$ on labeled crossings (CI logged).
+\item \emph{Numeric saltation:} \underline{published} $C_{\mathrm{salt}}^\mathcal T$ with CI constituents $(\hat\nu_{\min}\text{-CI},c_\Sigma\text{-CI})$ and chart constants $(\kappa_{\max}^\mathcal T,\constref{rtube})$; replay asserts $\|K-I\|_{\text{obs}}\le \overline C_{\mathrm{salt}}^\mathcal T(1+0.1)$; a ledger row is recorded per crossing.
+\item \emph{Grazing/dwell:} $p_{\mathrm{graze}}$ with HAC CI; if $>p_{\mathrm{thresh}}$ then $\constref{taumin}$ increased and logged for the horizon; Frontier Health KPI updated.
+\item \emph{ISS spending:} computed $C_{\mathrm{fr}}$ inserted into Thm.~\ref{thm:ISS2}; ledger \texttt{spend\_charged} nonnegative and sums to the reported spend; residual $\le 0$ on replay traces.
+\item \emph{Conservativity audit:} $f(\cdot)$ constants $(C_{R,\mathrm{fr}},C_{R,\mathrm{cbf}})$ exported; residual $\mathsf{Res}_t\le 0$ (CI). Any violation emits a rejecting \textsf{Conservativity} run with row-hash links.
+\item \emph{CBF invariance \& residual CI:} no violations of $h_i\ge 0$; across tubes, lower one-sided CI $\underline R_i\ge 0$ for all active $i$; if $\underline R_i<0$, log \textsf{CBF-Residual} reject (artifacted) and mark tube failure.
+\item \emph{Holonomy KPI:} $\mathrm{Hol}(0,T)$ and $\mathrm{Hol}/N_{\mathrm{cross}}$ trend non-increasing under stationary tasks or escalated $k$ when the gap CI contains $0$ (link to Sec.~\ref{sec:kernels2}).
+\item \emph{Switching stability:} either CQLF feasible ($P$ hash logged) or non-frontier switches respect $\tau_{\min}^{\mathrm{sw}}$; any chatter (violated dwell) is a hard failure.
+\end{itemize}
+\end{mdframed}
+
+\subsection*{KL--Fisher neighborhood guard (pointer)}
+Any theorem in this section that invokes quadratic EF proxies \emph{must} log a passing call to \texttt{kl\_quad\_bounds} (Sec.~\ref{sec:entropy2}); failures trigger a downgrade to non-parametric alarms for that window.
+
+\subsection*{Telemetry hooks}
+We log per tube: $(\hat\nu_{\min}^\mathcal T,\text{CI}),(\,c_\Sigma^\mathcal T,\text{CI}),\kappa_{\max}^\mathcal T,\constref{rtube},\overline C_{\mathrm{salt}}^\mathcal T)$ with provenance; each crossing stores $(F^\pm,n,K)$ for replay; a \emph{Frontier Spend Ledger} row (Sec.~\ref{subsec:frontier-ledger}); grazing metrics $(p_{\mathrm{graze}},\anglesep)$; conservativity constants $(C_{R,\mathrm{fr}},C_{R,\mathrm{cbf}})$; residual-CI evidence per active CBF; and switching certificates (CQLF $P$ hash or $\tau_{\min}^{\mathrm{sw}}$).
+
+% ============================================================
+\section{Strategic Series and Cross-Cumulants (Operationalized)}\label{sec:stoch2}
+% ============================================================
+
+\noindent\textbf{Windowing, whitening, dictionary.}
+Fix a window $[t-\constref{\tau},t]$. Build features on $(\Gamma,G)$ and whiten by the windowed Fisher metric $\FIM_t$ computed at the product reference $P_0$ (Def.~\ref{def:ref2}).
+Let $\mathcal T_K$ be a finite dictionary of test functionals up to total degree $K\le 3$ (declared and versioned).
+Form the mixed cumulant vector $\bm\kappa_t=\big(\kappa_{p,q}^{(m)}\big)$ with $p,q\ge 1$ and define the \emph{Coupling Mass}
+\[
+M_t:=\bm\kappa_t^\top\FIM_t^{-1}\bm\kappa_t,
+\]
+and the preliminary \emph{discovery set}
+\[
+E_t^{\mathrm{raw}}:=\{(p,q,m):\ \text{$\kappa_{p,q}^{(m)}\neq 0$ rejected at level $\cutq$ by BH/BY}\}.
+\]
+All computations that invoke EF quadratics are restricted to the radius $r=\varepsilon/\constref{Lpsi}$ (Thm.~\ref{thm:FIMbound2}); outside that radius only non-parametric alarms (HSIC, CVaR) are acted upon.
+
+% ------------------------------------------------------------
+\begin{proposition}[Finite-$K$ factorization test, radius-gated]\label{prop:factK-ops}
+\emph{\layertag{Stoch/Inf}}
+Within the EF neighborhood $\|\bm\kappa\|_{\FIM^{-1}}\le r$, the test $E_t^{\mathrm{raw}}=\varnothing$ (BH/BY at level $\cutq$) is a level-$\cutq$ certificate of finite-$K$ factorization; moreover $M_t=0$ iff $E_t^{\mathrm{raw}}=\varnothing$.
+\begin{proofsketch}
+Whitening makes cumulants orthonormal in the $\FIM^{-1}$ norm locally (Thm.~\ref{thm:FIMbound2}); BH/BY controls the FDR for the family $\{\kappa_{p,q}^{(m)}\}$; the vanishing of all mixed cumulants up to $K$ implies finite-$K$ factorization.
+\end{proofsketch}
+\uses{(C5) \constref{F}, \constref{Lpsi}; (C4) \constref{\tau}.}
+\end{proposition}
+
+% ------------------------------------------------------------
+\paragraph{Identifiability layer: instruments and interventions.}
+Correlation is not coupling. We attach \emph{instrument} and \emph{intervention} gates to each raw discovery.
+
+\begin{definition}[Instrument \& intervention toggles]\label{def:inst-int}
+\emph{\layertag{Stoch}}
+An \emph{instrument} $Z$ for a candidate cross-term between $\Gamma$ and $G$ satisfies (i) \emph{relevance}:
+$\mathrm{Cov}(Z,\text{cause})\neq 0$; (ii) \emph{exclusion}: $Z$ is conditionally independent of the \emph{effect} given the cause and declared covariates (checked by invariance tests across contexts/tasks).
+An \emph{intervention toggle} is a designed, exogenous perturbation to either the $\Gamma$ or $G$ channel that preserves rights-plane constraints and lies within the EF radius.
+\end{definition}
+
+% ---- NEW: IV Badge with direction/ablation evidence -------------------------
+\begin{definition}[Instrumental-Variable \emph{Badge} (IV-Badge)]\label{def:iv-badge}
+\emph{\layertag{Stoch/Inf}}
+An instrument $Z$ earns an \textsf{IV-Badge} for a candidate entry $i\!=\!(p,q,m)$ iff all three pass:
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{Relevance (strength)}: first-stage HAC-robust Wald test and $F$-statistic $>10$; CI excludes $0$.
+\item \textbf{Exclusion (context invariance)}: non-rejection across pre-registered contexts under BY at level $\cutq$ for correlations of $Z$ with declared confounders and direct-$\to$effect probes (Context Registry ids logged).
+\item \textbf{Direction/ablation evidence}: ablation or micro-intervention that attenuates the specific target $\kappa_{p,q}^{(m)}$ with HAC CI excluding $0$ for the drop $\Delta\kappa_{p,q}^{(m)}<0$ (effect sign logged).
+\end{enumerate}
+The badge’s transcript (tests, contexts, ablation deltas) is attached to the CIS row for $i$.
+\end{definition}
+
+\begin{lemma}[Operational instrument checks]\label{lem:inst-tests}
+\emph{\layertag{Stoch/Inf}}
+If (i) relevance holds with $F>10$ and CI excludes $0$, (ii) exclusion holds by BY across contexts, and (iii) the ablation drop on the \emph{target} $\kappa_{p,q}^{(m)}$ is significant with the predicted sign, then the sign of the promoted cross-term is stable under small tilts on the EF ball and ablations reduce the associated $\kappa_{p,q}^{(m)}$ as predicted.
+\begin{proofsketch}
+Local asymptotics under whitening; BY control over multiple invariance probes; ablation ensures directionality for the specific cumulant component.
+\end{proofsketch}
+\uses{(C5) \constref{F}, \constref{Lpsi}.}
+\end{lemma}
+
+% ------------------------------------------------------------
+\paragraph{Minimum Transfer Condition (MTC) with badges and conditioning.}
+A raw discovery must carry predictive value and be robust under drift and conditioning.
+
+\begin{definition}[Minimum Transfer Condition]\label{def:mtc}
+\emph{\layertag{Stoch/Clos}}
+A candidate index $i\in E_t^{\mathrm{raw}}$ is \emph{promotable} to $E_t$ only if it passes all gates:
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{Transfer:} adding feature $i$ to the transport map reduces held-out soft-transport loss $\hat R_{\mathrm{DRO}}$ by at least $\Delta_{\min}>0$ (CI excludes $0$; power $\ge 0.8$ for pre-registered MDE).
+\item \textbf{Sequential evidence:} an SPRT on $M_t$ with pre-registered $(\alpha,\beta)$ accepts $H_0:\,M_t\le B_{\mathrm{saf}}$ or, if $H_1$ is accepted, the candidate is \emph{rejected} (no promotion).
+\item \textbf{Conditioning \& leakage:} Fisher leakage $\constref{chi}(t)$ does not exceed the alarm threshold; else the \emph{leakage clamp} is triggered (below) and promotion is frozen.
+\item \textbf{IV-Badge (if instrumented):} any instrument-dependent claim must attach a passing \textsf{IV-Badge} (Def.~\ref{def:iv-badge}); otherwise the entry may be reported as correlational-only and is blocked from actuation.
+\end{enumerate}
+We write $E_t:=\{i\in E_t^{\mathrm{raw}}:\ \text{MTC+badges passed}\}$ with per-index badges in the CIS.
+\end{definition}
+
+\begin{proposition}[FDR safety under MTC+Badge gating]\label{prop:fdr-mtc}
+\emph{\layertag{Stoch}}
+If the gates are pre-registered and do not use the unadjusted $p$-values themselves (only downstream losses, SPRT outcomes, leakage $\constref{chi}$, and badge transcripts), then the realized FDR on $E_t$ is $\le \cutq$ (conservative) when BY is used for the raw stage.
+\begin{proofsketch}
+BY controls FDR under arbitrary dependence at the raw stage; post-hoc monotone filters that discard some rejections (MTC+badges) cannot increase FDR.
+\end{proofsketch}
+\end{proposition}
+
+% ------------------------------------------------------------
+\paragraph{SPRT from the DRO dual (with precondition).}
+Let $\phi_\eta(x;\theta)$ denote the soft-transport dual potential. Define the incremental log-likelihood ratio
+\[
+\ell_k \;:=\; \phi_{\eta^\star}(x_k;\hat\theta)\;-\;\mathbb E_{H_0}[\phi_{\eta^\star}(X;\hat\theta)],
+\qquad
+\mathrm{LLR}(n)=\sum_{k=1}^n \ell_k.
+\]
+With thresholds $A=\log\frac{1-\beta}{\alpha}$ and $B=\log\frac{\beta}{1-\alpha}$, accept $H_1$ if $\mathrm{LLR}\ge A$, $H_0$ if $\mathrm{LLR}\le B$, else continue.
+Consumption of SPRT outcomes requires the envelope identity $dv/d\rho=\eta^\star$ to pass within tolerance (Thm.~\ref{thm:rho-sense}).
+
+% ---- NEW: Window quarantine on envelope failure -----------------------------
+\begin{definition}[Window quarantine]\label{def:win-quarantine}
+\emph{\layertag{Stoch/Clos}}
+If the envelope precondition $dv/d\rho=\eta^\star$ fails in window $[t-\constref{\tau},t]$, mark the window \textsf{quarantined}:
+(i) \emph{freeze} promotions ($E_t\leftarrow\varnothing$),
+(ii) exclude the window from training/updates of adaptive policies and from FDR audits,
+(iii) allow only safety monitoring (CBF checks, ISS accounting) and KPI archiving.
+The quarantine status (boolean) and reason are recorded in the Provenance Ladder.
+\end{definition}
+
+% ------------------------------------------------------------
+\paragraph{Leakage clamp (automatic radius/claims freeze).}
+Define Fisher leakage $\constref{chi}(t):=\|\FIM_t-\FIM_{t-\constref{\tau}}\|/\|\FIM_{t-\constref{\tau}}\|$.
+On $\constref{chi}(t)>\chi_{\mathrm{alarm}}$:
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item shrink the EF radius $r\leftarrow \gamma_r r$ with $\gamma_r\in(0,1)$, 
+\item reduce the discovery level $\cutq\leftarrow \gamma_q\cutq$ (more conservative BY),
+\item freeze promotions ($E_t\leftarrow \varnothing$) until $\constref{chi}$ falls below $\chi_{\mathrm{clear}}<\chi_{\mathrm{alarm}}$ for $m$ consecutive windows.
+\end{enumerate}
+All clamps (trip time, $\gamma_r,\gamma_q$) are logged.
+
+% ---- NEW: Deterministic realized-FDR feedback clamp -------------------------
+\paragraph{Realized-FDR feedback (deterministic clamp).}\label{par:fdr-feedback}
+Weekly null-stream audits compute $\widehat{\mathrm{FDR}}_{\text{real}}$. If $\widehat{\mathrm{FDR}}_{\text{real}}>0.9\,\cutq$, then deterministically:
+\[
+\cutq \leftarrow 0.9\,\cutq,\qquad r \leftarrow \gamma_r^{\mathrm{audit}}\, r\ \ (\gamma_r^{\mathrm{audit}}\!\in(0,1)),\qquad
+\text{freeze promotions for the next $m_{\mathrm{audit}}$ windows.}
+\]
+Log a \textsf{Clamp Policy Evidence} record with pre/post $(\cutq,r)$ and audit evidence. Unfreeze only after the next passing audit.
+
+% ------------------------------------------------------------
+\subsection*{Runtime pipeline (auditable)}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{Window build \& whitening} $\to$ $(\FIM_t,W_t)$ with leakage $\constref{chi}(t)$; set EF radius $r$.
+\item \textbf{Quarantine gate} $\to$ if envelope precondition failed (Sec.~\ref{sec:closure2}), mark \textsf{quarantined} and skip discovery/actuation in this window.
+\item \textbf{Mixed cumulants} $\to$ raw vector $\bm\kappa_t$ and $M_t$ (radius-gated).
+\item \textbf{Multiple testing} (BH/BY at $\cutq$) $\to$ $E_t^{\mathrm{raw}}$ (unless quarantined).
+\item \textbf{Identifiability} (IV-Badge validity + micro-interventions) $\to$ badge transcripts per index.
+\item \textbf{MTC gates} (transfer $\Delta\hat R_{\mathrm{DRO}}$, SPRT on $M_t$, conditioning/leakage) $\to$ promoted $E_t$.
+\item \textbf{Risk posture} (leakage clamp; realized-FDR clamp) $\to$ potential freezes and $(r,\cutq)$ updates with evidence.
+\item \textbf{Artifact logging} $\to$ CIS with badges; SPRT/IV transcripts; clamp/quarantine events with reasons.
+\end{enumerate}
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# Cumulants + FDR
+def windowed_cumulants(data, K=3, window=tau, whitening="FIM", hac=True): ...
+def fdr_bh_by(pvals, level_q, method="BY"): ...
+
+# IV Badge components
+def iv_relevance_first_stage(Z, cause, covars=None, hac=True): ...
+def iv_exclusion_invariance(Z, confounders, contexts, level_q): ...
+def iv_direction_ablation(kappa_series_before, kappa_series_after, hac=True): ...
+def assemble_iv_badge(transcripts): ...
+
+# Instruments / interventions
+def test_instrument_relevance(Z, cause, hac=True): ...   # legacy wrapper
+def test_invariance_exclusion(effect, cause, Z, contexts, level_q): ...
+def apply_intervention(toggle, budget, rights_cbf): ...
+
+# Transfer (held-out DRO) and SPRT
+def transport_delta_R_DRO(features, labels, radius, holdout_seed): ...
+def sprt_mt(stream_phi_eta, alpha, beta): ...
+
+# Envelope precondition + quarantine
+def envelope_precondition_ok(eta_star, slope, tol=0.05): ...
+def quarantine_window(reason): ...
+
+# Leakage + clamps
+def fisher_leakage(F_now, F_prev): ...
+def leakage_clamp(chi, r, q, chi_alarm, chi_clear, gamma_r, gamma_q): ...
+def realized_fdr_audit(null_streams, target_q): ...
+def fdr_feedback_clamp(fdr_real, q, r, gamma_r_audit, m_freeze): ...
+
+# CIS / logging
+def cis_add_entry(idx, pval, by_thr, mtc_flags, power, badges, notes): ...
+def log_clamp_event(kind, pre_post, evidence): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window unless noted).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Radius compliance:} $\|\bm\kappa_t\|_{\FIM_t^{-1}}\le r$ for any EF-proxy claim; violations trigger a logged downgrade to non-parametric alarms.
+\item \emph{FDR evidence:} BY transcript (p-values, thresholds) stored; realized FDR on synthetic null streams reported (weekly) and fed to the feedback clamp (Sec.~\ref{par:fdr-feedback}).
+\item \emph{IV-Badge:} any instrumented promotion must include a passing badge transcript: (i) relevance $F>10$ with CI excluding $0$; (ii) exclusion non-rejection under BY across contexts; (iii) ablation $\Delta\kappa_{p,q}^{(m)}<0$ with CI excluding $0$.
+\item \emph{MTC:} (i) $\Delta\hat R_{\mathrm{DRO}}$ CI excludes $0$ with power $\ge 0.8$ for pre-registered MDE; (ii) SPRT stops with declared $(\alpha,\beta)$ after envelope precondition passes; (iii) no promotion if leakage clamp is \textsc{Red}.
+\item \emph{Window quarantine:} if the envelope precondition fails (Sec.~\ref{sec:closure2}), the window is flagged \textsf{quarantined} in the Ladder; $E_t=\varnothing$ and no adaptive updates use this window.
+\item \emph{Clamps:} all leakage and realized-FDR clamp events (radius shrink, $\cutq$ reduction, freeze interval) appear in the Provenance Ladder with timestamps; replay reproduces them deterministically from the logged inputs.
+\item \emph{Reproducibility:} recomputation of $M_t$ and $E_t$ from the Transport Pack matches within numerical tolerances ($\le 1\%$ RMS).
+\end{itemize}
+\end{mdframed}
+
+% ============================================================
+\section{DRO Closure: Tuning, KKT Logging, and Sensitivity}\label{sec:closure2}
+% ============================================================
+
+\noindent\textbf{Setup (windowed, radius-gated).}
+Fix a window $[t-\constref{tau},t]$ with empirical law $\hat P_t$ sourced from the Provenance Ladder.
+Let $\ell_\theta(x)$ be convex in $\theta$ and measurable in $x$.
+We define the \emph{soft-transport} DRO risk at radius $\constref{rho}$ using either a KL ball or a Wasserstein-$c$ ball; both are handled by a unified, \emph{smooth} dual.
+Whenever quadratic EF proxies are used downstream, we require a passing guard \texttt{kl\_quad\_bounds} (Sec.~\ref{sec:entropy2}).
+
+% ------------------------------------------------------------
+\paragraph{Primal (fixed $\theta$).}
+\[
+\mathcal R_{\mathrm{DRO}}(\theta;\constref{rho})
+~:=~
+\sup_{Q\in\mathcal P}~\Big\{~\mathbb E_Q[\ell_\theta(X)]:~\mathbf D(Q\|\hat P_t)\le \constref{rho}~\Big\},
+\]
+where $\mathbf D$ is either $(i)$ KL or $(ii)$ Wasserstein-$c$ with continuous, $1$-homogeneous cost $c$ on the EF ball.
+
+% ------------------------------------------------------------
+\paragraph{Unified dual with deterministic smoothing.}
+\textbf{KL case:}\quad
+$\displaystyle \mathcal R_{\mathrm{DRO}}
+=\inf_{\eta>0}\Big\{\eta\,\constref{rho}+\frac{1}{\eta}\log \mathbb E_{\hat P_t}\!\big[e^{\eta\,\ell_\theta(X)}\big]\Big\}$.
+
+\noindent
+\textbf{Wasserstein-$c$ case (smoothed):}\quad
+$\displaystyle \mathcal R_{\mathrm{DRO}}
+=\inf_{\eta\ge 0}\Big\{\eta\,\constref{rho}+\mathbb E_{\hat P_t}\big[\tilde\phi_\eta(X;\theta)\big]\Big\}$,
+with $c$-transform $\phi_\eta(x;\theta){:=}\sup_{y}\{\ell_\theta(y)-\eta\,c(x,y)\}$ replaced by a log-sum-exp smoothing
+\[
+\tilde\phi_\eta(x;\theta):=\tau_{\mathrm{lse}}\log\!\int\!\exp\!\big(\tfrac{\ell_\theta(y)-\eta c(x,y)}{\tau_{\mathrm{lse}}}\big)\,d\mu(y)
+\]
+over a compact EF ball, where $\tau_{\mathrm{lse}}\!>\!0$ is chosen so that the \emph{smoothing bias} satisfies
+\[
+0 \le \mathbb E_{\hat P_t}[\tilde\phi_\eta-\phi_\eta] \le \varepsilon_{\mathrm{lse}}
+\qquad\text{(logged, target }\varepsilon_{\mathrm{lse}}\le 10^{-4}\text{)}.
+\]
+We log $(\tau_{\mathrm{lse}},\varepsilon_{\mathrm{lse}})$ and fail-closed if the bias bound is not met.
+
+% ------------------------------------------------------------
+\begin{theorem}[Strong duality \& uniqueness of $\constref{etastar}$]\label{thm:duality-uniq}
+\emph{\layertag{Clos/Inf}}
+Assume: (i) $\ell_\theta$ convex, lsc in $\theta$; (ii) $\mathbf D$ as above with $c$ convex, lsc, coercive; (iii) $\hat P_t$ supported within the EF ball of radius $r$.
+Then $\mathcal R_{\mathrm{DRO}}$ equals its dual, the dual objective is strictly convex in $\eta$, and the minimizer $\eta^\star$ is unique.
+For the smoothed Wasserstein dual, $\tilde\eta^\star\to\eta^\star$ as $\tau_{\mathrm{lse}}\downarrow 0$ with bias bounded by $\varepsilon_{\mathrm{lse}}$.
+\begin{proofsketch}
+Fenchel–Rockafellar (KL) and convex conjugacy of $c$-transforms (Wasserstein); strict convexity from log-mgf curvature (KL) or Moreau envelope (smoothed $c$-transform), compactness from radius gating.
+\end{proofsketch}
+\uses{(C4) \constref{rho}; (C5) \constref{F}, \constref{Lpsi}; (C7) \constref{etastar}.}
+\end{theorem}
+
+% ------------------------------------------------------------
+\paragraph{Tail protection via CVaR (embedded).}
+For any KPI stream $Z_t$ (e.g., $M_t$ or slack), embed the Rockafellar–Uryasev epigraph:
+$\mathrm{CVaR}_{1-\alpha}(Z)=\min_{\tau}\{\tau+\tfrac{1}{\alpha}\mathbb E[(Z-\tau)_+]\}$,
+with multiplier $\lambda_{\mathrm{CVaR}}\!\ge\!0$ in the joint program; log $(\tau^\star,\lambda_{\mathrm{CVaR}}^\star)$.
+
+% ------------------------------------------------------------
+\begin{proposition}[KKT witness fields]\label{prop:kkt-ops2}
+\emph{\layertag{Clos/Inf}}
+Under convexity in $\theta$ and strict convexity in $\eta$, the KKT tuple
+\[
+\left(\eta^\star,\ \lambda_{\mathrm{CVaR}}^\star,\ \tau^\star,\ \text{(band/PR/CBF) multipliers}\right)
+\]
+exists and is unique in $(\eta^\star,\lambda_{\mathrm{CVaR}}^\star)$.
+Per window export: (i) $\eta^\star$ bracket/trace, (ii) dual gap, (iii) CVaR complementary slackness, (iv) AD vs FD gradient RMS, (v) solver transcript id, (vi) $(\tau_{\mathrm{lse}},\varepsilon_{\mathrm{lse}})$ if Wasserstein.
+\end{proposition}
+
+% ------------------------------------------------------------
+\begin{theorem}[$\rho$-sensitivity \& envelope identity]\label{thm:rho-sense}
+\emph{\layertag{Clos}}
+Let $v(\rho)=\mathcal R_{\mathrm{DRO}}(\theta;\rho)$. Under Thm.~\ref{thm:duality-uniq}, $v$ is differentiable and
+\[
+\frac{dv}{d\rho}\Big|_{\rho=\constref{rho}}=\eta^\star,
+\qquad
+\nabla_\theta \mathcal R_{\mathrm{DRO}}(\theta;\rho) = \mathbb E_{\hat P_t}\big[\nabla_\theta \tilde\phi_{\eta^\star}(X;\theta)\big],
+\]
+with Lipschitz constant controlled by $\eta^\star$ and the EF radius $r$.
+We use this identity \emph{as a precondition} for consuming SPRT outcomes (Sec.~\ref{sec:stoch2}) and to gate promotions via the quarantine hook below.
+\begin{proofsketch}
+Danskin–Envelope theorem with unique $\eta^\star$; interchange of $\nabla_\theta$ and $\mathbb E$ justified by bounded EF ball and Lipschitz $\ell_\theta$.
+\end{proofsketch}
+\end{theorem}
+
+% ------------------------------------------------------------
+\paragraph{Deterministic replay \& Dual-Gap Trend KPI.}
+We pin solver tolerances, seeds, and the evaluation order in a minimal \emph{Replay Pack} (container SHA logged).
+Track a \textbf{Dual-Gap Trend} KPI: dual gap $\le 10^{-4}$ (KL) or bias-compensated gap $\le 10^{-4}$ (Wasserstein) and a shrinking $\eta^\star$ bracket. If the dual gap \emph{plateaus above} $10^{-4}$ for $m$ consecutive windows, emit a \textsf{DRO Convergence Alarm} (tuning review of $\rho$, smoothing, or conditioning).
+
+% ------------------------------------------------------------
+\paragraph{Reference measure $\lambda$ (refinement-invariant, artifacted).}
+\begin{definition}[Stratified reference $\lambda$]\label{def:ref2}
+\emph{\layertag{Rep/Inf}}
+Let $G=\bigsqcup_{s\in\mathcal S} S_s$ be a Whitney stratification.
+Define $\lambda=\lambda_{\cont}+\lambda_{\atom}$ with
+$\lambda_{\cont} := \sum_{s} w_s\,\mathcal H^{\dim S_s}\!\!\restriction S_s$ and
+$\lambda_{\atom}:=\sum_{p} a_p\,\delta_p$ for isolated singularities.
+Set the window reference $P_0$ as the independence projection of $(\Gamma,G)$ against $\lambda$; export the digest $\{w_s\},\{a_p\},\text{mesh-hash}$ in the Transport Pack.
+\end{definition}
+
+\begin{lemma}[Refinement invariance]\label{lem:refinement}
+\emph{\layertag{Rep}}
+Under stratified mesh refinements that preserve total weights, $P_0$ and $\FIM_t$ are invariant to first order on the EF ball; $(\FIM_t,W_t,\eta^\star)$ change by $O(r^2)$.
+\begin{proofsketch}
+Local change-of-variables with Jacobian $\approx I$ on $r$-balls; atoms preserve total weight; Fisher is second-order in cumulants.
+\end{proofsketch}
+\end{lemma}
+
+% ------------------------------------------------------------
+\subsection*{Quarantine hook (precondition → action)}
+If the finite-difference slope check around $\rho$ does not match $\eta^\star$ within tolerance (Sec.~\ref{thm:rho-sense}), set \textsf{envelope\_ok}=\textsf{false}.
+The pipeline must then mark the window \textsf{quarantined} per Def.~\ref{def:win-quarantine} (Sec.~\ref{sec:stoch2}): promotions frozen, no adaptive updates, safety-only monitoring.
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# Duals, smoothing, and gradients
+def eta_star(losses, radius, div="KL", tol=1e-8, maxit=200): ...
+def phi_eta(samples, theta, eta, div="Wc", lse_temp=1e-2): ...
+def lse_bias_bound(temp, support_radius, lipschitz_ell, lipschitz_c): ...
+def dro_value_grad(theta, eta, data, div="Wc", lse_temp=1e-2): ...
+
+# Sensitivity + envelope precondition
+def bracket_eta(losses, radius, div="KL"): ...
+def envelope_slope(v_rho_minus, v_rho_plus, h): ...
+def check_envelope_precondition(eta_star, slope, tol=0.05): ...
+
+# CVaR epigraph + witnesses
+def cvar_enforce(z_stream, alpha=0.95): ...
+def kkt_witness_pack(eta_trace, dual_gap, cvar_slack, transcript_id, lse_params=None): ...
+
+# Replay + trends
+def log_replay_manifest(container_sha, seeds, solver_tol): ...
+def dual_gap_trend_monitor(gaps, threshold=1e-4, horizon_m=3): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window unless noted).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Dual gap \& smoothing bias:} dual gap $\le 10^{-4}$ (KL) or bias-compensated gap $\le 10^{-4}$ (Wasserstein); $(\tau_{\mathrm{lse}},\varepsilon_{\mathrm{lse}})$ logged with $\varepsilon_{\mathrm{lse}}\le 10^{-4}$.
+\item \emph{Envelope identity (precondition):} finite-difference slope vs.\ $\eta^\star$ matches within $5\%$ (Thm.~\ref{thm:rho-sense}); failing precondition \emph{must} trigger the quarantine hook (Sec.~\ref{sec:stoch2}).
+\item \emph{Gradients:} AD vs FD RMS $\le 1\%$ for $\nabla_\theta \mathcal R_{\mathrm{DRO}}$ (radius-gated).
+\item \emph{CVaR slack:} $\ge 0$ with $(\tau^\star,\lambda_{\mathrm{CVaR}}^\star)$ exported; violations emit rejecting automata runs linked in the artifact.
+\item \emph{Replay determinism (weekly):} container SHA + seeds + solver tolerance logged; replays reproduce $\eta^\star$, gaps, slopes bitwise.
+\item \emph{Trend alarm (panel-level):} if dual gap plateaus $>10^{-4}$ for $m$ windows, raise \textsf{DRO Convergence Alarm} and log auto-tuning actions (e.g., $\rho$ adjust, $\tau_{\mathrm{lse}}$ refine).
+\item \emph{Reference digest:} recomputation of $\FIM_t$ from $\{w_s\},\{a_p\}$ and mesh-hash matches within $1\%$ RMS; mismatch is a hard failure.
+\end{itemize}
+\end{mdframed}
+
+% ------------------------------------------------------------
+\paragraph{Tuning policy (runtime).}
+Pick a nominal $\constref{rho}$ to meet the negative-control benchmark; adapt by:
+(i) $\rho\uparrow$ if frequent $H_1$ SPRT accepts coincide with small $\eta^\star$ (under-robust),
+(ii) $\rho\downarrow$ if $\eta^\star$ persistently large and $R_t$ erodes (over-robust),
+(iii) hold $\rho$ under \textsc{Red} clamp; refine $\tau_{\mathrm{lse}}$ to keep $\varepsilon_{\mathrm{lse}}$ within target.
+All updates are hash-logged with pre/post $\eta^\star$, envelope-slope checks, and replay manifests.
+
+% ============================================================
+\section{Entropy Neighborhood: EF Radius, Conditioning, and Leakage}\label{sec:entropy2}
+% ============================================================
+
+\noindent\textbf{Setup (windowed EF neighborhood).}
+Work in a window $[t-\constref{tau},t]$ with reference $P_0$ (Def.~\ref{def:ref2}).
+Let $\psi(\theta)=\log\mathbb E_{P_0}[e^{\theta^\top T(X)}]$ be the log-partition of the exponential family centered at $P_0$ with sufficient statistics $T$.
+Denote the Fisher $\FIM:=\nabla^2\psi(0)$ and the windowed mixed-cumulant vector
+$\bm\kappa(\theta):=\nabla\psi(\theta)-\nabla\psi(0)$.
+Assume the Hessian is Lipschitz on a neighborhood of $0$:
+\[
+\|\nabla^2\psi(\theta_1)-\nabla^2\psi(\theta_2)\| \le \constref{Lpsi}\,\|\theta_1-\theta_2\|.
+\]
+
+% ------------------------------------------------------------
+\begin{theorem}[Local KL--cumulant equivalence \& operational radius]\label{thm:FIMbound2}
+\emph{\layertag{Inf}}
+Fix $\varepsilon\in(0,1)$ and set the EF radius $r:=\varepsilon/\constref{Lpsi}$.
+If $\|\bm\kappa(\theta)\|_{\FIM^{-1}}\le r$, then
+\[
+\frac{1-\varepsilon}{2}\,\|\bm\kappa(\theta)\|_{\FIM^{-1}}^{2}
+\ \le\
+D_{\mathrm{KL}}(P_\theta\|P_0)
+\ \le\
+\frac{1+\varepsilon}{2}\,\|\bm\kappa(\theta)\|_{\FIM^{-1}}^{2}.
+\]
+\begin{proofsketch}
+Taylor-expand $\psi$ at $0$: $\psi(\theta)=\psi(0)+\tfrac12\theta^\top\FIM\theta+R_3$, with
+$\|R_3\|\le \tfrac{\constref{Lpsi}}{6}\|\theta\|^3$ by Hessian-Lipschitzness.
+Mean parameters obey $\bm\kappa(\theta)=\FIM\theta+O(\|\theta\|^2)$, hence $\theta=\FIM^{-1}\bm\kappa+O(\|\bm\kappa\|_{\FIM^{-1}}^2)$.
+Plugging into $D_{\mathrm{KL}}=\psi(\theta)-\psi(0)-\theta^\top\nabla\psi(0)$ and requiring $\|\bm\kappa\|_{\FIM^{-1}}\le r=\varepsilon/\constref{Lpsi}$ bounds the third-order remainder by an $\varepsilon$-fraction of the quadratic term.
+\end{proofsketch}
+\uses{(C5) \constref{F}, \constref{Lpsi}.}
+\end{theorem}
+
+\begin{corollary}[Stability of $M$ and Fisher on the EF ball]\label{cor:radius-stability}
+\emph{\layertag{Inf}}
+Within $\|\bm\kappa\|_{\FIM^{-1}}\le r$, the coupling mass $M=\|\bm\kappa\|_{\FIM^{-1}}^{2}$ and Fisher vary Lipschitzly:
+\[
+\big|D_{\mathrm{KL}}(P_{\theta_1}\|P_{\theta_2})-\tfrac12\|\bm\kappa_1-\bm\kappa_2\|_{\FIM^{-1}}^2\big|
+\le \varepsilon\,\tfrac12\|\bm\kappa_1-\bm\kappa_2\|_{\FIM^{-1}}^2,\qquad
+\|\FIM(\theta)-\FIM\|\le \constref{Lpsi}\,\|\theta\|=O(\varepsilon).
+\]
+\end{corollary}
+
+% ------------------------------------------------------------
+\paragraph{Runtime guard: proof-use as a contract.}
+Any theorem/algorithm that invokes the quadratic EF proxy must \emph{log} a passing call to
+\[
+\texttt{kl\_quad\_bounds}(\bm\kappa_t,\FIM_t^{-1},\varepsilon)=\textsf{pass}
+\quad\text{where}\quad r=\varepsilon/\widehat{\constref{Lpsi}}.
+\]
+If the guard fails, we \emph{fail-closed}: disable the proxy for that window and act only on nonparametric alarms (HSIC, CVaR); downstream acceptance checks must reference this guard (see \S\ref{sec:stoch2}, \S\ref{sec:closure2}).
+
+% ------------------------------------------------------------
+\paragraph{Estimating $\constref{Lpsi}$ (small-tilt with HAC CIs).}
+We estimate $\constref{Lpsi}$ directly via finite differences of $\nabla^2\psi$ along an orthonormal basis in the $\FIM$-whitened space.
+
+\begin{definition}[Finite-difference Lipschitz estimator $\widehat{\constref{Lpsi}}$]\label{def:Lpsi-est}
+\emph{\layertag{Inf/Comp}}
+Let $\{e_j\}_{j=1}^d$ be orthonormal in the whitened space. For a grid $\delta\in\{\pm\delta_0,\pm2\delta_0\}$ (inside the EF ball), estimate
+\[
+\widehat{\FIM}(\delta e_j)=\nabla^2\psi(\delta e_j)\quad(\text{as score covariance/log-mgf curvature}),
+\qquad
+\widehat{L}_j:=\max_{\delta_1\neq\delta_2}\frac{\|\widehat{\FIM}(\delta_1 e_j)-\widehat{\FIM}(\delta_2 e_j)\|}{|\delta_1-\delta_2|}.
+\]
+Let $\widehat{\constref{Lpsi}}:=\max_j\,\mathrm{HAC\text{-}CI\ upper}(\widehat{L}_j)$.
+Set the radius $r:=\varepsilon/\widehat{\constref{Lpsi}}$ and \emph{log} $(\varepsilon,\widehat{\constref{Lpsi}},r,\text{CI})$.
+\end{definition}
+
+\begin{remark}[Policy \& defaults]\label{rem:eps-policy}
+Default $\varepsilon=0.2$; if $\mathrm{width}(\text{CI})/\widehat{\constref{Lpsi}}>0.3$, automatically tighten to $\varepsilon=0.1$ (downgrade logged).
+Define Fisher leakage $\constref{chi}(t):=\|\FIM_{t}-\FIM_{t-\constref{tau}}\|/\|\FIM_{t-\constref{tau}}\|$.
+\end{remark}
+
+% ------------------------------------------------------------
+\paragraph{Deterministic leakage clamp (three-state, replayable).}
+We operate a state machine on the smoothed leakage $\tilde\chi_t$ (3-window robust mean):
+\[
+\textsc{Green: } \tilde\chi_t\le \chi_{\mathrm{green}},\quad
+\textsc{Yellow: } \chi_{\mathrm{green}}<\tilde\chi_t\le \chi_{\mathrm{alarm}},\quad
+\textsc{Red: } \tilde\chi_t>\chi_{\mathrm{alarm}}.
+\]
+\begin{itemize}[leftmargin=*]
+\item \textbf{Thresholds (defaults).} $\chi_{\mathrm{green}}{=}0.05$, $\chi_{\mathrm{alarm}}{=}0.15$, clearance $\chi_{\mathrm{clear}}{=}0.08$ (hysteresis).
+\item \textbf{Actions.} \textsc{Yellow}: shrink $r\leftarrow \gamma_y r$ and $\cutq\leftarrow \gamma_q\cutq$ (defaults $\gamma_y{=}0.8$, $\gamma_q{=}0.8$); recompute \texttt{kl\_quad\_bounds}. \textsc{Red}: freeze promotions ($E_t\!\leftarrow\!\varnothing$), set $r\leftarrow 0.5r$, and act only on HSIC/CVaR alarms until clearance.
+\item \textbf{Unclamp.} Require $\tilde\chi_t<\chi_{\mathrm{clear}}$ for $m{=}3$ consecutive windows, then restore $(r,\cutq)$ linearly over the next $m$ windows (logged).
+\item \textbf{Determinism.} Clamp decisions are a pure function of the logged $\tilde\chi_t$ series and the $(\chi_{\mathrm{green}},\chi_{\mathrm{alarm}},\chi_{\mathrm{clear}},\gamma_y,\gamma_q,m)$ tuple; the replay tool recomputes identical states.
+\end{itemize}
+
+% ------------------------------------------------------------
+\begin{definition}[Window Quarantine]\label{def:win-quarantine}
+\emph{\layertag{Rep/Stoch}}
+A window is \emph{quarantined} if any precondition for EF-based inference fails (e.g., envelope identity $dv/d\rho=\eta^\star$ in \S\ref{sec:closure2}, or the EF guard above).
+\textbf{Effect:} For quarantined windows: (i) promotions freeze ($E_t\!=\!\varnothing$), (ii) adaptive updates (bandit/posteriors, PR retuning) are disabled, (iii) safety-only checks (CBFs, PR feasibility, CVaR) continue. The Ladder logs \texttt{quarantine\_status=true} and \texttt{reason}.
+\end{definition}
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# L_psi estimator + guard
+def estimate_Lpsi(data, F_whiten, basis=None, delta0=1e-2, steps=(1,2), hac=True): ...
+def ef_radius(epsilon, Lpsi_hat): return epsilon / Lpsi_hat
+def kl_quad_bounds(kappa, F_inv, epsilon, Lpsi_hat): ...
+
+# Leakage + clamp
+def fisher_leakage(F_now, F_prev): ...
+def smooth_leakage(chi_series, width=3): ...
+def leakage_state(chi_smooth, green=0.05, alarm=0.15, clear=0.08): ...
+def clamp_update(state, r, q, gamma_y=0.8, gamma_r=0.5): ...
+
+# Audit helpers
+def log_radius_contract(epsilon, Lpsi_hat, r, ci): ...
+def replay_clamp(chi_series, params): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window unless noted).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Radius contract:} $(\varepsilon,\widehat{\constref{Lpsi}},r)$ with HAC CI logged; \texttt{kl\_quad\_bounds}=\textsf{pass} wherever EF proxies are used (fail-closed otherwise).
+\item \emph{$\widehat{\constref{Lpsi}}$ reproducibility:} re-running Def.~\ref{def:Lpsi-est} (new seed/basis) changes $\widehat{\constref{Lpsi}}$ by $\le 10\%$; CI stored.
+\item \emph{Clamp determinism:} given the logged $\tilde\chi_t$ series and parameters, \texttt{replay\_clamp} reproduces all clamp events exactly; mismatch is a hard failure.
+\item \emph{Quarantine hook:} any failed precondition logs \texttt{quarantine\_status=true} with reason; no promotions or adaptive updates appear for that window.
+\item \emph{Downgrade logging:} any change to $\varepsilon$ or $(r,\cutq)$ lists pre/post values and the triggering evidence; linked in the Provenance Ladder.
+\item \emph{Nonparametric fallback:} in \textsc{Red} or quarantine, $E_t=\varnothing$ and only HSIC/CVaR alarms appear; any promotion then is a hard failure.
+\end{itemize}
+\end{mdframed}
+
+% ------------------------------------------------------------
+\subsection*{Integration}
+\noindent
+(i) \textbf{Sensing (\S\ref{sec:stoch2}):} BY/FDR tests and powered MTC must cite a passing \texttt{kl\_quad\_bounds} when quadratic proxies are used; clamp state and quarantine gate promotions.
+(ii) \textbf{DRO (\S\ref{sec:closure2}):} envelope-slope precondition (\(dv/d\rho=\eta^\star\)) is evaluated on the EF ball; bias/slope logs reference $(\varepsilon,\widehat{\constref{Lpsi}},r)$; failing precondition triggers quarantine (Def.~\ref{def:win-quarantine}).
+(iii) \textbf{Control (\S\ref{sec:ctrl2}):} radius compliance tags all PR/CBF witnesses that rely on EF quadratic approximations of stochastic terms; clamp/quarantine disable adaptive retuning.
+(iv) \textbf{Governance link (\S\ref{sec:stats2}):} realized-FDR audits and Fisher-drift budget panels surface $\tilde\chi_t$ and $r$; breach or audit failure \emph{must} appear as clamp/quarantine events in the Ladder.
+
+% ============================================================
+\section{Projected Control: PR Certification and ISS Budgets}\label{sec:ctrl2}
+% ============================================================
+
+\noindent\textbf{Controller stack (frontier-aware).}
+At each step we solve a CLF/CBF-QP on the active stratum and then project via the Dirac structure $\Pi$; inside frontier tubes of radius $\constref{rtube}$ we \emph{freeze} $\Pi$ and enforce dwell $\ge\constref{taumin}$ (I$_1$), charging the saltation spend to the ISS budget (Lem.~\ref{lem:saltation-bound}, Thm.~\ref{thm:ISS2}). The admissible set is guarded by PR on a band with margin $\constref{epsilon}$.
+
+% ------------------------------------------------------------
+\subsection*{CLF/CBF-QP with frontier guards and slack tail control}
+Consider $\dot x=f(x)+g(x)u$ (stratum-local). Pick CLF $V$ and CBFs $\{h_i\}$; enumerate assumptions (relative degree, smoothness) in the artifact.
+
+\[
+\begin{aligned}
+\min_{u,\ \delta\ge0,\ s\ge 0}\quad & \tfrac12\,u^\top R\,u + \alpha\,\delta^2 + \beta\,\|s\|_1 \\
+\text{s.t.}\qquad & L_f V(x)+L_g V(x)\,u \le -\lambda_V V(x) + \delta \\
+& L_f h_i(x)+L_g h_i(x)\,u \ge -\gamma_i\,h_i(x) - s_i \qquad \text{(off-tube)}\\
+& h_i^+ \ge h_i^- - \sigma_i \ \ \text{on tubes},\quad \sigma_i:=L_{h_i}\,C_{\mathrm{salt}}\,\|\delta x\| \ \ (\text{Lemma \ref{lem:cbf-frontier}})\\
+& u\in \mathcal U_{\text{act}},\ \ \text{PR margin}(u;\Omega)\ge \constref{epsilon}.
+\end{aligned}
+\]
+We track the \emph{soft-CBF slack stream} $\{s_i\}$ off-tube and the \emph{tube slack} $\{\sigma_i\}$ on-tube.
+
+\paragraph{CVaR guard on safety slack (rights-plane first).}
+Define $\mathrm{CVaR}_{1-\alpha}(s_i)$ and $\mathrm{CVaR}_{1-\alpha}(\sigma_i)$ via Rockafellar–Uryasev. Impose budgets
+\[
+\mathrm{CVaR}_{1-\alpha}(s_i) \le S_{\max,i},\qquad
+\mathrm{CVaR}_{1-\alpha}(\sigma_i) \le \Sigma_{\max,i}.
+\]
+If either budget is violated on the rolling window, \emph{escalate immediately} to freeze+dwell (regardless of PR margin), then re-enter with tightened gains $\gamma_i\uparrow$ and a reduced decision band (Sec.~\ref{sec:entropy2} clamp). CVaR witnesses are exported per window (Sec.~\ref{sec:closure2}).
+
+% ------------------------------------------------------------
+\subsection*{PR on a band with explicit uncertainty}
+Let $(A,B,C,D)$ be the linearization on the active stratum; we certify PR on $\Omega=[\omega_\ell,\omega_u]$ with margin $\constref{epsilon}$ over a declared uncertainty set $\mathcal U$:
+
+\begin{definition}[Uncertainty set for GKYP]\label{def:unc-set}
+\emph{\layertag{Ctrl/Rep}}
+Either (i) \textbf{Polytopic:} $\mathcal U=\mathrm{conv}\{(A_j,B_j,C_j,D_j)\}_{j=1}^J$ from vertices taken at a hashed operating-region grid; or (ii) \textbf{LFT:} $(A,B,C,D)=\mathcal F_\ell(M,\Delta)$ with $\Delta\in\mathbb D$ (structured, norm-bounded). We log vertex IDs or LFT structure, operating-region hash, and sampling grids.
+\end{definition}
+
+\begin{theorem}[Finite-frequency GKYP PR certificate over $\mathcal U$]\label{thm:gkyp-unc}
+\emph{\layertag{Ctrl}}
+Fix band $\Omega$ and margin $\constref{epsilon}$. If there exist $P\succ0$, $Q\succeq0$ s.t.
+\[
+\mathcal L(P,Q;A,B,C,D,\Omega,\constref{epsilon}) \ \preceq\ 0
+\]
+for all $(A,B,C,D)\in\mathcal U$ (all vertices for polytopes; all extremals of $\mathbb D$ for LFT in a standard scaling), where $\mathcal L(\cdot)$ denotes the GKYP LMI with band multiplier, then $G(s)=C(sI-A)^{-1}B+D$ is PR with margin $\constref{epsilon}$ for all models in $\mathcal U$ and all $\omega\in\Omega$.
+\begin{proofsketch}
+Generalized KYP with finite-frequency multipliers; robust feasibility holds by convexity over vertices or by scaled small-gain/IQC arguments for LFT extremals.
+\end{proofsketch}
+\end{theorem}
+
+\begin{remark}[Witness export, hitmap, and sample validation]\label{rem:hitmap}
+We export $\Omega$, $\constref{epsilon}$, uncertainty descriptor (vertex IDs or LFT hash), $(P,Q)$, dual multipliers, solver transcript. A dense frequency sweep (post-check) is logged with minimum sampled PR margin and a \emph{vertex/LFT hitmap} $\mathsf{Hit}=\{(\text{id}, \min_{\omega\in\Omega}\text{PRmargin}_{\text{id}}(\omega))\}$ highlighting the tight models. The hitmap drives retuning (Def.~\ref{def:band-retune}).
+\end{remark}
+
+\begin{definition}[Automatic band retuning]\label{def:band-retune}
+\emph{\layertag{Ctrl/Alg}}
+If the sampled minimum PR margin over $\Omega$ falls below $\constref{epsilon}(1+\eta_{\mathrm{band}})$ with $\eta_{\mathrm{band}}\in[0,0.2]$, \emph{shrink} the band by the smallest symmetric factor $\gamma_\Omega\in(0,1)$ such that the post-check minimum sampled margin recovers $\ge \constref{epsilon}(1+\eta_{\mathrm{band}})$; log $(\gamma_\Omega,\eta_{\mathrm{band}})$ and the hitmap. Under clamp \textsc{Red} (Sec.~\ref{sec:entropy2}), retuning is disabled.
+\end{definition}
+
+% ------------------------------------------------------------
+\subsection*{Lever selection as a safe bandit}\label{sec:ctrl2-bandit}
+Let $\mathcal L$ be feasible \emph{levers} (venue/policy toggles, PR margin raise, intervention intensity, allocation). Define the (negative) coupling gain and collateral cost:
+\[
+\mathrm{gain}(\ell) := -\frac{d}{ds}\Big\|\bm\kappa_s\Big\|_{\FIM^{-1}}\!\Big|_{s=0,\ell},\qquad
+\mathrm{cost}(\ell) := \lambda_R\,\Delta[-\log R_t] + \lambda_{\$}\,\text{budget}_\ell.
+\]
+
+\paragraph{Curvature-per-collateral objective.}
+Define the \emph{curvature damping per collateral} index
+\[
+\mathrm{CPC}(\ell)\ :=\ \frac{\text{ISS decay gain}_\ell}{\mathrm{cost}(\ell)}
+\ \approx\
+\frac{\lambda_V \Delta V^{\downarrow}_\ell + c_{\mathrm{fr}}\Delta C_{\mathrm{fr}}^{\downarrow} + c_{\mathrm{hol}}\Delta \mathrm{Hol}^{\downarrow}}{\lambda_R\,\Delta[-\log R_t] + \lambda_{\$}\,\text{budget}_\ell},
+\]
+estimated from small-tilt experiments within the EF ball (Sec.~\ref{sec:entropy2}). The safe-UCB selects
+\[
+\ell_t = \arg\max_{\ell\in\mathcal L_t}\ \widehat{\mathrm{CPC}}_\ell(t)
++ c\sqrt{\tfrac{\log t}{N_\ell(t)}}
+\quad\text{s.t.}\quad
+\texttt{is\_safe}(\ell)=\textsf{true},
+\]
+where \texttt{is\_safe} requires: (i) QP feasibility with CBF/PR constraints; (ii) predicted CVaR slack budgets will not be violated; (iii) no clamp upgrade (Sec.~\ref{sec:entropy2}).
+
+\begin{definition}[Normative dictionary (venue-aligned levers)]\label{def:normative}
+\emph{\layertag{Rep/Ctrl}}
+Each lever $\ell$ binds to a venue-specific instrument: \emph{Projector-Freeze TRO/PI} (frontier freeze), \emph{Apportionment SLA} (rate limits), \emph{Records anchor} (evidence gating), \emph{FACA-by-function} (advisory breadth), \emph{OTA/GAO concurrence} (procurement guard), \emph{State anti-commandeering} (jurisdictional scope). We log the mapping $(\ell\!\mapsto\!\text{instrument},\ \text{venue},\ \text{scope})$ and include it in the CIS notes.
+\end{definition}
+
+\paragraph{Telemetry.}
+We log per-lever posteriors (mean/variance), UCB scores, safety verdicts, and observed regret; CPC predictions must match the observed sign on $\Delta\|\bm\kappa\|_{\FIM^{-1}}$.
+
+% ------------------------------------------------------------
+\subsection*{Mixed-plane controller: switching stability}
+When constrained SVD (Sec.~\ref{sec:kernels2}) flags degeneracy ($\Delta\sigma$ CI contains $0$), we activate a mixed-plane controller (convex combination of QPs) with a formal stability witness:
+
+\begin{theorem}[Common-$V$ or dwell-time certificate]\label{thm:switch-stab}
+\emph{\layertag{Ctrl}}
+Let $\{A_i,B_i\}$ be linearizations tied to QP choices at the mixture vertices. If there exists $P\succ 0$ with $A_i^\top P+P A_i \prec 0$ for all $i$ (CQLF), then any convex mixing/scheduling is exponentially stable. If no CQLF exists, enforce a minimum dwell-time $\tau_{\mathrm{dwell}}$ between controller switches; with Lipschitz $f,g$ and bounded disturbances on the EF ball, there exists $\tau_{\min}^{\mathrm{switch}}>0$ that guarantees ISS under the observed switch schedule. We log the feasible $P$ (hash) or the enforced $\tau_{\mathrm{dwell}}$.
+\begin{proofsketch}
+Quadratic common Lyapunov suffices for arbitrary switching; otherwise standard average dwell-time ISS arguments with bounded inter-switch energy.
+\end{proofsketch}
+\end{theorem}
+
+% ------------------------------------------------------------
+\subsection*{Decision Range conservativity (operational form)}
+Let $R_t=\mathrm{vol}_r(U_t)$ or its ellipsoidal proxy $\widehat R_t$ (Sec.~\ref{sec:kernels2}). Under I$_1$–I$_5$ and Lem.~\ref{lem:cbf-frontier}, range loss satisfies
+\[
+R_t' \ \ge\ R_t\;-\;f\!\left(C_{\mathrm{fr}},\constref{taumin},d(x,\partial\mathcal C)\right).
+\]
+\textbf{Telemetry and audit.} We export the \emph{one-sided} CI (lower bound) for
+\(
+\mathsf{Res}_t:=(R_t-R_t')-f(\cdot)
+\)
+via a block bootstrap; the \emph{Conservativity} automaton enters a rejecting run iff the CI lower bound $>0$, and the run links $(C_{R,\mathrm{fr}},C_{R,\mathrm{cbf}})$, the PR witness id, and row hashes (Sec.~\ref{sec:stats2}).
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# CLF/CBF-QP + frontier relaxation + CVaR guard
+def solve_clf_cbf_qp(x, V, h_list, R, lambda_V, gamma_list, pr_guard, U_act): ...
+def cvar_slack_budget(slack_stream, alpha=0.95): ...
+def escalate_freeze_if_cvar_exceeds(budget, measured_cvar): ...
+
+# GKYP PR with uncertainty (polytope or LFT)
+def gkyp_pr_cert_uncertainty(unc_set, band, eps): ...
+def export_pr_witness(cert, unc_descriptor, transcript_id): ...
+def pr_frequency_sweep(models, band, grid): ...
+def pr_vertex_hitmap(sweep_results): ...
+def auto_band_retune(sweep_results, eps, eta_band=0.1): ...
+
+# Safe-bandit lever selection (curvature-per-collateral)
+def estimate_cpc(kappa, F_inv, iss_terms, lever, small_tilt_budget): ...
+def qp_safety_check(lever, pr_witness, cvar_forecast, clamp_state): ...
+def safe_ucb_step(levers, posteriors, safety_checker, t, c): ...
+
+# Switching stability
+def cqlf_search(models): ...          # returns (feasible, P) or (False, None)
+def enforce_min_dwell(schedule, tau_dwell): ...
+
+# Range & residual (one-sided CI)
+def range_proxy_volume(U_polytope, rank_r): ...
+def conservativity_residual(R, R_prime, C_fr, tau_min, dist_to_barrier): ...
+def residual_lower_CI(residual_series, block_len, B=1000): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Frontier guard:} inside tubes, $\Pi$ frozen and dwell $\ge\constref{taumin}$; tube slack $\sigma_i$ respects the bound from Lem.~\ref{lem:cbf-frontier}; saltation spend logged (Lem.~\ref{lem:saltation-bound}).
+\item \emph{PR witness over uncertainty:} GKYP LMI feasible for all vertices (or LFT extremals); $(P,Q)$, multipliers, transcript, and uncertainty descriptor exported; dense frequency sweep passes with sampled margin $\ge \constref{epsilon}$.
+\item \emph{Hitmap \& retuning:} vertex/LFT hitmap exported; if sampled minimum margin $<\constref{epsilon}(1+\eta_{\mathrm{band}})$ then band retuning (Def.~\ref{def:band-retune}) applied and logged; disabled in clamp \textsc{Red}.
+\item \emph{Slack CVaR guard:} $\mathrm{CVaR}_{0.95}(s_i)\le S_{\max,i}$ and $\mathrm{CVaR}_{0.95}(\sigma_i)\le \Sigma_{\max,i}$; any violation triggers freeze+dwell event in the Provenance Ladder.
+\item \emph{Safe-bandit logs:} chosen lever $\ell_t$ has a recorded CPC posterior (mean/var), UCB score, safety check=\textsf{true}; observed $\Delta\|\bm\kappa\|_{\FIM^{-1}}$ matches predicted sign.
+\item \emph{Switching stability:} either CQLF feasible (export $P$ hash) \emph{or} enforced $\tau_{\mathrm{dwell}}\!\ge\!\tau_{\min}^{\mathrm{switch}}$; no chattering (non-frontier switches respect dwell).
+\item \emph{Conservativity residual:} lower CI for $\mathsf{Res}_t$ $\le 0$; any positive lower bound emits a labeled rejecting \textsf{Conservativity} run with linked constants and PR witness id.
+\end{itemize}
+\end{mdframed}
+
+% ------------------------------------------------------------
+\subsection*{Integration with ISS budget and holonomy}
+Between crossings, CLF/CBF decay holds; at crossings, saltation jumps are charged against $C_{\mathrm{fr}}$ (Thm.~\ref{thm:ISS2}). Plane drift is throttled by the holonomy budget (Prop.~\ref{prop:holonomy}); the \emph{Hol/N$_{\mathrm{cross}}$} KPI (Sec.~\ref{sec:stats2}) localizes rotational mass, triggering $k$-escalation or lever changes when rising. Band retuning (Def.~\ref{def:band-retune}) is audit-bound and disabled under clamp \textsc{Red}.
+
+% ============================================================
+% ============================================================
+\section{Computable Kernels: Plane Selection \& Structural Derivatives}\label{sec:kernels2}
+% ============================================================
+
+\noindent\textbf{Effective map and whitening (radius-gated).}
+Let $J_{\mathrm{eff}}:=\Pi J_t$ denote the projected (Dirac) Jacobian; whiten by the window Fisher factor $W_t$ so that
+\[
+\widetilde J_t := W_t\,J_{\mathrm{eff}}, \qquad \FIM_t=W_t^\top W_t,
+\]
+and require a passing guard \texttt{kl\_quad\_bounds} (Sec.~\ref{sec:entropy2}) whenever EF quadratics are invoked.
+
+% ------------------------------------------------------------
+\subsection*{Range proxy and confidence}
+Compute $\widetilde J_t=U\Sigma V^\top$ with singular values $\sigma_1\ge\cdots\ge\sigma_m$.
+For rank $r$, define the decision-range proxy (ellipsoidal volume up to a constant)
+\[
+\widehat R_t \ :=\ \prod_{i=1}^r \sigma_i,
+\qquad
+\log \widehat R_t \ =\ \sum_{i=1}^r \log \sigma_i,
+\]
+and report bootstrap CIs via a moving-block bootstrap (MBB) matched to the window (Sec.~\ref{sec:stats2}).
+
+% ------------------------------------------------------------
+\subsection*{Constrained SVD (masks, groups, reproducible)}
+Venue/structure constraints are encoded by a binary mask $M\in\{0,1\}^{m\times m}$ (1=allowed) and optional group weights $\{\omega_g\}$.
+
+\begin{definition}[Constrained SVD]\label{def:csvd}
+\emph{\layertag{Alg/Ctrl}}
+Given $k\!\le\!r$, solve
+\[
+\max_{V\in\mathbb R^{m\times k}}~ \|\widetilde J_t V\|_F^2
+\quad
+\text{s.t. } V^\top V=I_k,\ \ V\odot(1{-}M)=0,\ \ \sum_g \omega_g\|V_g\|_F \le B,
+\]
+and set the selected control plane $\mathcal U_k:=\mathrm{span}(U_{[:,1:k]})$.
+We pin a PRNG seed and power iterations $\le 3$; all randomization and tolerances are logged (replayable).
+\end{definition}
+
+% ------------------------------------------------------------
+\subsection*{Degeneracy detection, gap-gated updates, and escalation}
+Let the spectral gap at rank $k$ be $\Delta\sigma:=\sigma_k-\sigma_{k+1}$.
+We compute a BY-controlled (level $\cutq$) MBB CI for $\Delta\sigma$.
+
+\begin{lemma}[Gap-calibrated update gate \& degeneracy policy]\label{lem:deg}
+\emph{\layertag{Alg/Ctrl}}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{Gap CI gate.} If the MBB CI for $\Delta\sigma$ contains $0$, \emph{block} basis updates to $\mathcal U_k$ for this window and log the CI (hash). A blocked update must be accompanied by one of:
+\begin{itemize}[leftmargin=10pt]
+\item \emph{$k$-escalation:} set $k\leftarrow k{+}1$ and recompute $\mathcal U_k$, or
+\item \emph{mixed-plane control:} activate the mixture with a switching-stability witness (Thm.~\ref{thm:switch-stab}).
+\end{itemize}
+\item \textbf{Holonomy throttle.} While updates are blocked, throttle non-frontier switching to respect the holonomy budget (Prop.~\ref{prop:holonomy}).
+\item \textbf{Audit trail.} The Provenance Ladder records: CI endpoints, action taken (escalate/mix), and the resulting $k$ or switching certificate id.
+\end{enumerate}
+\end{lemma}
+
+% ------------------------------------------------------------
+\subsection*{Drift, holonomy, and calibration}
+Across a frontier tube, let the whitened Jacobian jump be $\Delta \widetilde J:=\widetilde J^{+}-\widetilde J^{-}$ and the local gap $\delta_{\mathrm{gap}}$ at rank $k$.
+Davis–Kahan/Wedin yields
+\[
+\angle\!\big(\mathcal U_k^+,\mathcal U_k^-\big)
+\ \le\
+c_{\mathrm{DK}}\frac{\|\Delta \widetilde J\|_2}{\delta_{\mathrm{gap}}},
+\qquad c_{\mathrm{DK}}=O(1).
+\]
+Summing principal-angle increments over crossings defines the \emph{holonomy} $\mathrm{Hol}(0,T)$ and the KPI $\mathrm{Hol}/N_{\mathrm{cross}}$ (Sec.~\ref{sec:stats2}).
+
+\begin{proposition}[Tube-level calibration (replayable)]\label{prop:dk-cal}
+\emph{\layertag{Alg}}
+For each labeled crossing we log $\big(\widetilde J^{-},\widetilde J^{+},\delta_{\mathrm{gap}},\angle(\mathcal U_k^+,\mathcal U_k^-)\big)$.
+Acceptance requires
+\[
+\angle(\mathcal U_k^+,\mathcal U_k^-)\ \le\ (1+\eta_{\mathrm{cal}})\ c_{\mathrm{DK}}\frac{\|\Delta \widetilde J\|_2}{\delta_{\mathrm{gap}}},\quad \eta_{\mathrm{cal}}=0.1,
+\]
+else raise a \emph{DK-bound violation} alarm (artifacted). Holonomy accumulation and the normalized KPI are exported with bootstrap CIs.
+\end{proposition}
+
+% ------------------------------------------------------------
+\subsection*{Harmonic/rotational mass KPI (small-gap sensitive)}
+To surface small-gap fragility we define a harmonic penalty that upweights rotations occurring where the gap is tight.
+Let $\vartheta_j$ be the $j$th principal-angle increment and $\delta_{\mathrm{gap},j}$ the contemporaneous gap; with a floor $\underline\delta>0$,
+\[
+\mathrm{RotMass}(0,T):=\sum_{j}\vartheta_j,
+\qquad
+\mathrm{HarmMass}(0,T):=\sum_{j}\frac{\vartheta_j}{\max(\delta_{\mathrm{gap},j},\underline\delta)}.
+\]
+We report both as KPIs with CIs; rising \emph{HarmMass} with flat $N_{\mathrm{cross}}$ triggers $k$-escalation or mixed-plane control (logged).
+
+% ------------------------------------------------------------
+\subsection*{Finite-difference structural derivatives (auto $h^\ast$)}
+We estimate structural derivatives of $J_{\mathrm{eff}}$ and singular data using central differences with an adaptive step.
+
+\begin{definition}[Automatic step policy]\label{def:hstar}
+\emph{\layertag{Comp}}
+With a Lipschitz estimate $L_f$ (flow map) and HAC noise variance $\hat\sigma^2$, pick
+\[
+h^\ast \ =\ \arg\min_{h\in[h_{\min},h_{\max}]}\ \underbrace{c_1 L_f h}_{\text{truncation}} + \underbrace{c_2\, \hat\sigma\, h^{-1}/\sqrt{N}}_{\text{noise}}
+\ \approx\
+\sqrt{\frac{c_2\hat\sigma}{c_1 L_f \sqrt{N}}}.
+\]
+We log $(h^\ast,L_f,\hat\sigma,N)$ and the AD/FD cross-check RMS for diagnostics.
+\end{definition}
+
+\begin{proposition}[Stable singular and plane derivatives]\label{prop:svdgrads}
+\emph{\layertag{Comp}}
+With $h^\ast$ and radius gating, FD estimates of $\partial \sigma_i/\partial \theta$ and of small-tilt principal angles have RMS error $O(h^\ast)$ and pass AD/FD within $1\%$ RMS on calibration traces.
+\end{proposition}
+
+% ------------------------------------------------------------
+\subsection*{Holonomy–range coupling (operational bound)}
+Let $\vartheta_j$ be per-crossing principal-angle increments. Then
+\[
+\log \widehat R_T \ \ge\ \log \widehat R_0 \ -\ c_R \sum_j \vartheta_j,
+\qquad
+c_R:=\kappa_R\,\frac{\max_{i\le r}\sigma_i}{\min_{i\le r}\sigma_i},
+\]
+and rising $\mathrm{Hol}/N_{\mathrm{cross}}$ or \emph{HarmMass} with flat $N_{\mathrm{cross}}$ triggers $k$-escalation or lever change (Sec.~\ref{sec:ctrl2}).
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# Whitening + SVD
+def whiten_effective_jacobian(J_eff, W): ...
+def constrained_svd(Jw, mask=None, group_w=None, k=2, budget=None, seed=0, iters=2): ...
+def range_proxy(singulars, r): ...
+def log_range_ci(logsig_series, block_len, B): ...
+
+# Degeneracy + bootstrap + gating
+def bootstrap_gap_CI(singulars, k, level_q=0.1, block_len=None, B=500): ...
+def gap_update_gate(gap_CI): ...      # returns action: {"block":T/F, "reason":..., "ci":...}
+
+# DK/Wedin calibration + holonomy
+def dk_bound_angle(Jw_minus, Jw_plus, gap, c_dk=1.0): ...
+def principal_angle(Uk_prev, Uk_next): ...
+def accumulate_holonomy(angles): ...
+def hol_over_ncross(angles, ncross): ...
+
+# Harmonic mass
+def harmonic_mass(angles, gaps, delta_floor): ...
+def harmonic_panel_trend(harm_series, ncross_series): ...
+
+# Finite differences
+def estimate_flow_Lipschitz(traj): ...
+def pick_h_star(L_f, noise_var, N, h_min, h_max): ...
+def fd_svd_gradients(Jw_fn, theta0, h): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Radius guard:} EF proxy use cites \texttt{kl\_quad\_bounds}=\textsf{pass} (Sec.~\ref{sec:entropy2}); else downgrade to nonparametric alarms.
+\item \emph{Constrained SVD reproducibility:} reseeding changes $\sigma_{1:r}$ by $\le 0.5\%$ RMS; mask/group budget logged; power iterations $\le 3$.
+\item \emph{Gap-gated updates:} if CI$(\Delta\sigma)$ contains $0$, basis update is \emph{blocked} and either $k$ is escalated or mixed-plane control engaged (Lemma~\ref{lem:deg}); linkage to the switching-stability witness (Sec.~\ref{sec:ctrl2}) present.
+\item \emph{DK calibration:} measured $\angle(\mathcal U_k^+,\mathcal U_k^-)$ $\le (1{+}0.1)$ times the DK bound; violations emit a DK alarm with crossing id.
+\item \emph{FD stability:} AD/FD RMS $\le 1\%$ for singular-value/plane derivatives on calibration traces; $(h^\ast,L_f,\hat\sigma,N)$ logged.
+\item \emph{Holonomy KPIs:} $\mathrm{Hol}(0,T)$, $\mathrm{Hol}/N_{\mathrm{cross}}$, and \emph{HarmMass} reported with CIs; rising \emph{HarmMass} with flat $N_{\mathrm{cross}}$ triggers corrective action (logged).
+\item \emph{Range reporting:} $\widehat R_t$ and CI exported; monotone trend subject to I$_5$ on stationary tasks (Sec.~\ref{sec:stats2}).
+\end{itemize}
+\end{mdframed}
+
+% ------------------------------------------------------------
+\subsection*{Integration}
+\noindent
+(i) \textbf{Sensing (\S\ref{sec:stoch2}):} range/plane statistics inherit the radius guard; degeneracy-triggered $k$-escalation updates the CIS and registry hashes.
+(ii) \textbf{Frontiers (\S\ref{sec:calc2}):} DK calibration aligns with saltation spending and $\Pi$-freeze; holonomy/HarmMass are reported alongside Frontier Health.
+(iii) \textbf{Control (\S\ref{sec:ctrl2}):} gap-gated updates prevent unstable plane flips; rising HarmMass or Hol/N$_{\mathrm{cross}}$ triggers safe-bandit lever changes or mixed-plane activation with a formal stability witness.
+
+% ============================================================
+% ============================================================
+\section{Algebraic/Categorical Layer: Quasi-Shuffle \& Lipschitz}\label{sec:adv-structures2}
+% ============================================================
+
+\noindent\textbf{Alphabet, words, whitening (radius-gated).}
+Let $\mathfrak A=\mathfrak A_\Gamma \sqcup \mathfrak A_G$ be whitened letters (windowed dictionary $\mathcal T_K$, versioned).
+A word $w=a_1\cdots a_m$ has degree $|w|=m$ and type $(p,q)$ if it contains $p$ letters from $\mathfrak A_\Gamma$ and $q$ from $\mathfrak A_G$.
+Within the EF ball (Sec.~\ref{sec:entropy2}) we work in coordinates whitened by $W_t$ so that the Fisher inner product is
+$\langle u,v\rangle_{\FIM^{-1}}=u^\top v$ for letters; we drop the subscript when unambiguous.
+Every use of EF quadratics in this section requires a passing guard \texttt{kl\_quad\_bounds} (Sec.~\ref{sec:entropy2}).
+
+% ------------------------------------------------------------
+\subsection*{Merge Registry (declared, hashed, replayable)}
+We restrict quasi-shuffle \emph{merges} to admissible pairs recorded in a versioned \textsf{MergeRegistry.json}:
+\[
+(a u)\uplus(b v)=a(u\uplus b v) + b(a u\uplus v) + (a\ast b)(u\uplus v),\qquad 1\uplus w=w\uplus 1=w,
+\]
+where $(a\ast b)\in\mathfrak A$ is allowed iff $(a,b)\in\mathcal M_{\mathrm{adm}}$ (from the registry).
+The registry file’s schema (fields: \texttt{letters}, \texttt{pairs}, \texttt{time}, \texttt{hash}) and its content hash are pinned in the Provenance Ladder; promotions depending on a merge not in $\mathcal M_{\mathrm{adm}}$ are \emph{blocked}.
+
+\paragraph{Stratified/clamp-aware gating.}
+Cross-frontier merges are disabled inside frontier tubes (respecting $\Pi$-freeze, Sec.~\ref{sec:calc2}) and \emph{all} cross-channel merges are disabled in \textsc{Red} clamp (Sec.~\ref{sec:entropy2}); events are logged with window id and registry hash.
+
+% ------------------------------------------------------------
+\subsection*{Radius-gated orthonormality and associator budget}
+\begin{lemma}[Local orthonormality of letters]\label{lem:ortho}
+\emph{\layertag{Alg/Inf}}
+On the EF ball $r=\varepsilon/\constref{Lpsi}$, whitened letters obey
+\(
+|\langle a,b\rangle - \delta_{ab}|\le c_0\,\varepsilon,
+\)
+with $c_0=O(1)$ determined by dictionary smoothness. Hence multilinear operators built from letters have norms $1+O(\varepsilon)$.
+\uses{Sec.~\ref{sec:entropy2}.}
+\end{lemma}
+
+\begin{theorem}[Associativity up to $O(\varepsilon)$]\label{thm:qshuffle-assoc}
+\emph{\layertag{Alg}}
+With merges restricted to $\mathcal M_{\mathrm{adm}}$ (degree $K\le 3$),
+\[
+\big\|(u\uplus v)\uplus w - u\uplus (v\uplus w)\big\|
+\ \le\ c_{\mathrm{assoc}}\,\varepsilon\,\|u\|\,\|v\|\,\|w\|
+\]
+for all words $u,v,w$ of total degree $\le K$, with $c_{\mathrm{assoc}}=O(1)$ depending only on the registry.
+\begin{proofsketch}
+Exact orthonormal letters give zero associator; Lem.~\ref{lem:ortho} yields $O(\varepsilon)$ deviation; truncation $K\le 3$ bounds remainders.
+\end{proofsketch}
+\end{theorem}
+
+\paragraph{Associator budget KPI.}
+Define $\mathrm{Assoc}_t:=\max_{\deg\le3}\|(u\uplus v)\uplus w-u\uplus(v\uplus w)\|$ on a seeded random test basis.
+We report $\mathrm{Assoc}_t \le c_{\mathrm{assoc}}\widehat\varepsilon_t$ with $\widehat\varepsilon_t:=\|\bm\kappa_t\|_{\FIM_t^{-1}}/\widehat{\constref{Lpsi}}$; violations raise an alarm and block cross-channel promotions for that window.
+
+% ------------------------------------------------------------
+\subsection*{Non-expansiveness and factorization stability}
+\begin{proposition}[Non-expansiveness of the cumulant map]\label{prop:nonexp}
+\emph{\layertag{Alg/Inf}}
+Let $\mathcal C$ map moment series (truncated at $K\!\le\!3$) to cumulants arranged by words.
+For window laws within the EF ball,
+\[
+\|\mathcal C(M_1)-\mathcal C(M_2)\| \ \le\ (1+c_{\mathrm{ne}}\varepsilon)\ \|M_1-M_2\|.
+\]
+\end{proposition}
+
+\begin{corollary}[Finite-$K$ factorization stability]\label{cor:fact-stab}
+\emph{\layertag{Alg/Stoch}}
+If $M_0$ factorizes to order $K$ and $\|M-M_0\|\le\delta$ on the EF ball, then
+\(
+\|\bm\kappa_{\mathrm{mixed}}(M)\|\le (1+c_{\mathrm{ne}}\varepsilon)\,\delta.
+\)
+Hence the radius-gated factorization test (Prop.~\ref{prop:factK-ops}) is $\varepsilon$-stable.
+\end{corollary}
+
+% ------------------------------------------------------------
+\subsection*{Operational gates (tubes, clamp, registry)}
+\begin{definition}[Deterministic gate policy]\label{def:gates}
+\emph{\layertag{Rep/Alg}}
+Let $\mathrm{in\_tube}$ be the frontier-tube flag and $\mathrm{clamp}\in\{\textsc{Green},\textsc{Yellow},\textsc{Red}\}$.
+\begin{enumerate}[leftmargin=*]
+\item If $\mathrm{in\_tube}=\textsf{true}$: disable merges spanning $\Gamma$–$G$; freeze $\Pi$ (Sec.~\ref{sec:calc2}).
+\item If $\mathrm{clamp}=\textsc{Red}$: disable \emph{all} cross-channel merges; only nonparametric alarms (HSIC, CVaR) may influence control.
+\item Always: reject any $(a,b)$ not in $\mathcal M_{\mathrm{adm}}$; log the violation attempt with registry hash.
+\end{enumerate}
+\end{definition}
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# Registry + structures
+def load_merge_registry(path): ...
+def validate_registry_schema(reg): ...
+def build_quasi_shuffle(alphabet, registry):
+    """Return structure constants and the merge map a*b with hash."""
+
+# Residuals and non-expansiveness
+def associator_residual(u, v, w, structures):
+    """||(u ⊎ v) ⊎ w - u ⊎ (v ⊎ w)|| in FIM^{-1} norm."""
+def assoc_budget_check(structures, rand_seed, eps_hat, c_assoc): ...
+def moments_to_cumulants(moments, degree=3, whitening=True): ...
+def nonexpansiveness_check(M1, M2, eps_hat): ...
+
+# Stratified/clamp gates
+def enable_merges(is_in_tube, clamp_state, pair, registry): ...
+def gate_event_log(event, context): ...
+
+# Audits
+def hash_structures(structures): ...
+def replay_associator(test_basis, structures, seed): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Radius guard:} any EF-quadratic claim cites \texttt{kl\_quad\_bounds}=\textsf{pass}; else downgrade to nonparametric alarms.
+\item \emph{Registry present \& valid:} \textsf{MergeRegistry.json} schema validated; content hash recorded; any merge $(a,b)\notin\mathcal M_{\mathrm{adm}}$ blocks promotion and is logged.
+\item \emph{Associator budget:} replayed residual on degree-$\le3$ test basis satisfies
+$\mathrm{Assoc}_t \le c_{\mathrm{assoc}}\,\widehat\varepsilon_t$ (seed and structures hash logged).
+\item \emph{Non-expansiveness:} on adjacent windows $(M_{t-\constref{tau}},M_t)$,
+$\|\mathcal C(M_t)-\mathcal C(M_{t-\constref{tau}})\|\le (1+c_{\mathrm{ne}}\widehat\varepsilon_t)\|M_t-M_{t-\constref{tau}}\|$ within CI.
+\item \emph{Stratified/clamp gating:} inside tubes, cross $\Gamma$–$G$ merges disabled; in \textsc{Red}, all cross-channel merges disabled; gate events appear in the Ladder.
+\item \emph{Reproducibility:} structure-constants hash and the seeded associator test replay bit-for-bit; mismatch is a hard failure.
+\end{itemize}
+\end{mdframed}
+
+% ------------------------------------------------------------
+\subsection*{Integration}
+\noindent
+(i) \textbf{Sensing (\S\ref{sec:stoch2}):} finite-$K$ factorization tests inherit the associator budget and radius guard; \emph{K-escalation} (Sec.~\ref{sec:stoch2}) updates $\mathcal T_K$ and the registry hash.\\
+(ii) \textbf{Frontiers (\S\ref{sec:calc2}):} tube gating aligns algebra with saltation spending and $\Pi$-freeze; no spurious mixed cumulants are introduced during crossings.\\
+(iii) \textbf{Control (\S\ref{sec:ctrl2}):} disabling cross-merges in \textsc{Red} ensures controllers are tuned by HSIC/CVaR evidence only; all algebraic witnesses remain replayable from artifacts.
+
+% ============================================================
+\section{Computational Statistics and Reporting}\label{sec:stats2}
+% ============================================================
+
+\noindent\textbf{Scope.}
+This layer standardizes \emph{how} we summarize uncertainty (HAC/Bootstrap CIs, CVaR), \emph{what} we publish (KPIs, alarms), and \emph{which witnesses} we export (automata runs, GKYP transcripts, DRO traces). All statistics are computed per window $[t-\constref{tau},t]$ with provenance hashes and are radius-gated by Sec.~\ref{sec:entropy2}. Windows flagged as \emph{quarantined} (e.g., failed envelope precondition; Sec.~\ref{sec:closure2}) are \emph{excluded} from discovery/inference aggregates but remain visible for safety monitors and ledgers.
+
+% ------------------------------------------------------------
+\subsection*{Estimators and confidence procedures}
+
+\paragraph{HAC CLT for smooth functionals.}
+Let $Z_k$ be a stationary $\alpha$-mixing sequence with summable coefficients and let $\theta=\theta(\mathbb E[Z])$ be a smooth functional (e.g., entries of $\bm\kappa$, $M_t$, band-sampled PR margins).
+Define the Newey–West estimator with bandwidth $b$:
+\[
+\widehat{\mathrm{Var}}_{\mathrm{HAC}}(\hat\theta)
+=\Gamma_0+\sum_{h=1}^{b}w_h(\Gamma_h+\Gamma_h^\top),
+\quad
+w_h=1-\frac{h}{b+1},
+\]
+where $\Gamma_h$ are lag-$h$ sample autocovariances of the score.
+Wald CIs use $\mathcal N(0,\widehat{\mathrm{Var}}_{\mathrm{HAC}})$; $b$ is picked by plug-in and logged.
+
+\begin{lemma}[HAC CLT (ops)]\label{lem:hac2}
+\emph{\layertag{Stoch/Comp}}
+Under $\alpha$-mixing and smoothness, HAC-based Wald CIs are valid for $\theta$; radius gating (Sec.~\ref{sec:entropy2}) ensures Lipschitz score bounds.
+\end{lemma}
+
+\paragraph{Moving block bootstrap (MBB) for non-smooths.}
+For functionals with kinks/counts (e.g., $|E_t|$, $\widehat R_t=\prod_{i\le r}\sigma_i$, spectral gaps),
+use block length $b=o(\constref{tau})$ and $B$ resamples.
+\begin{proposition}[Block bootstrap validity]\label{prop:bb2}
+\emph{\layertag{Stoch/Comp}}
+If $b\to\infty$, $b/\constref{tau}\to 0$, the MBB consistently estimates the sampling distribution; percentile or BCa CIs are valid.
+\end{proposition}
+
+\paragraph{Tail risk.}
+For any KPI stream $Z$, report $\mathrm{CVaR}_{0.95}(Z)$ via Rockafellar–Uryasev program (Sec.~\ref{sec:closure2}); export $(\tau^\star,\lambda^\star)$.
+
+% ------------------------------------------------------------
+\subsection*{Quarantine, coverage, and realized error rates}
+
+\paragraph{Window quarantine (selection hygiene).}
+If a preconditioned check fails (e.g., envelope $dv/d\rho=\eta^\star$ mismatch; Sec.~\ref{sec:closure2}), mark the window \textsf{quarantined} and \emph{exclude} it from discovery tallies (FDR, $E_t$, cumulant CIs) and adaptive policy training. Safety KPIs (rights-plane, CVaR slacks) still consume quarantined windows. The Provenance Ladder records \texttt{quarantine=true}, \texttt{reason}, and hashes.
+
+\paragraph{Provenance coverage.}
+Define $\mathrm{Coverage}=\frac{\#\text{rows with ladder hashes}}{\#\text{ingested rows}}$ per window and a rolling CI. Coverage drops degrade auditability and can bias inference; they are wired to clamp decisions (below).
+
+\paragraph{Realized FDR (null streams).}
+Weekly, synthesize null streams (pre-registered seeds) and compute realized FDR for the raw BH/BY layer and the promoted $E_t$ after MTC gating. If $\widehat{\mathrm{FDR}}_{\mathrm{real}}>0.9\cutq$, deterministically tighten:
+$q\leftarrow0.9q$, $r\leftarrow \gamma_r r$ (default $\gamma_r=0.8$), and \emph{freeze} promotions for $m$ windows (default $m=3$), logging “Clamp Policy Evidence”.
+
+% ------------------------------------------------------------
+\subsection*{KPI definitions, targets, and alarms}
+
+\begin{constbox}
+\textbf{KPIs (definitions $\to$ targets $\to$ alarms).}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Coupling Mass} $M_t=\bm\kappa_t^\top\FIM_t^{-1}\bm\kappa_t$ (HAC CI). \\
+Target: median $\downarrow\ge20\%$ over $2\tau^\ast$; \emph{Alarm}: CI upper $>B_{\mathrm{saf}}$ or $\constref{chi}$ spikes with $|E_t|$ growth (conditioning leak).
+\item \textbf{Effective Breadth} $|E_t|$ (BY@\,$\cutq$, then MTC). \\
+Target: non-increasing on stationary tasks; \emph{Alarm}: any promotion missing MTC or Context Registry entry.
+\item \textbf{Decision Range} $\widehat R_t=\prod_{i\le r} \sigma_i$ (ellipsoid proxy, bootstrap CI). \\
+Target: monotone $\uparrow$ subject to I$_5$; \emph{Alarm}: $\mathrm{CVaR}_{0.95}$ drop beyond band, or conservativity bound violated (Sec.~\ref{sec:ctrl2}).
+\item \textbf{Fisher Drift \& Conditioning} $d_{\mathrm F}(P_{t-\constref{\tau}},P_t)$ \& radius $r=\varepsilon/\widehat{\constref{Lpsi}}$ with leakage $\constref{chi}$. \\
+Target: within budgets; \emph{Alarm}: two consecutive budget hits $\Rightarrow$ clamp (Sec.~\ref{sec:entropy2}); EF-quadratic use blocked when \texttt{kl\_quad\_bounds} fails.
+\item \textbf{Holonomy / Rotational Mass} (Prop.~\ref{prop:holonomy}). \\
+Target: decreasing; \emph{Alarm}: rising with flat $N_{\mathrm{cross}}$ or small-gap \emph{HarmMass} increase (Sec.~\ref{sec:kernels2}).
+\item \textbf{Harmonic Rotational Mass} $\displaystyle \mathrm{HarmMass}=\sum_j \frac{\vartheta_j}{\max(\delta_{\mathrm{gap},j},\underline\delta)}$. \\
+Target: flat or $\downarrow$; \emph{Alarm}: sustained rise $\Rightarrow$ $k$-escalation or mixed-plane control.
+\item \textbf{Frontier Health} $(\constref{\taumin}, C_{\mathrm{salt}}, C_{\mathrm{fr}}, \text{duty}, p_{\mathrm{graze}})$. \\
+Target: duty $\le10\%$; \emph{Alarm}: $\hat\nu_{\min}\le0$ (transversality failure).
+\item \textbf{Chatter Index} $\mathrm{Chatter}:=\frac{\#\text{off-frontier switches violating dwell}}{\#\text{switches}}$ and dwell drift $\Delta\constref{\taumin}$. \\
+Target: $0$ chatter; \emph{Alarm}: any violation $\Rightarrow$ switching-stability action (Sec.~\ref{thm:switch-stab}).
+\item \textbf{Rights-Plane Violations} $\#\{i:\,h_i(x)<0\}$ and residual lower bound (one-sided CI). \\
+Target: $0$; \emph{Alarm}: any violation or residual lower bound $<0$ $\Rightarrow$ rejecting automaton.
+\item \textbf{Provenance Coverage \& Latency} coverage \%, $\mathrm{Lat}_t=t_{\text{hash}}{-}t_{\text{ingest}}$. \\
+Target: coverage $\ge99\%$, latency $\le$ one window; \emph{Alarm}: shortfall $\Rightarrow$ clamp-tighten (q,r) and freeze promotions $m$ windows.
+\item \textbf{Dual-Gap Trend} $(G_t,\mathrm{bw}_t)$ for DRO (Sec.~\ref{sec:closure2}). \\
+Target: $G_t\le 10^{-4}$, $\mathrm{bw}_t\downarrow$; \emph{Alarm}: plateau $>10^{-4}$ for $m$ windows $\Rightarrow$ \textsf{DRO Convergence Alarm}.
+\item \textbf{Realized FDR} from null streams (raw \& promoted). \\
+Target: $\le 0.9\cutq$; \emph{Alarm}: $>0.9\cutq$ $\Rightarrow$ deterministic tighten and freeze (this section).
+\end{enumerate}
+\end{constbox}
+
+% ------------------------------------------------------------
+\subsection*{$\omega$-Automata evidence (first-class outputs)}
+Specifications are compiled to Büchi/Streett automata:
+\[
+\textsf{G}(M_t\!\le\!B_{\mathrm{saf}}),\quad
+\textsf{G}(h_i\!\ge\!\epsilon_{\min}),\quad
+\textsf{F}(R_t\!\ge\!R_{\min}),\quad
+\textsf{Freeze}\ \textsf{U}\ \textsf{Decoupled}.
+\]
+Per window we export:
+(i) automaton id and type, (ii) run start/end indices, (iii) accepting/rejecting label, (iv) witness set (visited accepting states), (v) \emph{consumed\_evidence} with exact KPI row hashes (timestamp, KPI-hash), (vi) quarantine flags used by the monitor, and (vii) linked artifacts (QP transcript id, GKYP cert id, DRO trace id).
+
+\begin{proposition}[Monitor correctness contract]\label{prop:omega-contract}
+\emph{\layertag{Comp}}
+Given the logged proposition stream (KPI thresholds, CBF flags, freeze state) and \textsf{quarantine} marks, recomputing the automata produces identical verdicts and runs. Any mismatch or missing row hash is a hard failure.
+\end{proposition}
+
+% ------------------------------------------------------------
+\subsection*{Reporting pipeline and dashboards}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{Ingest} $\to$ build $(\FIM_t,W_t)$, compute $\constref{chi}$, apply clamp state (Sec.~\ref{sec:entropy2}); compute coverage \& latency; tag quarantined windows.
+\item \textbf{KPI compute} $\to$ HAC/Bootstrap CIs; CVaR; Hol/HarmMass; Chatter; record alarms. Quarantined windows \emph{excluded} from discovery/FDR and adaptive training.
+\item \textbf{Certificates} $\to$ export PR/GKYP witness, DRO KKT trace, automata runs; attach transcript ids and \emph{consumed\_evidence} hashes.
+\item \textbf{Risk posture} $\to$ weekly null-stream realized-FDR panel; deterministic tighten (q,r,freeze) when out of bounds; coverage-triggered tighten when coverage $<99\%$.
+\item \textbf{Dashboard update} $\to$ rolling $3\tau^\ast$ panels with targets, CIs, CVaR, alarms; tooltips link to artifacts and registry hashes.
+\end{enumerate}
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# HAC + Bootstrap
+def hac_cov(scores, bandwidth=None): ...
+def wald_ci(theta_hat, var_hat, level=0.95): ...
+def mbb_ci(series, functional, block_len, B=1000, method="BCa"): ...
+
+# CVaR and alarms
+def cvar(value_stream, alpha=0.95): ...
+def raise_alarm(name, evidence): ...
+
+# Coverage, quarantine, and realized FDR
+def provenance_coverage(row_hashes, total_rows): ...
+def mark_quarantine(window_id, reason): ...
+def realized_fdr(null_stream_seeds, raw_pvals, promoted_flags, q): ...
+def tighten_from_fdr(fdr_real, q, r, gamma_q=0.9, gamma_r=0.8, freeze_m=3): ...
+
+# Chatter and conditioning dashboards
+def chatter_index(switch_log, tau_dwell): ...
+def conditioning_panel(Lpsi_hat_series, epsilon): ...
+def harmonic_mass(angles, gaps, delta_floor): ...
+
+# Automata monitors
+def build_omega_automata(specs): ...
+def run_monitors(prop_stream, automata, quarantine_flags): ...
+def export_automata_witness(run, links, consumed_evidence): ...
+
+# Dashboard & artifacts
+def update_kpi_dashboard(kpis, cis, cvars, alarms, links, posture): ...
+def link_artifact(kind, id_hash): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window unless noted).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Stat soundness:} HAC bandwidth/logs present; MBB $(b,B)$ recorded; recomputation reproduces CIs within numerical tolerance.
+\item \emph{Tail control:} CVaR slack $\ge 0$ for guarded KPIs; violations export rejecting automata run ids.
+\item \emph{Quarantine hygiene:} quarantined windows excluded from discovery/FDR and adaptive training; Ladder logs \texttt{quarantine=true} with reason.
+\item \emph{Coverage \& latency:} coverage $\ge 99\%$ and latency $\le$ one window; shortfall triggers deterministic clamp tighten (q,r) and a promotion freeze; events logged.
+\item \emph{Realized FDR:} weekly null audit recorded; if $\widehat{\mathrm{FDR}}_{\mathrm{real}}>0.9\cutq$ then $q,r$ tightened and promotions frozen for $m$ windows (policy log present).
+\item \emph{Witness completeness:} GKYP transcript id, DRO dual gap ($\le 10^{-4}$), $\eta^\star$ trace, automata witness with \emph{consumed\_evidence} hashes present.
+\item \emph{Clamp determinism:} given $\constref{chi}$ history and coverage/FDR panels, recomputed clamp states match (Sec.~\ref{sec:entropy2}).
+\item \emph{Chatter/holonomy:} $\mathrm{Chatter}=0$; rising \emph{HarmMass} with flat $N_{\mathrm{cross}}$ or any chatter triggers logged corrective action (k-escalation, mixed-plane, dwell).
+\end{itemize}
+\end{mdframed}
+
+% ------------------------------------------------------------
+\subsection*{Benchmarking hooks (pointers)}
+Negative control, degeneracy stress, and formal-spec acceptance reuse this reporting layer and must pass with 100\% correct automata verdicts on the spec suite; ranges and masses respect the CI targets with synthetic ground truth; realized-FDR tightening engages deterministically when audits exceed threshold.
+
+\subsection*{Notes on reproducibility}
+All dashboards regenerate from the Transport Pack + Provenance Ladder alone; no hidden state or mutable environment is required. Seeds, bandwidths, block lengths, solver tolerances, registry hashes, and risk-posture transitions (tighten/freezes) are logged and versioned.
+
+% ============================================================
+\section{Conclusions \& Deployment Notes}\label{sec:conclusion2}
+% ============================================================
+
+\paragraph{Summary.}
+Part~II delivers a \emph{proof-carrying governor}: geometry is \emph{spent} via saltation inside ISS with a per-crossing \emph{Frontier Spend Ledger} (\S\ref{sec:calc2}); identifiability is \emph{gated} by instruments + \emph{IV badges} and MTC with power (\S\ref{sec:stoch2}); robustness is \emph{witnessed} by KKT traces with unique $\eta^\star$ and envelope checks (\S\ref{sec:closure2}); EF radii are \emph{enforced} by deterministic leakage clamps and a window \emph{quarantine} policy (\S\ref{sec:entropy2}, \S\ref{sec:stats2}); control claims are \emph{certified} by GKYP/PR over uncertainty with a vertex/extremal \emph{hitmap} and an automatic \emph{band-retuning} rule (\S\ref{sec:ctrl2}); algebra is \emph{registry-bound} with an associator budget (\S\ref{sec:adv-structures2}); and reporting is \emph{deterministically replayable} with coverage KPIs, automata evidence (row-hashes), and realized-FDR tightening (\S\ref{sec:stats2}). Plane drift is bounded and acted upon via holonomy KPIs, the small-gap \emph{Harmonic Rotational Mass} panel, and a gap-calibrated degeneracy policy (\S\ref{sec:kernels2}).
+
+% ------------------------------------------------------------
+\subsection*{Deployment plan (staged rollout)}
+
+\begin{constbox}
+\textbf{Release gates (must pass to promote an environment).}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Preflight (offline, synthetic).}
+Negative-control suite passes; BY realized-FDR audit $\le 0.9\,\cutq$ on null streams; IV-badge harness validated on seeded causal graphs; Replay Pack builds with image SHA; registries (Merge/Context) present; quarantine reasons taxonomy registered.
+\item \textbf{Staging (shadow).}
+(i) \emph{No-Zeno} counters (\S\ref{sec:calc2}) satisfied; (ii) PR/GKYP witnesses feasible on the stated \emph{uncertainty descriptor}; (iii) \emph{vertex/extremal hitmap} exported; (iv) envelope slope check $dv/d\rho{=}\eta^\star$ within $5\%$ (\S\ref{sec:closure2}); (v) \emph{quarantine hygiene}: quarantined windows excluded from discovery/FDR and adaptive training; (vi) coverage $\ge 99\%$, latency $\le$ one window (\S\ref{sec:stats2}); (vii) clamp determinism reproduces from Ladder; (viii) IV badges attached to any $E_t$ promotions (relevance HAC-CI + BY-vetted exclusion + ablation $\Delta\kappa$).
+\item \textbf{Canary (bounded blast-radius).}
+No rights-plane violations; one-sided CI for \emph{conservativity residual} $\le 0$ (\S\ref{sec:ctrl2}); Saltation Calibration replay within $+10\%$; \emph{Frontier Spend Ledger} populated with $(\hat\nu_{\min},c_\Sigma,\kappa_{\max},r_{\mathrm{tube}})$ CIs; DK/Wedin calibration within slack; spectral-gap CI at active rank excludes $0$ or mixed-plane/certified dwell engaged; automata witnesses include \emph{consumed\_evidence} row-hashes.
+\item \textbf{Production.}
+All KPIs at target (App.~\ref{app:kpi-registry}); weekly realized-FDR panel green two consecutive weeks; coverage $\ge 99\%$ sustained; Harmonic Rotational Mass non-increasing; \emph{Chatter} index $=0$; PR band-retuning policy active when margins drift to $\constref{epsilon}$; risk-posture transitions (tighten/freezes) logged.
+\end{enumerate}
+\end{constbox}
+
+% ------------------------------------------------------------
+\subsection*{Rollback \& fail-closed policy}
+Any of the following triggers immediate \emph{freeze+dwell}, promotion freeze, EF-radius tighten, and safe-bandit fallback to a previously verified lever (\S\ref{sec:ctrl2}):
+\begin{enumerate}[leftmargin=*]
+\item rights-plane violation or one-sided residual lower bound $<0$ (CBF); 
+\item \textsf{Conservativity Violation} (residual CI lower $>0$);
+\item clamp \textsc{Red} persisting $>m$ windows or \emph{coverage} $<99\%$ for $m$ windows (\S\ref{sec:stats2});
+\item realized-FDR $>0.9\,\cutq$ (weekly) or missing IV badges on promotions;
+\item DK-bound violation or spectral-gap CI containing $0$ without $k$-escalation/mixed-plane engagement;
+\item PR sampling validation shows minimum sampled margin $<\constref{epsilon}$ or vertex/extremal \emph{hitmap} shifts beyond tolerance;
+\item missing automata \emph{consumed\_evidence} row-hashes or Ladder link.
+\end{enumerate}
+Automatic actions: (i) shrink $(r,q)$ per posture policy; (ii) raise PR margin target if feasible; (iii) shrink band $[\omega_\ell,\omega_u]$ via the retuning rule; (iv) enforce minimum dwell for controller switching; (v) disable cross-channel merges in \textsc{Red}.
+
+% ------------------------------------------------------------
+\subsection*{Operational runbook (SRE-facing)}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Daily.}
+Verify Ladder coverage $\ge 99\%$ and latency $\le$ one window; inspect \emph{Frontier Spend Ledger} and Frontier Health (duty-cycle, $p_{\mathrm{graze}}$, $\hat\nu_{\min}$ CIs); confirm PR sampling validation vs.\ certificate band and update \emph{hitmap}; re-monitor last 24h automata with \emph{consumed\_evidence} hashes; check quarantine hygiene and risk-posture state.
+\item \textbf{Weekly.}
+Run realized-FDR audit (synthetic null); deterministically tighten $(\cutq,r)$ and freeze promotions $m$ windows if $>0.9\cutq$; rebuild Replay Pack image and record SHA; review dual-gap trend and $\eta^\star$ bracket; evaluate Harmonic Rotational Mass and holonomy/N$_{\mathrm{cross}}$; review safe-bandit logs (gain/cost, CVaR forecasts, zero-violation constraint).
+\item \textbf{On clamp \textsc{Yellow/Red}.}
+Shrink $(r,\cutq)$ per policy; disable cross-channel merges in \textsc{Red}; switch sensing to HSIC/CVaR-only triggers; freeze promotions and log posture transition.
+\item \textbf{When degeneracy detected.}
+If CI$(\Delta\sigma)$ contains $0$, escalate plane dimension $k$ or engage mixed-plane controller; attempt common-$V$; else enforce minimum dwell (record $\tau_{\mathrm{dwell}}$).
+\item \textbf{If PR infeasible or margins crowd $\constref{epsilon}$.}
+Activate band-retuning (shrink $[\omega_\ell,\omega_u]$ per rule); inspect uncertainty \emph{hitmap} for dominating vertices/extremals; if necessary, raise PR margin and reduce admissible set until sampling validation passes.
+\item \textbf{If coverage drops $<99\%$.}
+Pause promotions; re-run ingestion audit; tighten $(r,q)$; backfill hashes; resume only after coverage $\ge 99\%$ for $m$ consecutive windows.
+\end{enumerate}
+
+% ------------------------------------------------------------
+\subsection*{Configuration \& versioning}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Registries (required).} \emph{MergeRegistry.json}, \emph{ContextRegistry.json}, and the windowed \emph{Instrument Map} (hashes in Ladder); IV-badge thresholds (first-stage $F>10$, BY-$q$) pinned.
+\item \textbf{Risk posture \& quarantine.} Finite-state posture (NOMINAL/TIGHTENED) params $(\gamma_q,\gamma_r,m)$; quarantine reasons taxonomy; posture transitions logged with evidence (realized FDR, coverage).
+\item \textbf{Uncertainty descriptors.} Polytope vertex ids or LFT structure hash + scaling metadata; \emph{hitmap} export schema and band-retuning policy file.
+\item \textbf{Frontier \& degeneracy artifacts.} Spend-Ledger schema; DK calibration ids; spectral-gap MBB parameters $(b,B)$.
+\item \textbf{Automata evidence.} Monitor specs and a \emph{consumed\_evidence} row-hash linking contract; re-monitor script ids.
+\item \textbf{Determinism.} Seeds, solver tolerances, Docker image SHA, and ordered replay scripts recorded in the Transport Pack.
+\end{itemize}
+
+% ------------------------------------------------------------
+\subsection*{SLOs \& monitors (minimum set)}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Safety SLOs.} Rights-Plane Violations $=0$; one-sided CBF residual lower bound $\ge 0$; CVaR$_{0.95}$ slacks $\le$ budget; \textsf{Conservativity} residual CI lower $\le 0$.
+\item \textbf{Auditability SLOs.} Coverage $\ge 99\%$; latency $\le$ one window; automata re-monitor bit-for-bit; \emph{consumed\_evidence} hashes present; posture transitions reproducible; quarantine hygiene satisfied.
+\item \textbf{Performance SLOs.} Median $M_t$ $\downarrow\ge 20\%$ over $2\tau^\ast$; $\widehat R_t$ non-decreasing (subject to I$_5$); dual gap $\le 10^{-4}$; holonomy/N$_{\mathrm{cross}}$ and Harmonic Rotational Mass non-increasing; spectral-gap CI excludes $0$ at active rank (or certified mixed-plane/dwell in effect); \emph{Chatter} index $=0$; realized-FDR $\le 0.9\cutq$.
+\end{itemize}
+
+% ------------------------------------------------------------
+\subsection*{Data protection \& compliance (practical minimum)}
+Minimize PII at ingest; hash/chunk raw telemetry; store windowed statistics and hashes; pre-register contexts for IV tests (Context Registry) and ensure partition reproducibility; maintain a normative dictionary mapping venue/legal levers to controller contracts (e.g., freeze/dwell via TRO/PI, apportionment SLA) for court-legible deployments.
+
+% ------------------------------------------------------------
+\subsection*{Known limitations \& future work}
+Higher-order ($K{\ge}4$) cumulants are budgeted and escalated selectively; common-$V$ may fail for some mixed-plane sets (fallback: dwell); PR certificates depend on declared uncertainty sets—automated region synthesis and adaptive band design are future work; cross-platform numerical determinism may require container-level BLAS pinning; bootstrap costs rise with window size—consider variance-reduced resampling.
+
+\begin{mdframed}
+\textbf{Environment acceptance checklist (one page).}
+\begin{enumerate}[leftmargin=*]
+\item Negative-controls $\checkmark$; realized-FDR audit $\checkmark$ with posture policy enforced (tighten/freeze if $>0.9\cutq$); Replay SHA recorded.
+\item \emph{Quarantine hygiene} $\checkmark$ (discovery/FDR excludes quarantined windows; reasons logged).
+\item Saltation \& DK calibration replays $\checkmark$ (residuals within bounds); Frontier Spend Ledger populated with CI-bearing constituents.
+\item PR/GKYP certificate feasible on \emph{uncertainty descriptor}; \emph{hitmap} exported; band-retuning rule configured; sampling validation $\checkmark$.
+\item Envelope slope check $\checkmark$; dual gap $\le 10^{-4}$; $\eta^\star$ bracket width $\downarrow$.
+\item Coverage $\ge 99\%$ and latency $\le$ one window; coverage-triggered clamp policy tested.
+\item Degeneracy response configured (gap CI, $k$-escalation or mixed-plane + dwell); \emph{Chatter} index monitor active.
+\item CIS entries for promotions include \emph{IV badges} and MTC power; CIS cross-links to automata rejecting runs when applicable.
+\item Automata re-monitor $\checkmark$ with \emph{consumed\_evidence} row-hashes; Ladder completeness $\ge 99\%$.
+\end{enumerate}
+\end{mdframed}
+
+% ============================================================
+% ============================================================
+\section{Tables \& Schemas (Certificate-First Appendix)}
+% ============================================================
+
+\subsection{KPI Registry: symbols, units, estimators, contracts}\label{app:kpi-registry}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l l l l l @{}}
+\toprule
+\textbf{KPI} & \textbf{Symbol} & \textbf{Unit} & \textbf{Estimator / CI} & \textbf{Target (default)} & \textbf{Alarm (default)} \\
+\midrule
+Coupling Mass & $M_t=\bm\kappa_t^\top\FIM_t^{-1}\bm\kappa_t$ & dimensionless & HAC / Wald CI & median $\downarrow\ge20\%$ over $2\tau^\ast$ & CI upper $> B_{\mathrm{saf}}$ or $\constref{chi}\!\uparrow$ with $|E_t|\!\uparrow$ \\
+Coupling Regret & $\mathrm{Regret}_M(t)=M_t-M_t^{\circ}$ & dimensionless & HAC CI vs.\ synthetic null & negative trend over $2\tau^\ast$ & CI upper $\ge 0$ for $\ge\tau^\ast$ windows \\
+Effective Breadth & $|E_t|$ & count & BY@\,$\cutq$ + MTC \& IV badges & non-increasing (stationary) & any promotion missing MTC or IV badge \\
+Decision Range & $\widehat R_t=\prod_{i\le r}\sigma_i$ & proxy (ellipsoid vol.) & MBB CI & monotone $\uparrow$ (I$_5$ held) & $\mathrm{CVaR}_{0.95}$ drop or conservativity residual $>0$ \\
+Conservativity Residual & $\mathrm{Res}_t=(R_t-R_t')-f(C_{\mathrm{fr}},\constref{\taumin},d)$ & proxy & plug-in + \emph{one-sided} CI & $\le 0$ (CI lower $\le 0$) & CI lower $>0$ $\Rightarrow$ rejecting run \\
+Fisher Drift & $d_{\mathrm F}(P_{t-\constref{\tau}},P_t)$ & $nats^{1/2}$ & geodesic / quad proxy + CI & below budget & two consecutive budget hits $\Rightarrow$ clamp \\
+Holonomy & $\mathrm{Hol}(0,T)$ & radians & DK/Wedin bound + CI & decreasing & rising with flat $N_{\mathrm{cross}}$ triggers lever/$k$ escalation \\
+Holonomy per Crossing & $\mathrm{Hol}/N_{\mathrm{cross}}$ & rad / crossing & ratio + CI & flat or $\downarrow$ & rising while $N_{\mathrm{cross}}$ flat \\
+\textbf{Harmonic Rotational Mass} & $\mathcal H_k$ & radians & small-gap harmonic term (gap-weighted sum), CI & non-increasing & CI lower $>$ tolerance or gap-CI at rank $k$ contains $0$ \\
+Frontier Health & $(\constref{\taumin},C_{\mathrm{salt}},C_{\mathrm{fr}},\text{duty},p_{\mathrm{graze}})$ & s,–,–,\%,– & plug-in + CI & duty $\le10\%$ & $\hat\nu_{\min}\!\le0$ or duty $>10\%$ \\
+Rights-Plane Residual & $\min_i \mathrm{LB}_{0.95}\{h_i^+-h_i^-+\sigma_i\}$ & units of $h_i$ & \emph{one-sided} bootstrap CI & $\ge 0$ & lower bound $<0$ $\Rightarrow$ rejecting run \\
+\textbf{Chatter Index} & $\Xi_{\mathrm{chat}}$ & count / window & dwell-violation counter & $0$ & $>0$ or trend $\uparrow$ \\
+Provenance Coverage & coverage \% & percent & binomial CI & $\ge99\%$ & coverage $<99\%$ for $m$ windows $\Rightarrow$ tighten posture \\
+Provenance Latency & $\mathrm{Lat}_t=t_{\text{hash}}{-}t_{\text{ingest}}$ & time & plug-in + CI & $\le$ one window & latency $>$ window \\
+Dual-Gap Trend & $(G_t,\mathrm{bw}_t)$ & – & panel trend & $G_t\le 10^{-4}$,\ $\mathrm{bw}_t\downarrow$ & $G_t>10^{-4}$ for $m$ windows \\
+\textbf{Realized FDR} & $\widehat{\mathrm{FDR}}_{\text{null}}$ & proportion & weekly null-stream audit & $\le 0.9\,\cutq$ & $>0.9\,\cutq$ $\Rightarrow$ posture tighten (freeze+$r,\cutq\downarrow$) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Default thresholds \& tuning knobs}\label{app:defaults}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l l l l @{}}
+\toprule
+\textbf{Name} & \textbf{Symbol} & \textbf{Default} & \textbf{Where used} & \textbf{Notes} \\
+\midrule
+PR margin & $\constref{epsilon}$ & context-specific & Sec.~\ref{sec:ctrl2} & GKYP witness exports margin \\
+FDR level & $\cutq$ & $0.10$ (BY) & Sec.~\ref{sec:stoch2} & posture may tighten: $\cutq\!\leftarrow\!0.9\cutq$ \\
+EF tolerance & $\varepsilon$ & $0.2$ (fallback $0.1$) & Sec.~\ref{sec:entropy2} & radius $r=\varepsilon/\constref{Lpsi}$ \\
+Leakage thresholds & $\chi_{\mathrm{green}},\chi_{\mathrm{alarm}},\chi_{\mathrm{clear}}$ & $0.05,\,0.15,\,0.08$ & Sec.~\ref{sec:entropy2} & hysteresis; 3-window smoothing \\
+\textbf{Risk-posture tightening} & $(\gamma_q,\gamma_r,m)$ & $(0.9,\,0.8,\,3)$ & Sec.~\ref{sec:stats2} & on realized-FDR breach: reduce $q$, shrink $r$, freeze $m$ windows \\
+SPRT errors & $(\alpha,\beta)$ & $(0.05,0.10)$ & Sec.~\ref{sec:stoch2} & precondition: $dv/d\rho=\eta^\star$ within $5\%$; else quarantine \\
+\textbf{IV relevance} & $F_{\text{first-stage}}$ & $>10$ & Sec.~\ref{sec:stoch2} & HAC CI excludes 0; BY-vetted exclusion across contexts \\
+Grazing dwell boost & $p_{\mathrm{graze}},\,\gamma_{\mathrm{dwell}}$ & $0.2,\,0.5$ & Sec.~\ref{sec:calc2} & stricter dwell if $p_{\mathrm{graze}}$ high \\
+DK calibration slack & $\eta_{\mathrm{cal}}$ & $0.1$ & Sec.~\ref{sec:kernels2} & angle $\le (1+\eta_{\mathrm{cal}})$ bound \\
+Safe-bandit explore weight & $c$ & $2.0$ & Sec.~\ref{sec:ctrl2} & UCB exploration bonus \\
+Min dwell (switching) & $\tau_{\mathrm{dwell}}$ & task-bound & Sec.~\ref{sec:ctrl2} & used if no common-$V$ \\
+\textbf{Gap bootstrap} & $(b,B)$ & plugin, $B{=}1000$ & Sec.~\ref{sec:kernels2} & MBB for $\Delta\sigma$ CI \\
+Band retuning step & $\Delta\Omega$ & policy file & Sec.~\ref{sec:ctrl2} & shrink $[\omega_\ell,\omega_u]$ when margins crowd $\constref{epsilon}$ \\
+Conservativity CI one-sided & $\alpha_{\mathrm{one}}$ & $0.95$ & Sec.~\ref{sec:ctrl2} & for residual lower bound \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Artifact field schemas (per window)}\label{app:artifact-schemas}
+
+\paragraph{Tier 1: Transport Pack.}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l l X X @{}}
+\toprule
+\textbf{Field} & \textbf{Type/Shape} & \textbf{Units} & \textbf{Required} & \textbf{Notes} \\
+\midrule
+$\FIM_t$ & matrix $(d\times d)$ & – & yes & window Fisher; hash and checksum \\
+$W_t$ & matrix $(d\times d)$ & – & yes & whitening s.t.\ $\FIM_t=W_t^\top W_t$ \\
+$\{\eta_k\}$ trace & vector & – & yes & $\eta$ iterates; last is $\constref{etastar}$ \\
+Dual gap, bracket width & scalars & – & yes & $\le 10^{-4}$; bracket width stored \\
+Envelope slope check & scalar & – & yes & $dv/d\rho$ vs.\ $\eta^\star$ (rel.\ err.\ $\le 5\%$) \\
+CVaR slack (CBF) & struct & units of $h_i$ & yes & $\mathrm{CVaR}_{0.95}(s_i),\,\mathrm{CVaR}_{0.95}(\sigma_i)$ \\
+Saltation constants & tuple & – & yes & $(\hat\nu_{\min},C_{\mathrm{salt}},C_{\mathrm{fr}})$ with CIs \\
+\textbf{Frontier Spend Ledger id} & hash & – & yes & per-crossing entries (table below) \\
+Holonomy angles & list & rad & yes & principal-angle increments \\
+\textbf{Harmonic Rotational Mass} & scalar & rad & yes & gap-weighted rotation metric (+ CI) \\
+Range proxy & scalar & – & yes & $\widehat R_t$ and bootstrap CI \\
+PR witness id & GKYP certificate id & – & yes & band, margin, $(P,Q)$, multipliers \\
+\textbf{PR hitmap id} & hash & – & yes & vertex/extremal contributions + min sampled margin \\
+Uncertainty descriptor & hash & – & yes & polytope vertex ids or LFT structure hash \\
+Reference digest & struct & – & yes & $\{w_s\},\{a_p\}$, mesh-hash (Def.~\ref{def:ref2}) \\
+Replay Pack SHA & hash & – & yes & deterministic container image SHA \\
+Solver transcript id & hash & – & yes & cone/QP transcript identifier \\
+Risk posture & enum & – & yes & \texttt{NOMINAL/TIGHTENED} \\
+\textbf{Quarantined?} & bool + reason & – & yes & true $\Rightarrow$ discovery/promotion excluded \\
+Coverage \& latency & scalars & \%, time & yes & coverage $\ge99\%$; latency $\le$ one window \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Frontier Spend Ledger (per crossing).}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l X X @{}}
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Notes} & \textbf{Blocks if violated} \\
+\midrule
+crossing\_id, tube\_id, ts & ids & unique ids and timestamp & – \\
+$K$-obs-norm & scalar & $\|K{-}I\|_{\text{obs}}$ & if $>C_{\mathrm{salt}}(1{+}0.1)$ \\
+$C_{\mathrm{salt}}$ point/CI & scalars & evaluated bound + CI & – \\
+$\hat\nu_{\min}$ CI & scalar CI & transversality with CI & if CI contains $0$ \\
+$c_\Sigma$ CI, $\kappa_{\max}$, $r_{\mathrm{tube}}$ & scalars & chart constant, curvature, tube radius & – \\
+slack\_used & scalar & $0.1\times C_{\mathrm{salt}}$ & – \\
+rights-residual LB & scalar & one-sided LB of $h^+-h^-+\sigma$ & if $<0$ \\
+ledger\_hash & hash & row-hash for automata evidence & – \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Tier 2: Provenance Ladder.}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l X X X @{}}
+\toprule
+\textbf{Step} & \textbf{Timestamp} & \textbf{Input hash(es)} & \textbf{Output hash} & \textbf{Signature/Note} \\
+\midrule
+Telemetry $\to$ Features & ISO-8601 & raw source hashes & features hash & extractor version \\
+Features $\to$ Cumulants & ISO-8601 & features hash & $\bm\kappa$ hash & HAC settings \\
+Cumulants $\to$ FDR & ISO-8601 & $\bm\kappa$ hash & $E_t^{\mathrm{raw}}$ hash & BY $\cutq$ \\
+Identifiability/MTC & ISO-8601 & raw set hash & $E_t$ hash & IV badge; power; $K$ used \\
+DRO/KKT & ISO-8601 & data/loss hash & $\eta$ trace hash & dual gap; envelope slope \\
+Saltation calibration & ISO-8601 & $(F^\pm,n)$ & replay id hash & $\|K{-}I\|$ vs.\ $C_{\mathrm{salt}}$ \\
+DK calibration & ISO-8601 & $(\widetilde J^\pm)$ & replay id hash & angle vs.\ DK bound \\
+QP/PR & ISO-8601 & model hash & transcript id hash & PR witness id; uncertainty hash; hitmap id \\
+Switching stability & ISO-8601 & QP set ids & cert hash & common-$V$ or $\tau_{\mathrm{dwell}}$ \\
+Clamp policy evidence & ISO-8601 & audit seed/hash & policy hash & posture transition; $(\cutq,r)$ pre/post \\
+Registries & ISO-8601 & – & registry hashes & Merge/Context; Instrument Map \\
+Risk posture \& quarantine & ISO-8601 & evidence hashes & state record & realized FDR; coverage; reason \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Tier 3: Coupling Identification Sheet (CIS) with IV badges.}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l l l l l X @{}}
+\toprule
+\textbf{Index} & \textbf{$p,q,m$} & \textbf{$p$-val} & \textbf{BY thr.} & \textbf{MTC} & \textbf{Power} & \textbf{IV badge (relevance, exclusion, ablation $\Delta\kappa$)} \\
+\midrule
+Entry & $(\cdot,\cdot,\cdot)$ & scalar & scalar & \{T/F\}$^3$ & $[0,1]$ & $F{>}10$, BY non-reject across contexts, observed $\downarrow$ in $\kappa$ \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Tier 4: Automata Evidence (row-hash links).}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l l l X X X @{}}
+\toprule
+\textbf{Automaton id} & \textbf{Type} & \textbf{Spec} & \textbf{Run} & \textbf{Indices} & \textbf{Consumed\_evidence (row-hashes)} & \textbf{Linked artifacts} \\
+\midrule
+hash & Büchi/Streett & e.g.\ $\textsf{G}(M_t\le B_{\mathrm{saf}})$ & accept/reject & $[t_0,t_1]$ & list of (ts, KPI-hash, ledger\_hash) & GKYP id, QP id, DRO id, Replay SHA \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Auxiliary descriptors}
+
+\paragraph{Uncertainty Model Descriptor (PR witness).}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l X X @{}}
+\toprule
+\textbf{Kind} & \textbf{ID / Hash} & \textbf{Payload} & \textbf{Note} \\
+\midrule
+Polytope & vertex-list hash & $\{(A_j,B_j,C_j,D_j)\}_{j=1}^J$ ids & operating-region grid hash \\
+LFT & structure hash & $M$ and structured set $\mathbb D$ & small-gain/scale meta \\
+\textbf{PR hitmap} & hitmap hash & per-vertex/extremal margin contributions & used for band retuning \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Registries, IV badges, posture \& policy evidence.}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l X X @{}}
+\toprule
+\textbf{Artifact} & \textbf{Hash / Version} & \textbf{Core fields} & \textbf{Blocks if missing} \\
+\midrule
+Merge Registry & hash & admissible merges $(a,b)$ & cross-merge promotions \\
+Context Registry & hash & contexts, covariates, exclusion assertions & IV-based promotions \\
+Instrument Map & windowed hash & invariance p-values, BY thresholds & IV promotion \\
+\textbf{IV Badge} & badge id & F-stat, HAC CI, BY transcript, ablation $\Delta\kappa$ & Et promotion \\
+Clamp Policy Evidence & audit hash & pre/post $\cutq$,\ $r$;\ posture state & – (tightening only) \\
+\textbf{Risk-posture manifest} & state hash & \texttt{NOMINAL/TIGHTENED}, reason, freeze horizon & – \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Deterministic Replay Pack.}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l X X @{}}
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Example} & \textbf{Note} \\
+\midrule
+Dockerfile hash & sha256 & \texttt{sha256:...} & pinned base image + deps \\
+Image SHA & sha256 & \texttt{sha256:...} & recorded in Transport Pack \\
+Seeds \& solver tol & struct & \texttt{\{rng:1234,tol:1e-8\}} & deterministic runs \\
+Replay script ids & list & \texttt{[saltation, DK, envelope, automata]} & ordered tasks \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Minimal manifest (machine-readable)}
+\noindent A compact, machine-consumable manifest tying tiers, registries, posture/quarantine, hitmaps, and replay image.
+\begin{lstlisting}
+{
+  "window_id": "...",
+  "transport_pack": {
+    "FIM_hash": "...", "W_hash": "...",
+    "eta_trace_hash": "...", "dual_gap": 9.8e-5,
+    "bracket_width": 1.3e-3, "envelope_check_relerr": 0.03,
+    "cvar_slack": {"s": 0.012, "sigma": 0.006},
+    "saltation": {"nu_min_CI": [0.19,0.27], "C_salt": 0.93, "C_fr": 0.11},
+    "frontier_spend_ledger_id": "...",
+    "holonomy_angles_hash": "...",
+    "harmonic_rotational_mass": {"H_k": 0.21, "ci": [0.17,0.26]},
+    "range_proxy": {"Rhat": 1.42, "ci": [1.31,1.51]},
+    "pr_witness_id": "...", "uncertainty_desc_hash": "...",
+    "pr_hitmap_id": "...",
+    "ref_digest": "...", "replay_sha": "...",
+    "solver_transcript": "...",
+    "risk_posture": "NOMINAL",
+    "quarantine": {"flag": false, "reason": null},
+    "coverage": 0.993, "latency_ms": 820
+  },
+  "registries": {
+    "merge_registry_hash": "...",
+    "context_registry_hash": "...",
+    "instrument_map_hash": "..."
+  },
+  "cis": [{
+    "idx":[p,q,m], "pval":0.003, "by_thr":0.007,
+    "mtc":{"transfer":true,"sprt":true,"cond":true},
+    "iv_badge":{"F": 18.4, "HAC_CI":[0.12,0.33],
+                "BY_nonreject":true, "delta_kappa_drop":0.21},
+    "power":0.86, "context_id":"C-01", "instrument_id":"IV-003", "K_used":3
+  }],
+  "automata": [{
+    "id":"...","type":"buchi","spec":"G(Res<=0)","run":"accept",
+    "t":[t0,t1],
+    "consumed_evidence":[["t0","kpi_hash0","ledger_row_hash0"],
+                         ["t1","kpi_hash1","ledger_row_hash1"]],
+    "links":{"gkyp":"...","qp":"...","dro":"...","replay_sha":"..."}
+  }],
+  "clamp_policy_evidence": {
+    "null_audit_seed":"...", "fdr_realized":0.072, "q_before":0.10, "q_after":0.10,
+    "r_before":0.41, "r_after":0.41, "posture":"NOMINAL"
+  }
+}
+\end{lstlisting}
+
+\end{document}

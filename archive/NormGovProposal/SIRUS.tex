@@ -1,0 +1,205 @@
+
+% ==============================
+% SIRUS — Master Redraft (steady edition)
+% ==============================
+% Goal: robust, reproducible, Overleaf‑friendly build with clean tables (tabularray),
+% UTF‑8‑safe code snippets (listings), and clear defaults. Works with pdfLaTeX or LuaLaTeX.
+
+\RequirePackage{iftex}
+\ifPDFTeX
+  \documentclass[11pt]{article}
+  \usepackage[utf8]{inputenc}
+  \usepackage[T1]{fontenc}
+\else
+  % LuaLaTeX / XeLaTeX
+  \documentclass[11pt]{article}
+  \usepackage{fontspec}
+  \defaultfontfeatures{Ligatures=TeX}
+\fi
+
+% ---------- Core typography & layout ----------
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{csquotes}
+\usepackage{url}         % provides \path{...}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,urlcolor=blue,citecolor=blue}
+
+% ---------- Lists, math ----------
+\usepackage{enumitem}
+\setlist{topsep=4pt,itemsep=2pt,parsep=0pt}
+\usepackage{amsmath,amssymb}
+
+% ---------- Tabularray (tables) ----------
+\usepackage{ragged2e}
+\usepackage{booktabs}
+\usepackage{tabularray}
+\UseTblrLibrary{booktabs}
+
+% Column types: L = elastic ragged-right; W{<width>} = fixed-width ragged-right
+\NewColumnType{L}{X}
+\NewColumnType{W}[1]{Q[wd=#1]}
+
+% Project-wide table defaults (tweak as needed)
+\SetTblrInner{colsep=3pt,rowsep=2pt,stretch=1.05}
+\SetTblrOuter{long}
+\SetTblrStyle{firsthead}{font=\bfseries}
+\SetTblrStyle{caption-tag}{font=\bfseries}
+
+% ---------- Listings (code) ----------
+\usepackage{listings}
+% Define a minimal JSON language so language=json works everywhere
+\lstdefinelanguage{json}{
+  sensitive=true,
+  morestring=[b]",
+  morecomment=[l]{//},
+  literate=*
+   {:}{{:}}{1}
+   {,}{{,}}{1}
+   {\{}{{\{}}{1}
+   {\}}{{\}}}{1}
+   {[}{{[}}{1}
+   {]}{{]}}{1}
+}
+\ifPDFTeX
+  % UTF-8 compatibility for listings under pdfLaTeX
+  \usepackage{listingsutf8}
+  \lstset{inputencoding=utf8}
+  % Map common Unicode to TeX-safe tokens
+  \lstset{literate=
+    {…}{{\ldots}}1 {–}{{--}}1 {—}{{---}}1
+    {“}{{``}}1 {”}{{''}}1 {‘}{{`}}1 {’}{{'}}1
+  }
+\fi
+\lstdefinestyle{sirus}{
+  basicstyle=\ttfamily\small,
+  numbers=left, numbersep=6pt, stepnumber=1,
+  showstringspaces=false, breaklines=true, breakatwhitespace=false,
+  tabsize=2, upquote=true,
+}
+\lstset{style=sirus}
+
+% ---------- Gentle global line-breaking relief ----------
+\emergencystretch=2em
+
+% ---------- Convenience macros ----------
+\newcommand{\code}[1]{\path{#1}} % semantic alias for path-like identifiers
+
+% ==============================
+% Document
+% ==============================
+\title{SIRUS: Safety, Integrity, Reproducibility, Utility, Stewardship\\\large Fixed Pipeline and Normative Contracts}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\bigskip
+
+% =====================================================
+% Section: Fixed Pipeline (Normative)
+% =====================================================
+\section{Fixed Pipeline (Normative)}
+
+% Notes:
+% - Use \code{...} for identifiers, filenames, UUIDs (breakable at _ / . / /).
+% - Keep last column elastic (L) to absorb layout pressure.
+
+\begin{longtblr}[
+  caption={Fixed Pipeline (Normative)},
+  label={tab:fixed-pipeline}
+]{
+  width   = \linewidth,
+  rowhead = 1,
+  colspec = { W{2.7cm}, W{3.6cm}, L, L, W{3.9cm}, L }
+}
+\toprule
+\textbf{Stage} & \textbf{Admits} & \textbf{Emits (state)} & \textbf{Emits (evidence)} & \textbf{Fail-Fast} & \textbf{Speed Effects} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Stage} & \textbf{Admits} & \textbf{Emits (state)} & \textbf{Emits (evidence)} & \textbf{Fail-Fast} & \textbf{Speed Effects} \\
+\midrule\endhead
+
+% ---- ROWS (replace with your canonical content; wrap identifiers with \code{...}) ----
+Ingest    & Signed request           & Session seed     & \code{req.sig}, \code{caller_id}          & Invalid signature & Batching window \\
+Normalize & Schema-checked payload   & Canonical form   & \code{payload.json}                       & Schema mismatch   & Cache hit rate  \\
+Attest    & Environment fences       & Attested context & \code{ENV_ATTEST_OK}                      & \code{ENV_ATTEST_FAIL} & Cold-start penalty \\
+Resolve   & Contracts resolved       & Binding ledger   & \code{contract_id}, \code{kernel_id}      & Missing binding   & Index locality  \\
+Execute   & Ops applied              & State delta      & \code{op_log.jsonl}                        & Idempotency break & Parallelism     \\
+Evaluate  & QA metrics               & Scorecard        & \code{score_v1.csv}                        & Guardrail trip    & Backpressure    \\
+\bottomrule
+\end{longtblr}
+
+% =====================================================
+% Section: Drift Geometry Contracts
+% =====================================================
+\section{Drift Geometry Contracts}
+
+\begin{longtblr}[
+  caption={Drift Geometry Contracts},
+  label={tab:drift-contracts}
+]{
+  width   = \linewidth,
+  rowhead = 1,
+  colspec = { W{4.2cm}, L, L, W{5.4cm} }
+}
+\toprule
+\textbf{Contract} & \textbf{Inputs} & \textbf{Outputs} & \textbf{Notes} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Contract} & \textbf{Inputs} & \textbf{Outputs} & \textbf{Notes} \\
+\midrule\endhead
+
+% ---- ROWS ----
+Surface Drift & \code{silo_id}, \code{uuid-1234}   & Surface model & Breaks on schema rev \\
+Kernel Match  & \code{kernel_id}, \code{digest}    & Binding       & Stable across replays \\
+Ledger Sync   & State delta                         & Ledger commit & Idempotent, monotonic \\
+\bottomrule
+\end{longtblr}
+
+% =====================================================
+% Section: Generator–Stabilizer–Inversion Ledger
+% =====================================================
+\section{Generator–Stabilizer–Inversion Ledger}
+
+\begin{longtblr}[
+  caption={Generator–Stabilizer–Inversion Ledger},
+  label={tab:gsi-ledger}
+]{
+  width   = \linewidth,
+  rowhead = 1,
+  colspec = { W{3.8cm}, L, L, L, W{4.6cm} }
+}
+\toprule
+\textbf{Phase} & \textbf{Generator} & \textbf{Stabilizer} & \textbf{Inversion} & \textbf{Artifacts} \\
+\midrule\endfirsthead
+\toprule
+\textbf{Phase} & \textbf{Generator} & \textbf{Stabilizer} & \textbf{Inversion} & \textbf{Artifacts} \\
+\midrule\endhead
+
+% ---- ROWS ----
+Warmup & Prompt prior    & Reg. loss   & Calib mapping  & \code{prior_v1.json} \\
+Train  & Batch sampler   & EMA, clip   & Scale solve    & \code{ckpt_042.bin}  \\
+Eval   & Held-out set    & Early stop  & Threshold curve & \code{auc_curve.png} \\
+Deploy & Canary          & Budget guard & Rollback plan & \code{release.yaml}  \\
+\bottomrule
+\end{longtblr}
+
+% =====================================================
+% Appendix: Code listings example (UTF‑8 safe)
+% =====================================================
+\appendix
+\section{Appendix: Example JSON}
+Below is a JSON excerpt that compiles under both engines (pdfLaTeX uses mapping; LuaLaTeX is native-UTF-8).
+
+\begin{lstlisting}[language=json,caption={Example payload}]
+{
+  "silo_id": "uuid-1234",
+  "notes": "truncated... handled via listings",
+  "file": "surface_v1.json"
+}
+\end{lstlisting}
+
+\end{document}

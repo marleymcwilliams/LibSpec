@@ -1,0 +1,1049 @@
+% =====================================================================
+% Clean, robust preamble + macros
+% - Minimal, safe package set (pdfLaTeX)
+% - Guards for \ceil/\floor (no redefinition errors)
+% - siunitx v3 config
+% - bookmark-safe macros for hyperref
+% - Cleveref names for theorem-like environments
+% =====================================================================
+
+\documentclass[11pt]{article}
+
+% Allow line breaks in long URLs (before hyperref loads url)
+\PassOptionsToPackage{hyphens}{url}
+
+% --------------------------- Page & typography ---------------------------
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% ------------------------------ Math basics ------------------------------
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{mathtools} % small fixes (e.g., \coloneqq), paired delimiters
+
+% --------------------------- Lists & spacing -----------------------------
+\usepackage{enumitem}
+\setlist{leftmargin=*, itemsep=0.25em, topsep=0.25em}
+
+% ------------------------------- Colors ----------------------------------
+\usepackage{xcolor}
+\definecolor{linkcol}{RGB}{30,90,160}
+
+% ------------------------------ Hyperlinks -------------------------------
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=linkcol,
+  citecolor=linkcol,
+  urlcolor=linkcol,
+  pdfauthor={},
+  pdftitle={A Calculus for Composable Safety: Migrating from Heuristics to a Unified Semantics},
+  pdfborder={0 0 0}
+}
+\urlstyle{same}
+
+% ----------------------------- Clever refs -------------------------------
+\usepackage[nameinlink,noabbrev]{cleveref}
+
+% --------------------------- Tables (lightweight) ------------------------
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{siunitx}
+\sisetup{
+  group-separator = {,},
+  group-minimum-digits = 4,
+  mode = match,
+  propagate-math-font = true,
+  reset-math-version = false,
+  reset-text-family = false,
+  reset-text-series = false,
+  reset-text-shape = false,
+  text-family-to-math = true,
+  text-series-to-math = true
+}
+
+% --------------------------- Theorem styles ------------------------------
+\usepackage{amsthm}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{invariant}[theorem]{Invariant}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% Cleveref names
+\crefname{theorem}{Theorem}{Theorems}
+\crefname{lemma}{Lemma}{Lemmas}
+\crefname{proposition}{Proposition}{Propositions}
+\crefname{definition}{Definition}{Definitions}
+\crefname{invariant}{Invariant}{Invariants}
+\crefname{assumption}{Assumption}{Assumptions}
+\crefname{remark}{Remark}{Remarks}
+
+% --------------------------- Section numbering ---------------------------
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+
+% ============================ Notation macros ============================
+% Blackboard & calligraphic
+\newcommand{\RR}{\mathbb{R}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\NN}{\mathbb{N}}
+\pdfstringdefDisableCommands{%
+  \def\Q{Q}%
+  \def\Sig{\Sigma}%
+  \def\composeev{compose\_ev}%
+  \def\vmeet{meet}%
+  \def\hplus{odot}%
+  \def\code#1{#1}%
+  \def\ISigma{I\_Sigma-Progress}%
+}
+
+% Robust, text-safe versions for \Q and \Sig
+\DeclareRobustCommand{\Q}{\texorpdfstring{\ensuremath{\mathcal{Q}}}{Q}}     % Grade space (semantic)
+\DeclareRobustCommand{\Sig}{\texorpdfstring{\ensuremath{\Sigma}}{\Sigma}}   % Obligations/effect system
+
+\newcommand{\cD}{\mathcal{D}}    % Design category
+\newcommand{\cE}{\mathcal{E}}    % Evidence category
+
+% Operators & symbols
+\DeclareMathOperator{\composeevOp}{compose\_ev}
+\DeclareRobustCommand{\composeev}{\texorpdfstring{\ensuremath{\composeevOp}}{compose\_ev}}
+\newcommand{\unk}{\top_{\mathrm{unk}}}         % Unknown/top
+\newcommand{\vmeet}{\wedge}                    % Vertical aggregation
+\newcommand{\hplus}{\odot}                     % Horizontal aggregation
+\newcommand{\leqQ}{\preceq}                    % “no better than” order on Q
+\newcommand{\geqQ}{\succeq}
+\newcommand{\code}[1]{\texttt{\textup{#1}}}    % monospace utility (upright in math)
+
+% Coordinate name helpers (stable spelling)
+\newcommand{\powerInv}{\code{powerInv}}
+\newcommand{\prMarginInv}{\code{prMarginInv}}
+\newcommand{\minLBDef}{\code{minLBDef}}
+\newcommand{\dualGap}{\code{dualGap}}
+\newcommand{\sensErr}{\code{sensErr}}
+\newcommand{\ledger}{\code{ledger}}
+\newcommand{\cvar}{\code{cvar}}
+\newcommand{\knorm}{\ensuremath{K_{\mathrm{norm}}}}
+
+% Stage/domain tags (consistent styling)
+\newcommand{\EF}{\textsc{EF}}
+\newcommand{\DRO}{\textsc{DRO}}
+\newcommand{\PR}{\textsc{PR}}
+\newcommand{\CBF}{\textsc{CBF}}
+\newcommand{\om}{\ensuremath{\omega}}
+
+% Invariant labels (used in prose and statements)
+\newcommand{\IMeet}{\textsc{I\_Meet}}
+\newcommand{\IMono}{\textsc{I\_Mono}}
+\DeclareRobustCommand{\ISigma}{%
+  \texorpdfstring{\textsc{I\_\ensuremath{\Sigma}-Progress}}{\textsc{I\_Sigma-Progress}}%
+}
+\newcommand{\IExchange}{\textsc{I\_Exchange}}
+\newcommand{\IClamp}{\textsc{I\_Clamp}}
+\newcommand{\IReplay}{\textsc{I\_Replay}}
+
+% Small utilities — GUARDED \ceil/\floor (no redefinition errors)
+\providecommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+\providecommand{\floor}[1]{\left\lfloor #1 \right\rfloor}
+
+% ---- Make macros harmless in PDF bookmarks (quiet hyperref warnings)
+\pdfstringdefDisableCommands{%
+  \def\Q{Q}%
+  \def\Sig{\Sigma}%
+  \def\composeev{compose\_ev}%
+  \def\vmeet{meet}%
+  \def\hplus{odot}%
+  \def\code#1{#1}%
+}
+
+% ============================ Document metadata ==========================
+\title{A Calculus for Composable Safety:\\ \large Migrating from Heuristics to a Unified Semantics}
+\author{} % Author(s)
+\date{}   % Or \today
+
+% ============================= Document start =============================
+\begin{document}
+\maketitle
+
+\tableofcontents
+\bigskip
+
+% =============================== Abstract ===============================
+\begin{abstract}
+We replace brittle heuristic stacking with a unified calculus grounded in three pillars: (i) a \emph{bimonoidal product poset} $Q$ for safety grades, with vertical aggregation $(Q,\vmeet)$ as coordinatewise max and horizontal aggregation $(Q,\hplus)$ as a mixed operator (sum on \cvar, \ledger; max elsewhere), tied together by a \emph{lax interchange law} $(x\vmeet x')\hplus(y\vmeet y') \,\geqQ\, (x\hplus y)\vmeet(x'\hplus y')$; (ii) a typed effect system $\Sig$ for stateful obligations equipped with a \emph{total discharge relation} \code{DischargedBy(obligation, stage, witness)} and a \emph{well-founded multiset measure} proving progress; and (iii) a composition model \composeev{} as a \emph{lax double functor} from designs to evidence, whose \emph{lax exchange law} holds under explicit side-conditions (stage monotonicity, lax-bilinearity of $\hplus$, non-expansive retunes, ordered clamps).
+
+We make the framework review-tight with: (a) a \emph{risk composition policy} for \cvar{} (default summation; optional convolution/copula paths gated by certified dependence witnesses in $\Sig$); (b) a strict \emph{validation order} (schema check $\rightarrow$ form $Q$ $\rightarrow$ aggregate), clarifying when $\unk$ propagates vs.\ when runs hard-fail; (c) a canonical, hash-chained \code{proof\_print} with a complete \emph{determinism envelope} (PRNG seeds, library SHAs, IEEE-754 mode and NaN canonicalization, endianness, canonical ordering, WCET traces) and explicit versioning fields. A CI-ready invariant suite (\IMeet, \IMono, \ISigma, \IExchange, \IClamp, \IReplay) plus golden fixtures and property-based tests lift the laws into continuously checked practice. Governance becomes \emph{enforceable by construction}: overrides and retunes are typed, scoped effects that alter $\Sig$ and the final hash; audits become deterministic replays of \composeev{}’s evidence.
+\end{abstract}
+
+
+% ========================== Main Body Sections ==========================
+
+\section{The Inevitable Failure of Heuristic Stacking}
+\label{sec:failure-of-stacking}
+
+\subsection{What We Mean by Heuristic Stacking}
+A \emph{heuristic} is a locally sensible guard, threshold, or checklist applied to a subsystem or stage. \emph{Stacking} arises when safety posture is improved over time by simply adding more such guards, each with its own score, threshold, and ad-hoc aggregation rule. Stacking feels expedient, but it lacks a \emph{shared semantics}: scores are incomparable, order effects are uncontrolled, and audit artifacts are non-canonical. In short, the global outcome is no longer a predictable function of the parts.
+
+\subsection{Four Pathologies of an Ad-Hoc Architecture}
+\paragraph{(P1) Non-compositionality.}
+Outcomes depend on evaluation order (e.g., a stability retune can reduce barrier slack); integrators cannot reason modularly. Local improvements can worsen the integrated system because no algebra constrains \emph{vertical} (sequential) and \emph{horizontal} (wiring) interactions.
+
+\paragraph{(P2) Semantic drift.}
+New, bespoke scores appear without normalization; bigger is worse is not enforced across stages; sums, maxima, and percentiles intermix without law. Aggregation ceases to be monotone, making comparison and policy tuning brittle.
+
+\paragraph{(P3) Audit opacity.}
+Artifacts are heterogeneous and non-deterministic; replay requires manual reconstruction. Without canonical witnesses and a determinism envelope, hashes cannot certify provenance, and small vendor/library changes become invisible.
+
+\paragraph{(P4) Governance theater.}
+Policies live as prose or comments, not as machine-enforced invariants. Silent overrides and undocumented retunes are possible; preconditions and expiries are not first-class and cannot be checked compositionally.
+
+\subsection{Derived Requirements (What the Calculus Must Provide)}
+To replace stacking, a unifying calculus must satisfy the following \emph{engineering} requirements:
+
+\begin{enumerate}[label=R\arabic*., leftmargin=2.2em]
+  \item \textbf{Universal grade space.} A normalized, dimensionless product poset $\Q$ with bigger is worse order, an explicit \emph{unknown} $\unk$, and two monoids: vertical $(\Q,\vmeet)$ for sequential stages and horizontal $(\Q,\hplus)$ for wiring.
+  \item \textbf{Lawful interaction.} An \emph{interchange} (lax bilinearity) law relating $\vmeet$ and $\hplus$ to bound order effects in integration.
+  \item \textbf{Monotone normalization.} Each guard supplies a monotone map into designated coordinates of $\Q$; registry of coordinates documents vertical/horizontal ops (e.g., \ledger/\cvar{} sum; others max).
+  \item \textbf{Validation order.} Strict sequence: \emph{schema check} $\rightarrow$ \emph{form $\Q$} $\rightarrow$ \emph{aggregate}. Schema-required fields fail hard \emph{before} $\Q$; optional metrics may produce $\unk$ which then absorbs under aggregation.
+  \item \textbf{Typed obligations.} A logic $\Sig$ that captures preconditions, scopes, expiries, and discharge rules (\code{DischargedBy}); a well-founded progress measure to guarantee termination in passing windows.
+  \item \textbf{Deterministic evidence.} A canonical, hash-chained \code{proof\_print} with fixed stage order (\EF{}$\!\to$\DRO{}$\!\to$\PR{}$\!\to$\CBF{}$\!\to$\om), versioned schema, canonical byte encoding, and a complete determinism envelope.
+  \item \textbf{Enforceable governance.} Overrides and retunes are typed, scoped effects that alter $\Sig$ and the final hash; clamps are monotone; the $\om$ meta-monitor enforces window-level preconditions (e.g., $K$ policy).
+\end{enumerate}
+
+\subsection{The Remedy: A Small Set of Enforceable Laws}
+We adopt a three-pillar calculus that meets R1–R7:
+
+\begin{itemize}
+  \item \textbf{Algebra of Acceptance ($\Q$).} A \emph{bimonoidal product poset} with $(\Q,\vmeet)$ as coordinatewise max (idempotent, commutative) and $(\Q,\hplus)$ as a mixed operator (sum on \cvar{} and \ledger; max elsewhere). The \emph{lax interchange law}
+  \[
+    (x \vmeet x') \hplus (y \vmeet y') \;\geqQ\; (x \hplus y) \vmeet (x' \hplus y')
+  \]
+  bounds order effects and underwrites integration safety.
+  \item \textbf{Logic of Obligations ($\Sig$).} Obligations are typed, scoped effects with a total \code{DischargedBy} relation and a well-founded multiset measure ensuring \emph{progress}. Governance is encoded as theorems (e.g., \code{RetuneDisabledInRed}, \code{RequiresHitmap}, \code{OmegaPrecond}).
+  \item \textbf{Geometry of Composition (\composeev).} A \emph{lax double functor} mapping designs to evidence, preserving vertical/horizontal composition up to $\geqQ$; its \emph{lax exchange law} holds under explicit side conditions (stage monotonicity, lax-bilinearity of $\hplus$, non-expansive retunes, ordered clamps).
+\end{itemize}
+
+\subsection{Why This Fixes P1–P4}
+Non-compositionality (P1) is addressed by lawful vertical/horizontal monoids and the interchange bound; semantic drift (P2) by a normalized coordinate registry and monotone homomorphisms into $\Q$; audit opacity (P3) by a canonical \code{proof\_print} and determinism envelope; governance theater (P4) by $\Sig$’s typed, auditable effects and CI-checked invariants (\IMeet, \IMono, \ISigma, \IExchange, \IClamp, \IReplay).
+
+% ------------------------------------------------------------------------
+
+\section{The Algebra of Acceptance ($\Q$): Formal Semantics for Safety Grades}
+\label{sec:algebra-Q}
+
+\subsection{From Scores to a Bimonoidal Product Poset}
+Safety aggregation must respect two orthogonal compositions: \emph{vertical} (sequential stages within a window) and \emph{horizontal} (wiring disjoint subsystems). We model grades in a normalized, dimensionless product poset $\Q$ equipped with two commutative monoids:
+\begin{itemize}
+  \item $(\Q,\vmeet)$ for vertical aggregation (idempotent, commutative, associative).
+  \item $(\Q,\hplus)$ for horizontal aggregation (commutative, associative), with mixed coordinate rules.
+\end{itemize}
+The interaction is governed by a \emph{lax interchange} inequality that bounds order effects and underwrites \cref{sec:compose-ev}.
+
+\subsection{Grade Space, Order, and the Unknown}
+Let $I$ index coordinates (e.g., $\chi$, \powerInv, \sensErr, \dualGap, \prMarginInv, \minLBDef, \code{salt}, \ledger, \cvar, $\knorm$). Define
+\[
+  \Q \coloneqq \prod_{i\in I} Q_i, \qquad Q_i \coloneqq \RR_{\ge 0}\cup\{\unk\}.
+\]
+Interpretation is \emph{bigger is worse}. We order grades componentwise by
+\[
+  x \geqQ y \iff \forall i\in I:\; x_i \ge y_i \quad\text{with}\quad \unk \text{ as the top element (absorbing)}.
+\]
+Thus $(\Q,\geqQ)$ is a product poset whose top is the all-$\unk$ vector. Safety is fail-closed: any composition with $\unk$ yields $\unk$.
+
+\subsection{Vertical Monoid $(\Q,\vmeet)$: Sequential Aggregation}
+\begin{definition}[Vertical operator]
+For $x,y\in\Q$, define $(x\vmeet y)_i \coloneqq \max(x_i,y_i)$ (with $\max(\unk,a)=\unk$).
+\end{definition}
+\begin{lemma}[Laws of $(\Q,\vmeet)$]\label{lem:meet-laws}
+$(\Q,\vmeet)$ is a commutative, idempotent monoid with identity $0$ (the all-zero vector). Moreover, $\unk$ is absorbing: $x\vmeet\unk=\unk$.
+\end{lemma}
+\begin{invariant}[\IMeet]
+Vertical aggregation is associative, commutative, idempotent, and absorbs $\unk$.
+\end{invariant}
+
+\subsection{Horizontal Monoid $(\Q,\hplus)$: Wiring Disjoint Subsystems}
+Some risks accumulate (\ledger, \cvar); most take worst-case.
+\begin{definition}[Horizontal operator]
+For $x,y\in\Q$ and coordinate $i$,
+\[
+  (x\hplus y)_i \coloneqq
+  \begin{cases}
+    x_i + y_i, & i\in\{\ledger,\cvar\},\\[0.2em]
+    \max(x_i,y_i), & \text{otherwise},
+  \end{cases}
+  \qquad \text{with } \unk \text{ absorbing.}
+\]
+\end{definition}
+\begin{lemma}[Laws of $(\Q,\hplus)$]\label{lem:hplus-laws}
+$(\Q,\hplus)$ is a commutative monoid with identity $0$, and $\unk$ is absorbing: $x\hplus\unk=\unk$.
+\end{lemma}
+
+\subsection{Interchange (Lax Bilinearity) and Monotonicity}
+\begin{proposition}[Lax interchange law]\label{prop:lax-interchange}
+For all $x,x',y,y'\in\Q$,
+\[
+  (x\vmeet x') \hplus (y\vmeet y') \;\geqQ\; (x\hplus y)\vmeet(x'\hplus y').
+\]
+\emph{Proof sketch.} Coordinatewise. For max–max coordinates, both sides equal $\max(x_i,x'_i,y_i,y'_i)$. For sum–max coordinates ($i\in\{\ledger,\cvar\}$), the claim reduces to
+$\max(x_i,x'_i) + \max(y_i,y'_i) \ge \max(x_i+y_i,\,x'_i+y'_i)$, which holds by elementary case analysis.
+\qed
+\end{proposition}
+
+\begin{invariant}[\IMono]
+All stage and adapter maps into $\Q$ are monotone w.r.t.\ $\geqQ$; tightening any guard cannot improve the aggregated grade.
+\end{invariant}
+
+\subsection{Normalization: Monotone Homomorphisms into \texorpdfstring{$\Q$}{Q}}
+Each guard contributes \emph{monotone} coordinates via simple, law-abiding maps (examples):
+\[
+\powerInv=\max(0,1-\mathrm{power}),\quad
+\prMarginInv=\frac{1}{\max(\mathrm{PRmargin},\varepsilon)},\quad
+\minLBDef=\max(0,-\min_i LB_i).
+\]
+Adapters \emph{must not} leak raw scores; instead they publish monotone images into named coordinates, documented in a registry.
+
+\subsection{Risk Composition Policy for \texorpdfstring{\cvar}{cvar}}
+The default horizontal rule $\cvar{:}$ \emph{sum} is a conservative, coherent upper bound (comonotone worst case). Less pessimistic aggregation is permitted only under explicit, auditable dependence certificates carried in $\Sig$:
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{IndependenceCert} $\Rightarrow$ compute aggregate loss via convolution (then evaluate CVaR).
+  \item \textbf{MarginalsOnlyCert} $\Rightarrow$ remain at the Fréchet upper bound (sum).
+  \item \textbf{CopulaCert($\theta$)} $\Rightarrow$ construct aggregate via the certified copula; evaluate CVaR.
+\end{itemize}
+Attempting to use a non-default rule emits \code{RequiresDepCert(CVaR)}; \Sig{} discharge enforces the choice and records it in evidence.
+
+\subsection{Validation Order: Schema \texorpdfstring{$\to$}{->} Form \texorpdfstring{$\Q$}{Q} \texorpdfstring{$\to$}{->} Aggregate}
+To separate contract violations from metric uncertainty:
+\begin{enumerate}[leftmargin=2em,label=(V\arabic*)]
+  \item \textbf{Schema check.} REQUIRED fields validated. Failure \emph{short-circuits} with a hard runtime error; no $\Q$ is formed.
+  \item \textbf{Form $\Q$.} Optional missing metrics map to $\unk$ at their coordinates (fail-closed).
+  \item \textbf{Aggregate.} Use $\vmeet$ / $\hplus$; $\unk$ absorbs by design.
+\end{enumerate}
+\begin{remark}[Unknown vs.\ REQUIRED]
+$\unk$ represents epistemic uncertainty at the \emph{metric} level; schema failure is a \emph{contract} violation handled before grading.
+\end{remark}
+
+\subsection{Coordinate Registry (excerpt)}
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}l l c c l c@{}}
+\toprule
+\textbf{Name} & \textbf{Semantics} & \textbf{Vert.} & \textbf{Horiz.} & \textbf{Enforced at} & \textbf{REQ?}\\
+\midrule
+$\chi$ & Fisher leakage/conditioning & $\max$ & $\max$ & Clamp & N \\
+\powerInv & $1-\mathrm{power}$ & $\max$ & $\max$ & Clamp & N \\
+\sensErr & Sensitivity error norm & $\max$ & $\max$ & Clamp & N \\
+\dualGap & p99 dual gap & $\max$ & $\max$ & Clamp & Y \\
+\prMarginInv & $1/\max(\mathrm{PRmargin},\varepsilon)$ & $\max$ & $\max$ & Clamp & Y \\
+\minLBDef & Deficit in LBs & $\max$ & $\max$ & Clamp & Y \\
+\code{salt} & Saltation magnitude & $\max$ & $\max$ & Hard floor & Y \\
+\ledger & Frontier cost & $\max$ & \textbf{sum} & Hard floor & Y \\
+\cvar & Tail risk (CVaR) & $\max$ & \textbf{sum}$^\dagger$ & Hard floor & Y \\
+$\knorm$ & $K/K_{\mathrm{policy}}$ (KPI) & $\max$ & $\max$ & $\om$ meta-monitor & N \\
+\bottomrule
+\end{tabularx}
+
+\vspace{0.25em}
+\footnotesize $^\dagger$ May use certified alternatives (convolution/copula) when \Sig{} discharges \code{RequiresDepCert(CVaR)}.
+\end{center}
+
+\subsection{What This Gives Us (Used Later)}
+\begin{itemize}
+  \item \textbf{Determinism of aggregation:} $(\Q,\vmeet,\hplus)$ plus \cref{prop:lax-interchange} enables order-bounded integration used by \composeev.
+  \item \textbf{Continuous checks:} \IMeet{} and \IMono{} lift to CI/property tests (assoc./comm./idemp.; monotonicity of adapters).
+  \item \textbf{Auditability:} Validation order (V1–V3) yields crisp failure modes and fail-closed propagation of uncertainty.
+\end{itemize}
+
+% ------------------------------------------------------------------------
+
+\section{The Logic of Obligations ($\Sig$): A Typed Effect System}
+\label{sec:sigma}
+
+\subsection{Purpose and Intuition}
+Numerical grades in $\Q$ cannot express \emph{stateful contracts}: preconditions, authorizations, quarantines, expiries, and overrides. The effect system $\Sig$ makes these contracts \emph{first-class}, auditable, and compositional. Stages \EF$\!\to$\DRO$\!\to$\PR$\!\to$\CBF$\!\to$\om{} may \emph{emit} obligations and must \emph{discharge} those already active according to explicit rules. A run \emph{passes} only if the final set is empty.
+
+\subsection{Syntax: Types, Scopes, and Structure}
+An obligation is a record
+\[
+  o \;=\; (\textit{tag}:\tau,\; \textit{scope}:s,\; \textit{origin\_id}:u,\; \textit{meta}:m),
+\]
+where:
+\begin{itemize}[leftmargin=1.6em]
+  \item $\tau \in \Sigma_{\text{types}}$ is the obligation \emph{type} (e.g., \code{RequiresHitmap}, \code{OmegaPrecond}, \code{Quarantine}, \code{RetuneDisabledInRed}, \code{RequiresDepCert(CVaR)}, \code{OverrideActive}).
+  \item $s \in \{\textit{Stage},\textit{Window},\textit{Global}\}$ controls lifetime; $s$ bounds where discharge may occur.
+  \item $u$ identifies the emitter (subsystem, stage, or policy module).
+  \item $m$ contains typed fields (e.g., \code{hitmap\_id}, \code{valid\_until}, \code{justification\_code}, \code{signature}).
+\end{itemize}
+We maintain an \emph{active multiset} $\Sigma \in \mathbb{M}(\Sigma_{\text{types}} \times \text{meta})$ per window.
+
+\subsection{Well-Founded Type Order and Multiset Measure}
+To prove termination of discharge, we posit a strict, well-founded order on types
+\[
+  (\Sigma_{\text{types}},\;\succ) \quad\text{with a typical chain}\quad
+  \code{OmegaPrecond}\succ \code{RequiresHitmap}\succ \code{RetuneDisabledInRed}\succ \code{OverrideActive}\succ\cdots
+\]
+reflecting dependency (preconditions must resolve before retune authorizations, etc.). We lift $\succ$ to a multiset order $\succ_M$ on finite multisets (Dershowitz–Manna). This induces a \emph{measure} $\mu:\mathbb{M}(\Sigma_{\text{types}})\to$ well-founded set, strictly decreasing on passing runs.
+
+\begin{invariant}[\ISigma]\label{inv:sigma-progress}
+For any adjacent stages in a \emph{passing} window, $\Sigma_{k}\succ_M \Sigma_{k+1}$. Hence, the discharge process terminates in finitely many steps within the window.
+\end{invariant}
+
+\begin{lemma}[Progress via multiset ordering]\label{lem:progress}
+If each stage either (i) discharges at least one obligation or (ii) emits only obligations strictly smaller (in $\succ$) than those it discharges, then \cref{inv:sigma-progress} holds.
+\end{lemma}
+
+\subsection{Total Discharge Relation}
+We define a total, decidable predicate
+\[
+  \code{DischargedBy}(o,\; \textit{stage},\; \textit{witness}) \in \{\textsf{true},\textsf{false}\}
+\]
+with a \emph{published matrix} serving as ground truth. Examples:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}l l l X@{}}
+\toprule
+\textbf{Obligation} & \textbf{Discharging stage} & \textbf{Scope} & \textbf{Witness requirement (excerpt)} \\
+\midrule
+\code{RequiresHitmap} & \PR & Window &
+\code{hitmap\_id} present, authorized; retune linked to \code{hitmap\_id}. \\
+\code{OmegaPrecond} & \om & Window &
+\code{precheck\_passed=true}; $\tau>2\tau_{\min}$ recorded. \\
+\code{Quarantine} & \om & Global &
+\code{quarantine\_observed=true} for all marked entities. \\
+\code{RetuneDisabledInRed} & \PR/\EF & Stage/Window &
+Either \code{clamp\_state}\,$\neq$\,\code{Red} in witness, or \code{no\_retune=true}. \\
+\code{RequiresDepCert(CVaR)} & \CBF/\om & Window &
+One of: \code{IndependenceCert}, \code{MarginalsOnlyCert}, \code{CopulaCert(}$\theta$\code{)}. \\
+\code{OverrideActive} & any (expiry) & Global &
+\code{expiry\_ts < now} or \code{revocation\_sig} valid. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\noindent
+The matrix is part of the \code{proof\_print} schema version; updates are versioned and auditable.
+
+\subsection{Operational Semantics (per stage)}
+Let a stage $S$ consume $(\Q_{\text{in}}, \Sigma_{\text{in}})$ and emit $(\Delta\Q_S, \Delta\Sigma^{+}_S, W_S)$ where $W_S$ are canonical witness bytes. The stage transition is
+\[
+(\Q_{\text{out}}, \Sigma_{\text{out}}) \;=\;
+\Big(\;\Q_{\text{in}} \vmeet \Delta\Q_S,\quad
+\big(\Sigma_{\text{in}} \uplus \Delta\Sigma^{+}_S\big) \setminus \{\,o \mid \code{DischargedBy}(o,S,W_S)\,\}\;\Big),
+\]
+subject to scope checks (a Stage-scoped $o$ can only be discharged by its issuer; Window/Global may be discharged by designated stages). Horizontal wiring composes $\Delta\Q_S$ via $\hplus$ across disjoint subsystems.
+
+\subsection{Soundness and Pass/Fail}
+\begin{definition}[Verdict] \label{def:verdict}
+A window \emph{passes} iff its final grade $\Q_{\mathrm{final}}$ is within policy and $\Sigma_{\mathrm{final}}=\varnothing$. Otherwise it \emph{fails}.
+\end{definition}
+
+\begin{lemma}[Obligation soundness]\label{lem:soundness}
+If a window passes, then $\Sigma_{\mathrm{final}}=\varnothing$. Conversely, any non-empty $\Sigma_{\mathrm{final}}$ forces failure.
+\end{lemma}
+
+\subsection{Non-Expansion Policies (Retune and Overrides)}
+\paragraph{Retune.} In Red, retune is statically forbidden (\code{RetuneDisabledInRed}); any retune attempt emits \code{RequiresHitmap} and must be \emph{non-expansive} with respect to critical obligations (it may not introduce a new \code{Quarantine}). Successful retune witnesses include \code{valid\_until} and link to \code{hitmap\_id}.
+
+\paragraph{Overrides.} An override is a \emph{typed, signed effect} serialized as its own block; activation emits \code{OverrideActive} (Global). Expiry or revocation discharges it, and any computation under override changes the final hash.
+
+\subsection{Interaction with $\Q$ and \composeev}
+$\Sig$ guards \emph{policy-level} choices that alter horizontal semantics (e.g., CVaR aggregation) and the allow-set of vertical actions (e.g., retune). The $\composeev$ mapping collects $\Delta\Q_S$, $\Delta\Sigma^{+}_S$, discharge events, and $W_S$ into ordered stage blocks; its \emph{lax exchange} property (next section) relies on stage monotonicity in $\Q$, non-expansion of critical $\Sig$ types, and clamp ordering.
+
+\subsection{CI Checks (executable invariants)}
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{\ISigma:} Randomized pipelines satisfy $\Sigma_k \succ_M \Sigma_{k+1}$ for passing runs.
+  \item \textbf{Soundness:} \cref{lem:soundness} enforced as the final gate before serializing \code{proof\_print}.
+  \item \textbf{Matrix coverage:} For each obligation type $\tau$, tests exist that (i) emit $\tau$, (ii) discharge $\tau$ at each permitted stage, and (iii) confirm non-discharge elsewhere.
+\end{itemize}
+
+% ------------------------------------------------------------------------
+
+\section{The Geometry of Composition (\composeev): A Lax Double Functor}
+\label{sec:compose-ev}
+
+\subsection{Why a Double Category}
+Safety integration mixes two orthogonal compositions: \emph{vertical} (the fixed pipeline \EF$\!\to$\DRO$\!\to$\PR$\!\to$\CBF$\!\to$\om) and \emph{horizontal} (wiring disjoint subsystems). Perfect commutation is not guaranteed; real systems exhibit integration friction. We therefore use a \emph{lax} structure that preserves composition up to the grade order $\geqQ$.
+
+\subsection{Designs and Evidence}
+We work with a double category of designs and a category of evidence:
+
+\paragraph{Designs \(\cD\).}
+\begin{itemize}[leftmargin=1.8em]
+  \item \emph{Objects:} Interfaces (typed I/O of subsystems).
+  \item \emph{Vertical morphisms:} Pipeline stages drawn from the ordered set \(\{\EF,\DRO,\PR,\CBF,\om\}\); composition is function composition in that order.
+  \item \emph{Horizontal morphisms:} Wiring diagrams joining interfaces; disjointness implies no shared state beyond explicitly wired ports.
+  \item \emph{2-cells:} Application of a stage to a wired design (a concrete run configuration).
+\end{itemize}
+
+\paragraph{Evidence \(\cE\).}
+\begin{itemize}[leftmargin=1.8em]
+  \item \emph{Objects:} Canonical witnesses \code{proof\_print} containing final \(\Q\), the terminal obligation multiset \(\Sigma_{\mathrm{final}}\), and ordered per-stage blocks.
+  \item \emph{Morphisms:} Verified transformations (e.g., aggregation of per-subsystem evidence into a system witness).
+  \item \emph{2-cells:} Coherence witnesses that record how vertical/horizontal compositions were realized.
+\end{itemize}
+
+\paragraph{Functor.}
+\(\composeev:\cD\Rightarrow\cE\) maps designs to evidence with two key properties: (i) vertical composition is mapped using the \emph{vertical monoid} \((\Q,\vmeet)\) and the \(\Sig\) discharge matrix; (ii) horizontal composition uses the \emph{horizontal monoid} \((\Q,\hplus)\) across disjoint subsystems. Preservation is \emph{lax}: equalities become inequalities in $\geqQ$.
+
+\subsection{Side Conditions (Assumptions for Laxity)}
+\begin{assumption}[Stage monotonicity]\label{asm:stage-mono}
+Each stage \(S\) is monotone in \(\Q\): if \(q_{\mathrm{in}}\geqQ q'_{\mathrm{in}}\) then \(S(q_{\mathrm{in}})\geqQ S(q'_{\mathrm{in}})\). Adapters into \(\Q\) are monotone (\IMono).
+\end{assumption}
+\begin{assumption}[Clamp ordering and monotonicity]\label{asm:clamp}
+Clamp decisions are taken before stages that depend on clamp state; the clamp function is monotone in \(\Q\) (\IClamp).
+\end{assumption}
+\begin{assumption}[Non-expansive retunes]\label{asm:retune}
+\PR{} retunes are \emph{non-expansive} w.r.t.\ critical obligations: they do not emit new \code{Quarantine}-class obligations; in Red, retune is forbidden (\Sig).
+\end{assumption}
+\begin{assumption}[Horizontal independence]\label{asm:horizontal}
+Horizontal composition wires disjoint subsystems; cross-talk occurs only via specified interfaces and is reflected in the chosen \(\hplus\) rule (sum on \cvar/\ledger, max elsewhere), with deviations gated by \Sig{} certificates.
+\end{assumption}
+\begin{assumption}[Validation order]\label{asm:validation}
+Schema validation precedes grading; \(\unk\) arises only from optional metrics (V1–V3 pipeline).
+\end{assumption}
+
+\subsection{Lax Exchange (Order-Bounded Integration)}
+\begin{theorem}[Lax Exchange Law for Grades]\label{thm:lax-exchange}
+Let \(v\) denote the vertical pipeline and \(h\) a horizontal wiring of disjoint subsystems. Under \cref{asm:stage-mono,asm:clamp,asm:retune,asm:horizontal,asm:validation},
+\[
+  \mathrm{grade}\big(\composeev(v\circ h)\big)\;\geqQ\;
+  \mathrm{grade}\big(\composeev(h\circ v)\big).
+\]
+\end{theorem}
+\begin{proof}[Proof sketch]
+Compute grades coordinatewise. Horizontal aggregation uses \((\Q,\hplus)\); vertical uses \((\Q,\vmeet)\). By \cref{prop:lax-interchange}, \((x\vmeet x')\hplus(y\vmeet y') \geqQ (x\hplus y)\vmeet(x'\hplus y')\). Stage monotonicity (\cref{asm:stage-mono}) and clamp ordering (\cref{asm:clamp}) preserve the inequality through the pipeline. Non-expansive retunes (\cref{asm:retune}) prevent new critical coordinates from violating monotonicity. Thus, composing first (then piping) is conservatively no better than piping first (then composing).
+\end{proof}
+
+\begin{invariant}[\IExchange]
+Randomized integration tests over small circuits satisfy \(\mathrm{grade}(\composeev(v\circ h))\geqQ \mathrm{grade}(\composeev(h\circ v))\).
+\end{invariant}
+
+\paragraph{Why \emph{lax} and not strict equality.}
+Consider two subsystems \(A,B\) sharing a PR retune. Tuning the \emph{combined} system may slightly improve \prMarginInv{} but worsen \minLBDef{} due to a conservative shared bound; tuning \emph{individually} yields different trade-offs. Because \(\hplus\) mixes sum and max, some coordinates tighten while others loosen, justifying an inequality rather than equality.
+
+\subsection{Operational Orchestration}
+Given per-subsystem stage deltas \((\Delta\Q_S^{(u)}, \Delta\Sigma_S^{+(u)}, W_S^{(u)})\), the orchestrator applies:
+\[
+\textbf{Vertical:}\quad \Q \leftarrow \Q \vmeet \big(\vmeet\nolimits_{S\in\{\EF,\DRO,\PR,\CBF,\om\}} \Delta\Q_S\big),
+\qquad
+\Sigma \leftarrow \text{discharge}(\Sigma \uplus \Delta\Sigma_S^{+},\, S,\, W_S),
+\]
+\[
+\textbf{Horizontal:}\quad \Delta\Q_S \leftarrow \hplus\nolimits_{u} \Delta\Q_S^{(u)},
+\quad
+W_S \leftarrow \text{canoncat}\big(W_S^{(u)}\big),
+\]
+respecting fixed per-stage order, scope rules for \(\Sig\), and canonical concatenation of witness bytes.
+
+\subsection{Evidence Serialization and Hash Coherence}
+Each stage emits a domain-tagged block; the final \code{proof\_print} is:
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{Header:} \code{schema\_version}, \code{hash\_version}, window ID, timestamp, reserved bytes.
+  \item \textbf{Blocks (ordered \EF\,\(\to\)\DRO\,\(\to\)\PR\,\(\to\)\CBF\,\(\to\)\om):} \(\langle\)tag, length, canonical witness bytes\(\rangle\).
+  \item \textbf{Footer:} Domain-separated BLAKE3-256 over header+blocks.
+\end{itemize}
+\begin{lemma}[Hash coherence (\IReplay)]\label{lem:hash-coherence}
+For reassociation of horizontal wiring with fixed per-stage order, the serialized byte stream is identical; thus the final hash is invariant and runs replay bit-for-bit.
+\end{lemma}
+\begin{remark}[Determinism envelope]
+Bit-level replay requires fixed PRNG seeds, library SHAs, IEEE-754 mode and NaN canonicalization, endianness, canonical ordering of logically unordered data, and (when applicable) WCET traces. These are recorded in the header and/or stage blocks.
+\end{remark}
+
+\subsection{What Integrators Get}
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{A conservative order policy:} Wiring-first is most conservative; any deviation must be justified (and certified) to improve grades.
+  \item \textbf{Local-to-global reasoning:} \((\Q,\vmeet,\hplus)\) and \(\Sig\) make subsystem guarantees compose with an explicit bound.
+  \item \textbf{Auditable artifacts:} The evidence trail is deterministic, versioned, and cryptographically sensitive to policy or dependency drift.
+\end{itemize}
+
+% ------------------------------------------------------------------------
+
+\section{From Heuristics to Calculus: Migration and Validation}
+\label{sec:migration}
+
+\subsection{Guiding Principle: Wrap, Don’t Rewrite}
+We migrate by \emph{strangling} legacy guards with thin adapters that present a uniform, auditable interface:
+\[
+  \textsf{Adapter}_G:\; \text{raw inputs} \;\longrightarrow\;
+  \big\langle \textsf{predicate},\; \Delta\Q_G,\; \Delta\Sigma_G^{+},\; W_G \big\rangle,
+\]
+where $\Delta\Q_G$ is a monotone image into named coordinates (\cref{sec:algebra-Q}), $\Delta\Sigma_G^{+}$ are newly emitted obligations (\cref{sec:sigma}), and $W_G$ are canonical witness bytes. Adapters \emph{must not} leak bespoke scores: they either normalize into $\Q$ or fail the \emph{schema check} (V1).
+
+\subsection{Three Phases}
+\paragraph{Phase 1 — Wrap \& Normalize.}
+\begin{enumerate}[leftmargin=2em,label=(P1.\arabic*)]
+  \item Define the \emph{coordinate registry} (names, semantics, normalization map, vertical/horizontal ops, enforcement locus, REQUIRED?).
+  \item Implement adapters for each legacy guard $G$ with: (a) schema validation; (b) monotone normalization into $\Delta\Q_G$; (c) canonical $W_G$; (d) \emph{no hidden aggregation}.
+  \item Establish CI gates for \IMono{} (adapter monotonicity) and \IMeet{}/\hspace{0pt}\cref{lem:meet-laws,lem:hplus-laws}.
+\end{enumerate}
+
+\paragraph{Phase 2 — Install the Calculus.}
+\begin{enumerate}[leftmargin=2em,label=(P2.\arabic*)]
+  \item Provide pure library ops: \code{meetQ} ($\vmeet$), \code{hplusQ} ($\hplus$), \code{seqCompose}, \code{parCompose}, $\Sig$ discharge, and canonical concatenation \code{canoncat}.
+  \item Implement $\composeev$ orchestrator with fixed stage order \EF$\!\to$\DRO$\!\to$\PR$\!\to$\CBF$\!\to$\om{}, enforcing assumptions \cref{asm:stage-mono,asm:clamp,asm:retune,asm:horizontal,asm:validation}.
+  \item Serialize \code{proof\_print} (header \{\code{schema\_version}, \code{hash\_version}, ids, timestamps, reserved\}; ordered blocks; BLAKE3 footer).
+\end{enumerate}
+
+\paragraph{Phase 3 — Shadow, Verify, Cutover.}
+\begin{enumerate}[leftmargin=2em,label=(P3.\arabic*)]
+  \item Run \emph{shadow mode}: legacy decision is authoritative; calculus runs in parallel and logs \code{proof\_print}.
+  \item Enforce invariant suite continuously (\cref{sec:invariants}); investigate \emph{any} violation before proceeding.
+  \item Cut over when (i) goldens pass; (ii) property tests are stable; (iii) determinism envelope is complete; (iv) governance approvals are recorded as \Sig{} effects.
+\end{enumerate}
+
+\subsection{Invariant Suite (Executable)}
+\label{sec:invariants}
+\begin{invariant}[\IMeet]
+$(\Q,\vmeet)$ is associative, commutative, idempotent; $\unk$ absorbs.
+\end{invariant}
+\begin{invariant}[\IMono]
+All adapters and stages are monotone in $\geqQ$; tightening inputs cannot improve grades.
+\end{invariant}
+\begin{invariant}[\ISigma]
+For passing windows, $\Sigma_k \succ_M \Sigma_{k+1}$ (well-founded multiset progress).
+\end{invariant}
+\begin{invariant}[\IExchange]
+Order-bounded integration: $\mathrm{grade}(\composeev(v\circ h)) \geqQ \mathrm{grade}(\composeev(h\circ v))$ on test circuits.
+\end{invariant}
+\begin{invariant}[\IClamp]
+Clamp function is monotone; applying clamps earlier never yields a better final grade.
+\end{invariant}
+\begin{invariant}[\IReplay]
+Bit-for-bit replay from \code{proof\_print} reproduces $\Q$ and $\Sig$ (hash coherence).
+\end{invariant}
+
+\subsection{Golden Fixtures (Regression Pack)}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\linewidth}{@{}l X X@{}}
+\toprule
+\textbf{Fixture} & \textbf{Witnesses} & \textbf{Assertions} \\
+\midrule
+Happy path (Amber clamp) &
+All stage blocks; $\Sig$ emptied; clamp$\in\{$Amber,Green$\}$ &
+Pass verdict; stable hash across runs; \IMeet/\IMono{} hold. \\
+Single hard-floor breach (per coordinate) &
+Target coordinate elevated; others nominal &
+Fail; correct clamp; schema vs.\ $\unk$ distinguished (V1–V3). \\
+Undischarged obligation &
+E.g., retune sans \code{hitmap\_id}; unmet \code{OmegaPrecond} &
+Fail; $\Sigma_{\mathrm{final}}$ contains the expected obligation. \\
+Horizontal composition &
+Two disjoint subsystems with distinct grades &
+\ledger/\cvar{} sum; others max; hash invariant under reassociation. \\
+Wiring reassociation &
+$(A\oplus B)\oplus C$ vs.\ $A\oplus(B\oplus C)$ &
+Identical serialized bytes (fixed per-stage order) $\Rightarrow$ same hash. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Property-Based Tests (Algebra \& Logic)}
+Generate random small circuits with adapters respecting schemas:
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{Algebra:} Assoc./comm./idemp.\ of $\vmeet$; assoc./comm.\ of $\hplus$; \cref{prop:lax-interchange}.
+  \item \textbf{Monotonicity:} Randomly worsen inputs and assert $\geqQ$ is preserved at outputs.
+  \item \textbf{$\Sig$ soundness:} Any Pass run ends with $\Sigma_{\mathrm{final}}=\varnothing$; matrix coverage for each type.
+  \item \textbf{Clamp monotonicity:} Non-decreasing badness yields non-improving states; early clamp no-better-than late.
+  \item \textbf{Replay:} Re-run with locked determinism envelope; hashes and decoded $(\Q,\Sig)$ are identical.
+\end{itemize}
+
+\subsection{K Policy: Normalization vs.\ Enforcement}
+\label{sec:k-policy}
+The coordinate $\knorm = K/K_{\mathrm{policy}}$ in $\Q$ is \emph{informational}. Enforcement occurs in $\om$ as a meta-monitor invariant:
+\[
+  \textsf{countPersistentLocalViolations} \;\le\; K_{\mathrm{policy}}
+  \quad\Longrightarrow\quad \text{window passes on this axis}.
+\]
+A test harness injects controlled violations across windows and asserts precise fail/pass transitions and replay stability.
+
+\subsection{Failure Taxonomy and Rollback}
+To aid operations:
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{Schema failure (V1):} Contract violation; halt before $\Q$; emits \code{OverrideActive?} only via signed effect.
+  \item \textbf{Unknown propagation (V2):} Optional metric absent $\Rightarrow$ $\unk$ coordinate; fail-closed aggregation.
+  \item \textbf{Invariant breach (CI):} Blocks promotion; requires a signed override to proceed; override is serialized and time-scoped.
+  \item \textbf{Determinism drift:} Hash flips with identical inputs $\Rightarrow$ investigate environment SHAs/IEEE-754/WCET; cut a new golden only via governance.
+\end{itemize}
+
+\subsection{Developer Ergonomics (Minimal APIs)}
+\begin{itemize}[leftmargin=1.6em]
+  \item \code{makeAdapter(G)} $\to$ \{\code{schema()}, \code{normalize()}\,$:\,\text{raw}\to\Delta\Q$, \code{emitSigma()}, \code{witness()}\}.
+  \item \code{seqCompose(stages, q0, sigma0)} $\to (\Q,\Sig)$ uses $\vmeet$ and discharge.
+  \item \code{parCompose(components)} $\to \Delta\Q$ uses $\hplus$ and canonical concatenation.
+  \item \code{serializeProofPrint(run)} $\to$ bytes; \code{replay(bytes)} $\to (\Q,\Sig)$.
+\end{itemize}
+
+\subsection{What Done Looks Like}
+Cutover criteria are explicit: all goldens green; property tests >\,$N$ randomized trials per PR; zero invariant regressions over $M$ consecutive windows in shadow; signed approvals recorded as $\Sig$ effects; determinism envelope documented and versioned in the header. At that point, the calculus replaces stacking—with proofs and fixtures, not just prose.
+
+% ------------------------------------------------------------------------
+
+\section{Enforceable Governance and Deterministic Audits}
+\label{sec:governance-audit}
+
+\subsection{Governance as Typed, Scoped Effects}
+Policies are not comments; they are \emph{effects} in $\Sig$ that are emitted, scoped, discharged, and audited.
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{Overrides as first-class objects.} An override is a signed, typed effect with schema
+  \[
+    (\textit{justification\_code}:\textsf{Enum},\; \textit{scope}:\{\textit{Stage,Window,Global}\},\; \textit{expiry\_ts}:\mathbb{Z},\; \textit{signature}:\textsf{bytes}).
+  \]
+  Activation emits \code{OverrideActive} (Global) into $\Sig$; discharge requires \emph{expiry} or \emph{revocation}. The override block is serialized; any run under override yields a distinct final hash.
+  \item \textbf{Retune policy (PR).} In Red, retune is statically forbidden (\code{RetuneDisabledInRed}). Any attempt emits \code{RequiresHitmap} and must be \emph{non-expansive} w.r.t.\ critical obligations. A successful witness carries \code{hitmap\_id}, \code{valid\_until}, and a proof of authorization.
+  \item \textbf{Risk-composition policy (CVaR).} Non-default horizontal aggregation requires a \Sig{} certificate: \code{IndependenceCert}, \code{MarginalsOnlyCert}, or \code{CopulaCert($\theta$)}. Attempting non-default without a certificate emits \code{RequiresDepCert(CVaR)} and fails at window end if undischarged.
+\end{itemize}
+
+\subsection{Determinism Envelope (Replayability Contract)}
+Bit-for-bit replay (\IReplay) needs a \emph{complete} determinism envelope recorded in the witness:
+\begin{enumerate}[leftmargin=2em,label=(D\arabic*)]
+  \item \textbf{PRNG seeds} for all randomized components.
+  \item \textbf{Software fingerprints:} content hashes of dynamic libraries/toolchain (e.g., BLAS/CUDA/libm, compiler).
+  \item \textbf{Floating point:} IEEE-754 mode, denormal handling, and \emph{canonical NaNs}.
+  \item \textbf{Data representation:} fixed endianness for all scalars; canonical ordering of logically unordered collections (sets/maps/rows).
+  \item \textbf{Concurrency/timing:} fixed schedules or recorded WCET traces for timing-sensitive paths.
+  \item \textbf{Environment:} OS/kernel build ID, CPU features bitmap, timezone and clock-source notes for timestamp normalization.
+\end{enumerate}
+These fields are either in the header or attached as per-stage metadata; omission is a schema error (V1).
+
+\subsection{\code{proof\_print}: Canonical, Hash-Chained Witness}
+The evidence stream is a stable byte layout:
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{Header (fixed order):}
+  \begin{tabular}{@{}ll@{}}
+  \code{schema\_version} : & \code{uint32\_le} \\
+  \code{hash\_version}   : & \code{uint32\_le} \\
+  \code{window\_id}      : & \code{uint64\_le} \\
+  \code{timestamp\_ns}   : & \code{int64\_le} \\
+  \code{env\_fingerprints} : & canonical map $\to$ bytes \\
+  \code{reserved}        : & zero-filled bytes \\
+  \end{tabular}
+  \item \textbf{Per-stage blocks (ordered \EF\,\(\to\)\DRO\,\(\to\)\PR\,\(\to\)\CBF\,\(\to\)\om):} 
+  \(\langle\)ASCII tag (4), length \code{uint32\_le}, canonical witness bytes\(\rangle\).
+  \item \textbf{Footer:} domain-separated BLAKE3-256 over header+blocks (little-endian digest).
+\end{itemize}
+
+\begin{lemma}[Replay and naturality]
+With fixed per-stage order and canonical concatenation, horizontal reassociation yields identical bytes; the final hash is invariant. Thus \IReplay{} holds and hash serves as a natural transformation over \composeev.
+\end{lemma}
+
+\subsection{Threat Model and Trust Boundaries}
+\paragraph{Trusted Computing Base (TCB).} Core calculus library (pure $\Q$/$\Sig$ ops, $\composeev$ orchestrator), compiler/toolchain used to build it, OS kernel, and hardware.
+
+\paragraph{Untrusted components.} Legacy guards (wrapped via adapters), third-party telemetry, low-level runtime monitors. These cross into the TCB via \emph{schemas} and are normalized into $\Q$; any drift is detected by (i) schema rejection (V1) and (ii) \emph{determinism diffs} (hash changes with identical inputs).
+
+\paragraph{Vendor drift detection.} Unexpected hash deltas trigger an investigation: compare env fingerprints (D2), floats (D3), ordering (D4), and timing (D5). A new golden may be minted \emph{only} through signed governance recorded as a \Sig{} effect.
+
+\subsection{Audit Workflow (Runbook)}
+\begin{enumerate}[leftmargin=2em,label=(A\arabic*)]
+  \item \textbf{Acquire witness:} collect \code{proof\_print} bytes for the window.
+  \item \textbf{Verify integrity:} recompute footer hash; check \code{schema\_version}/\code{hash\_version}.
+  \item \textbf{Decode:} parse header, per-stage blocks; reconstruct $(\Q,\Sig)$ via replay.
+  \item \textbf{Check verdict:} enforce \cref{def:verdict}; assert $\Sigma_{\mathrm{final}}=\varnothing$ on Pass.
+  \item \textbf{Cross-run comparison:} for claimed identical inputs, assert byte-for-byte equality; discrepancies are determinism events, not hand-waved.
+  \item \textbf{Override path:} if \code{OverrideActive} present, verify justification, scope, expiry, and that the final hash changed accordingly.
+\end{enumerate}
+
+\subsection{Security Considerations}
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{Domain separation:} stage tags and context strings are included in the hash preimage to prevent cross-protocol collisions.
+  \item \textbf{Keyed attestations:} optional MAC/signature over the final hash for external provenance; keys rotated under governance and recorded in the header.
+  \item \textbf{Forward-compatibility:} \code{schema\_version} and reserved bytes permit evolution without ambiguity; upgrades require new goldens.
+\end{itemize}
+
+\subsection{Operations Playbook (When Things Break)}
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{Invariant breach:} CI blocks promotion; open an incident; only a signed, time-scoped override unblocks (and marks the hash).
+  \item \textbf{Schema failure:} immediate reject (V1); no $\Q$ formed; root-cause in adapter or provider.
+  \item \textbf{Replay mismatch:} treat as supply-chain or environment drift; diff env fingerprints and floating-point settings; rebaseline via governance if justified.
+  \item \textbf{CVaR policy dispute:} require a \Sig{} certificate; otherwise revert to default sum and fail if risk exceeds floor.
+\end{itemize}
+
+\subsection{What Auditors Get}
+A single, deterministic artifact that (i) encodes policy choices as effects, (ii) captures all sources of non-determinism, and (iii) composes predictably via \composeev. The result is \emph{governance by construction}: every exceptional path is serialized, signed, and replayable.
+
+% ------------------------------------------------------------------------
+
+\section{Generalizations \& Scrutiny}
+\label{sec:generalizations}
+
+\subsection{Algebraic Strengthening}
+\paragraph{Complete lattice and fixpoints.}
+Because each $Q_i=\RR_{\ge0}\cup\{\unk\}$ is a complete lattice (with $0$ as bottom and $\unk$ as top) and products preserve completeness, $(\Q,\geqQ)$ is a complete lattice. Thus any monotone $F:\Q\to\Q$ admits a least fixpoint by Tarski; if stages are Scott-continuous (max/$+$ are), the Kleene chain from $\mathbf{0}$ converges to it. This supports \emph{feedback} or \emph{iterative} monitors with principled convergence criteria.
+
+\paragraph{Quantale/rig viewpoint.}
+$(\Q,\vmeet,\hplus)$ is an idempotent commutative rig-like algebra on a poset. Making $(\Q,\vmeet)$ a (sup-)semilattice and requiring $\hplus$ to be \emph{residuated} would enable backward reasoning (\emph{what slack suffices to achieve a target bound?}) via right/left residuals, useful for \emph{budget allocation} across subsystems.
+
+\paragraph{T-(co)norms as horizontal families.}
+Beyond $\max$/$+$, horizontal combination can be parameterized by \emph{t}-norm/\emph{t}-conorm families (e.g., probabilistic sum, bounded sum), each gated by a \Sig{} certificate and tracked in the witness; the interchange proof generalizes by substituting their known subdistributivity laws.
+
+\subsection{Abstract Interpretation Link}
+Normalization maps $g:\text{raw}\to\Q$ form a Galois insertion with a concrete metric domain when there is a pair $(\alpha,\gamma)$ such that $\alpha$ abstracts raw metrics to $\Q$ and $\gamma$ concretizes grades to safe raw regions. This yields \emph{soundness by construction} proofs for adapters and a route to \emph{best correct} normalizations.
+
+\subsection{Effects as Graded Monads}
+$\Sig$ can be modeled as a \emph{graded monad} (or effect algebra) indexed by obligation types, with bind laws enforcing scope and discharge order. The multiset measure then appears as a termination metric for graded binds, aligning with effectful semantics in typed PL.
+
+\subsection{Temporal Logic Interface}
+The discharge matrix can be viewed as a realizability layer for LTL/MTL obligations (examples already sketched). This suggests a compiler from policy-in-temporal-logic to $\Sig$ artifacts + tests, ensuring \emph{declarative policies} are enforced at runtime.
+
+\subsection{Scrutiny: Conservatism vs.\ Throughput}
+The lax exchange bound and default CVaR sum are intentionally conservative; they may reduce throughput. The calculus makes such pessimism \emph{explicit and reversible}: add a dependence certificate to weaken horizontal sums; or refine the coordinate registry to separate truly shared from independent tails.
+
+\subsection{Non-expansive retunes: a metric view}
+Equipping $\Q$ with the sup-seminorm $d(x,y)=\sup_i|x_i-y_i|$ (treating $\unk$ as $+\infty$) gives a \emph{non-expansive} requirement $\mathrm{Lip}(\mathrm{PR})\le1$ on safe coordinates and a \emph{no-creation} rule on critical $\Sig$ types. This provides a tunable quantitative contract for PR implementations.
+
+% ------------------------------------------------------------------------
+
+\section{Conclusion: A Principled Path to Composable Safety}
+\label{sec:conclusion}
+
+\subsection{What We Have Replaced and With What}
+We replaced brittle, order-sensitive \emph{heuristic stacking} with a compact calculus grounded in:
+\begin{enumerate}[leftmargin=2em,label=(C\arabic*)]
+  \item the \textbf{bimonoidal product poset} \(\Q\) with vertical \(\vmeet\), horizontal \(\hplus\), and a \emph{lax interchange} law (\cref{sec:algebra-Q});
+  \item the \textbf{typed effect system} \(\Sig\) with a total \code{DischargedBy} relation and a well-founded multiset measure ensuring progress (\cref{sec:sigma});
+  \item the \textbf{lax double functor} $\composeev$ that maps designs to canonical evidence with an order-bounded exchange theorem (\cref{sec:compose-ev}).
+\end{enumerate}
+Together with a strict validation order and a canonical \code{proof\_print}, the system yields deterministic audits and \emph{governance by construction} (\cref{sec:migration,sec:governance-audit}).
+
+\subsection{Engineering Guarantees (at a Glance)}
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{Determinism:} Replays are bit-for-bit identical (\IReplay).
+  \item \textbf{Monotonicity:} Tightening any guard cannot improve grades (\IMono).
+  \item \textbf{Composition:} Integration order is conservatively bounded (\IExchange); horizontal sums apply only to \ledger/\cvar.
+  \item \textbf{Sound governance:} Retunes/overrides are typed, scoped, signed effects; Pass \(\Rightarrow \Sigma_{\mathrm{final}}=\varnothing\).
+\end{itemize}
+
+\subsection{Limitations and Scope}
+This calculus constrains \emph{aggregation} and \emph{governance}; it does not certify model correctness or sensor fidelity beyond schemas and determinism. The lax exchange bound is intentionally conservative when \(\hplus\) uses sums; certified dependence models can narrow this gap via \(\Sig\).
+
+\subsection{What Ships: A Ready-to-Run Checklist}
+\begin{enumerate}[leftmargin=2em,label=(S\arabic*)]
+  \item Coordinate registry filled (names, normalization, vert./horiz.\ ops, enforcement locus, REQUIRED?).
+  \item Adapters implemented; \(\Q\) ops (\code{meetQ}, \code{hplusQ}) and \(\Sig\) discharge matrix complete.
+  \item $\composeev$ orchestrator with fixed stage order; \code{proof\_print} schema + determinism envelope fields.
+  \item Goldens pass; property tests green for algebra, \(\Sig\) soundness, clamp monotonicity, replay.
+  \item Governance approvals serialized as \(\Sig\) effects; drift monitoring (determinism diffs) enabled.
+\end{enumerate}
+
+\subsection{Future Work}
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{Tighten risk composition:} Broaden certified dependence models for \cvar{}; add conformance tests and calibration harnesses.
+  \item \textbf{Static typing of pipelines:} A lightweight type system that rejects misordered clamps/retunes at compile-time.
+  \item \textbf{Mechanized proofs:} Encode the algebra and \(\Sig\) progress in a proof assistant; auto-generate CI property tests from proofs.
+  \item \textbf{Operational tooling:} One-click witness diffing; determinism-drift explainer (library/FP-mode deltas).
+  \item \textbf{Reference corpus:} Public goldens covering each invariant and common failure modes for community regression.
+\end{itemize}
+
+\subsection{Takeaway}
+A small set of enforceable laws beats an ever-growing stack of heuristics. By centering \(\Q\), \(\Sig\), and $\composeev$, we obtain a system whose safety is \emph{composable}, whose policies are \emph{enforceable}, and whose audits are \emph{deterministic}. This is a foundation that scales—safely—by construction.
+
+% ============================== Appendices ==============================
+\appendix
+
+\section{Coordinate \& Normalization Catalogue (Extended)}
+\label{app:coord-catalogue}
+
+This appendix lists canonical coordinates of the grade space $\Q$, their engineering semantics, normalization maps into $\RR_{\ge 0}\cup\{\unk\}$, and aggregation/enforcement loci. All normalization maps are \emph{monotone} and respect the bigger is worse convention. Unless marked REQUIRED, omitted optional metrics map to $\unk$ at (V2); schema-required fields failing validation cause a hard reject at (V1).
+
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}l l c >{\raggedright\arraybackslash}X c c l c@{}}
+\toprule
+\textbf{Name} & \textbf{Semantics} & \textbf{Units} & \textbf{Normalization $f(\cdot)$} & \textbf{Vert.} & \textbf{Horiz.} & \textbf{Enforced at} & \textbf{REQ?} \\
+\midrule
+$\chi$ &
+Fisher leakage / conditioning &
+-- &
+$f_\chi = \max(0,\,\chi)$ (dimensionless index) &
+$\max$ & $\max$ & Clamp & N \\
+
+\powerInv &
+Inverse of achieved power &
+-- &
+$f_{\powerInv}=\max\bigl(0,\,1-\mathrm{power}\bigr)$ &
+$\max$ & $\max$ & Clamp & N \\
+
+\sensErr &
+Sensitivity error norm &
+-- &
+$f_{\sensErr}=\dfrac{\|\partial_{\rho}-\eta^\*\|_2}{\max(\|\eta^\*\|_2,\varepsilon)}$ &
+$\max$ & $\max$ & Clamp & N \\
+
+\dualGap &
+Solver dual-gap (p99) &
+-- &
+$f_{\dualGap}=\max(0,\,\mathrm{gap}_{p99})$ &
+$\max$ & $\max$ & Clamp & Y \\
+
+\prMarginInv &
+Inverse PR margin (safety tube) &
+-- &
+$f_{\prMarginInv}=\dfrac{1}{\max(\mathrm{PRmargin},\varepsilon)}$ &
+$\max$ & $\max$ & Clamp & Y \\
+
+\minLBDef &
+Lower-bound deficit (most violated) &
+-- &
+$f_{\minLBDef}=\max\!\bigl(0,\,-\min_i LB_i\bigr)$ &
+$\max$ & $\max$ & Clamp & Y \\
+
+\code{salt} &
+Saltation magnitude from reset &
+-- &
+$f_{\mathrm{salt}}=\|K_{\mathrm{obs}}-I\|_F$ (or operator norm) &
+$\max$ & $\max$ & Hard floor & Y \\
+
+\ledger &
+Cumulative frontier cost (budget) &
+cost &
+$f_{\ledger}=\max(0,\,\mathrm{cost})$ &
+$\max$ & \textbf{sum} & Hard floor & Y \\
+
+\cvar &
+Tail risk (CVaR$_\alpha$) &
+loss &
+$f_{\cvar}=\max(0,\,\mathrm{CVaR}_\alpha)$ \newline
+\emph{Policy:} default \textbf{sum}; alternatives require certificate (\S\ref{sec:algebra-Q}) &
+$\max$ & \textbf{sum}$^\dagger$ & Hard floor & Y \\
+
+$\knorm$ &
+Normalized violation count &
+-- &
+$f_{\knorm}=\dfrac{K}{K_{\mathrm{policy}}}$ (informational KPI) &
+$\max$ & $\max$ & $\om$ meta-monitor & N \\
+\bottomrule
+\end{tabularx}
+
+\vspace{0.3em}
+\footnotesize $^\dagger$ Permissible alternatives: convolution (IndependenceCert), Fréchet bounds (MarginalsOnlyCert), copula-based (CopulaCert($\theta$)); gated and recorded via $\Sig$.
+\end{center}
+
+\subsection*{Notes on Normalization}
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{Epsilon floor.} $\varepsilon>0$ prevents division by zero and fixes rounding behavior for replay; its value is part of the schema and determinism envelope.
+  \item \textbf{Unknowns.} If an optional source metric is absent, the corresponding coordinate is set to $\unk$, which \emph{absorbs} under $\vmeet$ and $\hplus$; REQUIRED fields are validated pre-$\Q$ (V1).
+  \item \textbf{Norm choice.} For \sensErr{} and \code{salt}, the chosen norm (2/Frobenius/operator) is fixed by schema version and recorded in the header.
+  \item \textbf{Units.} Coordinates enter $\Q$ as \emph{dimensionless} nonnegatives (or $\unk$); any unit-bearing inputs are normalized by the adapter prior to $f(\cdot)$.
+\end{itemize}
+
+\subsection*{Registry Governance}
+Each row in the catalogue is versioned. Adding a coordinate or changing a normalization map increments \code{schema\_version}; adapters must be updated in lockstep and covered by new golden fixtures that exercise the change without breaking \IReplay.
+
+% ------------------------------------------------------------------------
+
+\section{Proofs and Lemmas (Pack)}
+\label{app:proofs}
+
+This appendix collects concise proofs and proof sketches for the algebraic, logical, and audit properties used in the main text. Throughout, $\Q=\prod_{i\in I}(\RR_{\ge 0}\cup\{\unk\})$ with coordinatewise order $\geqQ$ (\emph{bigger is worse}), vertical operator $\vmeet$ (max), horizontal operator $\hplus$ (sum on \ledger/\cvar, max elsewhere), and $\unk$ absorbing.
+
+\subsection{Lax Interchange Law}
+\begin{proposition}[Lax interchange; cf.\ \cref{prop:lax-interchange}]
+\label{prop:app-lax}
+For all $x,x',y,y'\in\Q$,
+\[
+  (x\vmeet x') \hplus (y\vmeet y') \;\geqQ\; (x\hplus y)\vmeet(x'\hplus y').
+\]
+\end{proposition}
+\begin{proof}
+Coordinatewise. If $i\notin\{\ledger,\cvar\}$, both sides equal $\max(x_i,x'_i,y_i,y'_i)$. If $i\in\{\ledger,\cvar\}$, the claim reduces to
+\[
+  \max(x_i,x'_i) + \max(y_i,y'_i) \;\ge\; \max(x_i+y_i,\,x'_i+y'_i),
+\]
+which holds by case analysis on which terms realize the maxima. Any occurrence of $\unk$ makes both sides $\unk$ by absorption, preserving $\geqQ$.
+\end{proof}
+
+\subsection{Vertical \& Horizontal Aggregation Laws}
+\begin{proposition}[Vertical monoid laws; cf.\ \cref{lem:meet-laws}]
+\label{prop:app-vertical}
+$(\Q,\vmeet)$ is a commutative, idempotent monoid with identity $0$ (all zeros) and $\unk$ absorbing.
+\end{proposition}
+\begin{proof}
+Coordinatewise from $\max$: associativity, commutativity, idempotence are standard; $\max(a,0)=a$ for $a\ge0$ gives identity; $\max(\unk,a)=\unk$ defines absorption.
+\end{proof}
+
+\begin{proposition}[Horizontal monoid laws; cf.\ \cref{lem:hplus-laws}]
+\label{prop:app-horizontal}
+$(\Q,\hplus)$ is a commutative monoid with identity $0$ and $\unk$ absorbing.
+\end{proposition}
+\begin{proof}
+On \ledger/\cvar, $\hplus$ is $+$; elsewhere, it is $\max$. Both are associative/commutative with identity $0$. Absorption follows from $a+\unk=\unk$ and $\max(a,\unk)=\unk$ by convention.
+\end{proof}
+
+\subsection{Monotonicity of Stages and Adapters}
+\begin{lemma}[Monotone adapters/stages; \IMono]
+\label{lem:app-mono}
+If each adapter map $g$ into designated coordinates of $\Q$ is monotone and stages combine grades only via $\vmeet$ and $\hplus$, then the end-to-end map is monotone: $q_{\mathrm{in}}\geqQ q'_{\mathrm{in}} \Rightarrow q_{\mathrm{out}}\geqQ q'_{\mathrm{out}}$.
+\end{lemma}
+\begin{proof}
+Composition of monotone maps is monotone; $\vmeet$ and $\hplus$ are monotone in each argument (both $\max$ and $+$ are monotone).
+\end{proof}
+
+\subsection{Validation-Order Separation}
+\begin{lemma}[Schema failure vs.\ $\unk$]
+\label{lem:app-validation}
+With (V1) schema check $\to$ (V2) form $\Q$ $\to$ (V3) aggregate, REQUIRED-field violations halt \emph{pre}-grading, while missing optional metrics become $\unk$ in $\Q$ and absorb under aggregation. These two failure modes cannot be conflated.
+\end{lemma}
+\begin{proof}
+By construction: the $\Q$ vector is not instantiated if (V1) fails; otherwise optional omissions are mapped to $\unk$, and absorption ensures fail-closed propagation distinct from hard rejection.
+\end{proof}
+
+\subsection{$\Sig$ Progress via Multiset Ordering}
+\begin{proposition}[\ISigma: termination of discharge]
+\label{prop:app-sigma}
+Let $(\Sigma_{\text{types}},\succ)$ be well-founded and lift to the Dershowitz–Manna multiset order $\succ_M$. If each stage either discharges at least one obligation or emits only obligations strictly smaller (in $\succ$) than those it discharges, then for a passing window $\Sigma_k \succ_M \Sigma_{k+1}$ and the process terminates.
+\end{proposition}
+\begin{proof}
+Definitionally matches the multiset step relation: removing a nonempty multiset and replacing by elements each $\,\prec\,$ some removed element yields a strict $\succ_M$ decrease. Well-foundedness precludes infinite descent.
+\end{proof}
+
+\subsection{Clamp Monotonicity}
+\begin{lemma}[\IClamp]
+\label{lem:app-clamp}
+If clamp states are determined by fixed thresholds on coordinates of $\Q$ (Green $\prec$ Amber $\prec$ Red), then $q'\geqQ q \Rightarrow \chi(q') \succeq \chi(q)$. Applying clamps earlier in a worsening sequence cannot yield a better final grade.
+\end{lemma}
+\begin{proof}
+Threshold monotonicity gives state monotonicity. Early clamp decisions based on no-worse inputs cannot produce less conservative actions; downstream aggregation via $\vmeet/\hplus$ preserves no-better-than.
+\end{proof}
+
+\subsection{CVaR Composition Policy}
+\begin{proposition}[Default sum is a coherent upper bound]
+\label{prop:app-cvar}
+For tail-risk coordinate \cvar, $\,\cvar(A\oplus B)=\cvar(A)+\cvar(B)$ implements the Fréchet upper bound (comonotone case). Alternative rules (convolution/copula) produce values $\le$ this bound when their certificates are valid.
+\end{proposition}
+\begin{proof}[Proof sketch]
+CVaR is coherent and subadditive; equality holds under comonotonicity. Certified independence yields convolution and typically strict inequality; copula models interpolate within Fréchet bounds.
+\end{proof}
+
+\subsection{Hash Coherence / Replay}
+\begin{lemma}[\IReplay; naturality of hashing]
+\label{lem:app-replay}
+With fixed per-stage order and canonical concatenation (including canonical ordering of logically unordered data), reassociation of horizontal wiring produces identical serialized bytes; hence the final hash is invariant and bit-for-bit replay reconstructs $(\Q,\Sig)$.
+\end{lemma}
+\begin{proof}
+Associativity of $\hplus$ ensures the same multiset of per-subsystem stage deltas; canonical concatenation removes ordering degrees of freedom; thus the byte stream is identical and the hash equal.
+\end{proof}
+
+\subsection{Exchange for \composeev}
+\begin{theorem}[Lax exchange for evidence; cf.\ \cref{thm:lax-exchange}]
+\label{thm:app-exchange}
+Under stage monotonicity, clamp ordering, non-expansive retunes, validation order, and \cref{prop:app-lax}, we have
+\[
+  \mathrm{grade}\big(\composeev(v\circ h)\big)\;\geqQ\;
+  \mathrm{grade}\big(\composeev(h\circ v)\big).
+\]
+\end{theorem}
+\begin{proof}[Proof sketch]
+Lift \cref{prop:app-lax} through stage monotonicity and clamp monotonicity; non-expansion ensures $\Sig$ does not introduce new critical obligations that could invert the order; serialization preserves the inequality into evidence.
+\end{proof}
+
+% ============================== End matter ==============================
+\end{document}

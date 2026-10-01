@@ -1,0 +1,44 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{tabularray}
+\UseTblrLibrary{booktabs}
+
+% Robust line-breaking for code-like tokens (handles underscores)
+\usepackage{xurl} % loads 'url' and improves breaking; provides \path
+
+\begin{document}
+
+\section*{Drift Geometry — Step 2C (Q/X only; safe tokens)}
+
+\begin{longtblr}[
+  caption = {Drift Geometry (Q/X only; break-safe identifiers)},
+  label   = {tab:drift-step2c}
+]{
+  width   = \linewidth,
+  colsep  = 4pt,
+  stretch = 1.05,
+  rowhead = 1,
+  colspec = {Q[l,wd=4.0cm] X[l] X[l] Q[l,wd=5.2cm]}
+}
+\toprule
+\textbf{Concept} & \textbf{Contract} & \textbf{Receipt / Log} & \textbf{Gate} \\
+\midrule
+Wasserstein drift
+  & $W_1(p_t, p_{t-1})$
+  & \path{dro_kkt_log.w1_drift_estimate}
+  & Drift budget windows \\
+\midrule
+Adaptive radius
+  & $\rho_t = c \cdot \hat{L}_t \cdot \tau$
+  & \path{dro_kkt_log.adaptive_radius_rho_t}
+  & Containment envelopes \\
+\midrule
+Dual pressure
+  & $\eta^\ast$
+  & \path{dro_kkt_log.eta_star_dual_optimizer}
+  & If $\eta^\ast > \theta$ then \path{GATE_CHANGES} \\
+\bottomrule
+\end{longtblr}
+
+\end{document}

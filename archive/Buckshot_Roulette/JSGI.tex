@@ -1,0 +1,2757 @@
+\documentclass[10pt]{article}
+
+% --- Packages ---------------------------------------------------------------
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{bm}
+\usepackage{fullpage}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{booktabs} % for Symbol Registry table
+\usepackage{tabularx}
+\usepackage{array}
+
+% --- mdframed boxes (kept for prose rules/standing constants) ---------------
+\usepackage{mdframed}
+% Soft grayscale palette for boxes
+\definecolor{rulebg}{RGB}{248,248,250}
+\definecolor{ruleframe}{RGB}{165,165,165}
+
+\newmdenv[
+  linecolor=ruleframe,
+  linewidth=0.6pt,
+  roundcorner=4pt,
+  backgroundcolor=rulebg,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=8pt,
+  innerrightmargin=8pt,
+  skipabove=8pt,
+  skipbelow=8pt
+]{rulebox}
+
+% Rule environment with a bold heading: \begin{rulex}{Frontier projection freeze} ... \end{rulex}
+\newenvironment{rulex}[1]{%
+\begin{rulebox}\noindent\textbf{Rule (#1).}\ }{\end{rulebox}}
+
+% Boxed "Standing constants" environment
+\definecolor{constbg}{RGB}{246,249,255}
+\definecolor{constframe}{RGB}{140,160,190}
+
+\newmdenv[
+  linecolor=constframe,
+  linewidth=0.6pt,
+  roundcorner=4pt,
+  backgroundcolor=constbg,
+  innertopmargin=6pt,
+  innerbottommargin=6pt,
+  innerleftmargin=8pt,
+  innerrightmargin=8pt,
+  skipabove=10pt,
+  skipbelow=10pt
+]{constbox}
+
+% --- Code listings (for Numerical APIs) -------------------------------------
+\usepackage{listings}
+\definecolor{codebg}{RGB}{248,248,250}
+\definecolor{codeframe}{RGB}{180,180,180}
+\definecolor{codekw}{RGB}{0,0,160}
+\definecolor{codestr}{RGB}{120,50,0}
+\definecolor{codecm}{RGB}{90,90,90}
+\lstdefinestyle{apicode}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{codeframe},
+  frameround=tttt,
+  columns=flexible,
+  keepspaces=true,
+  showstringspaces=false,
+  keywordstyle=\color{codekw}\bfseries,
+  stringstyle=\color{codestr},
+  commentstyle=\color{codecm}\itshape,
+  tabsize=2,
+  belowskip=0.6\baselineskip,
+  aboveskip=0.6\baselineskip,
+  numbersep=6pt,
+  numbers=left,
+  numberstyle=\tiny\color{codecm},
+  language=Python
+}
+\lstset{style=apicode}
+
+% --- Shorthand / helpers -----------------------------------------------------
+\newcommand{\FIM}{\mathrm{FIM}}
+\newcommand{\normFIM}[1]{\left\|#1\right\|_{\\FIM^{-1}}}
+\newcommand{\uses}[1]{\par\smallskip\noindent\textit{Uses: }#1\par\smallskip}
+\newenvironment{proofsketch}{\begin{proof}[Proof sketch]}{\end{proof}}
+
+%% Absolute constants symbols and small helpers
+\newcommand{\absconst}[1]{c_{#1}}   % absolute constants c_1, c_2, ...
+\newcommand{\anglesep}{\theta_{\min}}
+\newcommand{\cutq}{q}
+
+%% “atoms + continuous” split marker in §4
+\newcommand{\cont}{{\mathrm{cont}}}
+\newcommand{\atom}{{\mathrm{atom}}}
+
+% Layer tag and clickable constant refs
+\newcommand{\layertag}[1]{\textup{[#1]}}
+\newcommand{\constref}[1]{%
+  \hyperref[const:#1]{\ensuremath{\csname constsym#1\endcsname}}%
+}
+
+% --- Theorems ---------------------------------------------------------------
+\newtheorem{assumption}{Assumption}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{definition}{Definition}
+\newtheorem{proposition}{Proposition}
+\newtheorem{remark}{Remark}
+\newtheorem{corollary}{Corollary}
+
+% --- Symbol Definitions for Constants ---
+\newcommand{\constsymSmax}{S_{\max}}
+\newcommand{\constsymGmax}{G_{\max}}
+\newcommand{\constsymkappamax}{\kappa_{\max}}
+\newcommand{\constsymthetamin}{\theta_{\min}}
+\newcommand{\constsymLF}{L_{\mathrm F}}
+\newcommand{\constsymrtube}{r_{\mathrm{tube}}}
+\newcommand{\constsymtaumin}{\tau_{\min}}
+\newcommand{\constsymLpsi}{L_\psi}
+\newcommand{\constsymF}{F}
+\newcommand{\constsymchi}{\chi}
+\newcommand{\constsymepsilon}{\epsilon}
+\newcommand{\constsymrho}{\rho}
+\newcommand{\constsymtau}{\tau}
+\newcommand{\constsymetastar}{\eta^\star}
+
+\title{Joint Strategic Geometry on Decision and Objective Spaces}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+\bigskip
+
+% ==== Symbol Registry (one page) ============================================
+\section*{Symbol Registry (standing constants and moduli)}\label{sec:symbol-registry}
+
+\noindent\emph{All constants are understood as \textbf{uniform on compact sublevel sets} of the Lyapunov functions in use.}
+For quick cross-references elsewhere, use \verb+\constref{...}+.
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{} c >{}c<{} >{\raggedright\arraybackslash}X @{}}
+\toprule
+\textbf{Code} & \textbf{Symbol(s)} & \textbf{Meaning / where used} \\
+\midrule
+C1 & \kappa_{\max}, \theta_{\min}, r_{\mathrm{tube}} & Frontier geometry: maximal curvature, minimal nonzero incidence angle, tubular radius.
+\newline\textit{Uses: frontier lemmas; defect scaling.} \\
+\addlinespace
+
+C2 & S_{\max}, G_{\max} & Uniform bounds on strategic fields $\hat{S}$ and first derivatives near frontiers.
+\newline\textit{Uses: hybrid axioms \& defect.} \\
+\addlinespace
+
+C3 & L_F, \tau_{\min} & One-sided Lipschitz moduli per stratum; No-Zeno dwell time from Lemma 1.
+\newline\textit{Uses: crossing counts and ISS budgets.} \\
+\addlinespace
+
+C4 & \tau, \rho & Window length and DRO radius.
+\newline\textit{Uses: adaptive policy; regret/decomposition bounds.} \\
+\addlinespace
+
+C5 & F = \mathrm{FIM}(0), \chi = \kappa(F), L_\psi & Fisher objects and Hessian-Lipschitz constant.
+\newline\textit{Uses: local KL-cumulant equivalence \& conditioning.} \\
+\addlinespace
+
+C6 & \epsilon & Positive-real (PR) margin on controller band $[\omega_L, \omega_H]$.
+\newline\textit{Uses: KYP/phase lemmas; ISS gains.} \\
+\addlinespace
+
+C7 & \eta^* & Inner dual optimizer for the soft-transport DRO.
+\newline\textit{Uses: KKT stationarity and diagnostics.} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{abstract}
+We present a candidate interlingua for decision--objective systems, built on bigraded multivectors, mixed cumulants, and algebraic/categorical closure. Relative to prior drafts, we \emph{commit to a stratified-smooth calculus on $G$} with precise frontier-compatibility axioms; we add existence/regularity assumptions for the stochastic semantics; we make the local entropy--cumulant bound \emph{coordinate invariant} via the Fisher metric and an explicit finite dictionary of sufficient statistics; we define a \emph{Dirac (power-preserving) projection $\Pi$} and state a compositional passivity--ISS theorem; and we adopt a \emph{distributionally robust (DRO) closure} objective for drift. We also make plane selection explicit as an SVD eigen-problem with degeneracy regularization, define DEC-compatible shape derivatives with a finite-difference estimator and variance bound, introduce block/bootstrap procedures for dependent data, quantify chart-induced bias/variance, fix invariance choices, specify a concrete Hopf object (quasi-shuffle on $(p,q)$-words) with a worked $\kappa_{2,1}$ example, and derive Lipschitz category constants.
+\end{abstract}
+
+\textbf{Keywords:} decision manifolds; objective stratifications; mixed cumulants; Fisher information; DRO; Dirac structures; passivity; Hopf algebras; category theory; closure hierarchy; robotics; computational neuroscience; finance.
+
+\section{Introduction and Motivation}\label{sec:intro}
+
+\paragraph{Purpose.}
+We develop a rigorously testable framework for coupled decision--objective dynamics. Agents evolve on a decision space $\Gamma$ while a co-evolving structural environment $G$ reshapes feasible actions and payoffs. Our objective is an \emph{engineering-grade} interlingua that: (i) separates modeling layers by explicit contracts; (ii) states hypotheses at proof/implementation granularity; (iii) provides local theorems that are falsifiable on benchmarks; and (iv) degrades gracefully outside their stated radii.
+
+\paragraph{Tensions we resolve.}
+We make precise choices where earlier drafts blended: (a) smooth vs.\ stratified geometry on $G$; (b) algebraic identities vs.\ their discrete/stratified counterparts; (c) stationary vs.\ drifting laws; (d) geometric control vs.\ numerics. We control the resulting defects by No-Zeno dwell times, geometry-scaled frontier budgets, band-limited approximations, and dependence-aware estimation.
+
+\subsection*{Problem statement}
+For a coupled process $X_t=(\gamma_t,G_t)$ on $X=\Gamma\times G$, we seek:
+
+\begin{enumerate}[label=(P\arabic*),leftmargin=*]
+\item \textbf{Hybrid calculus.} A stratified exterior calculus on $T\Gamma\oplus TG$ that reduces to the smooth theory on each stratum and yields integrable, geometry-controlled defect terms at frontiers with No-Zeno crossings.
+\item \textbf{Statistical semantics.} Laws (invariant or windowed) under which evaluation functionals are Borel/$L^2$, and a local Fisher-invariant equivalence between mixed cumulants and relative entropy with an explicit radius.
+\item \textbf{Closure mechanisms.} A Wasserstein--KL DRO (with stratified reference $\lambda$) and a Hopf-algebraic projection that preserve symmetries and bound higher orders.
+\item \textbf{Geometry-aware control.} A Dirac (power-preserving) projection $\Pi$ and band-limited fractional controllers verifiably positive-real on their band, implying ISS under frontier defects.
+\item \textbf{Compositional semantics.} Lipschitz functors in the FIM-normed cumulant metric with monoidal submultiplicativity, and non-expansive projections for Dirac/Hopf closures.
+\end{enumerate}
+
+\subsection*{Modeling layers and contracts}
+We isolate arguments by layer. Each result carries a tag \texttt{[Rep/Alg/Stoch/Inf/Clos/Ctrl/Comp]} and ends with \emph{Uses:} (C-codes).
+
+\begin{description}[leftmargin=*,style=nextline]
+\item[Representation (Rep).] $\Gamma$ smooth; $G$ Whitney-stratified with Filippov prolongation at frontiers and strict transversality. Contract: dwell $\tau_{\min}>0$ and frontier tubes of radius $r_{\mathrm{tube}}$ (Lemma~1).
+\item[Algebra (Alg).] Bigraded exterior calculus on $T\Gamma\oplus TG$; classical identities hold stratumwise; Jacobi fails by a distributional frontier term with per-crossing budget $C_{\mathrm{fr}}$ (Lemmas~2–3).
+\item[Stochastic (Stoch).] Occupation/invariant or windowed laws; evaluation functionals are Borel and $L^2$. Absolute continuity is taken \emph{stratumwise} w.r.t.\ a refinement-invariant reference $\lambda$ (Def.~4). 
+\item[Inference (Inf).] EF neighborhood at independence with finite, whitened dictionary; Fisher $F\!\succ\!0$. Local KL–cumulant equivalence on a ball of radius $r\le \epsilon/L_\psi$ with conditioning factor $\chi$.
+\item[Closure (Clos).] Wasserstein--KL DRO with soft-transport dual $\varphi_\eta$; inner optimizer $\eta^\star$ satisfies KKT under a dominated-convergence envelope. Adaptive radius $\rho_t=c\,\widehat L_t\tau$ with guarantees.
+\item[Control (Ctrl).] Dirac projection $\Pi$ from rank-regular constraints; “freeze on crossing, reproject after” rule. Band-limited fractional controller with KYP/phase PR certificates; passivity $\Rightarrow$ ISS with an explicit frontier term proportional to $t/\tau_{\min}$.
+\item[Composition (Comp).] Algebra-first quasi-shuffle $\odot$ (associative/commutative), \emph{then} whitening; invariant-whitening assumption ensures symmetry equivariance. Pushforward–cumulant Lipschitz lemma justifies non-expansiveness of Dirac/Hopf projections in the FIM metric; monoidal Lipschitz constants multiply.
+\end{description}
+
+\begin{mdframed}
+\textbf{Standing Hypotheses (H1--H6).}
+\begin{enumerate}[label=(H\arabic*),leftmargin=*]
+\item $\Gamma$ is a connected smooth manifold; when symmetry matters we take a Lie group (e.g.\ $SE(3)$).
+\item $G$ is a Whitney-stratified pseudomanifold $\bigsqcup_i M_i$; dynamics are specified stratumwise and prolonged by Filippov regularization. Crossings are non-explosive and strictly transversal.
+\item On each stratum, mixed wedge, interior contraction, and Schouten–Nijenhuis bracket obey the smooth identities; frontier crossings induce a defect $\Delta_{\mathrm{fr}}$ with $\int_0^T\|\Delta_{\mathrm{fr}}(x_t)\|dt\le C_{\mathrm{fr}} N_{\mathrm{cross}}(0,T)$.
+\item Test functionals $T_{u,v}=\iota_{u\otimes v}\hat S$ are Borel/$L^2$ under the laws considered (invariant or windowed). Laws satisfy $P_\theta\ll\lambda$ stratumwise, with $\lambda$ the stratified reference measure (Def.~4).
+\item In an EF neighborhood of independence $P_0=P_\Gamma\otimes P_G$, a finite statistic dictionary has $F=\FIM(0)\succ0$ and $\nabla^2\psi$ is $L_\psi$-Lipschitz on a ball around $0$.
+\item Controllers use Dirac projections and band-limited positive-real fractional operators; entropy-aware gain adaptation stays within a PR-admissible set or evolves on a slower time scale than the plant.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Non-goals and scope}
+We do not claim global equivalences far from independence; we do not develop an unconstrained discrete multivector calculus on arbitrary meshes; we restrict to band-limited fractional realizations; and we avoid unbenchmarked claims.
+
+\subsection*{Repository style and isolation}
+Every theorem/lemma is tagged by layer and ends with a \emph{Uses:} line that lists the C-codes it touches from the symbol registry. Cross-references name the exact contracts invoked.
+
+\subsection*{Notation}
+Bidegrees use $(p,q)$; total grade is $p+q$. Pairings $\langle\cdot,\cdot\rangle$ are induced by the relevant metric; FIM norms are $\|z\|_{\FIM^{-1}}=\normFIM{z}$.
+
+\subsection*{Roadmap}
+Section~\ref{sec:calc} fixes the hybrid calculus, proving No-Zeno (Lemma~1) and a geometry-scaled defect (Lemma~3). Section~\ref{sec:stoch} sets stochastic semantics (existence, windowing, measurability). Section~\ref{sec:closure} introduces the stratified reference $\lambda$ and the soft-transport dual with KKT and an adaptive $\rho_t$. Section~\ref{sec:entropy} states the Fisher-invariant KL–cumulant theorem with explicit radius and conditioning corollary. Section~\ref{sec:control} builds Dirac projections and PR-certified fractional control, then proves passivity $\Rightarrow$ ISS with a frontier term scaling as $t/\tau_{\min}$. Section~\ref{sec:kernels} develops SVD plane selection with $J$-structure and DEC-compatible shape derivatives with a frontier freeze. Section~\ref{sec:adv-structures} adopts the \emph{algebra-first} quasi-shuffle, an \emph{invariant} whitening assumption, and a pushforward–cumulant Lipschitz lemma yielding non-expansiveness in the FIM metric with monoidal submultiplicativity. Section~\ref{sec:stats} standardizes dependence-aware CIs, model-order selection, and FDR control. Section~\ref{sec:bench} closes with executable benchmarks, negative controls, and degeneracy stress tests.
+
+\section{Foundations: Categorical Back-Hook from ACT to JSG I}
+
+\subsection{Semantic Substrate and Categories}
+We fix the JSG I state space $X=\Gamma\times G$ with Whitney-stratified $G$ and Filippov prolongation across frontiers, and we adopt the standing symbol registry (C1–C7) for curvature/incidence/tube radius, one-sided Lipschitz/dwell, Fisher objects and PR margin.\footnote{See JSG I §1 for layers/assumptions and the symbol table.}
+
+\paragraph{Categories.}
+Let $\mathbf{Arch}$ be a category of architectural ports and legal compositions; $\mathbf{Budgets}$ carry frontier geometry and ISS supply/spend ledgers; $\mathbf{Evid}$ is a (double) category of per-window evidence (typed witnesses in a fixed order). We use structure-preserving functors
+\[
+F_{\mathrm{Dyn}},F_{\mathrm{Stoch}},F_{\mathrm{Safe}}:\mathbf{Arch}\to\{\text{Dynamics},\text{Stochastic Kernels},\text{Safety Obligations}\}
+\]
+and a symmetric-monoidal functor $B:\mathbf{Arch}\to\mathbf{Budgets}$.
+
+\subsection{Compiler-Style Anchors (adopted in JSG I)}
+We interpret ACT syntax into JSG I objects as \emph{contracts}:
+\begin{enumerate}
+  \item \textbf{Operad $\Rightarrow$ governed interface (R1).} Each operation yields a port schema with an EF-locality radius $r=\varepsilon_{\mathrm{EF}}/L_\psi$, a leakage clamp (Green/Amber/Red), and certificate handles $(\Omega\text{-ID},\text{CBF handles})$.
+  \item \textbf{Cospan pushout $\Rightarrow$ frontier $\Sigma$ with budgets (R2).} Each wire instantiates $(\kappa_{\max},\theta_{\min},r_{\mathrm{tube}})$, a freeze-on-crossing Dirac projection $\Pi$, and a ledger $C_{\mathrm{fr}}$ that accumulates saltation/reset spend; feasibility is checked against ISS supply $S_{\mathrm{ISS}}$; rights-plane tails trigger via CVaR.
+  \item \textbf{Sheaf cover $\Rightarrow$ cross-modal invariants (R3).} A data sheaf $F$ on a sensing cover yields energy $E(s)=s^\top L_F s$; calibrated thresholds $(\epsilon,\tau_{\mathrm{iou}},\tau_{\mathrm{imu}},\tau_{\mathrm{hsic}})$ with FDR control ensure at least one guard fires with probability $1-\delta$ when $E(s)>\epsilon$.
+  \item \textbf{Functorial semantics $\Rightarrow$ published witnesses (R4).} Per window we publish, in strict order, the tuple $(\text{EF},\text{DRO},\text{PR},\text{CBF},\omega)$; the Transport Pack proof-prints the ordered IDs.
+\end{enumerate}
+
+\subsection{Safety-Bearing Theorems (ported to JSG I)}
+
+\begin{theorem}[Frontier Pushout $\Rightarrow$ Stratified Frontier with Budgets \& Freeze]
+A pushout in $\mathbf{Arch}$ induces a JSG I frontier $\Sigma$ whose budget tuple $(\kappa_{\max},\theta_{\min},r_{\mathrm{tube}})$ and ledger $C_{\mathrm{fr}}$ compose additively under wiring. On crossing, $\Pi$ freezes actuation to the Dirac structure, and ledger feasibility is checked against the ISS supply over each window. 
+\textbf{Acceptance A1:} For any composed wire, verify: No-Zeno dwell $\tau_{\min}$, saltation replay $\|K_{\mathrm{obs}}-I\|\le C_{\mathrm{salt}}$, and $C_{\mathrm{fr}}^{+}\le S_{\mathrm{ISS}}$ in the window.
+\end{theorem}
+
+\begin{theorem}[Locality Adequacy (EF)]
+In a Fisher neighborhood of independence with Hessian-Lipschitz constant $L_\psi$, any Fisher-quadratic approximation must be guarded by $r=\varepsilon_{\mathrm{EF}}/L_\psi$ with leakage clamp $\chi$; the guard publishes $(\varepsilon_{\mathrm{EF}},\hat L_\psi,r,\kappa(F),\text{calibration VC})$.
+\textbf{Acceptance A2:} A per-window routine \texttt{kl\_quad\_bounds} logs the tuple with CI on $\hat L_\psi$ and a clamp state; fail-closed outside Green.
+\end{theorem}
+
+\begin{theorem}[Sheaf$\Rightarrow$Guard $(\tau,\delta)$-Exactness]
+Given a calibrated sheaf $F$ and thresholds with multiple-testing control, $E(s)>\epsilon$ implies (with prob.\ $\ge 1-\delta$) at least one guard triggers (IoU$\downarrow$, IMU residual$\uparrow$, cross-HSIC$\uparrow$).
+\textbf{Acceptance A3:} Publish the calibration VC digest and the realized $\delta$ with CI.
+\end{theorem}
+
+\begin{theorem}[Functorial Safety Witnesses \& Bounded-Latency Completeness]
+Let $\mathsf{mc}$ be the monitor derived from $(\text{EF}\!\to\!\text{DRO}\!\to\!\text{PR}\!\to\!\text{CBF}\!\to\!\omega)$. For locality radius $r$ and dwell $\tau_{\min}$, any $r$-local violation persisting for one window is detected within $K=\max\{N,\lceil 2\tau/\tau_{\min}\rceil\}$ windows. 
+\textbf{Acceptance A4:} Enforce fixed guard order; hash the ordered IDs into the proof-print; check latency via an injected harness.
+\end{theorem}
+
+\begin{theorem}[Dirac Projection \& PR$\Rightarrow$ ISS with Frontier Spend]
+On each stratum, $\Pi$ is power-preserving; band-limited PR certification on $[\omega_\ell,\omega_u]$ yields ISS whose storage inequality carries an explicit frontier term proportional to $t/\tau_{\min}$.
+\textbf{Acceptance A5:} Attach GKYP witness $(\Omega,P,Q,\epsilon_{\mathrm{PR}},\text{hitmap})$; verify ISS budget rows include $C_{\mathrm{fr}}$ spend and match No-Zeno crossing counts.
+\end{theorem}
+
+\begin{corollary}[No-Zeno Crossing Bound (ported)]
+Under one-sided Lipschitz $L_F$ and strict transversality $\alpha>0$, $N_{\mathrm{cross}}(0,T)\le T/\tau_{\min}$ with
+\[
+\tau_{\min}=\frac{1}{L_F}\log\!\Big(1+\frac{L_F r_{\mathrm{tube}}}{\alpha}\Big)\;\ge\;\frac{r_{\mathrm{tube}}}{\alpha+L_F r_{\mathrm{tube}}}.
+\]
+\textbf{Acceptance A6:} Emit $\tau_{\min}$ and replay counts vs.\ logged crossings.
+\end{corollary}
+
+\paragraph{Determinism Envelope \& Hash Coherence.}
+Container SHA, device/library hashes, seeds and tolerances fix Tier-2 completeness; the proof-print is a domain-separated hash of the ordered guard IDs. 
+\textbf{Acceptance A7:} ReplayAdequacy diff must bit-match all IDs; fail-closed on any missing Tier-1/2 field.
+
+\subsection{Contracts and Uses}
+Each theorem ends with a \emph{Uses} line (C-codes) and a downstream consumer:
+A1 uses C1,C2,C11; feeds JSG III ISS ledger and CBF audit.
+A2 uses C5; gates all EF-quadratic uses and promotions.
+A3 uses C4,C5; feeds sensor-fusion guards.
+A4 uses C3,C4,C12; feeds monitor harness.
+A5 uses C6,C12; gates control updates and links to decision-range conservativity.
+A6 uses C1–C3; feeds Frontier Health KPI.
+
+\subsection{Fail-Closed Priority}
+Any guard failure rejects the window with a typed reason; bounded-response liveness enforces that resolution occurs within $K$ windows or the run is rejected.
+
+% ============================================================
+\section{State Spaces and Hybrid Exterior Algebra}\label{sec:calc}
+% ============================================================
+
+% Enforce the promised labels: Lemma 1, 2, 3 in this section.
+\setcounter{lemma}{0}
+
+This section fixes the geometric setting and proves the \emph{Hybrid Calculus Axioms}. New here:
+(i) a \emph{No-Zeno} lemma under strict transversality with an explicit dwell time $\tau_{\min}$ (Lemma~\ref{lem:no-zeno});
+(ii) a \emph{geometry-scaled} Jacobi-defect bound with curvature/incidence dependence (Lemma~\ref{lem:jacobi-upgraded});
+(iii) a DEC consistency result with a frontier term controlled by No-Zeno (Proposition~\ref{prop:dec-consistency}).
+
+\subsection{Whitney stratifications and tangent structures}
+
+\begin{definition}[Whitney stratified pseudomanifold]\label{def:whitney}
+Let $G$ be a second-countable, Hausdorff space with a finite disjoint decomposition $G=\bigsqcup_{i\in I} M_i$ into connected, smooth manifolds (strata), satisfying: (i) the frontier condition; (ii) Whitney $(a)$ and $(b)$ regularity for incident pairs $(M_i,M_j)$ with $M_i\prec M_j$. Each $M_i$ carries a smooth Riemannian metric $g_i$; the collection is a \emph{stratified Riemannian structure}.
+\end{definition}
+
+When needed we work in an ambient smooth manifold $\widetilde G$ and view strata as embedded submanifolds with induced metric and second fundamental form. We write $TG=\bigsqcup_i TM_i$ and denote the tangent \emph{cone} at $x\in\overline{M_i}$ by $C_xM_i$.
+
+\begin{definition}[Frontier-transversal vector fields]\label{def:transversal}
+A family $V=\{V_i\}_{i\in I}$ with $V_i\in\mathfrak X(M_i)$ is \emph{frontier-transversal} if for every incident pair $M_i\prec M_j$ and $x\in M_i\cap\overline{M_j}$ there exist extensions $\widetilde V_j$ to a tubular neighborhood of $M_i$ in $\widetilde G$ such that $\lim_{y\to x,\,y\in M_j}\mathrm{proj}_{T_xM_i}\widetilde V_j(y)$ exists and $\lim_{y\to x,\,y\in M_j}\mathrm{proj}_{N_xM_i}\widetilde V_j(y)=0$.
+\end{definition}
+
+\subsection{Filippov selection and No-Zeno}\label{subsec:filippov-nozeno}
+
+Trajectories may cross strata. We model dynamics by a differential inclusion $\dot x\in F(x)$ on $X=\Gamma\times G$ defined stratumwise and prolonged to frontiers by Filippov regularization. Write $x=(\gamma,g)$.
+
+\begin{definition}[Filippov regularization on stratified spaces]\label{def:filippov}
+Let $F_i: \Gamma\times M_i\rightrightarrows T(\Gamma\times M_i)$ be bounded, measurable with closed, convex values and locally one-sided Lipschitz in $x$. The Filippov regularization $\mathcal F$ associates to each $x\in\Gamma\times G$ the convex closure of essential values of $F_j$ in neighborhoods approaching $x$ along strata with $x$ in their closure. A Carath\'eodory solution is an absolutely continuous curve $x(\cdot)$ with $\dot x(t)\in \mathcal F(x(t))$ a.e.
+\end{definition}
+
+\begin{assumption}[Non-explosive frontier dynamics]\label{ass:nonexpl}
+(i) $F_i$ has linear growth and one-sided Lipschitz modulus $L_F$ on each stratum; (ii) there exists a Lyapunov function whose sublevel sets intersect only finitely many strata.
+\end{assumption}
+
+\begin{remark}[Normals on Whitney frontiers and failure set]\label{rem:tube-normal}
+Choose $n(x)$ as the unit normal field induced by a $C^1$ tubular neighborhood of the embedded frontier representative in the ambient $\widetilde G$. 
+Strict transversality may fail on a set of codimension $\ge 1$; the set of \emph{crossing times} that hit this failure set has one-dimensional Lebesgue measure $0$.
+\end{remark}
+
+\begin{lemma}[Transversality under $C^1$ perturbations]\label{lem:generic-trans}
+There exists a residual (dense $G_\delta$) set of $C^1$ perturbations of the stratumwise fields for which 
+$\inf_{x\in\Sigma}\inf_{v\in\mathcal F(x)}|\langle v,n(x)\rangle|\ge \alpha>0$.
+Equivalently, for a generic perturbation the evaluation map $(x,v)\mapsto\langle v,n(x)\rangle$ has $0$ as a regular value on $\Sigma$, so tangencies occur only on a set of codimension $\ge1$ and do not affect crossing-time measures. 
+\emph{Uses:} Sard-type argument on $\langle v,n\rangle$; $C^1$ tubular $n(\cdot)$ from Remark~\ref{rem:tube-normal}.
+\end{lemma}
+
+
+\begin{lemma}[No-Zeno under strict transversality]\label{lem:no-zeno}
+\emph{[\textup{Rep/Alg/Stoch}]} Let $\Sigma$ be a smooth frontier with unit normal $n$. Suppose one-sided Lipschitz per stratum and strict transversality:
+\[
+\inf_{x\in\Sigma}\ \inf_{v\in \mathcal F(x)}\ |\langle v,n(x)\rangle|\ \ge\ \alpha>0.
+\]
+Here $n(x)$ is as in Remark~\ref{rem:tube-normal}; by Lemma~\ref{lem:generic-trans} the hypothesis is generic under arbitrarily small $C^1$ perturbations. Then for any compact interval $[0,T]$, the number of crossings $N_{\mathrm{cross}}(0,T)$ is finite and obeys
+\[
+N_{\mathrm{cross}}(0,T)\ \le\ \frac{T}{\tau_{\min}},\qquad
+\tau_{\min}\ =\ \frac{1}{L_F}\,\log\!\Big(1+\frac{L_F\,r_{\mathrm{tube}}}{\alpha}\Big)\ \ \ge\ \ \frac{r_{\mathrm{tube}}}{\alpha+L_F r_{\mathrm{tube}}}\,.
+\]
+\begin{proofsketch}
+Within a tubular neighborhood of radius $r_{\mathrm{tube}}$ around $\Sigma$, let $d(t)$ be the signed normal distance to $\Sigma$ (positive on one side). Along a Filippov solution, $\dot d(t)=\langle \dot x(t),n\rangle+\underbrace{\langle x-\pi_\Sigma(x),\nabla n\rangle}_{\text{curvature}}$, with the curvature term bounded by $L_F d(t)$ due to one-sided Lipschitzness and smoothness of $n$. Strict transversality gives $\dot d\ge \alpha - L_F d$, whose comparison solution yields the time to move from $-r_{\mathrm{tube}}$ to $+r_{\mathrm{tube}}$ $\ge \tau_{\min}$; hence at most $T/\tau_{\min}$ crossings on $[0,T]$.
+\end{proofsketch}
+\uses{(C1) $r_{\mathrm{tube}}$; (C3) $L_F$ and $\tau_{\min}$.}
+\end{lemma}
+
+\subsection{Bigraded exterior calculus on $T\Gamma\oplus TG$}
+
+On a stratum $M_i\subset G$ the product $\Gamma\times M_i$ carries classical multivector calculus. Set
+$\Lambda^{p,q}(\Gamma,M_i):=\Lambda^p(T\Gamma)\,\hat\otimes\,\Lambda^q(TM_i)$. Operations (mixed wedge $\wedge$, interior contraction $\iota$, Schouten–Nijenhuis bracket $[\cdot,\cdot]_{SN}$) are standard and understood stratumwise.
+
+\subsection{Hybrid Calculus Axioms and geometry-scaled defect}\label{subsec:hybrid-axioms}
+
+\begin{lemma}[Hybrid Calculus Axioms]\label{lem:hybrid-axioms}
+\emph{[\textup{Alg}]} Let fields/forms be specified stratumwise with frontier-transversal compatibility (Def.~\ref{def:transversal}). Along any Filippov trajectory $x_t$, the classical identities hold a.e.\ inside strata: graded-commutativity, contraction antiderivation, and bracket derivation. Jacobi holds up to a frontier defect $\Delta_{\mathrm{fr}}$ with
+\[
+\int_0^T\|\Delta_{\mathrm{fr}}(x_t)\|\,dt \ \le\ C_{\mathrm{fr}}(U,T)\,N_{\mathrm{cross}}(0,T),
+\]
+where $C_{\mathrm{fr}}$ depends on uniform bounds on fields and their first derivatives near frontiers and one-sided Lipschitz moduli.
+\begin{proofsketch}
+Test Jacobi on a smooth partition subordinate to a frontier tube. The only non-canceling terms are distributional fluxes supported on $\Sigma$, controlled by jumps of contractions across $\Sigma$; these are bounded by uniform field norms and Lipschitz moduli, yielding the stated $L^1$ estimate per crossing.
+\end{proofsketch}
+\uses{(C2) $S_{\max},G_{\max}$; (C3) one-sided Lipschitz $L_F$.}
+\end{lemma}
+
+\begin{lemma}[Jacobi defect with explicit geometry/angle scaling]\label{lem:jacobi-upgraded}
+\emph{[\textup{Alg}]}
+Under the hypotheses of Lemma~\ref{lem:hybrid-axioms} with frontier curvature $\kappa_{\max}$, tube radius $r_{\mathrm{tube}}$, and minimal nonzero incidence angle $\anglesep$, the per-crossing defect obeys
+\[
+\int_0^T\!\|\Delta_{\mathrm{fr}}(x_t)\|\,dt \ \le\ C_{\mathrm{fr}}\cdot N_{\mathrm{cross}}(0,T),\quad
+C_{\mathrm{fr}}\ \le\ (\|S\|_\infty+\|\nabla S\|_\infty)\,\Big(1+\absconst{1}\,\kappa_{\max} r_{\mathrm{tube}}\Big)\,\frac{\absconst{2}}{\sin\anglesep}\!,
+\]
+with absolute constants $\absconst{1},\absconst{2}$ independent of units, uniformly on compact sublevel sets.
+\begin{proofsketch}
+The tube interaction time scales like $r_{\mathrm{tube}}/\sin\theta$; curvature perturbs $n$ by $O(\kappa_{\max}r_{\mathrm{tube}})$. The distributional commutator across $\Sigma$ is controlled by jumps in contractions bounded by $\|S\|_\infty+\|\nabla S\|_\infty$, yielding the product form. 
+\end{proofsketch}
+\uses{(C1) $\kappa_{\max},\anglesep,r_{\mathrm{tube}}$; (C2) $S_{\max},G_{\max}$; (C3) $\tau_{\min}$.}
+\end{lemma}
+
+\begin{proposition}[Frontier-compatibility of derivations]\label{prop:graph-deriv}
+\emph{[\textup{Alg}]} If derivations $D_i$ agree in the frontier-transversal sense, their induced actions on $\Lambda^{\bullet,\bullet}$ satisfy the axioms with the same defect bound as in Lemma~\ref{lem:hybrid-axioms}.
+\uses{(C1) frontier tubes; (C2) $S_{\max},G_{\max}$; (C3) one-sided Lipschitz.}
+\end{proposition}
+
+\subsection*{Numerical API (Frontier calculus: crossings, dwell time, geometry-scaled defect)}
+\emph{\layertag{Rep/Alg/Comp}} This API detects frontier crossings, estimates a uniform dwell time $\widehat{\tau}_{\min}$ and a per-crossing Jacobi-defect budget $\widehat{C}_{\mathrm{fr}}$, and applies the frontier \emph{freeze} rule used later by control and estimation layers.
+
+\paragraph{Inputs.}
+(i) A signed-distance or implicit frontier model $\phi(x)$ on $X=\Gamma\times G$ (positive/negative on adjacent strata);  
+(ii) time-stamped states/velocities $(x_t,\dot{x}_t)$;  
+(iii) tubular radius $r_{\mathrm{tube}}$; (iv) field bounds $S_{\max},G_{\max}$ and geometric moduli $\kappa_{\max},\theta_{\min}$ (cf.\ \S\ref{sec:symbol-registry});  
+(v) optional discrete mesh for DEC.
+
+\paragraph{Outputs.}
+Crossing log with times and incidence estimates; $\widehat{\tau}_{\min}$; $\widehat{C}_{\mathrm{fr}}$; freeze intervals; optional DEC error audit.
+
+\begin{lstlisting}
+# == 2.1 Frontier tube & normals ==============================================
+def build_frontier_tube(phi, r_tube):
+    # Returns callable: signed distance d(x), unit normal n(x) on |phi(x)|<=r_tube
+    def d(x): return phi(x)                    # assume phi ~ signed dist near frontier
+    def n(x):                                  # robust normal from gradient
+        g = grad_phi(x); return g / max(norm(g), 1e-12)
+    return d, n
+
+# == 2.2 Crossing detection & incidence metrics ===============================
+def detect_crossings(times, x, d, n, theta_min):
+    # Returns list of crossings with normal component v_n and incidence angle
+    crossings = []
+    for k in range(1, len(times)):
+        if d(x[k-1]) * d(x[k]) <= 0:          # sign change (robustify with hysteresis)
+            v = (x[k] - x[k-1]) / (times[k]-times[k-1])
+            v_n = abs(dot(v, n(x[k])))
+            theta = max(theta_min, arccos( min(1.0, max(-1.0, dot(normalize(v), n(x[k])))) ))
+            crossings.append({"t": times[k], "v_n": v_n, "theta": theta})
+    return crossings
+
+# == 2.3 Dwell time estimator (No-Zeno proxy) =================================
+def estimate_dwell_time(crossings, horizon_T):
+    # use nearest-neighbor spacing between crossings
+    if len(crossings) < 2: return {"tau_min_hat": horizon_T, "N_cross": len(crossings)}
+    gaps = [crossings[i]["t"] - crossings[i-1]["t"] for i in range(1, len(crossings))]
+    tau_hat = max(min(gaps), 0.0)
+    return {"tau_min_hat": tau_hat, "N_cross": len(crossings), "gaps": gaps}
+
+# == 2.4 Geometry-scaled defect budget =======================================
+def estimate_C_fr(S_max, G_max, kappa_max, theta_vals):
+    # heuristic upper bound: curvature + shallow incidence amplify interaction time
+    inv_sin = [1.0/max(1e-3, sin(theta)) for theta in theta_vals]   # ~ 1/sin(theta)
+    amp = max(inv_sin) if inv_sin else 1.0
+    C0 = c_calib * (S_max + G_max) * (1.0 + kappa_max) * amp        # c_calib via unit tests
+    return {"C_fr_hat": C0}
+
+# == 2.5 Freeze rule scheduling ==============================================
+def schedule_freeze(crossings, tau_min_hat):
+    # freeze on [t_k - eps, t_k + eps], with eps chosen <= tau_min_hat/2
+    eps = 0.5 * tau_min_hat
+    return [{"t0": c["t"] - eps, "t1": c["t"] + eps} for c in crossings]
+
+# == 2.6 Optional DEC audit ===================================================
+def dec_consistency(mesh_h, k_order, N_cross):
+    # stratumwise O(h^k) + frontier O(h^k) per crossing
+    err = C_dec * (mesh_h**k_order) * (1 + N_cross)
+    return {"dec_err_bound": err, "k": k_order, "h": mesh_h}
+
+# == 2.7 Orchestration ========================================================
+def frontier_runtime(times, x, phi, r_tube, S_max, G_max, kappa_max, theta_min, mesh=None):
+    d, n = build_frontier_tube(phi, r_tube)
+    crossings = detect_crossings(times, x, d, n, theta_min)
+    dwell = estimate_dwell_time(crossings, horizon_T=times[-1]-times[0])
+    Cfr = estimate_C_fr(S_max, G_max, kappa_max, [c["theta"] for c in crossings])
+    freezes = schedule_freeze(crossings, dwell["tau_min_hat"])
+    audit = dec_consistency(mesh.h, mesh.k, dwell["N_cross"]) if mesh else {}
+    log = {"N_cross": dwell["N_cross"], "tau_min_hat": dwell["tau_min_hat"],
+           "C_fr_hat": Cfr["C_fr_hat"], "freezes": freezes, **audit}
+    return log
+\end{lstlisting}
+
+\paragraph{Acceptance checks.}
+(i) Logs report $N_{\mathrm{cross}}$, $\widehat{\tau}_{\min}$, and $\widehat{C}_{\mathrm{fr}}$;  
+(ii) freeze intervals are non-overlapping and contained in the tube;  
+(iii) optional DEC audit prints $O(h^k)+N_{\mathrm{cross}}O(h^k)$.
+
+\uses{\constref{rtube}, \constref{LF}, \constref{thetamin}, \constref{kappamax}, \constref{Smax}, \constref{Gmax}.}
+
+
+\subsection{DEC interoperation with frontier term}\label{subsec:dec}
+Let $\mathcal T_h$ be a shape-regular simplicial (or cubical) mesh on each $M_i$ with mesh size $h$, and let $W_h$ denote Whitney forms. Denote by $\mathsf W_h:\Omega^\bullet\!\to\!\Omega_h^\bullet$ the Whitney projection and by $\mathsf R_h$ its de Rham inverse (integration on chains). Assume crossings satisfy Lemma~\ref{lem:no-zeno} and fields are $C^{k+1}$ on strata.
+
+\begin{proposition}[DEC consistency with frontier term and cut-cell quadrature]\label{prop:dec-consistency}
+\emph{[\textup{Alg/Comp}]}
+Assume either \emph{(a)} fitted meshes with uniform angle bounds on cut cells, or \emph{(b)} unfitted meshes with a ghost-penalty/aggregate stabilization on the tube. 
+For $0\le r\le k$ and each stratum $M_i$,
+\[
+\| \mathsf W_h(\omega\wedge\eta)-\mathsf W_h\omega\wedge_h \mathsf W_h\eta \|_{L^2(M_i)} \le C\,h^{k-r}\|\omega\|_{H^{k}}\|\eta\|_{H^{k}},
+\]
+and similarly for brackets. Along any Filippov trajectory $x_t$ on $[0,T]$,
+\[
+\int_0^T \|\Delta_{\mathrm{fr},h}(x_t)\|\,dt \ \le\ C\,h^{k-r}\,T\ +\ \underbrace{C_{\mathrm{quad}}\,h^{\cutq}\,T}_{\text{cut-cell quadrature, } \cutq\ge k}\ +\ C_{\mathrm{fr}}\,N_{\mathrm{cross}}(0,T).
+\]
+Thus the total defect is $O(h^{k-r}T+h^{\cutq}T)+O(C_{\mathrm{fr}}\,T/\tau_{\min})$.
+\uses{Shape regularity or ghost-penalty on cut cells; Lem.~\ref{lem:no-zeno}; Lem.~\ref{lem:jacobi-upgraded}.}
+\end{proposition}
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:calc}.}
+\begin{enumerate}[leftmargin=*]
+\item All later bounds that invoke frontier disturbance (e.g., ISS in \S\ref{sec:control}) reference both $\tau_{\min}$ (Lemma~\ref{lem:no-zeno}) and $C_{\mathrm{fr}}$ (Lemma~\ref{lem:jacobi-upgraded}).
+\item Any occurrence of $N_{\mathrm{cross}}$ appears only inside expressions dominated by $T/\tau_{\min}$ on finite horizons.
+\item The DEC bridge exposes explicit $h$-rates and a frontier contribution that scales as $C_{\mathrm{fr}}\,T/\tau_{\min}$.
+\end{enumerate}
+\end{mdframed}
+
+% ============================================================
+\section{Strategic Series and Cross-Cumulants}\label{sec:stoch}
+% ============================================================
+
+We formalize strategic fields on $\Gamma$ and $G$, define scalar evaluation functionals, and construct mixed cumulants under invariant or windowed laws. New in this draft: (i) measurability and $L^2$ conditions for $T_{u,v}$ (Lemma~\ref{lem:meas-3}); (ii) a corrected factorization statement that separates the \emph{global} “separating dictionary” case from the \emph{finite-$K$} practical case (Proposition~\ref{prop:factorization}); (iii) a quantitative windowed stability bound (Lemma~\ref{lem:window-stability}).
+
+\subsection{Strategic series and evaluation functionals}
+
+On each stratum $M_i\subset G$, take the bigraded series $\hat S=\sum_{p,q}S^{(p,q)}$ with
+\[
+S^{(p,q)}\in \Gamma\big(\Lambda^p(T\Gamma)\,\hat\otimes\,\Lambda^q(TM_i)\big).
+\]
+For covectors $u\in\Lambda^p(T^*\Gamma)$ and $v\in\Lambda^q(T^*G)$ define the scalar \emph{evaluation functional}
+\[
+T_{u,v}(x)\ :=\ \iota_{u\otimes v}\,\hat S(x)\,,
+\qquad x=(\gamma,g)\in \Gamma\times M_i,
+\]
+interpreted stratumwise (Lemma~\ref{lem:hybrid-axioms} ensures algebraic well-posedness a.e. along Filippov trajectories).
+
+\subsection{Existence of laws and windowing}
+
+Under Assumption~\ref{ass:nonexpl}, standard Lyapunov/tightness arguments deliver invariant laws $\mu$ for $(X_t)_{t\ge0}$ when the drift/diffusion contracts on average; otherwise we use \emph{windowed laws} on $[t-\tau,t]$:
+\[
+\mu_{[t-\tau,t]}\ :=\ \frac{1}{\tau}\int_{t-\tau}^{t}\delta_{X_s}\,ds.
+\]
+All statements below hold either for $\mu$ or uniformly in $t$ for $\mu_{[t-\tau,t]}$ when $\tau$ exceeds the local mixing time.
+
+\begin{lemma}[Measurability and $L^2$ of evaluation functionals]\label{lem:meas-3}
+\emph{[\textup{Stoch/Alg}]} Suppose on each stratum $M_i$: (i) $S^{(p,q)}$ is Borel and locally square-integrable; (ii) $(u,v)$ have at most polynomial growth in charts; (iii) crossings satisfy Lemma~\ref{lem:no-zeno}. Then $T_{u,v}$ is Borel on $X=\Gamma\times G$ and $T_{u,v}\in L^2(\mu)$ (or $L^2(\mu_{[t-\tau,t]})$).
+\begin{proofsketch}
+Carathéodory measurability of contractions in local charts and the frontier-transversal compatibility (Def.~\ref{def:transversal}) yield Borel measurability; local $L^2$ on strata and finite crossing count ensure global $L^2$ under $\mu$ or window averages.
+\end{proofsketch}
+\uses{(C2) $S_{\max}$ bounds; (C3) No-Zeno $\tau_{\min}$; Rep charts.}
+\end{lemma}
+
+\subsection{Mixed cumulants and factorization}\label{subsec:cumulants}
+
+Let $\mathcal T_K=\{T^{(m)}_{p,q}\}_{1\le p+q\le K}$ be a centered, whitened finite dictionary (Section~\ref{sec:entropy}). For a finite list $(Z_1,\ldots,Z_m)$ drawn from $\mathcal T_K$, define the (alternating) joint cumulant $\kappa(Z_1,\ldots,Z_m)$ via the usual moment–cumulant Möbius inversion; we write $\kappa_{p,q}$ for degree $(p,q)$ cumulants.
+
+\begin{proposition}[Factorization via vanishing mixed cumulants]\label{prop:factorization}
+\emph{[\textup{Stoch/Inf}]}
+Consider $\gamma$-only statistics and $G$-only statistics drawn from (possibly infinite) dictionaries.
+
+\emph{(i) Global, separating dictionary.}
+If the dictionary separates points and the cumulant generating function is analytic near $0$, then
+\[
+\gamma\ \perp\ G\ \bigm|\ Y \qquad \Longleftrightarrow \qquad \kappa_{p,q}=0\ \ \text{for all }p,q\ge 1.
+\]
+
+\emph{(ii) Finite-$K$ implication with quantitative residual.}
+Fix total order $K\in\{2,3,\dots\}$ and a centered, whitened finite dictionary $\mathcal T_K$. If $\kappa_{p,q}=0$ for all $p,q\ge1$ with $p+q\le K$, then for any polynomial functional $F$ of $\mathcal T_K$ with total degree $\le K$,
+\[
+\Big|\,\mathbb E[F(\gamma,G)]\ -\ \mathbb E[F_\Gamma(\gamma)]\,\mathbb E[F_G(G)]\,\Big|
+\ \le\ C_K(F)\,\sum_{p+q\ge K+1}\ \|\kappa_{p,q}\|,
+\]
+where $C_K(F)$ depends only on $K$ and the coefficients of $F$ in the whitened basis. In particular, the log-moment generating function satisfies
+\[
+\psi(\theta_\Gamma,\theta_G)\ =\ \psi_\Gamma(\theta_\Gamma)+\psi_G(\theta_G)\ +\ R_{K+1}(\theta),
+\qquad |R_{K+1}(\theta)|\ \le\ C'_K\!\sum_{p+q\ge K+1}\|\kappa_{p,q}\|\,\|\theta\|^{p+q},
+\]
+for $\|\theta\|$ within the EF radius of Section~\ref{sec:entropy}.
+\begin{proofsketch}
+(i) follows from the Lévy–Khintchine/moment–cumulant expansion with a separating dictionary. (ii) truncates the series at total degree $K$; the remainder aggregates neglected mixed cumulants with combinatorial coefficients (Bell polynomials) that are bounded by $C_K(F)$ after whitening. The EF radius control comes from Theorem~\ref{thm:FIMbound}/Remark~\ref{rem:hessian-lip}.
+\end{proofsketch}
+\uses{(C5) whitened $F=\FIM(0)\!\succ0$, EF radius $r\le \epsilon/L_\psi$.}
+\end{proposition}
+
+\paragraph{Interpretation (cross-terms).}
+Cross-terms in $\hat S$ map to \emph{mixed} cumulants $\kappa_{p,q}$: nonzero $\kappa_{p,q}$ for $p,q\ge1$ are the irreducible coupling certificates between decision flow on $\Gamma$ and structure updates on $G$. Proposition~\ref{prop:factorization} formalizes the “no cross-term $\Rightarrow$ factorization up to order $K$” claim used in closure policies.
+
+\subsection{Windowed stability under drift}\label{subsec:window-stability}
+
+Let $L$ be the $W_1$ drift speed of the ground-truth law across time (Section~\ref{sec:closure}). For windowed cumulants computed on $[t-\tau,t]$ and $[s-\tau,s]$ with $|t-s|\ll \tau$:
+
+\begin{lemma}[Windowed stability of mixed cumulants]\label{lem:window-stability}
+\emph{[\textup{Stoch}]}
+If each statistic in $\mathcal T_K$ is $L_T$-Lipschitz in $d_X$, then for $p+q\le K$,
+\[
+\Big|\kappa_{p,q}^{(t,\tau)}-\kappa_{p,q}^{(s,\tau)}\Big|
+\ \le\ C_{p,q}\,L_T\ \frac{|t-s|}{\tau}\ +\ o_\tau(1),
+\]
+uniformly on compact sublevel sets. The constant $C_{p,q}$ depends only on $p,q$ and the dictionary normalization.
+\begin{proofsketch}
+Write cumulants as multilinear polynomials in moments; bound each moment difference by the Kantorovich–Rubinstein dual with $L_T$ and the window averaging factor $|t-s|/\tau$, then propagate through the multilinear map.
+\end{proofsketch}
+\uses{(C4) $\tau$; Lipschitz statistics; window laws $\mu_{[t-\tau,t]}$.}
+\end{lemma}
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:stoch}.}
+\begin{enumerate}[leftmargin=*]
+\item Proposition~\ref{prop:factorization} \emph{(ii)} is the only statement invoked when working with a finite dictionary; any “$\Leftrightarrow$” claim elsewhere references \emph{(i)} with a separating dictionary.
+\item All $L^2$ and measurability claims for $T_{u,v}$ cite Lemma~\ref{lem:meas-3}.
+\item Any time-variation bounds for windowed cumulants cite Lemma~\ref{lem:window-stability} with explicit dependence on $|t-s|/\tau$.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (Strategic series, windowed cumulants, finite-\texorpdfstring{$K$}{K} tests)}
+\emph{\layertag{Stoch/Inf/Comp}} This API constructs test functionals $T_{u,v}$, performs invariant whitening, computes windowed cumulants up to order $K\le 3$ by streaming U-statistics, and runs a finite-$K$ factorization test (⇒, not ⇔).
+
+\paragraph{Inputs.}
+(i) Centered raw features/features-of-forms for letters $a^{(m)}_{p,q}$;  
+(ii) symmetry group actions (frames on $\Gamma$, graph isomorphisms on $G$) for invariant whitening;  
+(iii) window spec $(\tau,\text{stride})$; (iv) target order $K\in\{2,3\}$.
+
+\paragraph{Outputs.}
+Per-window $\widehat{\mathbf k}_K$, FIM norm, HAC/BB hooks (from §9), and a BH/BY-controlled finite-$K$ factorization report.
+
+\begin{lstlisting}
+# == 3.1 Invariant whitening ===================================================
+def orbit_invariant_cov(features, group_actions, nsamp=128):
+    # Monte Carlo over group actions to enforce symmetry-invariant inner product
+    Sigma = 0
+    for g in sample(group_actions, nsamp):
+        Xg = apply_action(features, g)           # permute/rotate letters
+        Sigma += cov(Xg)
+    Sigma /= nsamp
+    return Sigma
+
+def whiten_dictionary(features, Sigma):
+    W = inv(cholesky(Sigma))                    # Fisher/whitening map
+    return features @ W.T, W                    # whitened letters, map
+
+# == 3.2 Test functionals T_{u,v} =============================================
+def build_T_uv(letters, u, v):
+    # u,v are contraction descriptors into bigraded series \hat S
+    def T(x): 
+        # evaluate contractions using current \hat S and x=(\gamma,G)
+        return contract(u, v, letters, x)
+    return T
+
+# == 3.3 Streaming cumulants (order <= 3) =====================================
+def stream_cumulants(T_stream, K=3):
+    # maintains running moments and converts to cumulants via Möbius inversion
+    state = init_u_stats(K)
+    for Tt in T_stream: update_u_stats(state, Tt, K)
+    return u_to_cumulants(state, K)             # dict of kappa_{p,q}^{(m)}
+
+# == 3.4 Windowed pipeline =====================================================
+def windowed_cumulants(data_stream, letters, Sigma, K, win_size, stride):
+    T_wh, W = whiten_dictionary(letters, Sigma)
+    windows = sliding_windows(data_stream, win_size, stride)
+    out = []
+    for w in windows:
+        kappa = stream_cumulants(eval_T_stream(T_wh, w), K=K)
+        kvec  = flatten_kappa(kappa)            # stack by (p,q,m)
+        F     = fisher_at_P0(T_wh)              # = I if fully whitened
+        fim_norm = sqrt(kvec.T @ inv(F) @ kvec)
+        out.append({"window": w.id, "kappa": kappa, "kvec": kvec, "fim_norm": fim_norm})
+    return out
+
+# == 3.5 Finite-K factorization test (BH/BY) ==================================
+def finiteK_factorization_test(window_out, groups, q=0.1, method="BH"):
+    # H0: selected entries of mixed cumulants == 0  (vanish up to K)
+    pvals = {}
+    for win in window_out:
+        pvals[win["window"]] = test_zero_kappa(win["kvec"])  # HAC/BB from section 9
+    # group by bidegree/stratum per section 9
+    rejections = {}
+    for gid, P in groups.items():
+        rejections[gid] = fdr_bh(P, q) if method=="BH" else fdr_by(P, q)
+    return {"pvals": pvals, "reject": rejections}
+
+# == 3.6 Diagnostics ===========================================================
+def mixing_diagnostic(series, max_lag=64):
+    ac = autocorr(series, max_lag)
+    return {"ac_tail": ac[-5:], "mix_flag": (abs(ac[max_lag])<0.1)}
+\end{lstlisting}
+
+\paragraph{Acceptance checks.}
+(i) Whitening uses orbit-averaged $\Sigma$ (equivariant);  
+(ii) each window reports $\|\widehat{\mathbf k}_K\|_{\FIM^{-1}}$;  
+(iii) finite-$K$ test declares only the $\Rightarrow$ direction (vanishing up to $K$ $\Rightarrow$ factorization up to $K$), with BH/BY and group structure as in §9;  
+(iv) mixing diagnostic is logged for each window.
+
+\uses{Invariant whitening (Assumption~\ref{ass:inv-whiten}); Fisher $F$; §9 HAC/BB/FDR.}
+
+
+% ============================================================
+\section{Hierarchical Closure: BBGKY Analogy and DRO}\label{sec:closure}
+% ============================================================
+
+We pose closure as a Wasserstein--KL distributionally robust optimization (DRO) and derive a tractable soft-transport dual. New here:
+(i) a stratified \emph{reference measure} $\lambda$ that is \emph{refinement invariant} (Definition~\ref{def:ref-measure}, Proposition~\ref{prop:refinement});
+(ii) measurability and stratum-Lipschitz properties of the soft potential $\varphi_\eta$ (Lemma~\ref{lem:varphi-meas});
+(iii) differentiability of $\mathcal R_\rho$ in $(\theta,\eta)$ with an envelope/KKT system and explicit gradients (Proposition~\ref{prop:kkt});
+(iv) an \emph{adaptive radius} policy with guarantees that expose finite-sample $W_1$ rates via an effective transport dimension $d_{\mathrm{eff}}$ (Definition~\ref{def:adaptive}, Theorem~\ref{thm:adaptive-radius}).
+
+\subsection{DRO objective and soft-transport dual}
+
+Given a whitened statistic dictionary up to order $K$ (Section~\ref{sec:entropy}), we fit $\theta$ by
+\begin{equation}\label{eq:DRO}
+\min_{\theta\in\Theta}\ \underbrace{\sup_{Q:\ W_1(Q,\hat P)\le \rho}\ D_{\mathrm{KL}}(Q\Vert P_\theta)}_{:=\ \mathcal R_\rho(\theta)}\ +\ \lambda_{\mathrm{hopf}}\,\big\|(\mathrm{id}-\Pi_{\le K})\,\hat S\big\|^2.
+\end{equation}
+Here $W_1$ is computed with a ground metric $d_X$ on $X=\Gamma\times G$, and the second term penalizes Hopf-residual energy (Section~\ref{sec:adv-structures}).
+
+\begin{definition}[Stratified reference with continuous+atomic split]\label{def:ref-measure}
+Write $\lambda=\lambda_{\cont}+\lambda_{\atom}$ with
+\[
+\lambda_{\cont}:=\sum_{i\in I} w_i\,\mathcal H^{\dim M_i}\!\!\restriction_{M_i},\qquad
+\lambda_{\atom}:=\sum_{j\in J} w'_j\,\delta_{D_j},
+\]
+normalized on compacta and refinement-invariant (Prop.~\ref{prop:lambda-refinement}). 
+For any model $P_\theta$, write $P_\theta=P^{\cont}_\theta+P^{\atom}_\theta$ with $P^{\cont}_\theta\ll\lambda_{\cont}$ and $P^{\atom}_\theta\ll\lambda_{\atom}$.
+\end{definition}
+
+\begin{proposition}[Refinement-invariant stratified reference measure]\label{prop:lambda-refinement}
+\emph{[\textup{Stoch/Clos}]}
+Let $G=\bigsqcup_i M_i$ be Whitney-stratified. Choose weights $c_i \propto \mathcal H^{\dim M_i}(M_i\cap K)$ on compacta $K$ (Hausdorff volume of top-dimensional pieces restricted to $K$) and assign atom weights $c'_j$ continuously under refinements so that $\sum_i c_i+\sum_j c'_j=1$ on $K$. 
+If two stratifications admit a common refinement, the induced measures $\lambda$ are mutually absolutely continuous and the inner value $\mathcal R_\rho(\theta)$ is identical for both. 
+\begin{proofsketch}
+Use Carathéodory’s construction on the stratified $\sigma$-algebra and note that Hausdorff measures agree up to equivalence across common refinements on each piece; atomic mass continuity prevents mass creation under partitioning. The dual integral defining $\varphi_\eta$ is invariant under equivalent $\lambda$.
+\end{proofsketch}
+\uses{Whitney stratification; Hausdorff measures; Carathéodory extension.}
+\end{proposition}
+
+\begin{lemma}[Differentiability and KKT envelope]\label{lem:dv-kkt}
+\emph{[\textup{Stoch/Clos/Inf}]}
+Assume: (i) $dP_\theta/d\lambda$ is $C^1$ in $\theta$ on each $\Gamma\times M_i$; 
+(ii) there exists an $L^1(\lambda)$ envelope $G$ with $\sup_{\|\theta\|\le r,\ \eta\in[0,\eta_{\max}]}\big\|\partial_\theta \log\frac{dP_\theta}{d\lambda}\big\|\le G$; and (iii) $d_X$ is continuous. Then
+\[
+\nabla_\theta \mathcal R_\rho(\theta)\ =\ \nabla_\theta \mathbb E_{\hat P}\!\left[\varphi_{\eta^\star}(\cdot;\theta)\right]
+\ =\ \mathbb E_{\hat P}\!\left[\frac{\int e^{-\eta^\star d_X(z,\cdot)}\,\partial_\theta \frac{dP_\theta}{d\lambda}(z)\,d\lambda(z)}{\int e^{-\eta^\star d_X(z,\cdot)}\,\frac{dP_\theta}{d\lambda}(z)\,d\lambda(z)}\right],
+\]
+and the KKT system holds with $\eta^\star\ge 0$ solving $\rho=\mathbb E_{\hat P}[\partial_\eta \varphi_\eta]$. 
+\begin{proofsketch}
+Carathéodory measurability (Lemma~\ref{lem:varphi-meas}) + dominated convergence (envelope) justify interchanging $\nabla_\theta$ and the integral; apply the envelope theorem for the inner infimum in $\eta$.
+\end{proofsketch}
+\uses{Envelope $G\in L^1$; Lem.~\ref{lem:varphi-meas}.}
+\end{lemma}
+
+\begin{remark}[Finite-sample $W_1$ drift rates and $\delta$ in Thm.~\ref{thm:adaptive-radius}]\label{rem:w1-rates}
+\emph{[\textup{Stoch/Clos}]}
+With $n$ points per window and effective transport dimension $d_{\mathrm{eff}}$,
+\(
+|\hat L_t - L| = O_{\mathbb P}\!\big(n^{-1/d_{\mathrm{eff}}}\big)
+\)
+in the worst case, and improves to
+\(
+O_{\mathbb P}(n^{-1/2})
+\)
+under bounded transport dimension / sub-Gaussian dictionary tails. 
+Choose $\delta$ in Theorem~\ref{thm:adaptive-radius} accordingly to set $(c,\tau)$ pragmatically.
+\uses{Window size $n$; dictionary tails/transport-dimension assumption.}
+\end{remark}
+
+
+With $P_\theta\ll\lambda$ and continuous $d_X$, the inner sup admits the Donsker–Varadhan/Kantorovich dual
+\[
+\mathcal R_\rho(\theta)
+\ =\ \inf_{\eta\ge 0}\Big\{\eta\rho+\mathbb E_{\hat P}[\varphi_\eta(\cdot;\theta)]\Big\},
+\quad
+\varphi_\eta(x;\theta)\ :=\ \log \int \exp\!\big(-\eta d_X(z,x)\big)\,\frac{dP_\theta}{d\lambda}(z)\,d\lambda(z).
+\]
+
+\begin{lemma}[Measurability and stratum-Lipschitz of $\varphi_\eta$]\label{lem:varphi-meas}
+\emph{[\textup{Stoch/Clos}]} If $d_X$ is continuous and $z\mapsto \frac{dP_\theta}{d\lambda}(z)$ is stratumwise continuous, then $x\mapsto \varphi_\eta(x;\theta)$ is Borel on $X$ and locally Lipschitz on each $\Gamma\times M_i$.
+\begin{proofsketch}
+Carathéodory’s criterion applies to $(x,z)\mapsto e^{-\eta d_X(z,x)}\,dP_\theta/d\lambda(z)$; local dominated convergence on strata yields stratum-Lipschitzness of $\varphi_\eta$.
+\end{proofsketch}
+\uses{(C1) stratum charts; continuity of $d_X$; stratumwise continuity of $dP_\theta/d\lambda$.}
+\end{lemma}
+
+\subsection{Differentiability and KKT system}\label{subsec:kkt}
+
+\begin{proposition}[Differentiability and KKT for the soft-transport dual]\label{prop:kkt}
+\emph{[\textup{Clos/Inf}]} Suppose for some $r>0$, $\eta\in[0,\eta_{\max}]$, and all $\|\theta\|\le r$:
+(i) $dP_\theta/d\lambda$ is $C^1$ stratumwise with an $L^1(\lambda)$ envelope uniform in $(\theta,\eta)$;
+(ii) $\varphi_\eta(x;\theta)$ from Lemma~\ref{lem:varphi-meas} is $\hat P$-integrable.
+Then $\mathcal R_\rho(\theta)$ is $C^1$ on $\{\|\theta\|\le r\}$, and the inner minimization over $\eta\ge 0$ admits KKT conditions with
+\[
+\partial_\eta \Big(\eta\rho+\mathbb E_{\hat P}[\varphi_\eta]\Big)\bigg|_{\eta=\eta^\star}\ =\ 0
+\quad\Longleftrightarrow\quad
+\rho\ =\ \mathbb E_{\hat P}\Big[\underbrace{\mathbb E_{Z\sim Q_{\eta^\star,\theta}^x}\big[d_X(Z,x)\big]}_{:=\ \bar d_\eta(x;\theta)}\Big],
+\]
+where $Q_{\eta,\theta}^x$ is the Gibbs kernel on $X$ with density
+\[
+\frac{dQ_{\eta,\theta}^x}{d\lambda}(z)\ \propto\ e^{-\eta d_X(z,x)}\,\frac{dP_\theta}{d\lambda}(z).
+\]
+Moreover,
+\[
+\nabla_\theta \mathcal R_\rho(\theta)\ =\ \mathbb E_{\hat P}\Big[\ \mathbb E_{Z\sim Q_{\eta^\star,\theta}^x}\big[\ \nabla_\theta \log (dP_\theta/d\lambda)(Z)\ \big]\ \Big].
+\]
+If $\eta\mapsto \mathbb E_{\hat P}[\varphi_\eta]$ is strictly convex (e.g.\ when $d_X$ is non-degenerate on supports), then $\eta^\star$ is unique and the envelope theorem applies.
+\begin{proofsketch}
+Differentiate $\varphi_\eta$ under the integral using the uniform $L^1$ envelope; apply Danskin’s theorem/envelope theorem at the $\eta$-minimizer. The $\partial_\eta$ identity is the well-known soft-transport moment. The $\theta$-gradient follows from the log-derivative trick inside the Gibbs kernel.
+\end{proofsketch}
+\uses{Dominated convergence envelope; (C5) EF radius context; (C4) window integrability.}
+\end{proposition}
+
+%% NEW: KKT/gradient with mixed parts
+\begin{corollary}[KKT and gradient under $\lambda_{\cont}+\lambda_{\atom}$]\label{cor:kkt-mixed}
+With Definition~\ref{def:ref-measure}, the soft-transport dual reads
+$\mathcal R_\rho(\theta)=\inf_{\eta\ge0}\{\eta\rho+\mathbb E_{\hat P}[\varphi_\eta]\}$ with
+\[
+\varphi_\eta(x;\theta)=\log\!\Big(\int e^{-\eta d_X(z,x)}\,\frac{dP^{\cont}_\theta}{d\lambda_{\cont}}(z)\,d\lambda_{\cont}(z)\ +\ \sum_{D\in\mathrm{Atoms}} e^{-\eta d_X(D,x)}\,\frac{dP^{\atom}_\theta}{d\lambda_{\atom}}(D)\Big).
+\]
+The KKT condition is $\rho=\mathbb E_{\hat P}[\bar d_\eta(x;\theta)]$ with $\bar d_\eta$ the $Q^{x}_{\eta,\theta}$-expectation over the \emph{product} measure, and
+\[
+\nabla_\theta \mathcal R_\rho(\theta)=\mathbb E_{\hat P}\!\Big[\mathbb E_{Z\sim Q^{x}_{\eta^\star,\theta}}\big[\nabla_\theta\log(dP^{\cont}_\theta\!/d\lambda_{\cont})(Z)\big]\Big]\ +\ \sum_{D}\ \hat P(\{x\})\,\pi_{\eta^\star,\theta}(D\mid x)\,\nabla_\theta\log\frac{dP^\atom_\theta}{d\lambda_{\atom}}(D).
+\]
+\end{corollary}
+
+%% NEW: strict monotonicity of g(η) and uniqueness
+\begin{lemma}[Uniqueness of $\eta^\star$ by strict decrease]\label{lem:gprime}
+If $d_X(\cdot,x)$ is not $\lambda$-a.e.\ constant for each $x$ (GKYP-type nondegeneracy), then for fixed $(\theta,x)$
+\[
+g_x'(\eta)=-\operatorname{Var}_{Q^{x}_{\eta,\theta}}\!\big[d_X(Z,x)\big]\ <\ 0.
+\]
+Hence $g(\eta):=\mathbb E_{\hat P}[g_x(\eta)]$ is strictly decreasing and the KKT root $\eta^\star$ is unique.
+\end{lemma}
+
+\begin{proposition}[DRO-metric sensitivity]\label{prop:dro-metric-sens}
+Let $d_X^\epsilon=d_X+\epsilon\,\delta d$ with $\delta d$ Lipschitz and $\theta^\*(\epsilon)$ be the minimizer of \eqref{eq:DRO}. 
+Under the IFT assumptions for the outer problem,
+\(
+\partial_\epsilon \theta^\*(0)= - \big[\nabla^2_\theta \mathcal R_\rho(\theta^\*)\big]^{-1}\,\nabla_{\theta}\mathbb E_{\hat P}\!\left[\partial_\epsilon \varphi_{\eta^\*}(\cdot;\theta^\*)\right],
+\)
+with $\partial_\epsilon \varphi_{\eta^\*}(x;\theta)=-\eta^\*\,\mathbb E_{Q^{x}_{\eta^\*,\theta}}[\delta d(Z,x)]$. 
+\emph{Report:} log $\|\partial_\epsilon\theta^\*(0)\|$ as “DRO-metric sensitivity”.
+\end{proposition}
+
+\paragraph{Numerical note.}
+Compute $\varphi_\eta$ with log-sum-exp stabilization; sample from $Q_{\eta^\star,\theta}^x$ via importance sampling or short-run MCMC confined to a stratum (accept/reject at frontiers).
+
+\subsection{Adaptive radius policy: finite-sample rates}\label{subsec:adaptive}
+
+\begin{definition}[Adaptive radius policy]\label{def:adaptive}
+\emph{[\textup{Clos/Stoch}]} For window size $\tau$ with $n$ effective observations and transport dimension $d_{\mathrm{eff}}$ for $(X,d_X)$ on the window, define a pilot drift estimate
+\[
+\hat L_t\ :=\ \tfrac{1}{\tau}\,W_1\!\big(\hat P_{[t-\tau,t]},\hat P_{[t-2\tau,t-\tau]}\big),\qquad
+\rho_t\ :=\ c\,\hat L_t\,\tau\quad (c\ge 1).
+\]
+\uses{(C4) $\tau,\rho$; (C1) metric measurability.}
+\end{definition}
+
+\begin{theorem}[Containment and regret under finite-sample $W_1$ rates]\label{thm:adaptive-radius}
+\emph{[\textup{Clos}]} Let $P_{[t-\tau,t]}$ and $P_{[t-2\tau,t-\tau]}$ be the true window laws with $W_1$ drift speed $L$. Suppose $\hat P$’s are empirical with $n$ effective points and
+\[
+|\hat L_t - L|\ \le\ \delta_{n,d_{\mathrm{eff}}}
+\quad\text{with}\quad
+\delta_{n,d_{\mathrm{eff}}}=\begin{cases}
+C\,n^{-1/d_{\mathrm{eff}}} & \text{(worst-case, no moment/low-dim assumptions)},\\[2pt]
+C'\,n^{-1/2} & \text{(under bounded transport dimension / sub-Gaussian tails)}.
+\end{cases}
+\]
+Then with $\rho_t=c\,\hat L_t\,\tau$:
+\begin{enumerate}[leftmargin=*]
+\item (\emph{Containment}) $P_{[t-\tau,t]} \in \mathcal W_1(\hat P_{[t-\tau,t]},\rho_t)$ with probability $\ge 1-\alpha$ for a choice of $c=c(\alpha)$ depending on the tail bound of $\delta_{n,d_{\mathrm{eff}}}$.
+\item (\emph{Regret drift term}) The drift contribution in $D_{\mathrm{KL}}(P\Vert P_{\widehat\theta})$ scales as
+\[
+\mathrm{Regret}_\mathrm{drift}\ \le\ C_d \big(L+\delta_{n,d_{\mathrm{eff}}}\big)\,\tau.
+\]
+\end{enumerate}
+\begin{proofsketch}
+Triangle inequality for $W_1$ and concentration of empirical $W_1$ around truth give the containment for appropriate $c$. The regret bound follows from the dual representation with Lemma~\ref{lem:varphi-meas} (Lipschitz in $x$) and Proposition~\ref{prop:kkt} to control the variation of $\varphi_{\eta^\star}$ across adjacent windows.
+\end{proofsketch}
+\uses{(C4) $\tau$; Lipschitz constants from Lemma~\ref{lem:varphi-meas}; envelope from Proposition~\ref{prop:kkt}.}
+\end{theorem}
+
+\subsection{Error decomposition (updated)}
+With the adaptive radius, the standard decomposition becomes
+\[
+D_{\mathrm{KL}}(P\Vert P_{\widehat\theta})
+\ \le\ C_a\big\|(\mathrm{id}-\Pi_{\le K})\hat S\big\|^2\ +\ C_e n^{-1/2}\ +\ C_d\big(L+\delta_{n,d_{\mathrm{eff}}}\big)\,\tau,
+\]
+where the last term replaces the purely qualitative drift piece and is reported per window in logs together with $\eta^\star$.
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:closure}.}
+\begin{enumerate}[leftmargin=*]
+\item Every use of the soft-transport dual references Definition~\ref{def:ref-measure} and Lemma~\ref{lem:varphi-meas}; claims about invariance under re-stratification cite Proposition~\ref{prop:refinement}.
+\item KKT/gradient statements cite Proposition~\ref{prop:kkt} and list the envelope hypotheses; implementations log $\eta^\star$.
+\item The adaptive radius and regret bounds cite Theorem~\ref{thm:adaptive-radius} with explicit $n$ and $d_{\mathrm{eff}}$ dependence; runs log $\widehat L_t$, $\rho_t$, $\eta^\star$.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (soft-transport dual, gradients, and logging)}
+
+\begin{lstlisting}
+# Ground types (conceptual)
+Metric dX(x,z)                      # ground metric on X = Gamma x G
+Model  P_theta                      # exponential-family or other density; exposes:
+                                    #   logpdf(z; theta), score(z; theta) = grad_theta logpdf
+Measure lambda                      # refinement-invariant reference (Def.~4)
+Sampler draw_from_lambda(stratum, m)  # draws z~lambda restricted to a stratum (or global)
+Projector Pi_leqK                   # Hopf projector used in residual penalty
+Logger log_json(dict)               # appends a JSON line to the run log
+
+# ---------- Core primitives (stable numerics) ----------
+function varphi_eta(x_batch, theta, eta, dX, P_theta, lambda, strata_policy):
+    # returns: vector phi[i] = varphi_eta(x_i; theta)
+    for each x in x_batch:
+        S = 0.0            # log-sum-exp accumulator (log domain)
+        w_sum = 0.0
+        # importance base: sample M support points from lambda (same stratum as x by default)
+        Z = draw_from_lambda(strata_policy(x), M)
+        # compute log-weights with log-sum-exp stabilization
+        for z in Z:
+            \ell = -eta * dX(z, x) + logpdf_P_over_lambda(z; theta, P_theta, lambda)
+            # standard log-sum-exp trick
+            if S == 0.0: S = \ell
+            else:
+                if \ell > S: w_sum = exp(S - \ell) * w_sum + 1.0; S = \ell
+                else:        w_sum = w_sum + exp(\ell - S)
+        phi[x] = S + log(w_sum) - log(M)        # Monte Carlo approx. to log \int ...
+    return phi
+
+function soft_transport_kernel(x, theta, eta, dX, P_theta, lambda, strata_policy):
+    # returns a closure that can sample/reweight from Q_{eta,theta}^x via importance weights on lambda
+    Z = draw_from_lambda(strata_policy(x), M)
+    L = [ -eta*dX(z,x) + logpdf_P_over_lambda(z; theta, P_theta, lambda) for z in Z ]
+    S = max(L); w = [ exp(\ell - S) for \ell in L ]; w = w / sum(w)   # normalized weights
+    return (Z, w)   # usage: E_{Q}[f] \approx sum_j w[j] * f(Z[j])
+
+# ---------- Inner solver for \eta^\star ----------
+function eta_star(rho, x_batch, theta, dX, P_theta, lambda, strata_policy,
+                  bracket=[1e-6, 1e3], tol=1e-5, M=512):
+    # solve g(eta) = E_x E_{Q_{eta,theta}^x}[ dX(Z,x) ] - rho = 0
+    function g(eta):
+        acc = 0.0
+        for x in x_batch:
+            (Z,w) = soft_transport_kernel(x, theta, eta, dX, P_theta, lambda, strata_policy)
+            acc += sum_j w[j] * dX(Z[j], x)
+        return acc / len(x_batch) - rho
+    # bracket monotone root (g is decreasing in eta under mild conditions)
+    a,b = bracket
+    if g(a) < 0: return a
+    if g(b) > 0: increase b geometrically until g(b) < 0 or b > 1e6
+    # Brent or bisection (robust)
+    while |b-a| > tol*(1+min(|a|,|b|)):
+        c = 0.5*(a+b)
+        if g(c) > 0: a = c else: b = c
+    return 0.5*(a+b)
+
+# ---------- Risk and gradient ----------
+function R_rho(theta, x_batch, rho, dX, P_theta, lambda, strata_policy, M=1024):
+    eta = eta_star(rho, x_batch, theta, dX, P_theta, lambda, strata_policy, M=M/2)
+    phi = varphi_eta(x_batch, theta, eta, dX, P_theta, lambda, strata_policy)
+    return eta*rho + mean(phi), eta
+
+function grad_R_rho(theta, x_batch, eta, dX, P_theta, lambda, strata_policy, M=1024):
+    # \nabla_\theta R_rho(\theta) = E_x E_{Q_{eta,theta}^x}[ score(Z; theta) ]
+    g = 0 (shape like theta)
+    for x in x_batch:
+        (Z,w) = soft_transport_kernel(x, theta, eta, dX, P_theta, lambda, strata_policy)
+        g += sum_j w[j] * score(Z[j]; theta)
+    return g / len(x_batch)
+
+# ---------- Adaptive radius and drift logging ----------
+function adaptive_radius(window_curr, window_prev, c, dX, effective_n, d_eff_hint=None):
+    # window_curr/prev: datasets; c >= 1
+    \hat W1 = empirical_W1(window_curr, window_prev, dX)      # same metric used in dual
+    \hat L  = \hat W1 / window_length_tau
+    rho_t   = c * \hat L * window_length_tau
+    # optional: rate hint for monitoring (not used in computation)
+    if d_eff_hint is None: rate = C / sqrt(effective_n) else: rate = C / (effective_n)^(1/d_eff_hint)
+    return rho_t, \hat L, \hat W1, rate
+
+# ---------- One-call convenience wrapper per window ----------
+function dro_step(theta, window_curr, window_prev, config):
+    # 1) adaptive radius (logs drift)
+    rho_t, \hat L, \hat W1, rate_hint = adaptive_radius(window_curr, window_prev,
+                            config.c_radius, dX=config.dX, effective_n=config.n_eff,
+                            d_eff_hint=config.d_eff)
+    # 2) pick minibatch x_batch from window_curr (or full window)
+    x_batch = minibatch(window_curr, size=config.batch)
+    # 3) compute risk and eta*
+    R, eta = R_rho(theta, x_batch, rho_t, config.dX, config.P_theta, config.lambda, config.strata_policy, M=config.M_mc)
+    # 4) gradient (for optimizer)
+    g = grad_R_rho(theta, x_batch, eta, config.dX, config.P_theta, config.lambda, config.strata_policy, M=config.M_mc)
+    # 5) Hopf residual (for penalty term and audit)
+    S_resid = norm( (Id - Pi_leqK) @ hatS(window_curr) )^2
+    # 6) structured logging
+    log_json({
+        "window_t": config.t_id,
+        "rho_t": rho_t,
+        "L_hat": \hat L,
+        "W1_hat": \hat W1,
+        "eta_star": eta,
+        "R_rho": R,
+        "hopf_residual": S_resid,
+        "n_eff": config.n_eff,
+        "rate_hint": rate_hint,
+        "M_mc": config.M_mc,
+        "batch": config.batch
+    })
+    return R + config.lambda_hopf * S_resid, g
+\end{lstlisting}
+
+\paragraph{Recommended defaults and guards.}
+\begin{itemize}[leftmargin=*]
+\item \emph{Bracketing for \(\eta^\star\).} Start with \([10^{-6},10^3]\); expand the right endpoint by \(\times 10\) if \(g(b)>0\). Enforce a hard cap (e.g., \(10^8\)) and fall back to \(\eta^\star=b\) if the bracket fails—log this.
+\item \emph{Monte Carlo budget.} Use \(M=512\)–\(2048\) per \(x\); reuse samples across nearby \(\eta\) during the 1-D solve (common-random-numbers variance reduction).
+\item \emph{Stratum policy.} By default, draw \(Z\) from the \emph{same} stratum as \(x\); allow “cross-stratum” proposals only if the frontier tube flag is raised (then freeze \(\Pi\) and \(\theta\) as in §6/§7).
+\item \emph{Stability.} All integrals in \(\varphi_\eta\) and kernel weights use log-sum-exp. Clip \(\eta\) to avoid \(\exp(-\eta d)\) underflow; report the clip in the log.
+\item \emph{EF models.} For exponential families, \texttt{score(z;theta)} is available in closed form; cache \(F=\mathrm{FIM}(0)\) for whitening and preconditioning. Use a Fisher preconditioner for the optimizer step.
+\item \emph{Unit tests.} (i) At \(\rho=0\), verify \(\eta^\star\!=\!0\), \(R_\rho(\theta)=\mathbb E[\log \frac{dP_\theta}{d\lambda}(X)]\). (ii) If \(d_X\equiv 0\), confirm \(\eta^\star\) arbitrary and \(R_\rho\) reduces to the log-normalizer term. (iii) Under independence (negative control), \(\eta^\star\approx 0\) and the Hopf residual dominates the objective.
+\end{itemize}
+
+\paragraph{Minimal config stub (to mirror your §10 API).}
+\begin{lstlisting}
+config := \{
+  dX: ground\_metric\_on\_X,\quad
+  P\_theta: ef\_model,\quad
+  lambda: stratified\_reference\_measure,\quad
+  strata\_policy: same\_stratum\_by\_default,\quad
+  c\_radius: 1.0,\quad
+  t\_id: window\_index,\quad
+  n\_eff: effective\_sample\_size,\quad
+  d\_eff: None\ |\ estimated\_transport\_dimension,\quad
+  M\_mc: 1024,\quad
+  batch: 2048,\quad
+  lambda\_hopf: 1e-2
+\}
+\end{lstlisting}
+
+
+% ============================================================
+% ============================================================
+\section{Entropy and Mixed Information Flow}\label{sec:entropy}
+% ============================================================
+
+We fix the EF neighborhood and prove a \emph{coordinate-invariant} local equivalence between $D_{\mathrm{KL}}$ and the Fisher-metric norm of mixed cumulants. New in this draft:
+(i) an explicit radius via a Hessian-Lipschitz constant and sharp constants (Theorem~\ref{thm:FIMbound});
+(ii) a conditioning corollary (Corollary~\ref{cor:FIM-conditioning});
+(iii) a windowed/transported whitening policy with bounds (Proposition~\ref{prop:window-transport}).
+
+% Ensure "Theorem 2" label as requested
+\setcounter{theorem}{1}
+
+\subsection{Dictionary and EF model}
+
+Let $\mathcal T_K$ be a finite, centered, whitened dictionary of alternated mixed statistics up to total degree $K\in\{2,3\}$ at \emph{independence} $P_0=P_\Gamma\otimes P_G$. Denote $F:=\mathrm{FIM}(0)\succ0$ with respect to $\mathcal T_K$. We use the EF
+\[
+\frac{dP_\theta}{dP_0}(x)=\exp\big(\langle \theta,\mathcal T_K(x)\rangle-\psi(\theta)\big),\qquad
+\kappa_{\mathrm{mix}}(\theta)=\mathbb E_{P_\theta}[\mathcal T_K]=\nabla\psi(\theta).
+\]
+
+\begin{theorem}[FIM-invariant local equivalence]\label{thm:FIMbound}
+\emph{[\textup{Inf}]} Suppose $\psi$ is twice differentiable on a neighborhood of $0$ with $\nabla^2\psi(0)=F\succ0$ and Hessian-Lipschitz with constant $L_\psi$ there. For any $0<\epsilon<1$ and radius
+\[
+r\ \le\ \frac{\epsilon}{L_\psi}\,,
+\]
+we have, for all $\|\theta\|\le r$,
+\[
+\frac12(1-\epsilon)\,\|\kappa_{\mathrm{mix}}(\theta)\|_{F^{-1}}^{2}
+\ \le\ D_{\mathrm{KL}}(P_\theta\Vert P_0)\
+\le\ \frac12(1+\epsilon)\,\|\kappa_{\mathrm{mix}}(\theta)\|_{F^{-1}}^{2}.
+\]
+\uses{(C5) $F\succ0$, $L_\psi$, tolerance $\epsilon$, radius $r\le \epsilon/L_\psi$.}
+\end{theorem}
+
+\begin{lemma}[Third-moment bound for $L_\psi$]\label{lem:Lpsi-3rd}
+For a whitened dictionary $\mathcal T_K$ and $F=\nabla^2\psi(0)$, there exist absolute $C>0$ such that, for $\|u\|=1$ and small $\|\theta\|$,
+\[
+\big\|\nabla^2\psi(\theta)-F\big\|\ \le\ C\,\sup_{\|u\|=1}\ \mathbb E_{P_0}\!\left[\big|\langle u, T_K\rangle\big|^3\right]\cdot\|\theta\|\ +\ O(\|\theta\|^2).
+\]
+Hence one may take $L_\psi \,\lesssim\, \sup_{\|u\|=1}\mathbb E_{P_0}[|\langle u,T_K\rangle|^3]$.
+\end{lemma}
+
+\begin{remark}[Estimator]\label{rem:Lpsi-est}
+Estimate the proxy via Hutch++/finite-difference probes (your \texttt{estimate\_Lpsi} API) and log $(L_\psi,\ r=\epsilon/L_\psi)$ with a CI. 
+\end{remark}
+
+\begin{remark}[Tight constants and how to pick them]\label{rem:constants}
+The $1/2(1\pm\epsilon)$ constants are optimal for quadratic $\psi$ and remain sharp to first order in $\epsilon$ by Taylor’s theorem with integral remainder and $\|\nabla^2\psi(\theta)-F\|\le L_\psi\|\theta\|\le\epsilon$.
+\end{remark}
+
+\begin{corollary}[Conditioning in unwhitened coordinates]\label{cor:FIM-conditioning}
+\emph{[\textup{Inf}]} Let $\tilde \theta=R\theta$ for an invertible linear map with Fisher congruence $\tilde F=R^{-\top} F R^{-1}$. If $\chi=\kappa(F)$ is the condition number of $F$, then for the same $\epsilon$ and $r$,
+\[
+\frac1{2\chi}(1-\epsilon)\,\|\kappa_{\mathrm{mix}}(\tilde\theta)\|_{\tilde F^{-1}}^{2}
+\ \le\ D_{\mathrm{KL}}(P_{\tilde\theta}\Vert P_0)\
+\le\ \frac{\chi}{2}(1+\epsilon)\,\|\kappa_{\mathrm{mix}}(\tilde\theta)\|_{\tilde F^{-1}}^{2}.
+\]
+\uses{(C5) $\chi=\kappa(F)$; Fisher congruence under coordinate changes.}
+\end{corollary}
+
+\subsection{Windowed FIM and whitening across time}\label{subsec:window-fim}
+
+Let $\mu_{[t-\tau,t]}$ be the windowed law from Section~\ref{sec:stoch}. Denote by $F_t:=\FIM_t(0)$ the Fisher matrix of the \emph{same} dictionary $\mathcal T_K$ computed at independence within that window. Two whitening policies are admissible; pick one and use it consistently.
+
+\begin{definition}[Whitening policies]\label{def:whitening-policies}
+\emph{[\textup{Inf/Stoch}]}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Global whitening (baseline).} Fix $F:=\FIM_{t_0}(0)$ at a reference window (or at the pooled baseline) and keep it fixed for all windows.
+\item \textbf{Transported whitening (congruence).} For each window, whiten by $F_t$ and transport coordinates to the baseline via the congruence map $R_t$ defined by $F_t=R_t^{-\top} F R_t^{-1}$ (e.g., $R_t=F^{1/2}U_t\Lambda_t^{-1/2}U_t^\top$ with $F_t=U_t\Lambda_t U_t^\top$).
+\end{enumerate}
+Define the \emph{whitening leakage} $\chi(t):=\kappa(F_t F^{-1})$ and $\chi_{\max}:=\sup_t \chi(t)$ on the time span of interest.
+\emph{Budget \& alarms:} enforce $\chi(t)\le \chi_{\max}$ (configuration) and log any exceedance; report $\chi_{\max}$ next to CI bars for time-series plots.
+
+\uses{(C4) window length $\tau$; (C5) baseline $F$, windowwise $F_t$, $\chi(t)$.}
+\end{definition}
+
+\begin{proposition}[Window-local equivalence and transported bounds]\label{prop:window-transport}
+\emph{[\textup{Inf/Stoch}]} Assume each window admits an EF neighborhood with the \emph{same} Hessian-Lipschitz constant $L_\psi$ for $\psi_t$ on a fixed ball and that $F_t\succ 0$. Then, for either whitening policy in Definition~\ref{def:whitening-policies}:
+\begin{enumerate}[leftmargin=*]
+\item (\emph{Window-local equivalence}) For all $\|\theta\|\le r\le \epsilon/L_\psi$,
+\[
+\frac12(1-\epsilon)\,\|\kappa_{\mathrm{mix}}^{(t)}(\theta)\|_{F_t^{-1}}^{2}
+\ \le\ D_{\mathrm{KL}}(P_{\theta}^{(t)}\Vert P_{0}^{(t)})\
+\le\ \frac12(1+\epsilon)\,\|\kappa_{\mathrm{mix}}^{(t)}(\theta)\|_{F_t^{-1}}^{2}.
+\]
+\item (\emph{Transport to baseline}) Expressing window-$t$ cumulants in the baseline Fisher norm incurs at most $\chi(t)$ inflation:
+\[
+\frac1{2\,\chi(t)}(1-\epsilon)\,\|\kappa_{\mathrm{mix}}^{(t)}(\theta)\|_{F^{-1}}^{2}
+\ \le\ D_{\mathrm{KL}}(P_{\theta}^{(t)}\Vert P_{0}^{(t)})\
+\le\ \frac{\chi(t)}{2}(1+\epsilon)\,\|\kappa_{\mathrm{mix}}^{(t)}(\theta)\|_{F^{-1}}^{2}.
+\]
+\end{enumerate}
+If $\chi(t)\le \chi_{\max}<\infty$ uniformly (e.g.\ under slow drift and bounded transport dimension), then the constants are uniform in $t$ with $\chi$ replaced by $\chi_{\max}$.
+\uses{(C4) drift/mixing uniformity; (C5) $F_t$, $L_\psi$, $\chi(t)$.}
+\end{proposition}
+
+\paragraph{Practical policy.}
+Prefer \emph{global whitening} when interpretability across time is crucial (fixed norm); prefer \emph{transported whitening} when per-window conditioning is poor (reduces numerical ill-conditioning at the cost of tracking $\chi(t)$).
+
+\subsection{Diagnostics and parameter selection}
+
+\begin{rulex}{Choosing \(\epsilon\) and \(r\)}
+Pick $\epsilon\in[0.05,0.2]$ to balance tightness vs.\ radius; set $r=\epsilon/L_\psi$ using a pilot bound on $L_\psi$ from finite differences of $\nabla^2\psi$ at $\theta=0$ (or Hutch++ trace bounds). Log $(\epsilon,r,L_\psi)$ alongside $\chi(t)$ for each window.
+\end{rulex}
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:entropy}.}
+\begin{enumerate}[leftmargin=*]
+\item Every “local KL–cumulant” statement cites Theorem~\ref{thm:FIMbound} with explicit $(\epsilon,r)$ and $F$.
+\item Any computation outside whitened coordinates cites Corollary~\ref{cor:FIM-conditioning} (or Proposition~\ref{prop:window-transport} in windows) and reports the relevant $\chi$.
+\item Windowed analyses declare the whitening policy and either bound $\chi_{\max}$ or include it in reported uncertainty.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (EF radius, $L_\psi$, whitening leakage $\chi(t)$)}
+
+\begin{lstlisting}
+# Assumptions
+# - T(x): centered, whitened sufficient-statistic vector (same dictionary across windows)
+# - Baseline Fisher F (SPD) is fixed (global whitening) or a chosen reference
+# - window data: {x_i}_{i=1}^n with precomputed T_i := T(x_i)
+
+LinearAlgebra:
+  chol(SPD M) -> L s.t. M = L L^T
+  solve_SPD(M, b) -> x with M x = b using Cholesky
+  power_norm(A_mv, dim, iters=10) -> approx spectral norm via power iteration on mv-product
+  hutchpp_opnorm(A_mv, dim, s=4, iters=2) -> Hutch++-style operator-norm proxy (optional)
+
+# ---------- Window Fisher and whitening leakage ----------
+function fisher_window(T_list):
+    # Empirical Fisher at independence in this window (covariance of T)
+    # ridge for numerical stability (lambda_ridge small, e.g. 1e-6 * trace/dim)
+    n = len(T_list); d = dim(T_list[0])
+    mu = mean(T_list)                         # should be ~0 by centering; keep for safety
+    C  = (1/n) * sum_i (T_list[i] - mu) (T_list[i] - mu)^T
+    lam = 1e-6 * trace(C) / d
+    return C + lam * I_d
+
+function chi_leakage(F_baseline, F_t):
+    # Compute chi(t) = kappa(F_t F_baseline^{-1}) via generalized EVP
+    # Equivalent to eigenvalues of S := F_baseline^{-1/2} F_t F_baseline^{-1/2}
+    L = chol(F_baseline)                 # F = L L^T
+    # mv for S: v -> L^{-1}^T * F_t * L^{-1} * v  (apply solves with L and L^T)
+    function S_mv(v):
+        y = solve_SPD(L, v)              # L y = v
+        z = F_t @ y
+        w = solve_SPD(L.T, z)            # L^T w = z
+        return w
+    # estimate extremal eigenvalues of S by power and inverse power
+    # power_norm returns ||S||_2^{1/2} if fed S_mv? -> square it
+    lam_max = power_norm(S_mv, dim=d, iters=12)^2
+    # For lam_min, run power on inverse of S via CG solves (or Gershgorin fallback):
+    # implement inverse-power via Rayleigh quotient iteration on (S + tau I)^{-1} if needed.
+    # or use eigs on small d
+    lam_min = 1.0 / power_norm(lambda v: cg_solve(S_mv, v), dim=d, iters=12)^2 
+    return lam_max / lam_min
+
+# ---------- Small-tilt Hessian probes and L_psi estimation ----------
+# EF identity: \nabla^2 psi(\theta) = Cov_{P_theta}(T). Around theta=0, estimate Lipschitz via:
+#   || \nabla^2 psi(\delta u) - \nabla^2 psi(0) || / ||\delta u||.
+# We approximate P_{delta u} by reweighting samples from P_0 with weights w_i \prop exp(\delta <u, T_i>).
+
+function weighted_cov(T_list, u, delta):
+    s = [ dot(u, T_i) for T_i in T_list ]
+    a = max(s)                        # log-sum-exp stabilization
+    w_unn = [ exp(delta * (s_i - a)) for s_i in s ]
+    Z  = sum(w_unn); w = [ w_unn_i / Z for w_unn_i in w_unn ]
+    mu_w = sum_i w[i] * T_list[i]
+    C_w  = sum_i w[i] * (T_list[i] - mu_w) (T_list[i] - mu_w)^T
+    return C_w
+
+function mv_diff_H(T_list, H0, u, delta):
+    # returns an mv-product for A := (H(delta u) - H0)/delta without forming it
+    H_delta = weighted_cov(T_list, u, delta)
+    A = (H_delta - H0) / delta
+    return (lambda v: A @ v)
+
+function estimate_Lpsi(T_list, deltas=[1e-3, 3e-3, 1e-2], m_dirs=8, use_hutchpp=True):
+    d  = dim(T_list[0])
+    H0 = fisher_window(T_list)                   # \nabla^2 psi(0) at independence
+    Lpsi_hat = 0.0
+    for k in 1..m_dirs:
+        u0 = gaussian(d); u = u0 / norm(u0)     # random unit direction (Euclidean or F-based)
+        for delta in deltas:
+            A_mv = mv_diff_H(T_list, H0, u, delta)  # mv for (H(delta u) - H0)/delta
+            if use_hutchpp:
+                opn = hutchpp_opnorm(A_mv, dim=d, s=4, iters=2)
+            else:
+                opn = power_norm(A_mv, dim=d, iters=10)
+            Lpsi_hat = max(Lpsi_hat, opn)
+    return Lpsi_hat, H0
+
+# ---------- Radius selection and logging ----------
+function pick_radius(epsilon, Lpsi_hat, floor=1e-8):
+    Lp = max(Lpsi_hat, floor)
+    r  = epsilon / Lp
+    return r
+
+function section5_online_update(window_T, F_baseline, epsilon, log_json):
+    # 1) window Fisher and leakage
+    F_t  = fisher_window(window_T)
+    chi  = chi_leakage(F_baseline, F_t)
+    # 2) Lipschitz estimate and EF radius
+    (Lpsi_hat, H0) = estimate_Lpsi(window_T)
+    r = pick_radius(epsilon, Lpsi_hat)
+    # 3) structured logging (aligns with section 5 acceptance checks)
+    log_json({
+        "section": "5",
+        "epsilon": epsilon,
+        "Lpsi_hat": Lpsi_hat,
+        "r_radius": r,
+        "chi_t": chi,
+        "trace_F_t": trace(F_t),
+        "cond_F_t": cond(F_t),              # optional: standard cond estimate
+        "n_stats": len(window_T),
+        "d_dict": dim(window_T[0])
+    })
+    return {"F_t": F_t, "chi": chi, "Lpsi_hat": Lpsi_hat, "r": r, "H0": H0}
+
+# ---------- Guards and unit checks ----------
+# - If chi explodes (e.g., > 1e6), switch to transported whitening (section 5.2) and re-estimate.
+# - If r is too small (below step size of optimizer), cap epsilon upward or enrich dictionary to reduce Lpsi_hat.
+# - Validate: for synthetic quadratic psi, Lpsi_hat -> 0 and r -> infty (subject to floor).
+\end{lstlisting}
+
+\paragraph{Notes and good practice.}
+\begin{itemize}[leftmargin=*]
+\item \emph{Direction metric.} Draw $u$ as unit vectors in the \emph{Fisher} norm if you want \(L_\psi\) in the induced operator norm of \(F^{-1}\); otherwise Euclidean is fine—just be consistent with the norm used in Theorem~\ref{thm:FIMbound}.
+\item \emph{Small-tilt accuracy.} The reweighting step is accurate for small \(\delta\); keep \(\delta\in[10^{-3},10^{-2}]\) (rescale if \(\|T\|\) is large) and monitor ESS \(= 1/\sum w_i^2\).
+\item \emph{Stability.} Always ridge \(F_t\) lightly before Cholesky; report the ridge size in logs if it exceeds \(10^{-6}\times\operatorname{trace}(F_t)/d\).
+\item \emph{Throughput.} Cache \(T_i\) once per window; reuse them for both \(F_t\) and \(L_\psi\) estimation. Hutch++ gives a robust operator-norm proxy with a handful of matvecs.
+\end{itemize}
+
+% ============================================================
+\section{Entropy-Aware Projected Control}\label{sec:control}
+% ============================================================
+
+We formalize a Dirac projection $\Pi$ and band-limited fractional controllers. New here: 
+(i) a proof that $D_i$ is a Dirac structure (maximally isotropic) under rank-regularity (Lemma~\ref{lem:dirac-isotropy}); 
+(ii) a \emph{frontier freeze} rule; 
+(iii) verifiable PR conditions via KYP or phase-margin bounds (Lemmas~\ref{lem:oust-pr-kyp}--\ref{lem:oust-pr-phase}); 
+(iv) an ISS theorem with an \emph{explicit} frontier term scaling as $t/\tau_{\min}$ (Theorem~\ref{thm:ISS}); 
+(v) entropy-aware gain adaptation via either an admissible-set projection (KYP) or a two-time-scale separation.
+
+% Ensure downstream numbering: Definition 6; Lemmas 7–10; Theorem 3.
+\setcounter{definition}{5}
+\setcounter{lemma}{6}
+\setcounter{theorem}{2}
+
+\subsection{Port-Hamiltonian plant and Dirac projection}
+
+On each stratum $M_i$, a port-Hamiltonian form reads
+\[
+\dot x \in J_i(x)\sharp dH(x) - R_i(x)\sharp dH(x) + G_i(x)u,\qquad y=G_i(x)^{\!*} dH(x),
+\]
+with skew $J_i=-J_i^{\!*}$, positive semidefinite $R_i\succeq 0$, and storage $H\ge 0$. 
+
+\begin{definition}[Dirac projection from strategic fields]\label{def:dirac-proj}
+Given $\hat S$ and a linear operator $\mathbb A_i(x;G):T_x\Gamma\to \mathbb R^r$ (from the $J$-aligned plane selection of §\ref{sec:kernels}), define
+\[
+\mathcal X_i(x):=\ker \mathbb A_i(x;G),\qquad \mathcal X_i^0(x):=\{e\in T_x^*\Gamma:\ e(f)=0\ \forall f\in \mathcal X_i(x)\}.
+\]
+Set the Dirac structure $D_i(x):=\mathcal X_i(x)\oplus \mathcal X_i^0(x)\subset T_x\Gamma\oplus T_x^*\Gamma$ and let $\Pi_i(x)$ be the orthogonal projector onto $D_i(x)$ for the energetic pairing $\langle e,f\rangle$.
+\end{definition}
+
+\begin{lemma}[Maximal isotropy and smoothness of $D_i$]\label{lem:dirac-isotropy}
+\emph{[\textup{Ctrl/Rep}]} If $\mathbb A_i(\cdot;G)$ has constant rank on $M_i$ (rank drops only on frontiers), then $D_i:=\mathcal X_i\oplus \mathcal X_i^0$ is maximally isotropic in $T\Gamma\oplus T^*\Gamma$ and forms a smooth subbundle on $M_i$. Consequently, $\Pi_i$ depends smoothly on $x$ along strata.
+\uses{(C1) rank-regularity per stratum; annihilator geometry.}
+\end{lemma}
+
+\begin{lemma}[Supply-rate preservation]\label{lem:supply}
+\emph{[\textup{Ctrl}]} Orthogonal projection onto a maximally isotropic subspace preserves the supplied power: if $\Pi_i((f,e),(u,y))=((\tilde f,\tilde e),(\tilde u,\tilde y))$ then
+\[
+\langle e,f\rangle + u^\top y \ =\ \langle \tilde e,\tilde f\rangle + \tilde u^\top \tilde y.
+\]
+\uses{Energetic pairing; Dirac isotropy.}
+\end{lemma}
+
+\begin{rulex}{Frontier projection freeze}\label{rule:frontier-freeze}
+During an instantaneous stratum crossing (frontier tube), hold $\Pi$ fixed at its pre-crossing value; reproject immediately after the crossing.
+\uses{(C3) dwell $\tau_{\min}$ from Lemma~\ref{lem:no-zeno}; (C1) frontier tube; (C2) bounded fields.}
+\end{rulex}
+
+\subsection{Band-limited fractional controllers and PR checks}\label{subsec:oust}
+
+Let $C_N(s)$ be an $N$th-order Oustaloup approximation of $s^\alpha$ on $[\omega_L,\omega_H]$ with a state-space realization $(A,B,C,D)$ after bilinear (band) mapping.
+
+\begin{lemma}[GKYP sufficiency for band-limited PR]\label{lem:oust-pr-gkyp}
+\emph{[\textup{Ctrl}]}
+Let $(A,B,C,D)$ realize $C_N(s)$ after the bilinear band map. There exist $P=P^\top\!\succ0$ and a Hermitian multiplier $Q=Q^\top\succeq0$ such that the frequency-interval GKYP LMI
+\[
+\underbrace{\begin{bmatrix} A & B \\ I & 0 \end{bmatrix}^\!\top\!\big(\Xi(\omega_L,\omega_H)\otimes P\big)\begin{bmatrix} A & B \\ I & 0 \end{bmatrix}}_{\text{interval constraint}}
+\ +\ 
+\underbrace{\begin{bmatrix} C & D \end{bmatrix}^\top \Pi_{\mathrm{PR}} \begin{bmatrix} C & D \end{bmatrix}}_{\Re\,C_N(j\omega)\ge\epsilon}\ \preceq\ -\,\epsilon I
+\]
+holds, where $\Xi(\omega_L,\omega_H)$ is the standard frequency-interval multiplier and 
+$\Pi_{\mathrm{PR}}=\begin{bmatrix}0 & I\\ I & 0\end{bmatrix}$ encodes positive realness.
+Then $C_N$ is $(\epsilon,[\omega_L,\omega_H])$-positive real. 
+\emph{Note:} the bilinear band map recovers the same inequality on the unit circle.
+\uses{(C6) PR margin $\epsilon$; GKYP (frequency-interval) multipliers.}
+\end{lemma}
+
+\begin{lemma}[Phase-margin sufficiency]\label{lem:oust-pr-phase}
+\emph{[\textup{Ctrl}]} If $\max_{\omega\in[\omega_L,\omega_H]}|\arg C_N(j\omega)-\alpha\pi/2|<\frac\pi2-\delta$ and $\mathrm{DC}$ gain $K_0>0$, then $\Re\, C_N(j\omega)\ge \epsilon(\delta,K_0)>0$ on the band. 
+\uses{(C6) phase-error bound $\Rightarrow$ PR margin $\epsilon(\delta,K_0)$.}
+\end{lemma}
+
+\paragraph{Admissible gain policy (verifiable).}
+Let $g\in\mathbb R^p$ denote controller gains (e.g., scalings of $C_N$ sections). Define the \emph{PR-admissible set}
+\[
+\mathcal G\ :=\ \{\,g:\ \exists\,P\succ0\ \text{s.t.\ KYP}(A(g),B(g),C(g),D(g);P)\ \text{holds on }[\omega_L,\omega_H]\,\}.
+\]
+At run time, set $g\leftarrow \mathrm{proj}_{\mathcal G}(g_{\mathrm{nom}}\cdot \phi(\|\kappa_{\mathrm{mix}}\|_{\FIM^{-1}}))$ with a Lipschitz, monotone $\phi(\cdot)$; log the achieved PR margin from Lemma~\ref{lem:oust-pr-kyp} for audit.
+
+\paragraph{Two-time-scale alternative.}
+Assume \emph{(TTS)}: $\dot g = \varepsilon\,\Xi(\|\kappa_{\mathrm{mix}}\|)$ with $0<\varepsilon\ll 1$ (slower than plant), and $g(t)$ remains within an open PR band for all $t$. Then the PR margin is preserved by averaging.
+
+\subsection{Closed-loop interconnection and ISS under switching}
+
+\begin{lemma}[Storage jump at a crossing]\label{lem:storage-jump}
+Across any instantaneous crossing $t_k$, the storage satisfies
+\[
+H(x(t_k^+))-H(x(t_k^-))\ \le\ C_{\mathrm{fr}},
+\]
+with $C_{\mathrm{fr}}$ from Lemma~\ref{lem:jacobi-upgraded}. Summing the jumps and using Lemma~\ref{lem:no-zeno} yields the $t/\tau_{\min}$ contribution in the ISS bound.
+\end{lemma}
+
+\begin{theorem}[Passivity $\Rightarrow$ ISS with frontier defects]\label{thm:ISS}
+\emph{[\textup{Ctrl}]} Suppose on each stratum $M_i$: 
+(i) there exists a storage $H$ with $\dot H\le y^\top u - \alpha\|y\|^2$; 
+(ii) interconnection via $\Pi$ preserves power (Lemma~\ref{lem:supply}); 
+(iii) $C_N$ is $(\epsilon,[\omega_L,\omega_H])$-PR (Lemma~\ref{lem:oust-pr-kyp} or \ref{lem:oust-pr-phase}); 
+(iv) frontier crossings are finite on finite horizons (Lemma~\ref{lem:no-zeno}); 
+(v) the frontier defect obeys Lemma~\ref{lem:jacobi-upgraded}. Then the closed loop is ISS and, for all $t\ge0$,
+\[
+\boxed{\
+H(x(t)) \ \le\ \beta\!\big(H(x(0))\big) \ +\ \int_0^t \gamma\!\big(\|w(\tau)\|\big)\,d\tau \ +\ C_0\,N_{\mathrm{cross}}(0,t)\,,
+}
+\]
+with $C_0=C_0\!\big(\constref{Smax},\constref{Gmax},\constref{kappamax},\constref{thetamin}\big)$ as in Lem.~\ref{lem:jacobi-upgraded}. 
+By Lem.~\ref{lem:no-zeno}, $N_{\mathrm{cross}}(0,t)\le t/\constref{taumin}$, hence
+\[
+\boxed{\ H(x(t)) \ \le\ \beta(H(x(0))) + \int_0^t \gamma(\|w(\tau)\|)\,d\tau \ +\ \frac{C_0}{\constref{taumin}}\ t.\ }
+\]
+\uses{ $\constref{taumin}$ (No-Zeno), geometry-scaled defect $C_0(\cdot)$, PR margin $\epsilon$.}
+\end{theorem}
+
+\paragraph{Entropy-aware gains (guaranteed variants).}
+\begin{description}[leftmargin=*,style=nextline]
+\item[Projection policy (preferred).] Use the admissible set $\mathcal G$; the gain update is $g\leftarrow\mathrm{proj}_{\mathcal G}(g_{\mathrm{nom}}\cdot \phi(\|\kappa_{\mathrm{mix}}\|_{\FIM^{-1}}))$. Since $\mathcal G$ is PR-certified by KYP, the PR margin $\epsilon$ is preserved pointwise in time, and Theorem~\ref{thm:ISS} applies verbatim.
+\item[Two-time-scale policy.] Under \emph{(TTS)}, average the dissipation inequality over windows of length $\gg 1/\varepsilon$; the effective margin is $\epsilon+O(\varepsilon)$, hence ISS with slightly perturbed constants.
+\end{description}
+
+\begin{mdframed}
+\textbf{Design/implementation checklist (auto-audit).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Dirac $\Pi$}: log rank of $\mathbb A_i$, detect/flag frontier freeze events, and record crossing times.
+\item \emph{PR checks}: implement \texttt{check\_positive\_real(C\_N, band, $\epsilon$)} using Lemma~\ref{lem:oust-pr-kyp} (primary) or Lemma~\ref{lem:oust-pr-phase} (fallback); log the achieved margin per window.
+\item \emph{Entropy-aware}: record $\|\kappa_{\mathrm{mix}}\|_{\FIM^{-1}}$, chosen $g$, whether projection to $\mathcal G$ occurred, and the \emph{(TTS)} flag if used.
+\item \emph{ISS budget}: report $\alpha$, $\epsilon$, $C_0$, $N_{\mathrm{cross}}(0,t)$ and its bound $t/\tau_{\min}$ alongside $H(x(t))$.
+\end{itemize}
+\end{mdframed}
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:control}.}
+\begin{enumerate}[leftmargin=*]
+\item The ISS inequality shows the frontier term as $C_0 N_{\mathrm{cross}}(0,t)$ and then substitutes $N_{\mathrm{cross}}\le t/\tau_{\min}$.
+\item Any use of “entropy-aware gains” references either the admissible-set projection (\texttt{proj\_}\(\mathcal G\)) or the two-time-scale assumption; PR preservation is explicit.
+\item Logs include PR margin on $[\omega_L,\omega_H]$, counts of frontier freezes/crossings, and the realized $t/\tau_{\min}$ bound.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (Dirac, PR checks, gain projection, ISS budget)}
+
+\begin{lstlisting}
+# --- Inputs (conceptual types) ----------------------------------------------
+Dirac:
+  A_i(x;G)                     # per-stratum constraint operator (Definition 6)
+  build_dirac_projection(A_i)  # returns Pi_i(x) with energetic inner product
+
+Controller:
+  oustaloup_ss(alpha, N, band, K) -> (A,B,C,D)   # state-space for C_N(s)=K s^alpha approx on [wL,wH]
+  band = [wL, wH]
+
+Metrics:
+  energy_pairing(e,f) = <e,f>   # energetic pairing
+  H(x)                          # storage
+  kappa_mix_norm := ||kappa_mix||_{FIM^{-1}}     # from §5/§3
+
+Logging:
+  log_json(dict)
+  now() -> t
+
+# --- Frontier handling -------------------------------------------------------
+state frontier = { crossing:false, last_cross_t:None, N_cross:0 }
+
+function on_frontier_enter():
+    frontier.crossing = true
+    frontier.N_cross += 1
+    frontier.last_cross_t = now()
+    freeze_Pi_and_controller_state()         # Rule: Frontier projection freeze (Section 6)
+    log_json({"evt":"frontier_enter", "t": frontier.last_cross_t, "N_cross": frontier.N_cross})
+
+function on_frontier_exit():
+    frontier.crossing = false
+    reproject_Pi_post_event()                # recompute Pi on new stratum
+    log_json({"evt":"frontier_exit", "t": now(), "N_cross": frontier.N_cross})
+
+# --- KYP positive-real checker (band-limited) --------------------------------
+# Maps [wL,wH] to the unit circle via a bilinear band map, then runs a KYP LMI.
+# If an SDP solver is unavailable, falls back to dense frequency sampling + phase-margin test.
+
+function check_PR_band(A,B,C,D, band, eps_min=0.0, sdp_solver=None, grid_pts=512):
+    (Aw,Bw,Cw,Dw) = bilinear_band_map(A,B,C,D, band)  # stable map of band to unit circle
+    if sdp_solver is not None:
+        # Continuous-time PR LMI (after mapping the band):
+        # Find P ≻ 0 and ε ≥ 0 s.t.
+        #   [A^T P + P A,      P B - C^T;
+        #    B^T P - C,   -(D + D^T)]  ≼  -ε I
+        (feasible, P, eps) = sdp_solver_PR(Aw,Bw,Cw,Dw)
+        if feasible and eps >= eps_min:
+            return {"pr_ok": True, "eps": eps, "cert":"KYP", "P": P}
+    # Fallback: phase-margin sufficiency (Lemma 10)
+    w = logspace(log10(band[0]), log10(band[1]), grid_pts)
+    phi_err_max = 0.0; min_Re = +inf
+    for wi in w:
+        H = freqresp_ct(A,B,C,D, wi)
+        min_Re = min(min_Re, Re(H))
+        phi_err_max = max(phi_err_max, abs(arg(H) - alpha*pi/2))
+    if min_Re > 0:
+        eps = min_Re                            # crude PR margin proxy
+        return {"pr_ok": True, "eps": eps, "cert":"phase", "phi_err_max": phi_err_max}
+    return {"pr_ok": False, "eps": 0.0, "cert":"none", "phi_err_max": phi_err_max}
+
+# --- Admissible gain set projection  G  --------------------------------------
+# If C_N depends affinely on gains g (common in cascaded Oustaloup sections), the set
+#   G = { g : ∃ P ≻ 0 s.t. KYP(A(g),B(g),C(g),D(g);P) holds on [wL,wH] }
+# is convex. We implement a practical projection by:
+#   (1) try KYP feasibility at g; if infeasible, (2) bisection on a scalar scale s in [s_min,s_max]
+#       toward a feasible point; (3) optional convex QP if an affine parametrization is available.
+
+function project_to_G(g_nom, phi_kappa, model, band, sdp_solver, s_bounds=[0.3, 2.0], tol=1e-3):
+    g_target = g_nom * phi_kappa              # entropy-aware scaling
+    if KYP_feasible(model, g_target, band, sdp_solver):
+        return g_target, {"projected": False, "scale": 1.0}
+    # Bisection on scalar scale s to nearest feasible:
+    s_lo, s_hi = s_bounds[0], s_bounds[1]
+    # Ensure bracket: expand outward if necessary
+    for it in 1..6:
+        if KYP_feasible(model, g_nom*s_lo, band, sdp_solver): break
+        s_lo *= 0.7
+    for it in 1..6:
+        if KYP_feasible(model, g_nom*s_hi, band, sdp_solver): break
+        s_hi *= 1.4
+    if not KYP_feasible(model, g_nom*s_hi, band, sdp_solver):
+        # give up: return last feasible baseline (conservative)
+        return g_nom, {"projected": True, "scale": 1.0, "note":"fallback_to_baseline"}
+    # Bisection to tolerance
+    for it in 1..20:
+        s_mid = 0.5*(s_lo + s_hi)
+        if KYP_feasible(model, g_nom*s_mid, band, sdp_solver):
+            s_hi = s_mid
+        else:
+            s_lo = s_mid
+        if abs(s_hi - s_lo) < tol * s_hi: break
+    g_feas = g_nom * s_hi
+    return g_feas, {"projected": True, "scale": s_hi}
+
+# Helper: feasibility wrapper
+function KYP_feasible(model, g, band, sdp_solver):
+    (A,B,C,D) = model.ss(g)                   # affine in g
+    res = check_PR_band(A,B,C,D, band, eps_min=0.0, sdp_solver=sdp_solver)
+    return res["pr_ok"]
+
+# --- Runtime controller synthesis & audit ------------------------------------
+function controller_step(alpha, N, band, g_nom, kappa_mix_norm, model, sdp_solver):
+    phi = phi_entropy(kappa_mix_norm)         # monotone Lipschitz policy
+    (g, proj_info) = project_to_G(g_nom, phi, model, band, sdp_solver)
+    (A,B,C,D) = model.ss(g)
+    pr = check_PR_band(A,B,C,D, band, eps_min=0.0, sdp_solver=sdp_solver)
+    log_json({"evt":"ctrl_update",
+              "kappa_mix_norm": kappa_mix_norm,
+              "phi": phi,
+              "g_nom": g_nom, "g_used": g,
+              "proj": proj_info, "pr_cert": pr["cert"], "pr_eps": pr["eps"]})
+    return (A,B,C,D), pr
+
+# --- ISS budget tracker (explicit frontier term) -----------------------------
+state iss = { H0: None, alpha_bar: None, eps_PR: None, C0: None, tau_min: None }
+
+function iss_init(H0, alpha_bar, eps_PR, C0, tau_min):
+    iss.H0 = H0; iss.alpha_bar = alpha_bar; iss.eps_PR = eps_PR; iss.C0 = C0; iss.tau_min = tau_min
+
+function iss_bound(t, input_energy_int):
+    # H(x(t)) <= e^{-alpha_bar t} H0 + input_energy_int + C0 * N_cross(0,t)
+    N = frontier.N_cross
+    bound_switch = iss.C0 * N
+    bound_linear = (iss.C0 / iss.tau_min) * t
+    H_bound = exp(-iss.alpha_bar * t) * iss.H0 + input_energy_int + bound_switch
+    log_json({"evt":"iss_budget",
+              "t": t, "H_bound": H_bound,
+              "N_cross": N, "C0": iss.C0,
+              "tau_min": iss.tau_min, "frontier_term": bound_switch,
+              "frontier_term_linear": bound_linear})
+    return H_bound, {"frontier_term": bound_switch, "frontier_term_linear": bound_linear}
+
+# --- One-call loop integration (per control tick) ----------------------------
+function control_tick(x, env, model, params):
+    if frontier_event_detected(env): on_frontier_enter()
+    (A,B,C,D), pr = controller_step(params.alpha, params.N, params.band,
+                                    params.g_nom, kappa_mix_norm(x),
+                                    model, params.sdp_solver)
+    if frontier.crossing:             # freeze rule during instantaneous crossing
+        hold_controller_state()       # keep last (A,B,C,D) until exit
+    u = apply_dirac_and_controller(x, A,B,C,D)   # \Pi from build_dirac_projection(A_i)
+    env.step(u)
+    if frontier_exit_detected(env): on_frontier_exit()
+    # ISS audit
+    H_t = H(x)
+    input_energy = params.input_integral.update(y_times_u=...)    # accumulate \int_0^t \gamma(||w||) d\tau if available
+    H_bound, ft = iss_bound(t=now(), input_energy_int=input_energy)
+    # Periodic audit log
+    log_json({"evt":"tick", "t": now(), "H": H_t, "H_bound": H_bound,
+              "pr_eps": pr["eps"], "N_cross": frontier.N_cross, "k_plane": params.k_plane_mode})
+\end{lstlisting}
+
+\paragraph{Guards, tests, and good practice.}
+- **Bilinear map sanity.** Validate the band map with a unit-gain integrator: the mapped discrete pole should land exactly on the unit circle at the designated band center.  
+- **SDP fallback.** If an SDP solver isn’t available, the phase-margin grid (Lemma 10) is a *sufficient* test. Log `pr\_cert ∈ {KYP, phase, none}` so failures are visible.  
+- **Projection stability.** If repeated projections keep shrinking gains, widen the band or increase \(N\) (Oustaloup order) to reduce phase error; both actions typically expand \(\mathcal G\).  
+- **Freeze discipline.** During any flagged crossing, hold \(\Pi\) and controller internal state (integrators/filters) fixed, then reproject immediately after exit—this is your boxed rule.  
+- **Audit completeness.** Each window should have: `pr\_eps`, `N\_cross`, `tau\_min`, `C0`, and the bound terms. These tie directly to Theorem 3 and your acceptance checks.
+
+\paragraph{Mini unit tests.}
+1) **PR checker:** For a known PR network (e.g., \(C(s)=K/(1+s)\)) on a narrow band, KYP must return `pr\_ok=True` and \(\epsilon>0\).  
+2) **Projection:** Intentionally scale gains to violate PR; `project\_to\_G` should return a scaled \(g\) with `projected=True` and `check\_PR\_band(...)=True`.  
+3) **ISS budget:** Simulate a run with zero input and no crossings; ensure the logged bound decays as \(e^{-\underline\alpha t}\) and the frontier terms remain zero; then inject synthetic crossings and verify the linear-in-\(t\) bound via \(\tau_{\min}\).
+
+\paragraph{“Uses:” (implicit for §6).}
+\emph{Uses: } (C6) PR margin; (C3) \(\tau_{\min}\) from Lemma 1; (C7) \(C_{\mathrm{fr}}\) via Lemma 3; energetic pairing; band \([\omega_L,\omega_H]\); Oustaloup order \(N\); freeze rule.
+
+
+% ============================================================
+\section{Computable Kernels: Plane Selection and Structural Derivatives}\label{sec:kernels}
+% ============================================================
+
+We turn abstract circulation bivectors into numerically stable kernels for control/estimation. New here:
+(i) admissible constrained subbundles for plane selection with upper semicontinuity of maximizers and a $k$-plane degeneracy policy; 
+(ii) SVD selection aligned with the \emph{almost-complex} structure of real skew matrices; 
+(iii) explicit regularity and finite-difference (FD) policies for shape derivatives with a \emph{frontier freeze} and dependence-aware CIs.
+
+% ---- Continue numbering: Lemma 11, Remark 2, Proposition 2
+\setcounter{lemma}{10}
+\setcounter{proposition}{1}
+
+\subsection{Plane selection under constraints: skew geometry and robustness}\label{subsec:plane}
+
+Let $A(\gamma,G)$ be the real skew matrix representing the $\Gamma$-circulation $\Phi=S^{(2,0)}_\Gamma$. 
+Let $\mathcal U(\gamma,G)\subset \mathbb R^d$ and $\mathcal V(\gamma,G)\subset \mathbb R^d$ be \emph{admissible subspaces} encoding feasibility (e.g., contact modes, actuator limits). 
+We assume:
+
+\begin{assumption}[Admissible subbundles and frontier rule]\label{ass:admissible}
+\emph{[\textup{Rep/Ctrl}]}
+(i) On each stratum $M_i$, $\mathcal U$ and $\mathcal V$ are $C^1$ subbundles with orthogonal projectors $P_U(\gamma,G)$ and $P_V(\gamma,G)$ depending continuously on $(\gamma,G)$; 
+(ii) across a frontier crossing, apply the \emph{freeze} rule of Section~\ref{sec:control}: hold $P_U,P_V$ fixed during the crossing and re-evaluate immediately after.
+\uses{(C1) stratified smoothness; frontier freeze (Rule in §6).}
+\end{assumption}
+
+For a given $(\gamma,G)$, define the constrained operator $A_{UV}:=P_U A P_V$.
+
+\begin{lemma}[Constrained SVD]\label{lem:constrained-svd-7}
+\emph{[\textup{Alg/Ctrl}]}
+The maximizers of 
+\[
+\max_{\substack{X\in\mathcal U,\ \|X\|=1\\ Y\in\mathcal V,\ \|Y\|=1}} |X^\top A Y|
+\]
+are the top left/right singular vectors of $A_{UV}$; the optimum equals $\sigma_1(A_{UV})$.
+\uses{Orthogonal projectors $P_U,P_V$; induced operator norm.}
+\end{lemma}
+
+\begin{lemma}[Upper semicontinuity of maximizing subspaces]\label{lem:usc-planes}
+\emph{[\textup{Rep/Alg}]}
+If $(\gamma_k,G_k)\to(\gamma,G)$ within a stratum and Assumption~\ref{ass:admissible} holds, then the set of maximizers of Lemma~\ref{lem:constrained-svd-7} is \emph{upper semicontinuous}: any limit of maximizers at $(\gamma_k,G_k)$ is a maximizer at $(\gamma,G)$. 
+Consequently, with the frontier freeze, the selected subspaces are piecewise continuous and free of chattering.
+\begin{proofsketch}
+Continuity of $P_U,P_V$ gives continuity of $A_{UV}$; the singular-value map is continuous and the argmax correspondence is upper semicontinuous on compact Grassmannians. The freeze eliminates instantaneous toggling at frontiers.
+\end{proofsketch}
+\uses{(C1) continuity of $P_U,P_V$; compactness of Grassmannians; frontier freeze.}
+\end{lemma}
+
+\begin{proposition}[Freeze-bias for structural derivatives]\label{prop:freeze-bias}
+Let the total freeze time inside tubes on a window be $T_{\mathrm{frz}}$ and the window length be $\tau$. 
+Then for the windowed gradient,
+\[
+\operatorname{Bias}\big(\widehat{\partial_\theta \mathcal L}\big)\ \le\ C\,\frac{T_{\mathrm{frz}}}{\tau}\ +\ O(h^2),
+\]
+with $C$ depending on local drift/Lipschitz moduli. \emph{Report:} log $T_{\mathrm{frz}}/\tau$ with the CI from the dependence-aware bootstrap.
+\end{proposition}
+
+\begin{remark}[Skew-SVD $\Leftrightarrow$ complex eigenplanes]\label{rem:skew-J-7}
+\emph{[\textup{Alg/Ctrl}]}
+For real skew $A$, singular values come in pairs and $A$ induces an almost-complex structure $J$ on each principal \(2\)-plane: if $Av=i\lambda v$ with $\lambda>0$, then the maximizing plane is spanned by $\Re v,\Im v$ and $J$ acts as a $\tfrac\pi2$ rotation on it. Under constraints, apply the same construction to $A_{UV}$ on the selected subspace. This $J$-aligned basis feeds $\mathbb A_i$ in Definition~\ref{def:dirac-proj}.
+\uses{Skew symmetry; spectral pairing; $J$-structure.}
+\end{remark}
+
+\paragraph{Degeneracy policy (measurable, robust).}
+Let $\sigma_1\ge\sigma_2\ge\cdots$ be the singular values of $A_{UV}$. 
+If $\sigma_1-\sigma_2<\varepsilon_{\mathrm{gap}}$, \emph{escalate} to a $k$-plane (typically $k=4$) spanned by the top $k$ singular vectors, and actuate in any $J$-compatible basis on that plane. 
+With a perturbation $\Delta$ and gap $g:=\sigma_k-\sigma_{k+1}>0$, Davis–Kahan/Wedin yields
+\[
+\sin\Theta\big(\widehat{\mathcal U}_k,\mathcal U_k\big)\ \le\ \frac{\|P_U\,\Delta\,P_V\|}{g}\,,
+\]
+hence the escalation threshold $g\le\varepsilon_{\mathrm{gap}}$ gives a measurable trigger and bounded principal-angle drift under small $\|\Delta\|$.
+\uses{Spectral gap $g$; operator perturbation $\|\Delta\|$; $J$-compatibility.}
+
+\subsection{Shape derivatives on $G$: regularity, FD policy, and freeze}\label{subsec:shape}
+
+Let $\theta\in\mathbb R^p$ parametrize $G_\theta$ and $T(\gamma,G_\theta)$ denote a stratumwise functional (e.g., contractions entering $A$).
+
+\begin{proposition}[Score regularity and FD MSE]\label{prop:score-fd-7}
+\emph{[\textup{Stoch/Inf}]}
+(i) (\emph{Regularity}) If the law admits a stratumwise density $w(\gamma;Y\!\mid G_\theta)$ differentiable in $\theta$ and there exists $g\in L^1$ with $|\nabla_\theta w|\le g$ uniformly on $\|\theta\|\le r$, then
+\[
+\nabla_\theta\,\mathbb E[T(\gamma,G_\theta)]
+\ =\ \mathbb E\big[T\,\nabla_\theta\log w\big]\ +\ \mathbb E[\nabla_\theta T],
+\]
+with expectations taken on each stratum and aggregated by $\lambda$ (Def.~\ref{def:ref-measure}).\\
+(ii) (\emph{FD MSE}) Two-sided central differences with step $h$ and $m$ samples per side satisfy
+\[
+\mathrm{MSE}\ \le\ \frac{2\sigma^2}{m h^2}\ +\ C_b^2\,h^4,\qquad 
+h^\star\ \asymp\ \Big(\frac{\sigma^2}{m\,C_b^2}\Big)^{\!1/6}.
+\]
+\begin{proofsketch}
+(i) Dominated convergence with the $L^1$ envelope; decompose via the log-derivative trick. (ii) Standard variance $O(m^{-1}h^{-2})$ and truncation bias $O(h^2)$ for central differences give the stated balance.
+\end{proofsketch}
+\uses{Envelope on $|\nabla_\theta w|$; window laws; variance $\sigma^2$; curvature bound $C_b$.}
+\end{proposition}
+
+\begin{rulex}{Frontier freezing for $\theta$-updates}
+Hold $\theta$ fixed inside frontier tubes and reuse the last valid gradient; re-enable updates after dwell time $\ge \tau_{\min}$ (Lemma~\ref{lem:no-zeno}). The induced bias is $O(\text{dwell})$ and is dominated by window averaging at the same scale.
+\uses{(C3) $\tau_{\min}$; (C1) frontier tubes; windowing (§\ref{sec:stoch}).}
+\end{rulex}
+
+\paragraph{Dependence-aware CIs.}
+Report gradient CIs using moving or circular block bootstrap (MBB/CBB) with $b\sim n^{1/3}$ (Section~\ref{sec:stats}). For multivariate gradients, give FIM-weighted ellipsoids; state the chosen $b$ and effective sample size.
+
+\paragraph{Update--reselect kernel with guards (summary).}
+Assemble $A$, compute $A_{UV}$, select a $J$-aligned plane (escalate to $k$ if $\sigma_k-\sigma_{k+1}<\varepsilon_{\mathrm{gap}}$), compute $\theta$-gradients via score or FD with $h^\star$, perform a rank-$2$ (or $2k$) refresh, and apply the frontier freeze during instantaneous crossings. Export the $J$-aligned basis to Definition~\ref{def:dirac-proj} for building $\mathcal X_i=\ker\mathbb A_i$.
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:kernels}.}
+\begin{enumerate}[leftmargin=*]
+\item Plane selection cites Lemma~\ref{lem:constrained-svd-7} and uses Assumption~\ref{ass:admissible}; maximizers are upper semicontinuous (Lemma~\ref{lem:usc-planes}); degeneracy escalation uses the gap trigger and logs principal angles.
+\item Skew geometry is explicit (Remark~\ref{rem:skew-J-7}); the $J$-basis exported to §\ref{sec:control} is stated.
+\item Gradient estimators cite Proposition~\ref{prop:score-fd-7}; outputs print $h^\star$, bootstrap CI (with block length $b$), and the freeze status if active.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (plane selection, $k$-plane guard, $J$-basis, FD $h^\star$, CIs)}
+
+\begin{lstlisting}
+# === Inputs (conceptual) =====================================================
+Geometry:
+  assemble_A(gamma, G, hatS) -> A        # skew matrix for S^{(2,0)}_\Gamma (Sec. 7)
+  admissible_subspaces(gamma, G) -> (P_U, P_V)   # orthogonal projectors (Assumption 7.1)
+
+Frontier:
+  in_frontier_tube() -> bool             # frontier detector (freezes updates)
+  tau_min                                # dwell-time lower bound from Lemma 1
+
+Stats:
+  T_stream                               # stream or window of sufficient stats / test functionals
+  window_id, n_eff                       # identifiers for logging
+
+Logging:
+  log_json(dict)
+
+# === Helpers: algebra on subspaces ==========================================
+function constrained_svd(A, P_U, P_V, k=2):
+    A_uv = P_U @ A @ P_V
+    # Economy SVD; for skew A_uv, use symmetric structure for speed if available
+    (U, s, Vt) = svd(A_uv, full=False)      # s[0] >= s[1] >= ...
+    return {"U": U[:, :k], "V": Vt.T[:, :k], "s": s[:max(4,k)]}
+
+function J_aligned_basis(A, U2, V2):
+    # Build a J-compatible 2-plane basis from top singular vectors (skew structure)
+    # For skew A, left/right vectors approximate +/- 90° phase shift; orthonormalize
+    QL = qr(U2)[0]; QR = qr(V2)[0]            # 2-col each
+    # Return orthonormal bases for the actuation plane(s)
+    return {"Q_left": QL, "Q_right": QR}
+
+function principal_angles(Q_prev, Q_new):
+    # Return principal angles between two k-planes (columns orthonormal)
+    # via SVD of Q_prev^T Q_new
+    M = Q_prev.T @ Q_new
+    s = svd(M, compute_uv=False)
+    angles = arccos( clip(s, 0, 1) )
+    return sort_desc(angles)                   # largest first
+
+# === Degeneracy guard and escalation ========================================
+state plane_state = { "Q_L": None, "Q_R": None, "sigma": None,
+                      "gap": None, "k": 2, "degenerate": False }
+
+function plane_select_kernel(gamma, G, hatS, eps_gap=1e-1, k_alt=4):
+    (P_U, P_V) = admissible_subspaces(gamma, G)
+    A = assemble_A(gamma, G, hatS)
+    S2 = constrained_svd(A, P_U, P_V, k=2)
+    s = S2["s"]; gap = s[0] - s[1] if len(s) > 1 else +inf
+    if gap < eps_gap:
+        S4 = constrained_svd(A, P_U, P_V, k=k_alt)
+        B = J_aligned_basis(A, S4["U"], S4["V"])
+        plane_state.k = k_alt; plane_state.degenerate = True
+        plane_state.sigma = S4["s"]; plane_state.gap = S4["s"][k_alt-1] - S4["s"][k_alt] if len(S4["s"])>k_alt else +inf
+        QL, QR = B["Q_left"], B["Q_right"]
+    else:
+        B = J_aligned_basis(A, S2["U"], S2["V"])
+        plane_state.k = 2; plane_state.degenerate = False
+        plane_state.sigma = S2["s"]; plane_state.gap = gap
+        QL, QR = B["Q_left"], B["Q_right"]
+    # principal angles vs previous (for chatter audit)
+    if plane_state["Q_L"] is not None:
+        angL = principal_angles(plane_state["Q_L"], QL)
+        angR = principal_angles(plane_state["Q_R"], QR)
+    else:
+        angL = angR = None
+    plane_state["Q_L"] = QL; plane_state["Q_R"] = QR
+    # log
+    log_json({"evt":"plane_select",
+              "window": window_id,
+              "sigma_top": float(plane_state.sigma[0]),
+              "gap_trigger": float(gap),
+              "k_mode": plane_state.k,
+              "degenerate": plane_state.degenerate,
+              "angles_L": angL, "angles_R": angR})
+    return {"QL": QL, "QR": QR, "k": plane_state.k, "gap": plane_state.gap,
+            "sigma": plane_state.sigma, "angles_L": angL, "angles_R": angR}
+
+# === Frontier freeze hook ====================================================
+state freeze = { "active": False, "entered_at": None }
+
+function maybe_freeze_updates():
+    if in_frontier_tube() and not freeze.active:
+        freeze.active = True; freeze.entered_at = now()
+        log_json({"evt":"freeze_on", "window": window_id})
+    if (not in_frontier_tube()) and freeze.active:
+        freeze.active = False
+        dwell = now() - freeze.entered_at
+        log_json({"evt":"freeze_off", "window": window_id, "dwell": dwell})
+
+# === FD step-size policy (Prop. 2) ===========================================
+# MSE <= 2*sigma^2/(m h^2) + C_b^2 h^4  ->  h* ~ (sigma^2/(m C_b^2))^(1/6)
+
+function estimate_sigma2(samples_plus, samples_minus):
+    # empirical variance of central-diff numerator over m pairs
+    diffs = [ s_plus[i] - s_minus[i] for i in 1..m ]
+    return var(diffs) / 2.0
+
+function estimate_Cb(pilot_vals, steps):
+    # crude curvature proxy: max absolute third finite-difference over a small grid of h
+    # pilot_vals[h] = central difference at step h
+    Cb = 0.0
+    for j in 2..len(steps)-1:
+        # second diff wrt h approximates leading bias coefficient
+        Cb = max(Cb, abs(pilot_vals[j-1] - 2*pilot_vals[j] + pilot_vals[j+1]) / (steps[j]-steps[j-1])^2)
+    return max(Cb, 1e-12)
+
+function fd_step_size_policy(m, sigma2_hat, Cb_hat):
+    h_star = (sigma2_hat / (m * Cb_hat^2))^(1/6)
+    return max(h_star, 1e-8)            # floor for numerical stability
+
+# === Dependence-aware bootstrap CIs ==========================================
+function block_length(n_eff, method="n_pow_third", c=1.0):
+    if method == "n_pow_third":
+        return max(2, floor(c * n_eff^(1/3)))
+    else:
+        return max(2, floor(c * n_eff^(1/3)))
+
+function bootstrap_CI_grad(grad_series, alpha=0.05, method="cbb"):
+    n = length(grad_series)
+    b = block_length(n_eff)
+    B = 1000
+    draws = []
+    for bidx in 1..B:
+        if method == "cbb":
+            start = randint(0, n-1)
+            # wrap-around circular blocks
+            idx = concatenate_blocks(start, b, n)[:n]
+        else:
+            idx = moving_blocks_indices(n, b)
+        draws.append( mean( grad_series[idx] ) )
+    q_lo = quantile(draws, alpha/2); q_hi = quantile(draws, 1 - alpha/2)
+    return {"ci":[q_lo, q_hi], "b": b, "B": B}
+
+# === End-to-end update-reselect (per estimation tick) ========================
+function update_reselect(gamma, G, hatS, grad_oracle, theta, m_pairs=16, fd_steps=[1e-3,2e-3,4e-3]):
+    maybe_freeze_updates()
+    if freeze.active:
+        log_json({"evt":"grad_skip_freeze", "window": window_id})
+        return {"frozen": True}
+    # 1) plane select (with degeneracy guard)
+    sel = plane_select_kernel(gamma, G, hatS)
+    # 2) gradient estimate: score if available; else FD with h*
+    if grad_oracle.has_score:
+        g_hat = grad_oracle.score(theta)             # unbiased; dependence handled in CI
+        series = grad_oracle.series()                # time series for CI
+        ci = bootstrap_CI_grad(series)
+        method = "score"
+    else:
+        # pilot curvature and sigma
+        pilot = {}
+        for h in fd_steps:
+            pilot[h] = grad_oracle.central_diff(theta, h, m=m_pairs)
+        Cb_hat = estimate_Cb([pilot[h] for h in fd_steps], fd_steps)
+        # variance proxy from smallest h
+        sigma2_hat = estimate_sigma2( grad_oracle.samples_plus(h=fd_steps[0]),
+                                      grad_oracle.samples_minus(h=fd_steps[0]) )
+        h_star = fd_step_size_policy(m_pairs, sigma2_hat, Cb_hat)
+        g_hat  = grad_oracle.central_diff(theta, h_star, m=m_pairs)
+        series = grad_oracle.series_h(h_star)        # time series of FD grads for CI
+        ci = bootstrap_CI_grad(series)
+        method = "fd"
+    # 3) log everything
+    log_json({"evt":"grad_update",
+              "window": window_id,
+              "method": method,
+              "g_hat": g_hat,
+              "ci": ci["ci"], "b_block": ci["b"], "B_boot": ci["B"],
+              "k_mode": sel["k"], "gap": float(sel["gap"]),
+              "angles_L": sel["angles_L"], "angles_R": sel["angles_R"]})
+    return {"plane": sel, "grad": g_hat, "ci": ci, "frozen": False}
+\end{lstlisting}
+
+\paragraph{Guards and good practice.}
+- **Chatter audit.** Always log principal angles between successive planes; if the max angle exceeds a small threshold repeatedly while not in a frontier tube, raise a degeneracy warning and keep \(k\!\!=\!4\) for a hold interval.  
+- **Spectral gap hygiene.** If the top two singular values are within machine epsilon of each other, skip plane flips even if the argmax toggles sign; the \(J\)-basis is orientation-free.  
+- **FD sanity.** Refuse \(h^\star\) if the effective sample size of the FD numerator (\(\mathrm{ESS}=1/\sum w^2\) for importance reweighting, if used) drops below a floor; increase \(m\) or take a larger \(h\).  
+- **CIs.** Report block length \(b\) and the bootstrap flavor (CBB/MBB) alongside the interval; this satisfies the acceptance checks in §9 as well.
+
+\paragraph{Mini unit tests.}
+1) **Skew toy:** \(A=\begin{bmatrix}0&\lambda\\-\lambda&0\end{bmatrix}\oplus 0\) with random \(P_U,P_V\). Expect \(k\!=\!2\), \(\sigma_1=\lambda\), angles \(=\{0,0\}\) across ticks.  
+2) **Degenerate case:** \(A\) with \(\sigma_1\approx\sigma_2\). Ensure \(k\)-escalation triggers and principal-angle drift stays bounded when you add a small perturbation.  
+3) **FD MSE curve:** For a known cubic \(T(\theta)\), verify empirical MSE vs.\ \(h\) follows \(a h^{-2} + b h^4\) and the measured minimum is near \(h^\star\).  
+
+\emph{Uses: } (C1) stratified smoothness \& frontier tubes; (C3) \(\tau_{\min}\); plane degeneracy threshold \(\varepsilon_{\mathrm{gap}}\); dependence-aware CI policy \(b\sim n^{1/3}\); \(J\)-basis export to \(\mathbb A_i\) (Def.\ 6).
+
+
+% ============================================================
+% ============================================================
+\section{Advanced Algebraic and Categorical Structures}\label{sec:adv-structures}
+% ============================================================
+
+We pin down the algebraic/categorical layer with an associative, commutative quasi-shuffle built \emph{algebra-first}, and lift Fisher-metric control to categorical Lipschitz bounds. New here:
+(i) the letter-merge $\odot$ is defined by an ambient associative product (Wick/Itô/chaos) and whitening is treated as a change of basis; 
+(ii) an \emph{Invariant whitening} assumption ensures symmetry equivariance; 
+(iii) a \emph{Pushforward Lipschitz} result justifies FIM-norm non-expansiveness for Dirac/Hopf projections; 
+(iv) monoidal submultiplicativity for functor Lipschitz constants.
+
+% Keep lemma/theorem numbering continuity: next lemma is 12, next theorem is 4.
+\setcounter{lemma}{11}
+\setcounter{theorem}{3}
+
+\subsection{Quasi-shuffle Hopf algebra by algebra-first merge}\label{sec:hopf}
+
+\paragraph{Alphabet and degrees.}
+Let $\mathcal A=\{a^{(m)}_{p,q}\}$ be the centered, whitened dictionary of sufficient statistics (Section~\ref{sec:entropy}); $\deg(a^{(m)}_{p,q})=(p,q)$, total degree $|a|=p+q$. Let $H=\mathbb K\langle \mathcal A\rangle$ be the tensor algebra of words with empty word $1$ and ground field $\mathbb K$ of characteristic $0$.
+
+\begin{assumption}[Invariant whitening]\label{ass:inv-whiten}
+\emph{[\textup{Inf/Alg}]}
+The inner product used to whiten $\mathcal A$ is invariant under the symmetry group acting on $\Gamma$ and $G$ (e.g., orthogonal frames on $\Gamma$, graph isomorphisms on $G$). Concretely, whitening is defined by a symmetry-invariant covariance (orbit-average or group-invariant frame), so the change-of-basis maps commute with group actions.
+\uses{(C5) Fisher inner product at $P_0$; symmetry group; whitening map.}
+\end{assumption}
+
+\paragraph{Algebra-first letter merge.}
+Choose an ambient \emph{associative, commutative} product $\diamond$ on centered variables (e.g., Wick/Itô/chaos on the EF statistics). Define the letter-merge on $\mathcal A$ by structure constants
+\[
+a^{(m)}_{p,q}\odot a^{(m')}_{r,s}\ :=\ \sum_{m''} c^{m''}_{(m,p,q),(m',r,s)}\, a^{(m'')}_{p+r,q+s},
+\]
+where $c^{m''}$ are the expansion coefficients of $a^{(m)}_{p,q}\diamond a^{(m')}_{r,s}$ in the \emph{ambient} basis, and \emph{then} whiten by an invertible linear map $W$ (change of basis).
+
+\begin{proposition}[Associativity preserved under change of basis]\label{prop:assoc-change}
+\emph{[\textup{Alg}]}
+If $\odot$ is induced by an associative, commutative bilinear map $\diamond$ on the ambient letters and $W$ is invertible, then the structure constants in the whitened basis still define a commutative, associative $\odot$.
+\begin{proofsketch}
+Let $B$ be the ambient basis and $\tilde B=W(B)$ the whitened one. Structure tensors transform by $C\mapsto (W^{-1})^{\otimes 1} C\, W^{\otimes 2}$. Associativity $C(C(\cdot,\cdot),\cdot)=C(\cdot,C(\cdot,\cdot))$ is a tensor identity preserved by invertible congruences.
+\end{proofsketch}
+\uses{Ambient associative $\diamond$; invertible $W$.}
+\end{proposition}
+
+\paragraph{Quasi-shuffle (\emph{stuffle}) product.}
+Define $u\uplus v$ recursively for words $u,v$ and letters $a,b$:
+\[
+1\uplus w=w\uplus 1=w,\qquad
+(ua)\uplus (vb)=(u\uplus vb)\,a+(ua\uplus v)\,b+(u\uplus v)\,(a\odot b).
+\]
+By Proposition~\ref{prop:assoc-change}, $(H,\uplus)$ is a commutative, associative, graded algebra.
+
+\paragraph{Coalgebra and antipode.}
+With deconcatenation $\Delta(w)=\sum_{uv=w}u\otimes v$ and counit $\epsilon(1)=1$, $(H,\uplus,\Delta,\epsilon)$ is graded connected and admits the standard antipode (Takeuchi), hence a commutative, noncocommutative Hopf algebra.
+
+\begin{proposition}[Symmetry equivariance]\label{prop:equivariance}
+\emph{[\textup{Alg/Rep}]}
+Under Assumption~\ref{ass:inv-whiten}, group actions on $\mathcal A$ act by Hopf automorphisms: the action commutes with $\odot$, $\uplus$, and $\Delta$.
+\begin{proofsketch}
+Invariance makes $W$ and the structure constants $c^{m''}$ equivariant; the recursion and deconcatenation are natural.
+\end{proofsketch}
+\uses{Assumption~\ref{ass:inv-whiten}; ambient product equivariance.}
+\end{proposition}
+
+\subsection{Characters, cumulants, and the degree-3 bridge}
+
+\paragraph{Characters and cumulants.}
+Any law $P$ induces a character $\chi_P:H\to\mathbb K$ by $\chi_P(1)=1$, $\chi_P(uv)=\chi_P(u)\chi_P(v)$, and $\chi_P(a)=\mathbb E_P[T_a]$. The cumulant character is $\kappa_P:=\log_*\chi_P=\sum_{n\ge1}\frac{(-1)^{n-1}}{n}(\chi_P-\epsilon)^{*n}$, which is \emph{primitive}: $\Delta(\kappa_P)=\kappa_P\otimes 1+1\otimes \kappa_P$.
+
+\paragraph{Worked order-3 example and the $\kappa_{2,1}$ split.}
+Let $x:=a^{(i)}_{1,0}$, $y:=a^{(j)}_{1,0}$, $z:=a^{(\ell)}_{0,1}$. The degree-$(2,1)$ Eulerian idempotent $E_{2,1}$ evaluates to the mixed cumulant $\kappa_{2,1}$ under any character:
+\[
+(\chi_P\otimes\chi_P)\,\Delta\!\big(E_{2,1}\big)
+=\kappa_{2,1}\otimes 1+1\otimes \kappa_{2,1}+\kappa_{1,1}\otimes \kappa_{1,0}+\kappa_{2,0}\otimes \kappa_{0,1}+\kappa_{1,0}\otimes \kappa_{1,1}.
+\]
+This justifies keeping $\kappa_{2,1}$ and its degree-$\le2$ factors at order $K=3$.
+
+\subsection{Hopf-canonical truncation and residual}
+Let $H^{(\le K)}$ be the span of words with $|w|\le K$ and define the orthogonal projector
+\[
+\Pi_{\le K}:H\to H^{(\le K)},\qquad \Pi_{\le K}(w)=\begin{cases}w,&|w|\le K,\\0,&|w|>K.\end{cases}
+\]
+The closure residual in Section~\ref{sec:closure} is exactly $\|(I-\Pi_{\le K})\hat S\|$ in the whitened inner product.
+
+\subsection{Functor Lipschitz constants and non-expansiveness in FIM}\label{sec:cat}
+
+\paragraph{Objects and metric.}
+For an instance $X$, let $\mathbf k_K(X)$ be the stacked whitened cumulant vector up to degree $K$ and
+\[
+d_K(X,X'):=\|\mathbf k_K(X)-\mathbf k_K(X')\|_{\FIM^{-1}}.
+\]
+
+\begin{proposition}[Pushforward Lipschitz]\label{prop:push-Lip}
+\emph{[\textup{Comp/Inf}]}
+Let $T:X\to X$ be $L$-Lipschitz in $d_X$ and each statistic in the dictionary be $C$-Lipschitz on $X$. In an EF neighborhood of $P_0$,
+\[
+\|\mathbf k_K(T_\# P_\theta)-\mathbf k_K(P_\theta)\|_{\FIM^{-1}}
+\ \le\ L\,C\,\|\theta\|\ +\ O(\|\theta\|^2).
+\]
+\begin{proofsketch}
+Write $\kappa(\theta)=\nabla\psi(\theta)$. For any letter $a$, $\big|\mathbb E_{P_\theta}[T_a\!\circ T]-\mathbb E_{P_\theta}[T_a]\big|\le L C\,W_1(P_\theta,P_0)=O(\|\theta\|)$; multilinearity and the EF expansion then give the bound in the Fisher norm.
+\end{proofsketch}
+\uses{(C4) window/EFradius; (C5) $F$, dictionary Lipschitz $C$, map Lipschitz $L$.}
+\end{proposition}
+
+\begin{lemma}[Non-expansive projections]\label{lem:nonexpansive-12}
+\emph{[\textup{Comp/Inf/Ctrl}]}
+Dirac $\Pi$ (Section~\ref{sec:control}) and Hopf $\Pi_{\le K}$ satisfy
+\[
+\|\mathbf k_K(\Pi X)-\mathbf k_K(\Pi X')\|_{\FIM^{-1}}\ \le\ \|\mathbf k_K(X)-\mathbf k_K(X')\|_{\FIM^{-1}},
+\]
+and $\|\mathbf k_K(\Pi X)\|_{\FIM^{-1}}\le \|\mathbf k_K(X)\|_{\FIM^{-1}}$.
+\begin{proofsketch}
+Both $\Pi$ and $\Pi_{\le K}$ are orthogonal projections (energetic and Hopf/whitened, respectively), hence $L=1$. Each dictionary element is $C\le 1$-Lipschitz w.r.t. the induced Hilbert norm. Apply Proposition~\ref{prop:push-Lip} and take $X'=0$ for the one-argument bound.
+\end{proofsketch}
+\uses{Proposition~\ref{prop:push-Lip}; energetic orthogonality; whitened orthogonality; (C5) Fisher norm.}
+\end{lemma}
+
+\begin{theorem}[Monoidal submultiplicativity]\label{thm:monoidal-4}
+\emph{[\textup{Comp}]}
+If $F,G$ are $C_F$- and $C_G$-Lipschitz strong monoidal functors between the $K$-cumulant categories, then $(F\otimes G)$ is $C_FC_G$-Lipschitz:
+\[
+d_K\big((F\otimes G)(X),(F\otimes G)(X')\big)\ \le\ C_FC_G\, d_K(X,X').
+\]
+\begin{proof}
+Block-diagonal Fisher metrics under independence and the direct sum of cumulants yield the product bound.
+\end{proof}
+\uses{Block-diagonal Fisher metric; functorial monoidality.}
+\end{theorem}
+
+%% NEW: local/Orlicz Lipschitz variant
+\begin{proposition}[Local/Orlicz Lipschitz]\label{prop:local-orlicz}
+On any sublevel set $\{x:\Phi(x)\le R\}$ where each letter in $\mathcal T_K$ is $C(R)$-Lipschitz, 
+the pushforward bound of Prop.~\ref{prop:push-Lip} holds with $C\!=\!C(R)$. 
+If letters have sub-Gaussian tails, then replacing Lipschitz norms by Orlicz $\psi_2$ norms yields the same first-order bound in expectation.
+\end{proposition}
+
+%% NEW: symmetry-equivariant whitening error
+\begin{remark}[Equivariance error from orbit-averaging]\label{rem:whiten-error}
+Let $\widehat\Sigma$ be the Monte Carlo orbit-averaged covariance and $\Sigma_G$ the exact group integral. If $\|\widehat\Sigma-\Sigma_G\|\le \epsilon$, then the quasi-shuffle structure constants (hence Lipschitz constants) perturb by $O(\epsilon)$. 
+\emph{Report:} log the observed $\epsilon$ per window.
+\end{remark}
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:adv-structures}.}
+\begin{enumerate}[leftmargin=*]
+\item The letter-merge $\odot$ is \emph{algebra-first} with associativity guaranteed (Prop.~\ref{prop:assoc-change}); projection is a basis change, not a definition.
+\item Symmetry claims cite Assumption~\ref{ass:inv-whiten} and Prop.~\ref{prop:equivariance}.
+\item Non-expansiveness in the FIM metric points to the \emph{Pushforward Lipschitz} Proposition~\ref{prop:push-Lip} and then Lemma~\ref{lem:nonexpansive-12}.
+\item Theorem~\ref{thm:monoidal-4} is stated and used wherever monoidal products appear.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (Hopf algebra, invariant whitening, FIM Lipschitz tests)}
+
+\begin{lstlisting}
+# === Inputs (conceptual) =====================================================
+Dictionary:
+  A_letters = { a_{p,q}^{(m)} : total degree |a|<=K }     # centered sufficient-statistic letters
+  index(a) <-> integer id                                  # bijection letter <-> id
+
+Ambient product:
+  ambient_prod(i,j) -> list[(k, coeff)]                    # coefficients in ambient (pre-whitened) basis
+                                                           # e.g., Wick/Itô/chaos product on centered vars
+
+Whitening (Assumption 8.1):
+  # symmetry-invariant inner product at P0:
+  #   W: ambient -> whitened basis, with  <Wx,Wy> = x^T Sigma^{-1} y   (Sigma from FIM/covariance at P0)
+  Sigma = fisher_covariance_at_P0(A_letters)               # SPD; symmetry-invariant construction
+  W = inv(chol(Sigma))                                     # whiten: a_tilde = W * a_ambient
+
+Samples / cumulants:
+  T_stream  # time/windowed samples of letter evaluations T_a(x)
+  F = FIM_at_P0_whitened()                                 # equals I_d if fully whitened
+
+Logging:
+  log_json(dict)
+  window_id
+
+# === Build letter-merge structure constants (algebra-first) ==================
+# 1) Ambient structure tensor C_ambient from ambient_prod
+function build_C_ambient():
+    d = len(A_letters)
+    # store as sparse: dict[(i,j)] -> list[(k, c)]
+    C = dict()
+    for i in 1..d:
+        for j in 1..d:
+            C[(i,j)] = ambient_prod(i,j)                   # list of (k, c_ambient)
+    return C
+
+# 2) Change of basis to whitened constants via associativity-preserving congruence
+#    If A_tilde = W A_amb, then structure tensor transforms by   C_tilde = W * C_ambient * (W^{-1} ⊗ W^{-1}).
+#    Implement as: coefficients in whitened basis via least-squares with orthonormal W (Cholesky choice makes W^T W = Sigma^{-1}).
+function whiten_constants(C_ambient, W):
+    # For each pair (i,j), transform the coefficient vector in ambient coords to whitened coords.
+    # Practical: apply W to the RHS basis and W^{-1} to inputs; since W is invertible, we can precompute Winv = inv(W).
+    Winv = inv(W)
+    C_tilde = dict()
+    for (i,j), terms in C_ambient.items():
+        # Build coefficient vector c_amb in ambient coordinates
+        c_amb = zeros(d)
+        for (k, c) in terms: c_amb[k] += c
+        # Transform: c_tilde = W * c_amb, inputs indices mapped by Winv (absorbed into basis reindexing)
+        c_tilde = W @ c_amb
+        # Sparsify
+        out = []
+        for k in 1..d:
+            if abs(c_tilde[k]) > 1e-12: out.append((k, c_tilde[k]))
+        C_tilde[(i,j)] = out
+    return C_tilde
+
+# 3) Associativity spot-check (sanity):  (a ⊙ b) ⊙ c  ==  a ⊙ (b ⊙ c)
+function check_associativity(C_tilde, trials=256, tol=1e-8):
+    d = len(A_letters)
+    for t in 1..trials:
+        i,j,k = randint(1,d), randint(1,d), randint(1,d)
+        # left: L = C(C(e_i,e_j), e_k)
+        L = zeros(d)
+        for (h, cij) in C_tilde[(i,j)]:
+            for (r, chr) in C_tilde[(h,k)]:
+                L[r] += cij * chr
+        # right: R = C(e_i, C(e_j, e_k))
+        R = zeros(d)
+        for (h, cjk) in C_tilde[(j,k)]:
+            for (r, cir) in C_tilde[(i,h)]:
+                R[r] += cjk * cir
+        if norm(L-R, inf) > tol:
+            return {"assoc_ok": False, "i":i,"j":j,"k":k,"diff": norm(L-R,inf)}
+    return {"assoc_ok": True}
+
+# === Quasi-shuffle (stuffle) product on words with letter-merge C_tilde ======
+# Words represented as lists of letter ids; use memoization for speed.
+memo = dict()
+function uplus(u, v, C_tilde):
+    key=(tuple(u),tuple(v))
+    if key in memo: return memo[key]
+    if len(u)==0: return {v:1.0}
+    if len(v)==0: return {u:1.0}
+    u1, a = u[:-1], u[-1]
+    v1, b = v[:-1], v[-1]
+    # (u⊎vb)·a
+    T1 = { w+[a]: c for (w,c) in uplus(u, v1, C_tilde).items() }
+    # (ua⊎v)·b
+    T2 = { w+[b]: c for (w,c) in uplus(u1, v, C_tilde).items() }
+    # (u⊎v)·(a⊙b)
+    T3 = dict()
+    for (k, cab) in C_tilde[(a,b)]:
+        for (w,c) in uplus(u1, v1, C_tilde).items():
+            w2 = w+[k]; T3[w2] = T3.get(w2,0.0) + c*cab
+    # sum
+    out = T1
+    for (w,c) in T2.items(): out[w] = out.get(w,0.0)+c
+    for (w,c) in T3.items(): out[w] = out.get(w,0.0)+c
+    memo[key]=out; return out
+
+# === Symmetry equivariance audit (Assumption 8.1) ============================
+# Given group actions G on letters (permutation/orthogonal), verify invariance of C_tilde.
+function check_equivariance(C_tilde, actions):
+    # actions: list of group elements acting as permutation/orhogonal maps P_g on indices
+    for g in actions:
+        P = action_matrix(g)            # dxd, orthogonal/permutation
+        for (i,j), terms in C_tilde.items():
+            # pushforward both inputs by g and compare pushed outputs
+            i2, j2 = P@e_i, P@e_j       # conceptual; implement as index mapping
+            lhs = push_constants(C_tilde, i2, j2)
+            rhs = push_forward_output(terms, P)   # apply P to output index
+            if not approx_equal(lhs, rhs, tol=1e-10):
+                return {"equiv_ok": False, "g": g, "ij": (i,j)}
+    return {"equiv_ok": True}
+
+# === Empirical FIM-norm contraction tests for projections ====================
+# Build cumulant vector k_K from T_stream (order ≤ K); then compare norms before/after projections.
+function cumulant_vector_K(T_stream, K):
+    # compute centered moments → cumulants (order ≤3 typically); return flattened vector in whitened basis
+    return k_vec
+
+function FIM_norm(vec, F):
+    # vec is already whitened; with perfect whitening F≈I, but allow general F:
+    return sqrt( vec^T * inv(F) * vec )
+
+function test_projection_contraction(Pi_op, PiK_op, T_stream, F, K):
+    k_full = cumulant_vector_K(T_stream, K)
+    # Dirac projection Π (acts on trajectories/mechanics → induces pushforward of T_stream)
+    T_proj = Pi_op.apply_to_stream(T_stream)
+    k_dirac = cumulant_vector_K(T_proj, K)
+    # Hopf truncation Π_{≤K} (acts directly in algebra; numerically: zero out >K words)
+    k_hopf = PiK_op.apply_to_cumulants(k_full)      # or recompute on truncated dictionary
+
+    n_full  = FIM_norm(k_full,  F)
+    n_dirac = FIM_norm(k_dirac, F)
+    n_hopf  = FIM_norm(k_hopf,  F)
+
+    log_json({"evt":"fim_contraction_test", "window": window_id,
+              "||k||": n_full, "||Pi k||": n_dirac, "||Pi<=K k||": n_hopf,
+              "dirac_ok": (n_dirac <= n_full + 1e-10),
+              "hopf_ok":  (n_hopf  <= n_full + 1e-10)})
+    return {"dirac_ok": n_dirac<=n_full+1e-10, "hopf_ok": n_hopf<=n_full+1e-10,
+            "n_full": n_full, "n_dirac": n_dirac, "n_hopf": n_hopf}
+
+# === Pushforward Lipschitz spot-check (Prop. 8.5) ============================
+# Given a Lipschitz map T (geometry layer) and small EF tilt theta, check:
+#   ||k_K(T_# P_theta) - k_K(P_theta)||_{F^{-1}} <= L*C*||theta|| + O(||theta||^2)
+function pushforward_Lip_check(T_map, theta, L_est, C_est, T_stream_base, F, K):
+    # importance-reweight T_stream_base to P_theta if needed (small tilt); or draw fresh samples
+    k_theta   = cumulant_vector_K( reweight(T_stream_base, theta), K )
+    k_theta_T = cumulant_vector_K( reweight(T_map.apply_to_stream(T_stream_base), theta), K )
+    diff = FIM_norm(k_theta_T - k_theta, F)
+    rhs  = L_est * C_est * norm(theta)
+    log_json({"evt":"push_Lip_check", "window": window_id, "lhs": diff, "rhs": rhs,
+              "ok": diff <= 1.2*rhs})     # allow small slack for finite-sample noise
+    return {"ok": diff <= 1.2*rhs, "lhs": diff, "rhs": rhs}
+
+# === End-to-end builder (one call) ===========================================
+function build_quasi_shuffle_runtime(K, actions=None):
+    C_amb = build_C_ambient()
+    C = whiten_constants(C_amb, W)
+    assoc = check_associativity(C)
+    if not assoc["assoc_ok"]:
+        log_json({"evt":"assoc_fail", "detail": assoc}); raise "Associativity spot-check failed"
+    if actions is not None:
+        eq = check_equivariance(C, actions)
+        log_json({"evt":"equiv_check", "ok": eq["equiv_ok"]})
+    return {"C_tilde": C, "uplus": (u,v) -> uplus(u,v,C)}
+
+\end{lstlisting}
+
+\paragraph{Guards and good practice.}
+- **Associativity audit.** Keep the spot-check enabled in CI; any failure means your ambient product or whitening map isn’t consistent.  
+- **Invariant whitening.** If the symmetry group is large, approximate the orbit-average covariance by Monte Carlo over group elements; log the number of samples and the max deviation from exact invariance.  
+- **Sparsity.** Store \(C_{\text{tilde}}\) as sparse maps; quasi-shuffle growth is combinatorial — cut off strictly at degree \(K\) and cache results per word length.  
+- **Projection tests.** Run the FIM-contraction test for both \(\Pi\) and \(\Pi_{\le K}\) per window; keep failures visible in the auto-report.  
+- **Pushforward Lipschitz.** Use the same small-tilt reweighting machinery as §5’s \(L_\psi\) estimator; ensure effective sample size is healthy (e.g., ESS \(>\) \(0.2n\)).
+
+\paragraph{Mini unit tests.}
+1) **Ambient ↦ whitened consistency:** choose a quadratic-Gaussian ambient where Wick coefficients are analytic; verify associativity passes for random triples.  
+2) **Equivariance:** apply a random orthogonal frame change on \(\Gamma\); check that transformed constants match via the action test.  
+3) **Non-expansiveness (empirical):** simulate data, compute \(\|\mathbf k_K\|_{\FIM^{-1}}\) before/after \(\Pi\) and \(\Pi_{\le K}\); both should not increase beyond numerical tolerance.
+
+\emph{Uses: } Invariant whitening (Assumption~\ref{ass:inv-whiten}); Prop.~\ref{prop:assoc-change}, Prop.~\ref{prop:push-Lip}, Lem.~\ref{lem:nonexpansive-12}; FIM \(F\) and degree cap \(K\).
+
+
+% ============================================================
+\section{Computational Statistics and Practicalities}\label{sec:stats}
+% ============================================================
+
+We fix a uniform, dependence-aware inference policy for all reported quantities:
+the mixed-cumulant vector
+$\mathbf k_K=(\kappa^{(m)}_{p,q})_{1\le p+q\le K}$,
+the gradient vectors used for shape derivatives,
+and the spectral gap $\Delta\sigma:=\sigma_1-\sigma_2$ driving plane selection.
+All norms are Fisher-induced (Theorem~\ref{thm:FIMbound}) unless noted.
+
+% Continue numbering: Lemma 13+, Proposition 3+
+\setcounter{lemma}{12}
+\setcounter{proposition}{2}
+
+\subsection{Data model, estimands, and dependence}\label{subsec:stats-model}
+
+Let $\{Z_t\}_{t=1}^n$ be the windowed time series of centered, whitened test functionals (Section~\ref{sec:stoch}) from which we compute moments/cumulants up to order $K\in\{2,3\}$. Gradient estimators and SVD gaps are functions of the same stream.
+
+\begin{assumption}[Mixing and moments]\label{ass:mixing}
+\emph{[\textup{Stoch}]}
+Within a window, $\{Z_t\}$ is strictly stationary and \emph{strongly mixing} with coefficients $\alpha(k)$ satisfying $\sum_{k\ge1}\alpha(k)^{\delta/(2+\delta)}<\infty$ for some $\delta>0$, and $\mathbb E\|Z_t\|^{4+\delta}<\infty$. (Windowwise analysis uses the same assumptions per window.)
+\uses{Window size $\tau$; effective $n$ per window.}
+\end{assumption}
+
+\subsection{HAC covariance and Wald CIs (default for smooth functionals)}\label{subsec:hac}
+
+Let $\widehat{\mathbf k}_K$ be the estimator of $\mathbf k_K$ (streaming U-stats for order $\le3$, with sketching optional for order 3).
+Let $\{\widehat\psi_t\}$ be the associated influence-function process (componentwise).
+
+\begin{lemma}[HAC CLT and consistency]\label{lem:hac}
+\emph{[\textup{Stoch/Comp}]}
+Under Assumption~\ref{ass:mixing},
+\(
+\sqrt{n}\big(\widehat{\mathbf k}_K-\mathbf k_K\big)\xrightarrow{d}\mathcal N(0,\Sigma_K)
+\),
+where $\Sigma_K$ is the long-run covariance.
+Let $\widehat\Sigma_K$ be a HAC estimator with a positive, compact-support taper (e.g., Bartlett) and bandwidth
+$b_{\mathrm{HAC}}=\lfloor c\,n^{1/3}\rfloor$ for fixed $c>0$.
+Then $\widehat\Sigma_K\xrightarrow{p}\Sigma_K$ and Wald CIs using $\widehat\Sigma_K$ are asymptotically valid.
+\uses{$b_{\mathrm{HAC}}\sim n^{1/3}$; taper choice; moment/mixing envelope.}
+\end{lemma}
+
+\begin{remark}[Reporting policy for HAC]\label{rem:hac-report}
+Every table/figure that includes $\widehat{\mathbf k}_K$ must print: the taper, $b_{\mathrm{HAC}}$, and the FIM norm used to scale Wald ellipsoids.
+\uses{Fisher $F$; user-chosen $c$.}
+\end{remark}
+
+\subsection{Block bootstrap CIs (default for non-smooth or finite-difference estimators)}\label{subsec:bb}
+
+For gradients (score/FD) and the spectral gap $\Delta\sigma$, we use block bootstrap CIs.
+
+\begin{proposition}[MBB/CBB validity and block-length rule]\label{prop:bb}
+\emph{[\textup{Stoch/Comp}]}
+Let $\widehat\theta$ be any smooth functional of $\{Z_t\}$ or a finite-difference estimator with $h\to0$ and $mh^2\to\infty$.
+The moving (MBB) or circular (CBB) block bootstrap with block length
+$b=\lfloor c\,n^{1/3}\rfloor$ yields consistent percentile or studentized CIs for $\widehat\theta$ under Assumption~\ref{ass:mixing}.
+A data-driven choice of $c$ by pilot MSE minimization (variance + squared-bias proxy) is admissible and recommended.
+\uses{$b\sim n^{1/3}$; pilot MSE; FD step $h$ (\S\ref{subsec:shape}).}
+\end{proposition}
+
+\begin{remark}[Which CI where]\label{rem:which-ci}
+Use HAC/Wald for $\widehat{\mathbf k}_K$ and other smooth functionals; use block bootstrap for: (i) finite-difference gradients, (ii) SVD gaps and $k$-plane engagement rates, (iii) any estimator involving hard thresholds or projections. Always print the CI type and $(b,B)$ in logs and captions.
+\uses{Estimator smoothness; bootstrap design $(b,B)$.}
+\end{remark}
+
+\subsection{Simultaneous inference and FDR control}\label{subsec:fdr}
+
+Let $\{\widehat T_j\}_{j=1}^m$ be the family of tested entries (e.g., coordinates of $\mathbf k_K$). Let $\widehat p_j$ be marginal $p$-values (HAC-based z-tests or bootstrap studentized).
+
+\begin{lemma}[BH/BY control]\label{lem:fdr}
+\emph{[\textup{Stoch/Comp/Inf}]}
+At target level $q\in(0,1)$:
+(i) If the $p$-values are PRDS (positively dependent), the Benjamini–Hochberg procedure controls FDR at $q$.
+(ii) Without dependence assumptions, Benjamini–Yekutieli controls FDR at $q$ after scaling $q\leftarrow q/\!\sum_{i=1}^m 1/i$.
+A hierarchical variant—BH/BY within groups (by bidegree $(p,q)$ and stratum), then BH on group-level $p$—is admissible and recommended.
+\uses{Group partition by bidegree/stratum; chosen $q$.}
+\end{lemma}
+
+\begin{remark}[Symmetry projection]\label{rem:symm-proj}
+Enforce bidegree symmetries and invariances by projecting $\widehat{\mathbf k}_K$ onto the symmetry-fixed subspace (orthogonal in the whitened inner product) before testing; this reduces multiplicity and increases power without inflating type-I error.
+\uses{Invariant whitening (Assumption~\ref{ass:inv-whiten}); orthogonal projector.}
+\end{remark}
+
+\subsection{Gradients and finite differences: CIs and step choice}\label{subsec:grad-ci}
+
+For gradients, apply Proposition~\ref{prop:score-fd-7} (score identity and FD MSE) and use the bootstrap for CIs.
+
+\begin{lemma}[CI policy for gradients]\label{lem:grad-ci}
+\emph{[\textup{Stoch/Inf}]}
+Compute $h^\star\asymp(\sigma^2/(mC_b^2))^{1/6}$ and form CIs by CBB/MBB with $b\sim n^{1/3}$ on the gradient time series (score or FD at $h^\star$).
+Report $(h^\star, b, B)$ and whether \emph{frontier freeze} was active.
+\uses{Proposition~\ref{prop:score-fd-7}; block bootstrap; frontier freeze flag.}
+\end{lemma}
+
+\subsection{SVD gaps and $k$-plane engagement: CIs and certification}\label{subsec:gap-ci}
+
+\begin{lemma}[Gap certification]\label{lem:gap-ci}
+\emph{[\textup{Comp/Ctrl}]}
+Estimate $\Delta\sigma_t$ per window and report a bootstrap CI; additionally, report principal-angle bands from Davis–Kahan/Wedin bounds using the observed perturbation proxy. Trigger $k$-plane escalation when $\widehat\Delta\sigma_t<\varepsilon_{\mathrm{gap}}$ or its CI contains $0$.
+\uses{Degeneracy threshold $\varepsilon_{\mathrm{gap}}$; bootstrap CI; perturbation proxy.}
+\end{lemma}
+
+\subsection{Sketching and variance propagation for order-3}\label{subsec:sketch}
+
+When tensor sketching (CountSketch/Hutch++) is used for third-order moments:
+
+\begin{lemma}[Sketch error propagation]\label{lem:sketch}
+\emph{[\textup{Comp}]}
+With sketch size $s=O(\epsilon^{-2}\log d)$, the sketched third-order moment yields a cumulant error $\|\widehat\kappa_{2,1}-\kappa_{2,1}\|=O_{\mathbb P}(\epsilon)$ for fixed $n$; the HAC/BB procedures apply with an added $O(\epsilon)$ bias term that vanishes as $s\to\infty$.
+\uses{Sketch size $s$; target $\epsilon$.}
+\end{lemma}
+
+\subsection{Reporting template (uniform across outputs)}\label{subsec:report}
+
+\begin{mdframed}
+\textbf{Every reported estimate \emph{must} include:}
+(i) CI type (HAC vs.\ MBB/CBB), taper and $b_{\mathrm{HAC}}$ or $(b,B)$;
+(ii) FIM norm used to scale ellipsoids;
+(iii) for gradients: $h^\star$ and freeze flag;
+(iv) for SVD gaps: $k$-plane mode, $\widehat\Delta\sigma$, its CI, and principal-angle bands; 
+(v) for multiple tests: the FDR procedure (BH/BY), group partition, and target $q$.
+\end{mdframed}
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:stats}.}
+\begin{enumerate}[leftmargin=*]
+\item HAC objects print taper and $b_{\mathrm{HAC}}$; bootstrap objects print $(b,B)$ and method (MBB/CBB).
+\item Gradient outputs print $h^\star$ and the frontier freeze status.
+\item SVD reports include gap CIs and principal-angle bands; $k$-plane engagement is logged.
+\item Any multiple-testing claim includes BH/BY choice, group structure, and target $q$.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (HAC, block bootstrap, FDR reporting)}
+
+\begin{lstlisting}
+# Inputs
+stream:      time series or windowed array of estimates/influence values
+est_name:    string tag (e.g., "kappa_21", "grad_theta", "gap_svd")
+n_eff:       effective sample size (# points in window)
+alpha:       0.05 (default)
+q_fdr:       target FDR for families of tests (e.g., entries of k_K)
+F:           Fisher matrix for FIM norm (if needed)
+
+# HAC covariance for smooth vector estimators --------------------------------
+function hac_cov(stream_vec, c=1.0, taper="bartlett"):
+    n = len(stream_vec)
+    b = max(2, floor(c * n**(1/3)))
+    S0 = empirical_cov(stream_vec)                         # lag 0
+    S = S0
+    for h in 1..b:
+        w = 1 - h/(b+1) if taper=="bartlett" else kernel_weight(h,b,taper)
+        Gh = lagged_cov(stream_vec, h)                     # sample lag-h cov
+        S += w * (Gh + Gh.T)
+    log_json({"evt":"hac", "name": est_name, "b_HAC": b, "taper": taper})
+    return S
+
+function wald_ci(point, cov, alpha=0.05):
+    se = sqrt(diag(cov))
+    z = normal_quantile(1 - alpha/2)
+    lo = point - z * se; hi = point + z * se
+    return {"ci_lo": lo, "ci_hi": hi, "se": se, "z": z}
+
+# Block bootstrap CI (MBB/CBB) -----------------------------------------------
+function block_length(n_eff, c=1.0): return max(2, floor(c * n_eff**(1/3)))
+
+function bootstrap_ci(series, alpha=0.05, method="cbb", B=1000, c=1.0):
+    n = length(series); b = block_length(n, c)
+    draws = []
+    for bidx in 1..B:
+        idx = sample_blocks(n, b, method)                  # moving or circular
+        draws.append( mean(series[idx]) )
+    q_lo = quantile(draws, alpha/2); q_hi = quantile(draws, 1 - alpha/2)
+    log_json({"evt":"bootstrap", "name": est_name, "method": method, "b": b, "B": B})
+    return {"ci":[q_lo, q_hi], "b": b, "B": B}
+
+# Gradient CI wrapper ---------------------------------------------------------
+function grad_ci(grad_series, h_star, alpha=0.05, method="cbb"):
+    ci = bootstrap_ci(grad_series, alpha=alpha, method=method)
+    log_json({"evt":"grad_ci", "name": est_name, "h_star": h_star,
+              "ci": ci["ci"], "b": ci["b"], "B": ci["B"]})
+    return ci
+
+# SVD gap CI and principal-angle band ----------------------------------------
+function gap_ci(gap_series, angles_series=None, alpha=0.05):
+    ci = bootstrap_ci(gap_series, alpha=alpha, method="cbb")
+    out = {"gap_ci": ci, "angles": None}
+    if angles_series is not None:
+        out["angles"] = {"max_angle_ci": bootstrap_ci(angles_series, alpha=alpha)}
+    log_json({"evt":"gap_ci", "name": est_name, "ci": ci["ci"]})
+    return out
+
+# Multiple testing: BH/BY -----------------------------------------------------
+function fdr_bh(pvals, q=0.1):
+    m = len(pvals); order = argsort(pvals)
+    thresh = [ (k/m) * q for k in 1..m ]
+    k_star = max({k: pvals[order[k]] <= thresh[k]} ∪ {0})
+    reject = zeros(m, dtype=bool); reject[order[:k_star]] = True
+    log_json({"evt":"fdr_bh", "m": m, "q": q, "k_star": int(k_star)})
+    return reject
+
+function fdr_by(pvals, q=0.1):
+    m = len(pvals); Hm = sum_{i=1}^m (1/i)
+    return fdr_bh(pvals, q=q/Hm)
+
+function hierarchical_fdr(groups):
+    # groups: dict[group_id] -> list of p-values
+    rejects = dict()
+    for g, pv in groups.items():
+        rejects[g] = fdr_bh(pv, q=q_fdr)                    # or BY per policy
+    # combine group-level with a BH on min-p per group if needed
+    return rejects
+
+# Uniform reporting helper ----------------------------------------------------
+function report_estimate(name, point, ci_info, meta):
+    log_json({"evt":"report", "name": name,
+              "point": point, "ci": ci_info,
+              "meta": meta})    # include: HAC/BB settings, FIM norm, h_star, freeze flag, k-plane, etc.
+
+\end{lstlisting}
+
+
+% ============================================================
+\section{Benchmarks and Application Domains}\label{sec:bench}
+% ============================================================
+
+This section provides \emph{executable} protocols and an \emph{auto-report} that compiles the exact quantities our guarantees require (ISS/PR, frontier terms, cumulant CIs/FDR, plane degeneracy metrics). All protocols reuse the same pipeline (windows, cumulants, SVD planes, Dirac projection, PR checks, DRO closure) and differ only by environment adapters. The auto-report consumes windowed JSON logs produced by §§6–9.
+
+\subsection{Reproducibility pack (common to all domains)}\label{subsec:bench-repro}
+
+\paragraph{Artifacts.} (i) Raw/processed data (or generator seeds); (ii) YAML configs; (iii) source with fixed versions; (iv) lockfile; (v) seeds; (vi) per-window JSON logs (metrics, CI, PR margins); (vii) notebooks to render Tables~A–D and the figures below.
+
+\paragraph{Config schema (minimal).} Keys controlling windows, cumulant order $K$, bootstrap and HAC settings, Oustaloup band/order, degeneracy threshold $\varepsilon_{\mathrm{gap}}$, and DRO radius policy $(c,\tau)$ are identical across domains.
+
+\begin{mdframed}\small\ttfamily
+windows:\{size: 2048, stride: 512\}\quad
+stats:\{order\_K:[2,3], hac\_c:1.0, bb\_B:1000\}\quad
+svd:\{gap\_thresh: 0.1\}\quad
+control:\{oustaloup:\{N:7, band:[0.5,8.0]\}, pr\_margin\_min:0.05\}\quad
+dro:\{c:1.5, tau:2048\}
+\end{mdframed}
+
+\subsection{Negative control: factorized ground truth}\label{subsec:neg-control}
+
+\paragraph{Design.} Construct data with $\gamma\perp G$ by design (independent factors or blocked randomization); generate statistics with the same dictionary, whitening, and windowing as treatment runs.
+
+\paragraph{Targets.} For each window $w$:
+\[
+\|\widehat\kappa_{\mathrm{mix}}^{(w)}\|_{\FIM^{-1}}\ \text{CI includes }0,\qquad
+\widehat\eta^{\star (w)}\approx 0\quad \text{in the DRO dual.}
+\]
+
+\paragraph{Pass/Fail.} \emph{Pass} if: (i) the HAC ellipsoid for $\mathbf k_K^{(w)}$ contains the origin in at least $95\%$ of windows, \emph{and} (ii) the median $\widehat\eta^\star$ across windows is within a small neighborhood of $0$ (tunable, e.g.\ $\le 0.1$). Otherwise \emph{fail}. Also report the BH/BY-adjusted discovery count; it should be $0$ (up to the nominal FDR).
+
+\paragraph{Uses:} \textit{(Stoch/Inf/Clos)} HAC policy (§\ref{sec:stats}), DRO dual (§\ref{sec:closure}), invariant whitening (§\ref{sec:adv-structures}).
+
+\subsection{Degeneracy stress: near-multiplicity of top singular values}\label{subsec:degstress}
+
+\paragraph{Design.} Create episodes where the constrained operator $A_{UV}$ satisfies $\sigma_1\approx\sigma_2$ for an extended interval by tuning environment parameters (e.g., symmetric contact geometry). Trigger the $k$-plane policy when $\Delta\sigma=\sigma_1-\sigma_2<\varepsilon_{\mathrm{gap}}$.
+
+\paragraph{Targets.} For each window:
+\begin{itemize}[leftmargin=*]
+\item bootstrap CI for $\Delta\sigma$ (CBB/MBB, $b\sim n^{1/3}$);
+\item principal-angle bands (Davis–Kahan/Wedin) between successive selected planes;
+\item chatter rate (fraction of windows with max principal angle above a small threshold while not in a frontier tube);
+\item safety/goal metrics (e.g., $d_{\min}$ in robotics) unchanged relative to non-degenerate runs.
+\end{itemize}
+
+\paragraph{Pass/Fail.} \emph{Pass} if: (i) the $k$-plane mode engages when $\widehat\Delta\sigma$ CI intersects $0$; (ii) the empirical principal angles respect the certified Wedin band in all but a $\le 5\%$ tail; (iii) chatter rate $\le 1\%$ outside frontier tubes; (iv) no degradation in domain safety metric beyond CI overlap.
+
+\paragraph{Uses:} \textit{(Ctrl/Comp)} degeneracy guard (§\ref{sec:kernels}), bootstrap CI (§\ref{sec:stats}), frontier freeze (§\ref{sec:control}).
+
+\subsection{Common auto-report (Tables \& Figures)}\label{subsec:auto-report}
+
+\paragraph{Table A: Config.} Windows, $K$, HAC bandwidth $b_{\mathrm{HAC}}$, bootstrap $(b,B)$, controller $(N,[\omega_L,\omega_H])$, PR margin summary.
+
+\paragraph{Table B: Domain metrics.} Means $\pm$ CIs and effect sizes (Cliff’s $\delta$) vs.\ baselines.
+
+\paragraph{Table C: Statistical layer.} $\|\widehat{\mathbf k}_K\|_{\FIM^{-1}}$ with HAC ellipsoid, BH/BY discoveries by bidegree, negative-control checks.
+
+\paragraph{Table D: Control layer.} PR margin \([ \min,\max]\), spectral gaps, \% time in $k$-plane mode, frontier crossings, ISS terms:
+\[
+C_0 N_{\mathrm{cross}}(0,t),\qquad \frac{C_0}{\tau_{\min}}\,t.
+\]
+
+\paragraph{Figure 1.} Lead-time/performance curves (or generalization curves in neuroscience).  
+\paragraph{Figure 2.} Degeneracy/stability (gap CI and principal-angle bands).  
+\paragraph{Figure 3.} Windowed drift: $\widehat L_t$, $\rho_t=c\,\widehat L_t\,\tau$, and $\widehat\eta^\star_t$ trajectories.
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:bench}.}
+\begin{enumerate}[leftmargin=*]
+\item Negative control passes both: origin-inclusion for $\mathbf k_K$ and $\widehat\eta^\star\approx 0$.
+\item Degeneracy stress satisfies: $k$-plane engagement on gap-CI touch, Wedin-certified principal angles, low chatter, preserved safety metric.
+\item Auto-report prints HAC taper/$b_{\mathrm{HAC}}$, bootstrap $(b,B)$, FDR $q$, PR margin range, \% time in $k$-plane, frontier counts, and the explicit ISS frontier terms.
+\end{enumerate}
+\end{mdframed}
+
+\begin{mdframed}
+\textbf{Auto-report additions (Section 10).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Whitening leakage alarms:} log $\chi(t)$ and flag any $\chi(t)>\chi_{\max}$ with the window id.
+\item \emph{DRO metric sensitivity:} compute $\|\partial_\epsilon\theta^\*(0)\|$ from Prop.~\ref{prop:dro-metric-sens} and print as “DRO-metric sensitivity”.
+\end{itemize}
+\end{mdframed}
+
+\subsection*{Numerical API (auto-report aggregation for §10)}
+
+\begin{lstlisting}
+# === Inputs ==============================================================
+logs:         iterable of per-window JSON events from §§6–9
+domain:       {"robotics","neuroscience","finance",...}
+alpha:        0.05
+fdr_q:        0.1
+
+# === Collectors ==========================================================
+state agg = {
+  "config": {}, "windows": [],
+  "hac": [], "bootstrap": [],
+  "kappa": [], "kappa_fim_norm": [],
+  "fdr": {"pvals_by_group": {}},
+  "pr": [], "svd": [], "angles": [],
+  "frontier": {"N_cross":0, "events":[]},
+  "iss": [], "drift": [], "dro_dual": []
+}
+
+function ingest(logs):
+    for evt in logs:
+        switch evt["evt"]:
+          case "hac":
+            agg["hac"].append(evt)                        # name, b_HAC, taper
+          case "bootstrap":
+            agg["bootstrap"].append(evt)                  # name, method, b, B
+          case "report":
+            if "kappa" in evt["name"]:
+                agg["kappa"].append(evt)
+                if "fim_norm" in evt["meta"]:
+                    agg["kappa_fim_norm"].append({"window":evt["meta"]["window"],
+                                                  "norm":evt["meta"]["fim_norm"]})
+          case "fim_contraction_test":
+            agg["pr"].append({"window":evt["window"], "n_full":evt["||k||"],
+                              "n_dirac":evt["||Pi k||"], "n_hopf":evt["||Pi<=K k||"]})
+          case "ctrl_update":
+            agg["pr"].append({"window":evt["t"], "eps":evt["pr_eps"], "cert":evt["pr_cert"]})
+          case "plane_select":
+            agg["svd"].append({"window":evt["window"], "sigma_top":evt["sigma_top"], "gap":evt["gap"],
+                               "k_mode":evt["k_mode"], "degenerate":evt["degenerate"]})
+            if evt["angles_L"] is not None:
+                agg["angles"].append({"window":evt["window"], "max_angle": max(evt["angles_L"]+evt["angles_R"])})
+          case "frontier_enter":
+            agg["frontier"]["N_cross"] = evt["N_cross"]
+            agg["frontier"]["events"].append(evt)
+          case "iss_budget":
+            agg["iss"].append({"t":evt["t"], "H_bound":evt["H_bound"],
+                               "frontier_linear":evt["frontier_term_linear"],
+                               "frontier_switch":evt["frontier_term"]})
+          case "push_Lip_check":
+            pass                                           # optional: store for §8 audit
+          case "grad_ci":
+            pass                                           # §7 already logs CIs
+          case "adaptive_radius":
+            agg["drift"].append({"window":evt["window"], "Lhat":evt["Lhat"], "rho":evt["rho"]})
+          case "dro_dual":
+            agg["dro_dual"].append({"window":evt["window"], "eta_star":evt["eta_star"]})
+
+# === Table builders ======================================================
+function table_A_config():
+    # extract unique config values from logs (band, N, hac/boot, order K)
+    return {...}  # dict ready for LaTeX tabular
+
+function table_B_domain_metrics(domain_metrics_series):
+    # mean ± CI via §9 bootstrap helpers; effect size vs baseline
+    return {...}
+
+function table_C_stats():
+    # FIM norms, HAC ellipsoid info, FDR summary
+    # Build grouped p-values by (p,q) and stratum; run BH/BY
+    groups = agg["fdr"]["pvals_by_group"]
+    reject = hierarchical_fdr(groups)
+    return {"fim_norms": agg["kappa_fim_norm"], "fdr": reject}
+
+function table_D_control():
+    pr_eps = [e["eps"] for e in agg["pr"] if "eps" in e]
+    kplane_frac = mean([s["k_mode"]>2 for s in agg["svd"]])
+    gap_series = [s["gap"] for s in agg["svd"]]
+    N_cross = agg["frontier"]["N_cross"]
+    frontier_lin = max([r["frontier_linear"] for r in agg["iss"]], default=0.0)
+    return {"pr_eps_min": min(pr_eps, default=0.0),
+            "pr_eps_max": max(pr_eps, default=0.0),
+            "kplane_frac": kplane_frac,
+            "gap_min": min(gap_series, default=NaN),
+            "gap_max": max(gap_series, default=NaN),
+            "N_cross": N_cross,
+            "frontier_linear": frontier_lin}
+
+# === Negative-control and degeneracy checks =============================
+function check_negative_control():
+    origin_hits = fraction_windows_origin_included(agg["kappa"], alpha)
+    eta_med = median([d["eta_star"] for d in agg["dro_dual"]])
+    return {"origin_rate": origin_hits, "eta_med": eta_med,
+            "pass": (origin_hits>=0.95 and abs(eta_med)<=0.1)}
+
+function check_degeneracy():
+    k_engage = fraction([s["k_mode"]>2 for s in agg["svd"] where gap_CI_touches_zero(window)])
+    chatter = fraction([a["max_angle"]>angle_thresh and not in_frontier(window) for a in agg["angles"]])
+    wedin_ok = fraction_windows_principal_angles_within_band(agg["angles"], agg["svd"]) >= 0.95
+    return {"k_plane_engagement": k_engage, "chatter": chatter,
+            "wedin_cert": wedin_ok,
+            "pass": (k_engage>0 and chatter<=0.01 and wedin_ok)}
+
+# === Render to LaTeX tables/figures =====================================
+function render_report(domain_metrics_series):
+    A = table_A_config()
+    B = table_B_domain_metrics(domain_metrics_series)
+    C = table_C_stats()
+    D = table_D_control()
+    neg = check_negative_control()
+    deg = check_degeneracy()
+    # Write \begin{tabular}... snippets or pipe to a template engine
+    return {"A":A,"B":B,"C":C,"D":D,"neg":neg,"deg":deg}
+
+\end{lstlisting}
+
+\paragraph{Guards and good practice.}
+- \emph{Completeness.} Fail the CI render if any table is missing its HAC/BB hyperparameters or FDR $q$.  
+- \emph{Stability.} For very small gaps (machine epsilon), force $k$-plane mode for a hold interval; annotate in Table D.  
+- \emph{Transparency.} Always print both frontier terms in the ISS row: $C_0 N_{\mathrm{cross}}$ and $(C_0/\tau_{\min})t$.
+
+\paragraph{Uses:} \textit{(Comp/Stats/Ctrl/Clos)} §6 PR/ISS logs; §7 plane selection + degeneracy logs; §8 FIM contraction tests; §9 HAC/BB/FDR; §4 adaptive $\rho_t$ and $\eta^\star$.
+
+
+% ============================================================
+\section{Conclusion}\label{sec:conclusion}
+% ============================================================
+
+We have developed a framework for modeling decision-objective dynamics using bigraded multivectors, cumulant expansions, and higher-level algebraic structures. Several key insights emerge:
+
+\subsection*{11.1 \quad Synthesis of Theory}
+\begin{itemize}
+    \item The hybrid exterior algebra formalizes independent and mixed dynamics between decision states and structural environments (G).
+    \item Mixed cumulants $\kappa_{p,g}$ serve as rigorous markers of irreducible coupling, grounded in stochastic semantics.
+    \item Closure can be addressed in two complementary ways: entropy-regularized variational truncation and Hopf-algebraic coproduct decompositions.
+    \item Category theory elevates the framework, ensuring compositional semantics and cumulant-preserving functors.
+\end{itemize}
+
+\subsection*{11.2 \quad Path to Computation}
+\begin{itemize}
+    \item A feasible computational roadmap exists: order-3 cumulant estimation with shrinkage and sketching; symbolic derivations with Python libraries; high-performance kernels in C++.
+    \item Statistical challenges are mitigated by bootstrap confidence intervals, truncation, and Hopf-projected residuals.
+\end{itemize}
+
+\subsection*{11.3 \quad Applications and Benchmarks}
+\begin{itemize}
+    \item Robotics: projected control improves safety/efficiency under changing constraints.
+    \item Neuroscience: $\|K_{\text{mix}}\|$ predicts generalization in context-remapping tasks.
+    \item Finance: $\kappa_{1,2}$ offers early warning of regime shifts.
+\end{itemize}
+
+\subsection*{11.4 \quad Validation Roadmap}
+\begin{enumerate}
+    \item Local validity: prove and test the entropy-cumulant inequality; demonstrate stable projected control in one domain.
+    \item Cross-domain transfer: validate cumulant-based diagnostics in at least two domains.
+    \item Compositionality: demonstrate categorical functors with empirical and theoretical guarantees across interacting systems.
+\end{enumerate}
+
+\subsection*{11.5 \quad Vision and Future Work}
+\begin{itemize}
+    \item The long-term goal is to unify geometry, information theory, algebraic combinatorics, and control into a coherent methodology.
+    \item By coupling rigorous semantics, computational feasibility, and benchmark-driven validation, the joint strategic geometry framework aspires to become a principled tool for designing and governing complex adaptive systems.
+\end{itemize}
+
+\appendix
+
+\section{Alignment \& Normative Contracts for Joint Strategic Geometry}\label{app:alignment}
+
+\emph{\layertag{Comp/Clos/Ctrl/Inf}} This section specifies a \emph{normative layer} for deploying the framework. The goal is to make \emph{value-sensitive behavior} explicit, monitorable, and auditable using the same mathematical objects used for guarantees (Fisher metrics, cumulants, projections, PR/ISS, DRO). Philosophically: (i) treat coupling as a conserved risk resource; (ii) treat energetic passivity as a dignity floor; (iii) treat drift as epistemic debt that must be amortized; (iv) treat (co)homological obstruction as actionable \emph{tension} rather than mere metaphor.
+
+\paragraph{Operationalized philosophical primitives.} Let $\widehat{\mathbf k}_K^{(t)}$ be the $K$-order mixed cumulants and $\FIM$ the Fisher information metric. Define: (i) \textbf{coupling mass} $M_t:=\|\widehat{\mathbf k}_K^{(t)}\|_{\FIM^{-1}}$; (ii) \textbf{tension 2-form} $\omega_t$ as the exterior (wedge) accumulation of non-commuting evaluations (Section~\ref{sec:adv-structures}), with norm $T_t:=\|\omega_t\|_{\FIM^{-1}}$; (iii) \textbf{colimit defect} $\Delta^{\mathrm{colim}}_t$ as a normed obstruction (\v{C}ech 1-cocycle magnitude) to forming a global state from local data.
+
+\subsection*{Axioms (Alignment Layer)}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Safety budget (statistical coupling).} Fix a budget $B_{\mathrm{saf}}>0$ on the Fisher-norm of mixed cumulants: $\|\mathbf k_K\|_{\FIM^{-1}}\le B_{\mathrm{saf}}$. Exceeding the budget triggers protective actions (below).
+  \item \textbf{Non-amplification by design.} Only functors and projections certified non-expansive in the FIM norm (Section~\ref{sec:adv-structures}) are admissible in the deployment graph; this prevents spurious growth of coupling through composition.
+  \item \textbf{Energetic safety.} Closed-loop designs must maintain a positive-real margin $\epsilon>0$ on the operational band and satisfy the ISS inequality in Theorem~\ref{thm:ISS} with explicit frontier term scaling $C_0 t/\constref{taumin}$.
+  \item \textbf{Caution under drift.} Radius policy (Definition~\ref{def:adaptive}) with $\rho_t=c\,\widehat L_t\,\tau$ is used; $\delta$ is set from finite-sample $W_1$ rates (Remark~\ref{rem:w1-rates}). Dual $\eta^\star_t$ is logged and bounded.
+  \item \textbf{Transparency and consent.} Symmetry choices (whitening, invariance groups), truncation order $K$, PR bands, and statistical CI/FDR methods are disclosed wherever decisions impact agents.
+  \item \textbf{Subsidiarity \& reversibility.} Prefer interventions that (i) act at the smallest locus compatible with safety, and (ii) admit an explicit rollback map $\mathcal R$ with $\|I-\mathcal R\circ\mathcal A\|_{\FIM}\le \beta$ for a set $\mathcal A$ of admissible actions and small $\beta>0$.
+  \item \textbf{Exposure accounting \& hysteresis.} Maintain a cumulative exposure integral $E_t:=\int_0^t M_s\,\mathrm ds$ with budget $B_{\mathrm{exp}}$; apply hysteresis bands on triggers to avoid policy thrashing.
+  \item \textbf{Tension budget (coherence).} Fix a budget $B_{\mathrm{ten}}$ on $T_t=\|\omega_t\|_{\FIM^{-1}}$ and a defect budget $B_{\mathrm{col}}$ on $\|\Delta^{\mathrm{colim}}_t\|$. These capture strategic vorticity and consensus obstruction, respectively.
+  \item \textbf{Least privilege \& enumerated authority.} Policy knobs (below) are namespaced and scoped; each actuation is justified by a minimal-sufficient trigger and recorded with a capability token.
+  \item \textbf{Value elasticity bounds.} For declared objectives $J$, estimate Fisher–Riesz sensitivities $\|\nabla J\|_{\FIM^{-1}}$ and enforce a Lipschitz envelope so that interventions do not induce \emph{surprise} outside declared bounds.
+\end{enumerate}
+
+\subsection*{Normative control policies (trigger--response)}
+Let $M_t:=\|\widehat{\mathbf k}_K^{(t)}\|_{\FIM^{-1}}$, $\epsilon_t$ the PR margin, $\eta_t^\star$ the DRO dual, $T_t:=\|\omega_t\|_{\FIM^{-1}}$, $\Delta^{\mathrm{colim}}_t$ the colimit defect, and $E_t$ the exposure integral.
+\begin{description}[leftmargin=*,style=nextline]
+  \item[Trigger T1 (statistical over-coupling).] If $M_t>B_{\mathrm{saf}}$ (with CI excluding $B_{\mathrm{saf}}$), then: (i) apply Dirac $\Pi$ (if not active); (ii) reduce controller gains via a monotone map $g(\cdot)$ constrained to the admissible PR set; (iii) increase truncation (reduce residual) by lowering $K$’s residual penalty threshold.
+  \item[Trigger T2 (energetic risk).] If $\epsilon_t<\epsilon_{\min}$ on the band, revert gains to a safe envelope and widen Oustaloup order/band as per Lemma~\ref{lem:oust-pr-kyp}/\ref{lem:oust-pr-phase}.
+  \item[Trigger T3 (distributional drift).] If $\eta^\star_t>\eta_{\max}$ for a persistence window, enlarge $\rho_t$ (cautious inference) and/or shorten $\tau$; optionally halt adaptation within frontier tubes.
+  \item[Trigger T4 (tension flare).] If $T_t>B_{\mathrm{ten}}$ or $\|\Delta^{\mathrm{colim}}_t\|>B_{\mathrm{col}}$, then: (i) decompose $\omega_t$ along certified non-expansive projectors to locate sources; (ii) prefer \emph{enzyme} actions $\mathcal E$ (Definition below) that reduce $T_t$ with bounded control effort; (iii) freeze cross-component functors that break commutativity until tension recedes below the lower hysteresis band.
+  \item[Trigger T5 (excess exposure).] If $E_t>B_{\mathrm{exp}}$, enforce a cool-down: suspend non-essential adaptations, raise $\epsilon_{\min}$ by a margin $\kappa>0$, and restrict authority to a minimal capability set.
+  \item[Trigger T6 (consent/coherence failure).] If transparency feedback indicates dissent or if a coequalizer certificate fails (no consensus colimit), then: (i) fall back to local policies (subsidiarity); (ii) require an override (see Governance) with a justificatory taxonomy entry and an ex-post harm audit.
+\end{description}
+
+\paragraph{Definition (Catalytic policy actuators, ``enzymes'').} An actuator $\mathcal E$ is catalytic if it monotonically reduces $T_t$ while preserving (i) the PR margin and (ii) coupling mass budget: for some $\alpha,\gamma>0$, $T_{t+1}\le T_t-\alpha\|u_t\|$ and $M_{t+1}\le M_t+\gamma\|u_t\|$ with $(\alpha,\gamma)$ certified and $\epsilon_{t+1}\ge\epsilon_{\min}$. Catalog and reuse $\mathcal E$ with provenance.
+
+\subsection*{Accountability artifacts}
+Per deployment episode, publish: (i) windowed $M_t$ with HAC or bootstrap CIs and FDR settings (Section~\ref{sec:stats}); (ii) PR margin $\epsilon_t$ range; (iii) frontier counts and the ISS frontier term $C_0 N_{\mathrm{cross}}(0,t)$ and $C_0 t/\constref{taumin}$; (iv) $\widehat L_t$, $\rho_t$, $\eta^\star_t$ trajectories (Section~\ref{sec:closure}); (v) symmetry/whitening invariance checks (Assumption~\ref{ass:inv-whiten}); (vi) tension metrics $T_t$ and $\|\Delta^{\mathrm{colim}}_t\|$ with localization plots; (vii) exposure $E_t$ and hysteresis bands; (viii) an \emph{override ledger} (see below) with taxonomy codes and outcomes; (ix) a reproducibility capsule (non-expansiveness certificates, seeds, and audit scripts) to replay ISS frontier accounting.
+
+\subsection*{Governance hooks (interfaces)}
+The alignment layer exposes:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Policy knobs:} $(B_{\mathrm{saf}},\,\epsilon_{\min},\,q_{\mathrm{FDR}},\,K,\,c,\,\tau,\,B_{\mathrm{ten}},\,B_{\mathrm{col}},\,B_{\mathrm{exp}})$ with scope (global vs windowed) and provenance. Each knob carries a capability token and an expected effect size range.
+  \item \textbf{Override contracts:} An operator may override T1--T6 but must attach a justification chosen from a fixed taxonomy (safety-of-safety, humanitarian, legal, fiduciary, experiment), cite the triggering metrics, and specify an ex-ante rollback map $\mathcal R$. Overrides are logged and included in accountability artifacts.
+  \item \textbf{Audit API:} An external auditor can recompute $M_t$, verify non-expansiveness certificates (Section~\ref{sec:adv-structures}), replay ISS frontier accounting, and independently compute $T_t$ and $\Delta^{\mathrm{colim}}_t$ from provided local evaluations.
+\end{itemize}
+
+\paragraph{Remark (Ethical posture).} The alignment layer encodes a conservative stance: prefer reduced coupling (smaller $\|\mathbf k_K\|_{\FIM^{-1}}$), preserved energetic passivity (PR margin), cautious inference under drift (larger $\rho_t$), and minimized tension (smaller $T_t$ and $\|\Delta^{\mathrm{colim}}_t\|$) when uncertainties grow. Choices are explicit and tunable, with rollback maps and hysteresis to guard against over-correction. The same mathematical guarantees support domain-specific ethics without appeal to untestable narratives.
+
+\uses{Thm.~\ref{thm:ISS}, Lem.~\ref{lem:oust-pr-kyp}, Lem.~\ref{lem:oust-pr-phase}, Def.~\ref{def:adaptive}, Rem.~\ref{rem:w1-rates}, Lem.~\ref{lem:nonexpansive-12}.}
+
+
+\end{document}

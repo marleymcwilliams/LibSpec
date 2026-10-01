@@ -1,0 +1,36 @@
+% sirus_visual_macros.tex (fixed)
+\providecolor{sirusBlue}{rgb}{0.086,0.29,0.59}
+\providecolor{sirusBlueLite}{rgb}{0.905,0.937,0.988}
+\providecolor{sirusRed}{rgb}{0.67,0.125,0.157}
+\providecolor{sirusRedLite}{rgb}{0.992,0.91,0.91}
+\providecolor{sirusGreen}{rgb}{0.062,0.45,0.27}
+\providecolor{sirusGreenLite}{rgb}{0.902,0.969,0.937}
+\providecolor{sirusAmber}{rgb}{0.71,0.38,0.0}
+\providecolor{sirusAmberLite}{rgb}{1.0,0.961,0.898}
+
+\newlength{\sirusBoxWidth}
+\setlength{\sirusBoxWidth}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+\newlength{\sirusPad}
+\setlength{\sirusPad}{0.5em}
+
+\newcommand{\SirusBox}[4]{%
+  \par\smallskip\noindent
+  \begingroup\setlength{\fboxsep}{\sirusPad}%
+  \fcolorbox{#1}{#2}{%
+    \begin{minipage}{\sirusBoxWidth}\small
+      {\bfseries #3}\par\medskip
+      #4
+    \end{minipage}}%
+  \endgroup\par\smallskip}
+
+\newcommand{\GoldenRuleBody}[1]{\SirusBox{sirusBlue}{sirusBlueLite}{Golden-Rule Framing}{#1}}
+\newenvironment{GoldenRuleBlock}{}{}
+\newcommand{\SafetyBody}[1]{\SirusBox{sirusRed}{sirusRedLite}{Safety Note}{#1}}
+\newenvironment{SafetyBlock}{}{}
+\newcommand{\EthicBody}[1]{\SirusBox{sirusGreen}{sirusGreenLite}{Ethic Check}{#1}}
+\newenvironment{EthicBlock}{}{}
+\newcommand{\AlertBody}[1]{\SirusBox{sirusAmber}{sirusAmberLite}{Attention}{#1}}
+\newenvironment{AlertBlock}{}{}
+
+\newenvironment{ReceiptList}{\begin{itemize}[leftmargin=1.3em,itemsep=1pt,topsep=2pt]}{\end{itemize}}
+\newcommand{\Receipt}[2]{\item \texttt{#1}: {#2}}

@@ -1,0 +1,296 @@
+
+\documentclass[11pt]{article}
+
+% ---------- Encoding & Fonts ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\setstretch{1.06}
+
+% ---------- Math & Theorems ----------
+\usepackage{mathtools, amsmath, amssymb, amsthm}
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+% ---------- Lists ----------
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.25em}
+\setlist[enumerate]{leftmargin=1.5em}
+
+% ---------- Boxes & Tables ----------
+\usepackage[framemethod=default]{mdframed}
+\newmdenv[linewidth=0.6pt,roundcorner=2pt,backgroundcolor=gray!6,linecolor=black!70,
+skipabove=8pt,skipbelow=8pt,innertopmargin=6pt,innerbottommargin=6pt,innerleftmargin=8pt,innerrightmargin=8pt]{auditbox}
+\usepackage{booktabs}
+\usepackage{array}
+
+% ---------- Figures ----------
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,shapes.symbols}
+
+% ---------- Unicode safety in bookmarks ----------
+\usepackage{newunicodechar}
+\newunicodechar{≤}{\ensuremath{\leq}}
+\newunicodechar{≥}{\ensuremath{\geq}}
+\newunicodechar{→}{\texorpdfstring{$\to$}{->}}
+\newunicodechar{∈}{\ensuremath{\in}}
+\newunicodechar{π}{\ensuremath{\pi}}
+\newunicodechar{ρ}{\ensuremath{\rho}}
+\newunicodechar{τ}{\ensuremath{\tau}}
+
+% ---------- Hyperref ----------
+\usepackage{hyperref}
+\hypersetup{
+  hidelinks,
+  colorlinks=true,
+  linkcolor=blue,
+  citecolor=blue,
+  urlcolor=blue,
+  pdfencoding=auto,
+  psdextra
+}
+\pdfstringdefDisableCommands{%
+  \def\to{→}%
+  \def\ensuremath#1{#1}%
+  \def\texttt#1{#1}%
+  \def\textsc#1{#1}%
+}
+
+% ---------- Helper macros ----------
+\newcommand{\SC}[1]{\textsc{#1}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\kb}{\mathrm{KB}}
+\newcommand{\Ball}{\mathbb{B}}
+
+% Receipt header macro (visual)
+\newcommand{\ReceiptHeader}[4]{%
+\begin{auditbox}
+\textbf{#1} \hfill \SC{verdict:} \textbf{#2}\\
+\SC{prev:} \code{#3}\\
+\SC{payload-root:} \code{#4}
+\end{auditbox}
+}
+
+% Proof-surface figure macro
+\newcommand{\ProofSurfaceFigure}[2]{%
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[node distance=8mm, every node/.style={font=\small}]
+  \tikzset{leaf/.style={draw,rounded corners=2pt,inner sep=3pt,fill=gray!10}}
+  \tikzset{node/.style={draw,rounded corners=2pt,inner sep=3pt,fill=gray!6}}
+  \tikzset{edge/.style={-Latex,thin}}
+  \node[leaf] (r1) {#1$_1$};
+  \node[leaf, right=of r1] (r2) {#1$_2$};
+  \node[leaf, right=of r2] (r3) {#1$_3$};
+  \node[leaf, right=of r3] (r4) {#1$_4$};
+  \node[node, above=of ($(r1)!0.5!(r2)$)] (n12) {$H(#1_1\|#1_2)$};
+  \node[node, above=of ($(r3)!0.5!(r4)$)] (n34) {$H(#1_3\|#1_4)$};
+  \node[node, above=12mm of ($(n12)!0.5!(n34)$)] (root) {\textbf{#2}};
+  \draw[edge] (r1) -- (n12);
+  \draw[edge] (r2) -- (n12);
+  \draw[edge] (r3) -- (n34);
+  \draw[edge] (r4) -- (n34);
+  \draw[edge] (n12) -- (root);
+  \draw[edge] (n34) -- (root);
+\end{tikzpicture}
+\caption{Proof surface: Merkle root over canonical receipt headers (not payloads).}
+\label{fig:proof-surface}
+\end{figure}
+}
+
+% Rail gauge macro
+\newcommand{\RailGauge}[3]{%
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+  \draw[fill=green!35,draw=black!60] (0,0) rectangle (3,0.5);
+  \draw[fill=orange!35,draw=black!60] (3,0) rectangle (6,0.5);
+  \draw[fill=red!35,draw=black!60] (6,0) rectangle (9,0.5);
+  \draw[very thick] (#1, -0.2) -- (#1,0.7);
+  \node[below] at (1.5,-0.2) {\small Green};
+  \node[below] at (4.5,-0.2) {\small Amber};
+  \node[below] at (7.5,-0.2) {\small Red};
+  \node[above] at (#1,0.7) {\small \textbf{#2}};
+\end{tikzpicture}
+\caption{Clamp state for #3 (needle position is illustrative).}
+\end{figure}
+}
+
+% Title
+\title{\vspace{-8pt}A Neutral, Safety--First Program for Verifiable Computation:\\
+A Deterministic, Auditable, and Governed Architecture}
+\author{}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent \textbf{Trust through verifiability.} We present a research--neutral, safety--first program for verifiable computation. Every consequential step emits a typed receipt with deterministic encodings; header--only aggregation produces a proof surface (a Merkle root) that auditors can check from bytes. Norms are specified in temporal logic and gated in CI via SMT; control is formulated as distributionally robust optimization (DRO) with level--1 optimality and conservation receipts and level--2 stability via cached PR/ISS certificates with revocation. We formalize the evidence algebra, selective disclosure, mechanized governance (monotone safety), and operational obligations. The result is a practical path from ``assumed trust'' to ``provable trust.''
+\end{abstract}
+
+\section{Objectives and Scope}
+We aim to formalize auditable computational trust without domain assumptions. Design objectives:
+\begin{enumerate}[label=\textbf{O\arabic*}.]
+  \item \emph{Compositional evidence:} receipts compose over time and parallelism.
+  \item \emph{Determinism by design:} canonical encodings; pinned environments; replayable transcripts.
+  \item \emph{Mechanized governance:} norms are machine--checkable and monotone under revision.
+  \item \emph{Transparent control:} distributed uncertainty, robust objectives, explicit certificates.
+  \item \emph{Selective disclosure:} privacy via payload commitments and field--level proofs.
+\end{enumerate}
+
+\section{Acceptance Coordinates and Unknowns}
+Let $Q=\prod_{i=1}^d Q_i$ be acceptance coordinates with preorder $\preceq$. Partition axes into $\mathcal{M}$ (max channels) and $\mathcal{S}$ (sum channels) and define
+\begin{equation*}
+(x\curlywedge y)_i := \begin{cases}
+\max(x_i,y_i), & i\in\mathcal{M},\\
+x_i+y_i, & i\in\mathcal{S}.
+\end{cases}
+\end{equation*}
+Each $Q_i$ contains an absorber $\top^{(i)}_{\mathrm{unk}}$ that isolates unknowns to axis $i$. Adapters $g$ are monotone homomorphisms with $g(\varnothing)=\top_{\mathrm{unk}}$ and preserve $\curlywedge$. This provides a sound calculus for uncertainty (intervals, sub--Gaussian envelopes, Wasserstein balls) while prioritizing monotonic propagation.
+
+\section{Receipts, Proof Surface, and Selective Disclosure}
+A receipt splits into a canonical \emph{header} (schema id, predicate id, verdict, \code{prev\_digest}, \code{payload\_root}, \code{envlock\_digest}, hash suite) and a \emph{payload} committed by a Merkle root. The \emph{proof surface} is a Merkle root over canonical headers only; it detects header tampering and supports redaction: payload fields are revealed with inclusion proofs against \code{payload\_root} while the surface remains invariant.
+\ProofSurfaceFigure{r}{\code{ROOT\_HASH}}
+\ReceiptHeader{DRO\_KKT\_OK/v1}{PASS}{\code{prev: 9c2…}}{\code{root: 51a…}}
+
+\begin{auditbox}
+\textbf{Audit Hook.} Any single--byte mutation in a header flips the surface root with overwhelming probability (collision resistance of $H$). Payload redaction leaves the root unchanged; inclusion proofs verify revealed fields against the committed \code{payload\_root}.
+\end{auditbox}
+
+\section{Norms: STL with SMT Gating}\label{sec:norms}
+Norms are stated in Signal Temporal Logic (STL) with quantitative semantics; bounded monitors compile to SMT--LIB (QF\_LRA) and gate changes in CI. Dense--time properties are monitored via robust--satisfaction intervals; the lower bound is enforced online for soundness under discretization.
+
+\section{Control as DRO with Receipts}\label{sec:control}
+Control is a distributionally robust program over a Wasserstein ball $\Ball^p_\varepsilon(P_0)$. Runtime artifacts:
+\begin{itemize}
+  \item \textbf{Level--1 receipts:} convex class declaration (QP/SOCP/SDP), KKT residuals and duality gap within tolerances; conservation receipts verifying $\Delta V$ vs.\ declared spend.
+  \item \textbf{Level--2 certificates:} PR/ISS from an audited cache keyed by component digests; revocation checked before use.
+\end{itemize}
+
+\section{Mechanized Governance (Monotone Safety)}\label{sec:governance}
+Let $\mathrm{MF}(N)$ be must--fail IDs in norms bundle $N$. CI enforces $\mathrm{MF}(N_t)\subseteq \mathrm{MF}(N_{t+1})$. Optionally, SMT proves entailment between STL revisions. Batches are summarized by epoch receipts committing prior headers so archival does not break verification.
+
+\section{Rails and Clamp States}
+Rails define banded operating regions (Green/Amber/Red) with hysteresis and dwell; transitions are driven by guard margins and certificate status. Policies emit selective--disclosure receipts and can gate pipeline modes.
+\RailGauge{4.2}{GOVERN}{Guard margin}
+
+\section{Short Proofs}
+\begin{proposition}[Header Tamper Detectability]
+If $H$ is collision--resistant and the surface root is a Merkle root over canonical headers, any header byte mutation changes the root with overwhelming probability.
+\end{proposition}
+\begin{proof}
+A changed header yields a different leaf hash; Merkle recomputation propagates to the root unless a collision occurs in $H$.
+\end{proof}
+
+\begin{lemma}[Redaction Invariance]
+If a header commits to payload root $\rho$, selective disclosure that preserves $\rho$ leaves the surface root unchanged.
+\end{lemma}
+\begin{proof}
+The surface aggregates headers only; inclusion proofs check reveals against $\rho$.
+\end{proof}
+
+\begin{proposition}[Distributivity]
+Let $A,B$ be sets of valid chains; let $c$ be a valid chain. Then $c*(A\sqcup B)=(c*A)\sqcup(c*B)$.
+\end{proposition}
+\begin{proof}
+Prefixing by $c$ maps each chain to a longer chain; it distributes over set union pointwise. Header commitment uses sorted canonical bytes, so aggregation is order--insensitive.
+\end{proof}
+
+\begin{proposition}[Monotone Safety]
+If CI enforces $\mathrm{MF}(N_t)\subseteq \mathrm{MF}(N_{t+1})$ for all $t$, safety obligations are monotone nondecreasing.
+\end{proposition}
+\begin{proof}
+Set inclusion prevents removal of any previously required must--fail; additions tighten obligations; equality preserves them.
+\end{proof}
+
+\section{Threats and Mitigations}
+\begin{table}[t]
+\centering
+\begin{tabular}{@{}p{3.2cm}p{6.0cm}p{5.8cm}@{}}
+\toprule
+\textbf{Threat} & \textbf{Vector / Assumption} & \textbf{Mitigation (Mechanized)}\\
+\midrule
+Supply--chain drift & Non--deterministic builds/toolchains & EnvLock by digest; deterministic encodings; receipts bind \code{envlock\_digest} \\
+Ledger tampering & Mutation of stored receipts & Header--only surface (Merkle root); any header byte flip changes root \\
+Signature malleability & Ambiguous signature encoding & Normative COSE over deterministic CBOR; Ed25519 (\code{alg=-7}) \\
+DoS via growth & Unbounded receipts & Deterministic batching; epoch summaries; archival with root verification \\
+Privacy leakage & Over--disclosure during audit & Selective disclosure with payload proofs; headers suffice for chain checks \\
+Controller instability & Unsafe actions under drift & L1 receipts (KKT, Conservation); L2 PR/ISS from revocation--checked cache \\
+\bottomrule
+\end{tabular}
+\caption{Security posture from byte--level commitments, deterministic encodings, and CI gates.}
+\end{table}
+
+\section{Verification Obligations}
+\begin{itemize}
+  \item \textbf{VO-ROOT-EQUAL:} Replays on identical inputs yield identical surface roots across platforms.
+  \item \textbf{VO-LEDGER-TAMPER:} Single--byte header mutations alter the root.
+  \item \textbf{VO-SD-CORRECT:} Selective--disclosure proofs verify against \code{payload\_root}; root unchanged.
+  \item \textbf{VO-NB-MONO:} $\mathrm{MF}(N_t)\subseteq \mathrm{MF}(N_{t+1})$ in CI; deltas receipted.
+  \item \textbf{VO-KKT-RESID:} Convex class declared; residuals and dual gap $\le$ tolerances.
+  \item \textbf{VO-CONS-BAL:} Conservation: observed $\Delta V$ matches declared spend within tolerance.
+  \item \textbf{VO-PR/ISS-CACHE:} L2 certificates only accepted from non--revoked cache entries.
+\end{itemize}
+
+\section{Operational Checklists}
+\begin{auditbox}
+\textbf{Proof Surface (Header--Only)}
+\begin{verbatim}
+Input: headers H = {h_1, ..., h_n} (canonical bytes)
+1. Sort H lexicographically (byte-wise)
+2. Compute leaf hashes L_i = H(h_i)
+3. Build binary Merkle tree over {L_i}
+4. Output root R
+\end{verbatim}
+\end{auditbox}
+
+\begin{auditbox}
+\textbf{Selective Disclosure Verification}
+\begin{verbatim}
+Input: header h (payload_root ρ), revealed fields F*, inclusion proofs π*
+For each (field, value, proof) in (F*, π*):
+  a) verify Merkle path to ρ
+If all paths verify, accept fields as authentic w.r.t. ρ
+\end{verbatim}
+\end{auditbox}
+
+\begin{auditbox}
+\textbf{Level-1 DRO/KKT Receipt}
+\begin{verbatim}
+Input: transcript T, convex class C, residuals (r_stat, r_pri, r_dual), duality gap g, tolerances τ*
+Require: C ∈ {QP, SOCP, SDP}
+Check: r_stat ≤ τ_stat AND r_pri ≤ τ_pri AND r_dual ≤ τ_dual AND g ≤ τ_gap
+\end{verbatim}
+\end{auditbox}
+
+\section{Assumptions and Limitations}
+\begin{itemize}
+  \item \textbf{Collision resistance:} Security reduces to assumptions on $H$ and EdDSA; no bespoke crypto.
+  \item \textbf{Determinism scope:} Fixed toolchain and deterministic encodings are required; exact cross--ISA floating point may require fixed--point or constrained kernels.
+  \item \textbf{STL monitoring:} Dense--time properties via bounded monitors and robust intervals (sound but conservative).
+  \item \textbf{Level--2 costs:} PR/ISS accepted via audited cache with revocation; full online recomputation is out of scope for high--rate loops.
+\end{itemize}
+
+\section{Context and Prior Art (Neutral)}
+This program synthesizes reproducible supply--chain attestations (deterministic builds; byte--identical artifacts), transparent logs with tamper--evident commitments (hash--chained receipts; Merkle proof surfaces), and formal control/verification for runtime safety (STL/SMT gating; CLF/CBF; KKT/PR/ISS receipts). The contribution is a normalized architecture in which every consequential step emits a typed, auditable, selectively disclosable receipt, allowing independent conformance checks and reproducible evaluation.
+
+\section{Conclusion}
+We provide a neutral, safety--first architecture for verifiable computation with compositional receipts, deterministic encodings, formal norms and governance, DRO control with explicit certificates, and privacy by selective disclosure. Short proofs, obligations, and checklists make the program practically auditable.
+
+\appendix
+\section*{Appendix A: Minimal Worked Example}
+Consider a toy quadratic program with objective $x^\top Q x + c^\top x$ subject to $Ax\leq b$. The solver emits residuals $(r_{\mathrm{stat}}, r_{\mathrm{pri}}, r_{\mathrm{dual}})$ and dual gap $g$. A \SC{DRO\_KKT\_OK/v1} receipt is issued with PASS if all quantities are within tolerances; a conservation receipt checks $\Delta V$ against declared spend. Headers are serialized to deterministic CBOR, hashed (domain--separated), and chained via \code{prev\_digest}. The surface root summarizes the sequence without exposing payloads.
+
+\end{document}

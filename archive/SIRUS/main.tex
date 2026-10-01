@@ -1,0 +1,129 @@
+\documentclass[11pt]{article}
+
+% ---------- Encoding & fonts ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% ---------- Layout & micro-typography ----------
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{microtype}
+
+% ---------- Math ----------
+\usepackage{amsmath,amssymb,mathtools}
+
+% ---------- Tables, colors, lists ----------
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+
+% ---------- Links (bookmark-safe) ----------
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=black,citecolor=black,urlcolor=blue}
+
+% ---------- Visual macros (no packages loaded inside) ----------
+\input{sirus_visual_macros.tex}
+
+% ---------- Title ----------
+\title{SIRUS: Ethics-First Prototype Draft}
+\author{SIRUS Working Group}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+% ===== Reader Care & Ethics Preamble =====
+\begin{GoldenRuleBlock}
+\GoldenRuleBody{
+\textbf{Purpose.} This work proposes governance and control rails intended to \emph{reduce harm} while enabling safe progress. Apply a \textbf{Golden-Rule framing}: for any proposed action, first check the mirrored-risk bound
+\[
+\mathrm{risk}_{\text{in}\leftarrow\text{out}} \le \rho\,\mathrm{risk}_{\text{out}\leftarrow\text{in}},\qquad \rho\in(0,1].
+\]
+If this bound fails, the move is \textsc{MUST--FAIL} (\texttt{GOLDEN\_RULE\_BREACH}) and admission to Q* is disallowed.
+}
+\end{GoldenRuleBlock}
+
+\begin{SafetyBlock}
+\SafetyBody{
+\textbf{Reader care.} Technical material on governance/control can trigger cognitive dissonance or dissociative artifacts. A \emph{gentle path} is provided: read \textbf{GSE\texorpdfstring{$\leftrightarrow$}{↔}}, \textbf{Mirror}, and \textbf{Sentinel} first; only then approach Q*. If distress arises, pause and step down to the gentle path; defer implementation sections until stable.
+}
+\end{SafetyBlock}
+
+\begin{EthicBlock}
+\EthicBody{
+\textbf{Mechanism rails (binding).} We require: \texttt{NO\_PACK} (no SSOT $\Rightarrow$ no run), \texttt{NO\_ENVLOCK} (no promotion/rollback), \texttt{TAILCONTRACT\_BREACH} (auto-rollback; two-strike freeze), \texttt{CONSENT\_BRAKE} (growth capped until revocations cleared), \texttt{RESTORATION\_DEBT\_OPEN} (no growth with outstanding harm), and \texttt{BRAVERY\_BREACH} (risk-taking without receipts/remedies/DP aggregates).
+}
+\end{EthicBlock}
+
+\section*{Author's Note}
+
+This manuscript grows from a commitment to \textbf{harm reduction, transparency, and alignment with the Golden Rule}.  
+Our aim is not only to explore technical mechanisms for governance and control, but also to ensure that such work remains safe, interpretable, and compassionate to its readers.  
+
+We recognize that complex formalism can provoke discomfort or dissonance; accordingly, we place ethics, reader care, and stability first. The technical material is scaffolded by clear fail-safe conditions and normative rails so that the pursuit of solvability does not outpace the protection of people.  
+
+In this spirit, the following sections should be read as both a proposal and an invitation: to engage carefully, to question openly, and to help refine the scaffolding of trustworthy progress.
+
+
+% ===== Body =====
+
+\section{Introduction}
+This is a stabilised seed. Ethics and reader care are front-loaded so each revision begins aligned. Add sections gradually; keep proofs and mechanisms crisp, and defer visuals to the macro layer.
+
+\section{Editorial Rails \& Commitments}
+\textbf{Vow.} Serve people. Build trustworthy scaffolding. Keep the tail honest. Move.
+
+\noindent\textbf{Normative verbs (RFC 2119/8174):}
+\begin{enumerate}[leftmargin=1.3em,label=\textbf{C\arabic*.}]
+  \item SSOT determinism: identical SSOT+Policy+DE+receipts $\Rightarrow$ identical $\Omega$.
+  \item Priced frontiers: each crossing emits a \texttt{FrontierRow} with $\Delta_{\mathrm{fr}}$ and tightness (EXACT/DP/RELAXED).
+  \item $\beta$-leases on unknowns; breaches quarantine.
+  \item Non-expansive retunes (Lipschitz caps).
+  \item Loader rank enforcement: \emph{Safety-or-Halt}.
+  \item GSE\texorpdfstring{$\leftrightarrow$}{↔} before Q*: deterministic work only after gates pass.
+  \item Evidence-gated coupling, Mirror symmetry, Sentinel vigilance.
+  \item Bravery-as-Accountability (bravery without receipts = \texttt{BRAVERY\_BREACH}).
+\end{enumerate}
+
+\section{Objects, Windows, Frontiers}
+Artifacts canonicalize to bytes via deterministic profiles (e.g., CBOR with fixed key order). Domain-separated digests bind into the proof surface. A window $W=[t_0,t_1]$ stages change across the frontier $\partial(G \dashv S)$.
+
+\section{Hybrid Spaces — Frontier Conditions (Normative)}
+Creation episodes follow \textbf{FRZ $\rightarrow$ MUT $\rightarrow$ REPROJ $\rightarrow$ FrontierRow} (must-fail otherwise):
+\begin{enumerate}[leftmargin=1.3em,label=(F\arabic*)]
+\item \textbf{Dwell.} Stabilizing flow halts for at least $\tau_{\min}$; no stabilizing kernels during MUT.
+\item \textbf{Dirac reprojection.} REPROJ maps to $S$ without altering accepted bytes.
+\item \textbf{Pricing.} Emit typed \texttt{FrontierRow} with $\Delta_{\mathrm{fr}}$, checker, and tightness grade.
+\end{enumerate}
+
+\section{GSE\texorpdfstring{$\leftrightarrow$}{↔}, CDG, Mirror, Sentinel}
+\subsection*{GSE (bilateral)}
+Transport on bilateral energy with priced slack; receipts record pre/post descriptors, energy drop, projection residual, and tightness.
+
+\subsection*{CDG (evidence-gated coupling)}
+Mixed cumulants, permutation/phase-shuffle tests, optional MI bounds. Grades: \texttt{MECH\_EXACT | MECH\_RELAXED | UNSET | COINCIDENTAL}. Admit Q* only on \texttt{EXACT} or priced \texttt{RELAXED}.
+
+\subsection*{Mirror (symmetry \& Golden Rule)}
+Enforce symmetry bands and the mirrored-risk bound prior to any admission to Q*.
+
+\subsection*{Sentinel (vigilance)}
+Continuous drift/anomaly/adversary checks; any veto defers or reverts to GSE\texorpdfstring{$\leftrightarrow$}{↔}.
+
+\section{Acceptance Algebra \& FTQ--NF}
+Guard lattice $\times$ spend monoid; adapters are deterministic, domain-separated, and introduce bounded unknowns. Normalize to \texttt{FTQ\_NF\_ROW} (guards + ledger), idempotent and absorber-preserving.
+
+\section{Q* Queue (Deterministic Layer)}
+Greedy, collision-avoiding selection with distinct prices and lexicographic progress; scope limited to deterministic, dissipative layers. Each move ledgered as \texttt{QSTAR\_MOVE}.
+
+\section{Frontier Pricing Grammar \& Loader Safety}
+Typed events include \texttt{ADD\_ADAPTER | REWIRE | MODEL\_SWAP | PDE\_STEP | QSTAR\_MOVE | GSE\_ENTER/EXIT | NORM\_IMPORT/EXPORT | CDG | EXCHANGE\_SLACK | MIRROR\_TEST | SENTINEL | ETHIC\_CHECK}. Loader enforces \emph{Safety-or-Halt} via a well-founded rank.
+
+\section{Conformance \& Must-Fail Set}
+\texttt{FRONTIER\_MISSING\_FREEZE}, \texttt{RETUNE\_NONEXPANSIVE\_VIOLATION}, \texttt{UNK\_BUDGET\_EXCEEDED}, \texttt{CDG\_UNSET\_QSTAR}, \texttt{CDG\_COINCIDENTAL\_QSTAR}, \texttt{MIRROR\_GAP\_OVERBAND}, \texttt{SENTINEL\_VETO\_IGNORED}, \texttt{GOLDEN\_RULE\_BREACH}, \texttt{EXCHANGE\_SLACK\_OVERBAND}, \texttt{RECIPROCITY\_VIOLATION}. Mechanism rails binding as listed in the ethics block.
+
+\section*{Acknowledgments}
+Thanks to colleagues and readers who insisted on safety, clarity, and tail honesty.
+
+\end{document}
