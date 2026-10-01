@@ -21,7 +21,13 @@ jobs:
           LEAN_NUM_THREADS: "1" # keeps leanchecker within runner memory with Mathlib
         with:
           lake-package-directory: lean
+          # Mathlib's own cache covers dependencies; tarring lean/.lake (~5 GB)
+          # for the GitHub cache runs the runner out of disk.
+          use-github-cache: "false"
           leanchecker: "true"
+          # Without arguments leanchecker derives the module name `Jsg` from the
+          # package name `jsg`; the library is `JSG`.
+          leanchecker-args: "JSG"
 
       - name: Forbidden tokens, axiom audit, statements check
         run: bash scripts/check.sh
