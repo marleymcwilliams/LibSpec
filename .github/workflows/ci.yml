@@ -1,0 +1,27 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # tags are needed for the statements-unchanged check
+
+      # Installs Lean, fetches the Mathlib cache, runs `lake build`, then
+      # replays every JSG module through the kernel with leanchecker.
+      - uses: leanprover/lean-action@v1
+        env:
+          LEAN_NUM_THREADS: "1" # keeps leanchecker within runner memory with Mathlib
+        with:
+          lake-package-directory: lean
+          leanchecker: "true"
+
+      - name: Forbidden tokens, axiom audit, statements check
+        run: bash scripts/check.sh

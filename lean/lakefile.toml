@@ -1,0 +1,16 @@
+name = "jsg"
+version = "0.1.0"
+defaultTargets = ["JSG"]
+
+[leanOptions]
+autoImplicit = false
+
+[[require]]
+name = "mathlib"
+scope = "leanprover-community"
+rev = "v4.34.1"
+
+# Builds the root JSG.lean and every module under JSG/: Statements, Proofs, Lemmas and Tests.
+[[lean_lib]]
+name = "JSG"
+globs = ["JSG.*"]

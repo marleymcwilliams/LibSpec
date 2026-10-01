@@ -1,0 +1,21 @@
+# Working rules for this repo
+
+## Roles
+- The human owns `lean/JSG/Statements.lean`. Never edit it.
+  If a statement looks wrong or unprovable, stop and explain why.
+- Proofs go in `lean/JSG/Proofs/`, helper lemmas in `lean/JSG/Lemmas/`.
+- `archive/` is read-only.
+
+## Definition of done
+- `lake build` passes with no errors, and no warnings in files you touched.
+- No `sorry`, `admit`, `axiom`, or native evaluation (`native_decide`, `decide +native`).
+- `#print axioms` on each target shows only propext, Classical.choice, Quot.sound.
+- `scripts/check.sh` passes.
+
+## How to work
+- One target per session unless told otherwise.
+- Search Mathlib (Loogle, exact?, apply?) before writing a helper lemma.
+- Never weaken a hypothesis or change a statement to make a proof go through.
+- After three failed approaches, stop. Report what you tried, what blocked you,
+  and whether the statement itself might be false.
+- End every session with: files changed, theorems closed, ideas added to guide/IDEAS.md.
