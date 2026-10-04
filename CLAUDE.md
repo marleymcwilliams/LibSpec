@@ -13,6 +13,7 @@
 - `scripts/check.sh` passes.
 
 ## How to work
+- Never push to `main`. Work on a branch and open a PR.
 - One target per session unless told otherwise.
 - Search Mathlib (Loogle, exact?, apply?) before writing a helper lemma.
 - Never weaken a hypothesis or change a statement to make a proof go through.
