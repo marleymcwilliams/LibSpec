@@ -15,51 +15,36 @@ This guide is the single canon for JSG I–V, SpecChain, the SIRUS spec, the Nav
 
 The JSG books came first and the neutral drafts last. The order is inferred from renamed terms, because the dates embedded in the files are partly example values.
 
-```mermaid
-flowchart TB
-  seed["Game substrate (likely seed)<br/>Expectiminimax game graph; strategic vorticity"]
-  jsg13["JSG I → II → III<br/>Clamp says “Yellow”; proof_print; I₁–I₅ redefined in III"]
-  v13["V1–V3 hardening passes<br/>Anti-Goodhart meta-guard, dual approval, reversion timers"]
-  jsg4["Launchpad → JSG IV<br/>Governance as code; “Yellow” renamed “Amber”"]
-  jsg5["JSG V<br/>Acceptance calculus: grade lattice, Σ, compose_ev"]
-  pde["Dissipative-PDE program<br/>Calculus applied to Navier–Stokes; adds acceptance shocks"]
-  spec["SpecChain SCp1–5 and MDmaster<br/>proof_print renamed proof_surface; Loader, tail contracts"]
-  sirus["SIRUS spec master (three snapshots)<br/>SSOT discipline; Boolean decision with receipted Q′"]
-  ethics["Ethics rails, runtime note<br/>main.tex, Playbook, crit.tex, SIRUS_game.tex"]
-  drafts["Drafts 0–7 (last)<br/>Neutral rewrites; ethics rails dropped from must-fails"]
-  seed --> jsg13 --> v13 --> jsg4 --> jsg5 --> spec --> sirus --> drafts
-  jsg5 --> pde
-  sirus -.- ethics
-```
-
-*corpus lineage · 8 stages, 2 side branches*
+&#91;embedded content: corpus lineage · 8 stages, 2 side branches\]
 
 Solid arrows mean a stage builds on the one before it; the dashed line marks work from the same period. The PDE program branches off the JSG V calculus.
 
 ## Canonical glossary
 
-Twenty terms, each with one home. Two are still open decisions: sequential composition and the SIRUS name.
+Twenty-two terms, each with one home. One is still an open decision: the SIRUS name.
 
 | Canonical term | Meaning | Replaces or aliases | Home |
 | --- | --- | --- | --- |
-| Grade lattice **G** | Per-axis values in ℝ≥0 ∪ {⊤}, bigger is worse, ordered coordinatewise | "Q" in JSG V and the PDE paper; "Q" in SCp2 | JSG V §2 |
-| Floor axes **M** | Axes where the worst reading counts; combined by max; reordering never charges them | max-channels, Q\_max | JSG V; PDE §2.1 |
-| Budget axes **S** | Axes that add up and can be spent; frontier debits land here | sum-channels, Q\_sum, ledger and CVaR axes | JSG V; PDE §2.1 |
-| Unknown **⊤** | Top of every axis; absorbs under every operator; allowed on a budget axis only up to a registered lease β | ⊤unk (JSG V, PDE); ⊥ in SCp2 (reversed orientation); "third value" (SIRUS spec) | PDE §2.1, I4b |
-| Parallel join **⊕** | Combines disjoint subsystems: max on M, sum on S | horizontal ⊕ (JSG V); ∧ (PDE); ⊎ and ⊙ (SCp2) | JSG V |
-| Sequential composition **⊗** | Combines stages in time. Open decision: JSG V takes max on every axis, SCp2 sums every axis, the PDE paper reuses ⊕ | vertical ⊓ (JSG V); ⋆, and ∧ as its alias (SCp2) | Open |
+| Graded values **G** | Per-axis intervals \[lo, hi\] in \[0, ∞\]; the verdict reads hi; ordered by badness (endpoints) and by information (narrower is better) | "Q" in JSG V, the PDE paper and SCp2 | Core v2 |
+| Floor axes **M** | Per-window rates; combined by max | max-channels, Q\_max | Core v2 |
+| Budget axes **S** | Cumulative spends; combined by +; each carries a subadditivity side condition | sum-channels, Q\_sum, ledger and CVaR axes | Core v2 |
+| Unknown | The interval \[0, ∞\]; a lease β allows width up to β, and anything wider is a breach | ⊤unk (JSG V, PDE); ⊥ in SCp2 (the information order); "third value" (SIRUS spec) | Core v2; PDE I4b |
+| Combine **⊕** | Endpointwise max on M, + on S; a commutative monoid, not a join (on S, g ⊕ g = 2g) | "Parallel join"; horizontal ⊕ (JSG V); ∧ (PDE); ⊎ and ⊙ (SCp2) | Core v2 |
+| Sequential composition | Resolved: the same ⊕; sequence and parallel differ only in data flow | vertical ⊓ (JSG V); ⋆, and ∧ as its alias (SCp2) | Core v2 |
+| Residual **θ ⊸ g** | Budget left for later stages: θ ⊖ g on S; θ on M when g ≤ θ | None | Core v2 |
 | Decision **D** | {REJECT < ACCEPT}; no third value | "Q" in the SIRUS spec | SIRUS spec §1.2 |
-| Verdict map **δ\_θ** | ACCEPT iff every axis is known and at or below its threshold θ | Implicit threshold checks | New |
-| Receipted result **R** | (decision, receipt address, grade, metrics); projection π(R) = decision; metrics cannot flip a REJECT | Q′ | SIRUS spec §1.4 |
-| Obligations **Σ** | Multiset of typed obligations; each discharged only by its authority with its witness; a pass leaves Σ empty | Typed effects | JSG V §3; PDE §2.2 |
-| Frontier debit **Δ\_fr** | Priced cost of a regime crossing or reassociation, charged to S only | C\_fr, frontier spend, C\_salt | PDE §10 |
+| Verdict map **δ\_θ** | Indicator of the down-set of θ, read on upper endpoints | Implicit threshold checks | Core v2 |
+| Receipted result **R** | (grade, receipt address, metrics). The decision is derived as δ\_θ(grade), never stored, and metrics cannot influence the grade | Q′ | SIRUS spec §1.4 |
+| Obligations **Σ** | Typed: each has a witness type and an authority stage; progress is the Dershowitz–Manna order | Typed effects | Core v2 |
+| Must-pass set **MP** | Inputs the gate must ACCEPT; disjoint from the must-fail set | None | Core v2 |
+| Frontier charge **Δ\_fr** | Total variation A · Σ‖jump\_k‖ at the finest resolution; additive, so regrouping can't change it | C\_fr, frontier spend, C\_salt, the subadditive merged-crossing debit | Core v2 |
 | **proof\_surface** | Window or run digest binding the guard IDs in fixed order | proof\_print, proof print | SCp1 |
 | Guard order | EF → DRO → PR → CBF → ω | None | JSG III |
 | **ω stage** | Automata verdict over KPI row hashes; the fifth guard | "Ω" in the SIRUS pipeline | JSG III |
 | Uncertainty set **𝒰** | Model-uncertainty set for PR/GKYP witnesses and degraded profiles | "Ω" in JSG II–IV, including Ω\_wc | JSG IV §Ω contract |
 | Clamp states | Green, Amber, Red | "Yellow" | JSG IV |
 | Invariant families | Prefix by family: H1–H5 (governor, JSG III list), A1–A5 (PDE acceptance), L1–L10 (Loader), T11–T13 (tail contracts) | I₁–I₅ (three incompatible versions); I1–I13 | New |
-| Policy preorder **⪰** | P₂ ⪰ P₁ iff no dial is weaker; ⪰ changes are permanent, all others expire | ThresholdChange VC semantics | JSG IV |
+| Policy lattice **⪰** | Dials in a complete lattice, larger is stricter; E(t) = baseline ⊓ active weakenings; threshold dials store their inverse | "Strictest unexpired policy P\*"; ThresholdChange VC semantics | Core v2 |
 | **SIRUS** (this project) | The governance and evidence spec | Also the name of Bénard et al.'s random-forest rule-set algorithm; the two were merged in MDmaster | Open: rename or disambiguate |
 | Content address | BLAKE3-256 of canonical bytes | `b3:…` placeholders (849 in the master spec) | SIRUS spec §0.5 |
 
@@ -69,17 +54,17 @@ Eleven components can be proved in Lean now and five more with analysis; the oth
 
 | Component | Layer | Lean status | Source |
 | --- | --- | --- | --- |
-| Grade lattice laws: join monotone, associative, commutative; ⊤ absorbs | Lean now | Stub | JSG V §2 |
-| Lax interchange law | Lean now | Not started | JSG V §2 |
-| Verdict map antitone; unknown forces REJECT | Lean now | Stub | SIRUS spec §1.2–1.3 |
-| No confidence inflation (metrics cannot flip a verdict) | Lean now | Stub | SIRUS spec §1.4 |
-| Σ discharge terminates; a pass leaves Σ empty | Lean now | Stub | JSG V §3; PDE Lemma 2.1 |
-| Loader safety-or-halt (lexicographic rank) | Lean now | Stub | MDmaster SCp3 |
-| Frontier debit subadditive and digest-monotone | Lean now | Stub | PDE Lemma 10.1 |
-| Monotone policy changes compose | Lean now | Stub | JSG IV policy conservativity |
+| Graded values: combine laws, interchange equation, residual threading | Lean now | Stub | JSG V §2 |
+| Receipt integrity: replaying the addressed content yields the grade | Lean now | Not started | JSG V §2 |
+| Verdict: unknown rejects; complete evidence within θ accepts | Lean now | Stub | SIRUS spec §1.2–1.3 |
+| Noninterference: metrics cannot change the grade | Lean now | Stub | SIRUS spec §1.4 |
+| Loader: invariant preserved; Dershowitz–Manna progress | Lean now | Stub | JSG V §3; PDE Lemma 2.1 |
+| Frontier charge: additive under regrouping; chattering never free | Lean now | Stub | MDmaster SCp3 |
+| Policy lattice: expiry tightens; bridge to acceptance | Lean now | Stub | PDE Lemma 10.1 |
+| Calibration: must-pass accepted, must-fail rejected, sets disjoint | Lean now | Stub | JSG IV policy conservativity |
 | Capped governance fold: bounded, with a vacuous nightly check | Lean now | Stub | JSG IV aggregator lemma |
-| Must-fail sets only grow | Lean now | Stub | Draft0–7 |
-| Unknowns lease: breach of β quarantines | Lean now | Not started | PDE I4b |
+| Must-fail CI gate: accepted histories keep every unsigned failure class | Lean now | Stub | Draft0–7 |
+| Typed obligations (authority and witness); unknowns lease as interval width ≤ β | Lean now | Not started | PDE I4b |
 | CVaR tail-to-level step (C₀ = 1) | Lean + analysis | Not started | PDE Lemma 9.1 |
 | No-Zeno dwell bound, corrected | Lean + analysis | Stub | JSG I Lemma 1 |
 | Local KL–Fisher quadratic bound | Lean + analysis | Not started | JSG I FIM bound |
@@ -87,175 +72,217 @@ Eleven components can be proved in Lean now and five more with analysis; the oth
 | Geometry-scaled Jacobi frontier defect | Lean + analysis | Not started | JSG I Lemma 3 |
 | PR/GKYP witnesses | Certificate | Not applicable | JSG II–IV |
 | CBF tube residuals and saltation replay | Certificate | Not applicable | JSG III |
-| Statistical gates: HAC and bootstrap CIs, BY FDR, SPRT, MTC | CI / test | Not applicable | JSG II |
+| Statistical gates: HAC and bootstrap CIs, BY FDR, SPRT, MTC; interval enclosure (lo ≤ truth ≤ hi) at a declared coverage | CI / test | Not applicable | JSG II |
 | Determinism envelope and proof\_surface replay | CI / test | Not applicable | SIRUS spec §12; JSG IV |
 | ACT→JSG compiler soundness and completeness | Open math | Not started | JSG IV Launchpad |
 | Navier–Stokes regularity spine L1–L5 | Open math | Not applicable | DissipativePDEs |
 | Golden Rule, restoration debt, consent brake, bravery-as-accountability | Norm | Not applicable | main.tex |
 | Alignment budgets and override taxonomy | Norm | Not applicable | JSG I appendix |
 
-## Unified core objects
+## Unified core objects (v2)
 
-Seven objects carry the whole calculus; every other component is built from them.
+Four objects carry the calculus. This revision folds in an outside review of v1, which found that its seven objects were partly the same object in different notation, and that a gate rejecting everything satisfied every v1 theorem.
 
-**1. Grade lattice.** A finite set of axes is split into floors M and budgets S.
-
-```latex
-G = \prod_{i \in M \cup S} \left(\mathbb{R}_{\ge 0} \cup \{\top\}\right), \qquad g \le h \iff g_i \le h_i \ \text{for all } i
-```
+**1. Graded values.** Each axis holds an interval \[lo, hi\] in \[0, ∞\], and the verdict reads hi. A known value is \[x, x\], full ignorance is \[0, ∞\], and a lease β allows \[x, x + β\]. Floor axes M carry per-window rates and combine by max; budget axes S carry cumulative spends and combine by +. Both are commutative ordered monoids, so the operation is called **combine**, not join: on budgets, g ⊕ g = 2g.
 
 ```latex
-(g \oplus h)_i = \begin{cases} \max(g_i, h_i) & i \in M \\ g_i + h_i & i \in S \end{cases} \qquad (\top \text{ absorbs in both cases})
+[a,b] \oplus [c,d] = \begin{cases} [\max(a,c),\ \max(b,d)] & \text{floor axis} \\ [a+c,\ b+d] & \text{budget axis} \end{cases}
 ```
 
-**2. Verdict map and receipted result.** A threshold vector θ fixes δ\_θ(g) = ACCEPT iff g\_i ≤ θ\_i on every axis, so any ⊤ rejects. A receipted result R = (g, receipt, metrics) projects to π(R) = δ\_θ(g). Metrics are not an input to π, so "no confidence inflation" holds by construction.
+Sequential and parallel composition use the same ⊕. A stage is a function X → G × Y; stages in sequence pass Y along and combine their grades, so the two kinds of composition differ only in data flow, and interchange holds as an equation. Each budget axis registers a soundness side condition: the real quantity must be subadditive under composition, as CVaR is.
 
-**3. Obligations.** Σ is a finite multiset. Emit adds finitely many per window. Discharge(o, stage, witness) removes one and is legal only for o's authority. Acceptance is fail-closed: a window passes only if Σ = ∅.
-
-**4. Frontier debit.** A crossing c has a jump F⁺ − F⁻ and digest-pinned constants. It is charged to S only, so floors are invariant under reassociation.
+**2. Residuated budgets.** The verdict is the indicator of the down-set of θ, read on upper endpoints. On budget axes, accepted parts do not combine into an accepted whole, so each stage is checked against the residual that earlier stages left:
 
 ```latex
-\Delta_{fr}(c) = \lVert F^+ - F^- \rVert \cdot A, \qquad A = \hat\nu_{\min}^{-1}\,\left(1 + c_\Sigma\, \kappa_{\max}\, r_{\mathrm{tube}}\right) \ge 0
+\theta \multimap g = \max\{h : g \oplus h \le \theta\} = \begin{cases} \theta & \text{floor axis, when } g \le \theta \\ \theta \ominus g \ \text{(truncated subtraction)} & \text{budget axis} \end{cases}
 ```
 
-**5. Policy preorder and governance fold.** A policy is a vector of dials, and P₂ ⪰ P₁ iff no dial is weaker. A ⪰ change is permanent. Any other change is a weakening: it needs an expiry, and on expiry the runtime reverts to the strictest unexpired policy P\*. Weakenings fold as below; admission must test the unclipped total (see Known defects).
+The same mechanism covers thresholds, the frontier charge, the governance cap and any explicit step bound. The frontier charge is total variation: A · Σ‖jump\_k‖ at the finest resolution. It is additive under concatenation, so no regrouping can change it, and chattering across a frontier and back is never free. A is computed conservatively, with ν̂\_min as a lower confidence bound and κ\_max, r\_tube as upper bounds, in ENNReal so that ν̂\_min = 0 gives A = ∞.
+
+**3. Typed obligations.** Each obligation o has a witness type W(o) and an authority stage. Discharging o requires a witness of type W(o) produced at authority(o), and a window passes only when every emitted obligation was discharged that way. The Loader's progress is measured by the Dershowitz–Manna order on its pending obligations, which allows one obligation to be replaced by finitely many smaller ones. Its safety is a separate theorem: an invariant Inv (L1–L10) preserved by every accepted step. A halt with rejection carries the remaining obligations and the axes still unknown as its certificate.
+
+**4. Policy lattice.** A policy maps dials into a complete lattice where larger is stricter; must-fail sets are dials valued in a powerset. The effective policy is a monotone baseline met with the active weakenings:
 
 ```latex
-R_{1:n} = \min\left\{R_{\max},\; R_{1:n-1} + \lambda\, \phi^{[\text{emergency}]}\, R(\Delta_n)\right\}
+E(t) = B(t) \wedge \bigwedge \{\, w : w \text{ active at } t \,\}
 ```
 
-**6. Loader rank.** The Loader's state carries a rank r ∈ ℕ⁵ under lexicographic order. Every accepted transition strictly lowers r; otherwise the Loader halts with a rejection certificate. Well-foundedness gives safety-or-halt.
+Expiry removes a term from the meet, so it can only make E stricter. Thresholds are looser when larger, so a threshold dial stores its inverse, and the bridge theorem catches the mistake if it doesn't: if P₂ ⪰ P₁ then Accept(P₂) ⊆ Accept(P₁). Weakenings are priced by magnitude × duration against a token bucket: a reservoir of capacity C that refills at rate ρ per window, both of them dials. Without the refill this is the lifetime budget again, just draining more slowly. The bucket bounds the rate of weakening, not its persistence: a weakening that costs at most ρ per window can be renewed forever, so three options are open: set ρ to the standing weakening you accept, cap each weakening's cumulative duration, or raise each consecutive renewal's cost by a factor γ > 1, which any finite C and ρ eventually refuse. Escalation must be keyed to the dial being weakened, not to the request, or relabeling and brief lapses would reset it. It also needs a deliberate reset, such as decay after a quiet period, or one long episode leaves the dial effectively frozen.
 
-**7. Must-fail sets.** For successive norms versions, MF(N\_t) ⊆ MF(N\_{t+1}). Removing a failure class is a weakening and follows rule 5.
+**Positive controls.** Every property above is a safety property, and a gate that rejects everything satisfies all of them. Two counterweights are required: a must-pass set MP of inputs that must ACCEPT, kept disjoint from the must-fail set, and a completeness lemma: complete evidence whose values are within θ is accepted. That lemma stays nearly definitional unless a statement ties each interval to the true value (lo ≤ truth ≤ hi). That enclosure is empirical, because truth is measured: it holds at a declared coverage level and belongs to the CI layer, or to the certificate layer when the interval comes from exact computation on a model. It is not a Lean item. The real guard against vacuity is the must-pass set together with the always-reject mutant.
 
-## Lean 4 statement stubs
+## Lean 4 statement stubs (v2)
 
-This is an uncompiled sketch against Mathlib. Each `sorry` is one proof obligation, and three statements already close without one (`no_flip`, `monotone_compose`, `mustFail_monotone`).
+This is an uncompiled sketch against Mathlib. Every theorem carries a `Mutant:` comment naming a plausible wrong implementation that fails it; a theorem without one doesn't earn its place. Confirm every Mathlib name with Loogle before relying on it, including `Multiset.IsDershowitzMannaLT`.
 
 ```lean
 import Mathlib
 
 namespace JSG
 
-/-! ## 1. Grade lattice -/
+/-! ## 1. Graded values -/
 
-/-- One axis: bigger is worse, `⊤` is unknown. -/
-abbrev Axis := WithTop NNReal
-
-/-- Floors combine by max; budgets add. -/
+/-- Floors carry per-window rates (combine by max);
+    budgets carry cumulative spends (combine by +). -/
 inductive Kind | floor | budget
+
+/-- An axis value is an interval in [0, ∞]; the verdict reads `hi`. -/
+@[ext] structure Bound where
+  lo : ENNReal
+  hi : ENNReal
+  le : lo ≤ hi
+
+def Bound.known (x : ENNReal) : Bound := ⟨x, x, le_rfl⟩
+def Bound.unknown : Bound := ⟨0, ⊤, le_top⟩
+
+def combineAxis : Kind → Bound → Bound → Bound
+  | .floor,  a, b => ⟨max a.lo b.lo, max a.hi b.hi, max_le_max a.le b.le⟩
+  | .budget, a, b => ⟨a.lo + b.lo, a.hi + b.hi, add_le_add a.le b.le⟩
 
 variable {ι : Type} (kind : ι → Kind)
 
-abbrev Grade (ι : Type) := ι → Axis   -- Pi order is coordinatewise
+abbrev Grade (ι : Type) := ι → Bound
 
-def join (g h : Grade ι) : Grade ι := fun i =>
-  match kind i with
-  | .floor  => max (g i) (h i)
-  | .budget => g i + h i
+def combine (g h : Grade ι) : Grade ι := fun i => combineAxis (kind i) (g i) (h i)
 
-theorem join_comm (g h : Grade ι) : join kind g h = join kind h g := by sorry
-theorem join_assoc (g h k : Grade ι) :
-    join kind (join kind g h) k = join kind g (join kind h k) := by sorry
-theorem join_mono {g g' h h' : Grade ι} (hg : g ≤ g') (hh : h ≤ h') :
-    join kind g h ≤ join kind g' h' := by sorry
-theorem top_absorbs (g h : Grade ι) (i : ι) (hi : g i = ⊤) :
-    join kind g h i = ⊤ := by sorry
+theorem combine_comm (g h : Grade ι) : combine kind g h = combine kind h g := by sorry
 
-/-! ## 2. Verdicts and receipted results -/
+theorem combine_assoc (g h k : Grade ι) :
+    combine kind (combine kind g h) k = combine kind g (combine kind h k) := by sorry
+-- Mutant: averaging budgets, (a + b) / 2, is commutative but not associative.
+
+/-- Sequential and parallel composition agree: interchange is an equation. -/
+theorem interchange (a b c d : Grade ι) :
+    combine kind (combine kind a b) (combine kind c d)
+      = combine kind (combine kind a c) (combine kind b d) := by sorry
+-- Mutant: JSG V's rule (max on every axis in sequence, + on budgets in parallel).
+
+/-! ## 2. Verdicts and residuals -/
 
 inductive Decision | reject | accept
   deriving DecidableEq
 
-/-- Accept iff every axis is known and within its threshold. -/
-noncomputable def verdict (θ : ι → NNReal) (g : Grade ι) : Decision := by
+/-- Accept iff every upper bound is within its threshold. -/
+noncomputable def verdict (θ : ι → ENNReal) (g : Grade ι) : Decision := by
   classical
-  exact if ∀ i, g i ≤ (θ i : Axis) then .accept else .reject
+  exact if ∀ i, (g i).hi ≤ θ i then .accept else .reject
 
-theorem verdict_unknown (θ : ι → NNReal) (g : Grade ι) (i : ι) (hi : g i = ⊤) :
-    verdict θ g = .reject := by sorry
+/-- Fail-closed: an unknown axis rejects whenever its threshold is finite. -/
+theorem verdict_unknown (θ : ι → ENNReal) (g : Grade ι) (i : ι)
+    (hθ : θ i < ⊤) (hu : g i = Bound.unknown) : verdict θ g = .reject := by sorry
+-- Mutant: a verdict that reads `lo` instead of `hi` accepts unknowns.
 
-/-- A worse grade never earns a better verdict. -/
-theorem verdict_antitone (θ : ι → NNReal) {g g' : Grade ι} (h : g ≤ g')
-    (hacc : verdict θ g' = .accept) : verdict θ g = .accept := by sorry
+/-- Completeness: complete evidence within θ is accepted. -/
+theorem verdict_complete (θ : ι → ENNReal) (g : Grade ι)
+    (hk : ∀ i, (g i).lo = (g i).hi) (hin : ∀ i, (g i).lo ≤ θ i) :
+    verdict θ g = .accept := by sorry
+-- Mutant: the always-REJECT gate, which satisfies every safety theorem here.
 
-structure Receipted (ι : Type) where
-  grade   : Grade ι
-  receipt : String                  -- content address of the receipt envelope
+/-- Budget left for later stages; ENNReal subtraction truncates at 0. -/
+def residual (θ x : ENNReal) : ENNReal := θ - x
+
+/-- Checking stage two against stage one's residual is checking the total. -/
+theorem residual_spec (θ x y : ENNReal) (hθ : θ ≠ ⊤) (hx : x ≤ θ) :
+    y ≤ residual θ x ↔ x + y ≤ θ := by sorry
+-- Mutant: checking each stage against the full θ accepts x = y = θ.
+
+/-- Raw evidence plus free-form metrics such as confidence scores. -/
+structure Evidence (E : Type) where
+  record  : E
   metrics : List (String × Float)
 
-noncomputable def Receipted.proj (θ : ι → NNReal) (r : Receipted ι) : Decision :=
-  verdict θ r.grade
+/-- No confidence inflation, stated where it can fail: an obligation on every grader. -/
+def Noninterfering {E : Type} (gradeOf : Evidence E → Grade ι) : Prop :=
+  ∀ r m m', gradeOf ⟨r, m⟩ = gradeOf ⟨r, m'⟩
+-- Mutant: a grader that narrows `hi` when a confidence metric is high.
 
-/-- No confidence inflation: metrics cannot change the verdict. -/
-theorem no_flip (θ : ι → NNReal) (r : Receipted ι) (m : List (String × Float)) :
-    ({ r with metrics := m }).proj θ = r.proj θ := rfl
+/-- No confidence inflation: with a noninterfering grader, metrics cannot flip the verdict. -/
+theorem no_flip {E : Type} (θ : ι → ENNReal) (gradeOf : Evidence E → Grade ι)
+    (hni : Noninterfering gradeOf) (r : E) (m m' : List (String × Float)) :
+    verdict θ (gradeOf ⟨r, m⟩) = verdict θ (gradeOf ⟨r, m'⟩) := by
+  rw [hni r m m']
+-- Mutant: the same grader; Mutants.lean exhibits metrics that flip its verdict.
 
-/-! ## 3. Obligations -/
+/-! ## 3. Loader: safety and progress, kept separate -/
 
-variable {O : Type} [DecidableEq O]
+structure Loader (S O : Type) [Preorder O] where
+  step     : S → S → Prop
+  Inv      : S → Prop                                  -- L1–L10
+  inv_step : ∀ s t, Inv s → step s t → Inv t
+  pending  : S → Multiset O
+  progress : ∀ s t, step s t → Multiset.IsDershowitzMannaLT (pending t) (pending s)
 
-/-- One legal discharge removes one open obligation. -/
-def Discharges (s t : Multiset O) : Prop := ∃ o ∈ s, t = s.erase o
+/-- Safety: every reachable state satisfies the invariant. -/
+theorem Loader.safe {S O : Type} [Preorder O] (L : Loader S O) {s t : S}
+    (hs : L.Inv s) (hr : Relation.ReflTransGen L.step s t) : L.Inv t := by sorry
+-- Mutant: a step that skips one L-check still terminates but breaks this.
 
-theorem discharge_decreases {s t : Multiset O} (h : Discharges s t) :
-    Multiset.card t < Multiset.card s := by sorry
+/-- Progress: no infinite run. -/
+theorem Loader.terminates {S O : Type} [Preorder O] [WellFoundedLT O]
+    (L : Loader S O) : WellFounded (fun t s => L.step s t) := by sorry
+-- Mutant: a retry that re-emits the same obligation cannot satisfy `progress`.
 
-/-- Discharge-only runs terminate. -/
-theorem discharge_wf : WellFounded (fun t s : Multiset O => Discharges s t) := by sorry
-
-/-- Fail-closed acceptance. -/
-def passes (s : Multiset O) : Prop := s = 0
-
-/-! ## 4. Loader: safety-or-halt -/
-
-abbrev Rank := ℕ ×ₗ ℕ ×ₗ ℕ ×ₗ ℕ ×ₗ ℕ
-
-theorem safety_or_halt {S : Type} (rank : S → Rank) (step : S → S → Prop)
-    (h : ∀ s t, step s t → rank t < rank s) :
-    WellFounded (fun t s => step s t) := by sorry
-
-/-! ## 5. Frontier debit -/
+/-! ## 4. Frontier charge -/
 
 variable {E : Type} [NormedAddCommGroup E]
 
-def debit (A : ℝ) (jump : E) : ℝ := ‖jump‖ * A
+/-- Total variation: charge every jump at the finest resolution. -/
+noncomputable def charge (A : ENNReal) (jumps : List E) : ENNReal :=
+  A * (jumps.map (fun v => (‖v‖₊ : ENNReal))).sum
 
-theorem debit_subadditive (A : ℝ) (hA : 0 ≤ A) (js : List E) :
-    debit A js.sum ≤ (js.map (debit A)).sum := by sorry
+/-- Additive under concatenation, so regrouping can't change it. -/
+theorem charge_append (A : ENNReal) (j₁ j₂ : List E) :
+    charge A (j₁ ++ j₂) = charge A j₁ + charge A j₂ := by sorry
 
-theorem debit_mono_digest {A A' : ℝ} (hAA : A ≤ A') (j : E) :
-    debit A j ≤ debit A' j := by sorry
+/-- Chattering is never free. -/
+theorem charge_chatter (A : ENNReal) (v : E) :
+    charge A [v, -v] = 2 * A * (‖v‖₊ : ENNReal) := by sorry
+-- Mutant: v1's merged-jump charge, under which (v, -v) costs 0.
 
-/-! ## 6. Governance -/
+/-! ## 5. Policy lattice -/
 
-/-- Dials, oriented so that larger is stricter; `p₂ ⪰ p₁` is `p₁ ≤ p₂`. -/
-abbrev Policy (κ : Type) := κ → ℝ
+variable {P : Type} [CompleteLattice P]   -- larger = stricter
 
-theorem monotone_compose {κ : Type} {p₁ p₂ p₃ : Policy κ}
-    (h₁ : p₁ ≤ p₂) (h₂ : p₂ ≤ p₃) : p₁ ≤ p₃ := le_trans h₁ h₂
+/-- Baseline met with the weakenings active now. -/
+def effective (B : P) (active : Set P) : P := B ⊓ sInf active
 
-def capAdd (Rmax lam : ℝ) (x y : ℝ) : ℝ := min Rmax (x + lam * y)
+/-- Expiry can only make the policy stricter. -/
+theorem expiry_tightens (B : P) {a a' : Set P} (h : a' ⊆ a) :
+    effective B a ≤ effective B a' := by sorry
+-- Mutant: "revert to the most recent policy", which can land on a weaker one.
 
-def fold (Rmax lam : ℝ) (rs : List ℝ) : ℝ := rs.foldl (capAdd Rmax lam) 0
+/-- The bridge: tighter thresholds never admit more inputs. -/
+theorem bridge {Inp : Type} (gradeOf : Inp → Grade ι) {θ₁ θ₂ : ι → ENNReal}
+    (h : θ₂ ≤ θ₁) :
+    {x | verdict θ₂ (gradeOf x) = .accept} ⊆ {x | verdict θ₁ (gradeOf x) = .accept} := by sorry
+-- Mutant: a threshold dial stored un-inverted, so "stricter" raises θ.
 
-/-- The defect, stated as a theorem: the nightly check `fold ≤ Rmax` cannot fail. -/
+/-- JSG IV's fold, kept to document its defect: the nightly check cannot fail. -/
+def fold (Rmax lam : ℝ) (rs : List ℝ) : ℝ :=
+  rs.foldl (fun x y => min Rmax (x + lam * y)) 0
+
 theorem fold_check_vacuous (Rmax lam : ℝ) (h : 0 ≤ Rmax) (rs : List ℝ) :
     fold Rmax lam rs ≤ Rmax := by sorry
 
-/-- Proposed fix: admit a weakening only if the unclipped total stays within Rmax. -/
-def admits (Rmax lam : ℝ) (rs : List ℝ) : Prop := lam * rs.sum ≤ Rmax
+/-! ## 6. Calibration -/
 
-theorem admits_mono (Rmax lam : ℝ) (hl : 0 ≤ lam) (rs : List ℝ) (r : ℝ) (hr : 0 ≤ r)
-    (h : admits Rmax lam (r :: rs)) : admits Rmax lam rs := by sorry
+/-- Accept every must-pass input, reject every must-fail input, sets disjoint. -/
+def Calibrated {Inp : Type} (gate : Inp → Decision) (MP MF : Set Inp) : Prop :=
+  Disjoint MP MF ∧ (∀ x ∈ MP, gate x = .accept) ∧ (∀ x ∈ MF, gate x = .reject)
+-- Mutant: the always-REJECT gate fails this as soon as MP is nonempty.
 
-/-! ## 7. Must-fail sets -/
+/-- The CI gate on must-fail sets: a new version keeps every failure class,
+    unless a signed weakening covers what it removes. -/
+def mfGate {C : Type} (signed : Set C → Prop) (old new : Set C) : Prop :=
+  old ⊆ new ∨ signed (old \ new)
 
-theorem mustFail_monotone {C : Type} (MF : ℕ → Set C)
-    (step : ∀ t, MF t ⊆ MF (t + 1)) : Monotone MF :=
-  monotone_nat_of_le_succ step
+/-- Every history the gate accepts, with no signed removals, only grows. -/
+theorem mfGate_monotone {C : Type} (signed : Set C → Prop) (MF : ℕ → Set C)
+    (hg : ∀ t, mfGate signed (MF t) (MF (t + 1)))
+    (hs : ∀ s, signed s → s = ∅) : Monotone MF := by sorry
+-- Mutant: Draft0–7's history, which dropped GOLDEN_RULE_BREACH with nothing signed.
 
-/-! ## 8. No-Zeno kernel (analysis layer, corrected form) -/
+/-! ## 7. No-Zeno kernel (analysis layer, corrected form) -/
 
 /-- If the signed distance moves no faster than `Smax`,
     going from `+r` to `-r` takes at least `2r / Smax`. -/
@@ -263,28 +290,37 @@ theorem dwell_lower_bound {d : ℝ → ℝ} {Smax r t₁ t₂ : ℝ} (hS : 0 < S
     (hlip : ∀ s t, |d t - d s| ≤ Smax * |t - s|)
     (h₁ : d t₁ = r) (h₂ : d t₂ = -r) (ht : t₁ ≤ t₂) :
     2 * r / Smax ≤ t₂ - t₁ := by sorry
+-- Mutant: JSG I's version, which assumes |ḋ| ≥ α at the frontier instead of a speed
+-- bound; a trajectory with |ḋ| = 100α crosses far faster than the claimed τ_min.
 
 end JSG
 ```
 
-Two simplifications to revisit. The Σ pass rule is definitional here, so the substantive theorem is termination. The fold scales every term by λ, including the first, which JSG IV leaves unscaled.
+Four pieces are deferred to Milestone 2 or later: typed obligations with witness types and authorities (pass-soundness), receipt integrity (replaying the content at a receipt's address yields its grade), the token-bucket trace invariant for weakenings, and a `Noninterfering` proof for each concrete grader. v1's `monotone_compose` and `discharge_wf` are dropped, since each held for any implementation. `no_flip` and `mustFail_monotone` are restated where they can fail: on the grader, and on the CI gate.
 
 ## Known defects and proposed fixes
 
-Ten defects so far. The first two sit in theorems you would formalize early.
+Seventeen defects so far. The last seven came from an outside review of v1 and are fixed in core v2.
 
 | Defect | Where | Why it matters | Proposed fix |
 | --- | --- | --- | --- |
-| Nightly fold check cannot fail | JSG IV aggregator lemma, R10, GovernanceFold | Once the total saturates at R\_max, later weakenings add nothing, so small loosenings accumulate unseen | Refuse any weakening whose unclipped total exceeds R\_max; freeze weakenings at the cap |
+| Nightly fold check cannot fail | JSG IV aggregator lemma, R10, GovernanceFold | Once the total saturates at R\_max, later weakenings add nothing, so small loosenings accumulate unseen | Price weakenings by magnitude × duration against a token bucket (core v2) |
 | No-Zeno proof sketch inverts its inequality | JSG I Lemma 1, ported to II–IV and the PDE paper | ḋ ≥ α − L·d bounds transit time from above, not below; the stated τ\_min treats α as a speed ceiling | Add the speed bound S\_max (C2); state τ\_min ≥ 2r/S\_max; keep α only to exclude sliding |
 | Exchange-certificate bound is a hash | PDE paper §4.2, ExchCert | The bound replays exactly but carries no analytic content | Derive the bound from its norm and side conditions; keep the hash only to bind it |
-| Three incompatible definitions of Q, with clashing operator symbols | JSG V, PDE paper, SCp2, SIRUS spec | Proofs about one "Q" don't transfer to another | Adopt G, D and R from the glossary; settle sequential composition |
+| Three incompatible definitions of Q, with clashing operator symbols | JSG V, PDE paper, SCp2, SIRUS spec | Proofs about one "Q" don't transfer to another | Adopt core v2's graded values, decision and receipted result |
 | Name collision on SIRUS | MDmaster, "SIRUS API Reference" and "SIRUS Unified Documentation" | Documentation for Bénard et al.'s rule-set algorithm was merged in, with "\[Unverified\]" stubs | Remove those sections; rename the project or add a disambiguation line |
 | Placeholder content addresses | SIRUS spec: 849 `b3:…` against 11 real digests | SSOT pointers don't bind anything yet | Generate digests in CI; fail the build on any `b3:…` |
 | Drafts drop must-fails that their own rule protects | main.tex rails vs Draft0–7 | The corpus breaks its own monotone-governance rule | Restore the rails as must-fails, or record the removal as a signed, expiring weakening |
 | Invariant numbering overloaded | JSG II vs III, PDE paper, SCp3–4 | "I₃" means different things in different files | Prefix by family, as in the glossary |
 | Navier–Stokes L4 is conditional | PDE paper Lemma 3.5 | It assumes a finite ledger sum, which is where the difficulty lies | Keep the spine in the open-math layer; let nothing else depend on it |
 | "If the CI passes, the work is correct" | Human\_Guide, step 4 | CI shows conformance, not correctness; cross-checking two agents misses errors they share | Reword: "If CI passes, the work conforms to the spec" |
+| Subadditive frontier debit lets regrouping net out chattering | PDE Lemma 10.1; v1 core object 4 | Jumps v and −v cost 2A‖v‖ charged separately and 0 merged | Charge total variation at the finest resolution |
+| `safety_or_halt` proves only termination | v1 Lean stubs; SCp3 | Well-foundedness is a variant, not an invariant, and a step counter satisfies any lexicographic rank | Prove invariant preservation separately; take progress from pending obligations |
+| ⊤ means both "unknown" and "infinitely bad" | JSG V; PDE I4b; SCp2 | The unknowns lease has no representation, since one unknown makes a whole budget axis ⊤ | Interval-valued axes |
+| P\* can be undefined | JSG IV | Incomparable unexpired policies have no strictest member | E(t) = baseline ⊓ active weakenings |
+| The v1 admission rule is a lifetime budget | v1 fix for the fold | It never releases, so eventually nothing is admissible; counting only active weakenings would allow endless renewal | Magnitude × duration against a token bucket |
+| A safety-only core | v1 core and stubs | A gate that rejects everything satisfies every v1 theorem | Must-pass set and a completeness lemma |
+| `no_flip` tests a type, not a property | v1 stubs | It closes by `rfl` because the projection ignores metrics, while inflation happens upstream in grading | Noninterference on the grading function |
 
 ## Source map
 
@@ -312,16 +348,17 @@ Seven sources stay canonical, four merge into the guide, two split, and the rest
 
 ## Roadmap
 
-Settle two decisions, freeze the glossary, then prove in three milestones. Milestone 1 is small and already contains a real catch: the fold check.
+Two decisions remain, then freeze the glossary and prove in three milestones. Milestone 1 already holds a real catch: the fold check.
 
-- [ ] Decide sequential composition: max on every axis (JSG V), sum on every axis (SCp2), or ⊕ for both (PDE paper)
+- [x] Decide sequential composition: resolved in core v2 (the same ⊕; rates are floors, spends are budgets)
 - [ ] Decide whether the normative rails are must-fails inside the gates or a declared layer outside them
-- [ ] Freeze the glossary and run one rename pass: 𝒰 for Ω, proof\_surface, Amber, invariant prefixes
-- [ ] Lean milestone 1: grade lattice laws, verdict map, `no_flip`, fold vacuity with the fixed admission rule, must-fail monotonicity
-- [ ] Lean milestone 2: Σ termination, Loader safety-or-halt, frontier debit subadditivity
+- [ ] Decide how persistent weakenings are handled: refill rate ρ as the accepted standing level, a cap on each weakening's cumulative duration, or renewal cost escalating by a factor γ, keyed to the dial
+- [ ] Freeze the glossary and run one rename pass: 𝒰 for Ω, proof\_surface, Amber, invariant prefixes, combine for join
+- [ ] Lean milestone 1: graded values, verdict and completeness, residuals, calibration, fold vacuity
+- [ ] Lean milestone 2: typed obligations, Loader safety and progress, frontier charge, policy lattice
 - [ ] Lean milestone 3 (analysis): CVaR tail-to-level, the corrected dwell bound, then the local KL–Fisher bound
-- [ ] CI: fail the build on any `b3:…` placeholder and on any must-fail removed without a signed weakening
+- [ ] CI: fail the build on any `b3:…` placeholder, on any must-fail removed without a signed weakening, and on any theorem without a mutant
 - [ ] Recover the SIRUS\_game runtime note and remove the SIRUS-algorithm sections from MDmaster
 - [ ] Move the Navier–Stokes spine to a research notebook, outside the guide's dependency graph
 
-The step-by-step plan for doing all of this is in [Project roadmap](ROADMAP.md).
+The step-by-step plan for doing all of this is in Project roadmap.
