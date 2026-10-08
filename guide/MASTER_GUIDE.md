@@ -25,7 +25,7 @@ flowchart TB
   pde["Dissipative-PDE program<br/>Calculus applied to Navier–Stokes; adds acceptance shocks"]
   spec["SpecChain SCp1–5 and MDmaster<br/>proof_print renamed proof_surface; Loader, tail contracts"]
   sirus["SIRUS spec master (three snapshots)<br/>SSOT discipline; Boolean decision with receipted Q′"]
-  ethics["Ethics rails, runtime note<br/>main.tex, Playbook, crit.tex, SIRUS_game.tex"]
+  ethics["Ethics rails, runtime note<br/>SIRUS/main.tex, Playbook, crit.tex, SIRUS_game.tex"]
   drafts["Drafts 0–7 (last)<br/>Neutral rewrites; ethics rails dropped from must-fails"]
   seed --> jsg13 --> v13 --> jsg4 --> jsg5 --> spec --> sirus --> drafts
   jsg5 --> pde
@@ -46,8 +46,8 @@ Twenty-two terms, each with one home. One is still an open decision: the SIRUS n
 | Floor axes **M** | Per-window rates; combined by max | max-channels, Q\_max | Core v2 |
 | Budget axes **S** | Cumulative spends; combined by +; each carries a subadditivity side condition | sum-channels, Q\_sum, ledger and CVaR axes | Core v2 |
 | Unknown | The interval \[0, ∞\]; a lease β allows width up to β, and anything wider is a breach | ⊤unk (JSG V, PDE); ⊥ in SCp2 (the information order); "third value" (SIRUS spec) | Core v2; PDE I4b |
-| Combine **⊕** | Endpointwise max on M, + on S; a commutative monoid, not a join (on S, g ⊕ g = 2g) | "Parallel join"; horizontal ⊕ (JSG V); ∧ (PDE); ⊎ and ⊙ (SCp2) | Core v2 |
-| Sequential composition | Resolved: the same ⊕; sequence and parallel differ only in data flow | vertical ⊓ (JSG V); ⋆, and ∧ as its alias (SCp2) | Core v2 |
+| Combine **⊕** | Endpointwise max on M, + on S; a commutative monoid, not a join (on S, g ⊕ g = 2g) | "Parallel join"; horizontal ⊙ (JSG V); ∧ (PDE); ⊎ and ⊙ (SCp2) | Core v2 |
+| Sequential composition | Resolved: the same ⊕; sequence and parallel differ only in data flow | vertical ∧ (JSG V); ⋆, and ∧ as its alias (SCp2) | Core v2 |
 | Residual **θ ⊸ g** | Budget left for later stages: θ ⊖ g on S; θ on M when g ≤ θ | None | Core v2 |
 | Decision **D** | {REJECT < ACCEPT}; no third value | "Q" in the SIRUS spec | SIRUS spec §1.2 |
 | Verdict map **δ\_θ** | Indicator of the down-set of θ, read on upper endpoints | Implicit threshold checks | Core v2 |
@@ -93,7 +93,7 @@ Eleven components can be proved in Lean now and five more with analysis; the oth
 | Determinism envelope and proof\_surface replay | CI / test | Not applicable | SIRUS spec §12; JSG IV |
 | ACT→JSG compiler soundness and completeness | Open math | Not started | JSG IV Launchpad |
 | Navier–Stokes regularity spine L1–L5 | Open math | Not applicable | DissipativePDEs |
-| Golden Rule, restoration debt, consent brake, bravery-as-accountability | Norm | Not applicable | main.tex |
+| Golden Rule, restoration debt, consent brake, bravery-as-accountability | Norm | Not applicable | SIRUS/main.tex |
 | Alignment budgets and override taxonomy | Norm | Not applicable | JSG I appendix |
 
 ## Unified core objects (v2)
@@ -317,7 +317,7 @@ Four pieces are deferred to Milestone 2 or later: typed obligations with witness
 
 ## Known defects and proposed fixes
 
-Seventeen defects so far. The last seven came from an outside review of v1 and are fixed in core v2.
+Eighteen defects so far. The last seven came from an outside review of v1 and are fixed in core v2.
 
 | Defect | Where | Why it matters | Proposed fix |
 | --- | --- | --- | --- |
@@ -327,10 +327,11 @@ Seventeen defects so far. The last seven came from an outside review of v1 and a
 | Three incompatible definitions of Q, with clashing operator symbols | JSG V, PDE paper, SCp2, SIRUS spec | Proofs about one "Q" don't transfer to another | Adopt core v2's graded values, decision and receipted result |
 | Name collision on SIRUS | MDmaster, "SIRUS API Reference" and "SIRUS Unified Documentation" | Documentation for Bénard et al.'s rule-set algorithm was merged in, with "\[Unverified\]" stubs | Remove those sections; rename the project or add a disambiguation line |
 | Placeholder content addresses | SIRUS spec: 849 `b3:…` against 11 real digests | SSOT pointers don't bind anything yet | Generate digests in CI; fail the build on any `b3:…` |
-| Drafts drop must-fails that their own rule protects | main.tex rails vs Draft0–7 | The corpus breaks its own monotone-governance rule | Restore the rails as must-fails, or record the removal as a signed, expiring weakening |
+| Drafts drop must-fails that their own rule protects | SIRUS/main.tex rails vs Draft0–7 | The corpus breaks its own monotone-governance rule | Restore the rails as must-fails, or record the removal as a signed, expiring weakening |
 | Invariant numbering overloaded | JSG II vs III, PDE paper, SCp3–4 | "I₃" means different things in different files | Prefix by family, as in the glossary |
 | Navier–Stokes L4 is conditional | PDE paper Lemma 3.5 | It assumes a finite ledger sum, which is where the difficulty lies | Keep the spine in the open-math layer; let nothing else depend on it |
 | "If the CI passes, the work is correct" | Human\_Guide, step 4 | CI shows conformance, not correctness; cross-checking two agents misses errors they share | Reword: "If CI passes, the work conforms to the spec" |
+| JSG V's Lax Exchange theorem runs against its own interchange law | JSG V §4, Lax Exchange Law; restated in the proofs appendix | The interchange law (§2) makes piping each subsystem first the worse order; the theorem, with ∘ read as function composition, and its proof's last sentence make wiring first the worse one. On a sum axis with x = 1, x′ = 0, y = 0, y′ = 1, piping first grades 2 and wiring first 1 | Moot in core v2: sequence and parallel both use ⊕, so interchange is an equation and JSG V's rule becomes the `interchange` mutant |
 | Subadditive frontier debit lets regrouping net out chattering | PDE Lemma 10.1; v1 core object 4 | Jumps v and −v cost 2A‖v‖ charged separately and 0 merged | Charge total variation at the finest resolution |
 | `safety_or_halt` proves only termination | v1 Lean stubs; SCp3 | Well-foundedness is a variant, not an invariant, and a step counter satisfies any lexicographic rank | Prove invariant preservation separately; take progress from pending obligations |
 | ⊤ means both "unknown" and "infinitely bad" | JSG V; PDE I4b; SCp2 | The unknowns lease has no representation, since one unknown makes a whole budget axis ⊤ | Interval-valued axes |
@@ -356,7 +357,7 @@ Seven sources stay canonical, four merge into the guide, two split, and the rest
 | MDmaster | SpecChain SCp1–5 (Loader, tail contracts), game substrate, forward/inverse duality | Split | Keep SpecChain and the game sections; remove the SIRUS-algorithm sections |
 | SIRUS\_SPEC\_MASTER | SSOT discipline, decision layer D and R, GMM, SSG, self-specification | Keep | The one canonical snapshot |
 | SIRUS\_SPEC\_MASTER\_revised, Untitled.md | Near-duplicate snapshots, each about 1,300–1,450 lines different | Archive | Diff once for anything the master lacks |
-| main.tex, Operational\_Playbook, crit.tex | Normative rails, the vow, the human-facing guide | Keep | Norm layer and onboarding |
+| SIRUS/main.tex, Operational\_Playbook, crit.tex | Normative rails, the vow, the human-facing guide | Keep | Norm layer and onboarding |
 | Repo\_conventions, Human\_Guide | WorkCard schema, PR plan, agent orchestration loop | Merge | Contributor docs; reword the CI claim |
 | SIRUS.tex | Table scaffolding for the fixed pipeline | Archive | Template only |
 | SIRUS\_game.tex | A pdfLaTeX error log; the runtime note survives only in its missing-character lines | Archive | Recover the text first |
