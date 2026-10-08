@@ -4,7 +4,27 @@ Seven phases, each ending at a gate you can check yourself. You move on when a g
 
 ## At a glance
 
-&#91;embedded content: project roadmap · 7 phases, 6 gates, 3 closing options\]
+```mermaid
+flowchart TB
+  p0["Phase 0: Set up the workbench"] --> g0{"CI is green on main"}
+  g0 --> p1["Phase 1: Learn to read Lean"]
+  g0 --> p2["Phase 2: Freeze the statements"]
+  p1 --> g2{"Tagged statements-v1"}
+  p2 --> g2
+  g2 --> p3["Phase 3, Milestone 1: Algebraic core"]
+  p3 --> g3{"lake build green, no sorry"}
+  g3 --> p4["Phase 4, Milestone 2: Obligations, Loader, charge, policy"]
+  p4 --> g4{"lake build green, no sorry"}
+  g4 --> p5["Phase 5, Milestone 3: Analysis layer"]
+  p5 --> g5{"lake build green, no sorry"}
+  g5 --> p6["Phase 6: Guide v1, then choose"]
+  p6 --> g6{"Tagged v1.0"}
+  g6 --> c1("Certificates")
+  g6 --> c2("The compiler")
+  g6 --> c3("Stop")
+```
+
+*project roadmap · 7 phases, 6 gates, 3 closing options*
 
 Each diamond is a gate: the checklist at the end of that phase's section. Phase 1 feeds the same gate as Phase 2, because reviewing statements takes both.
 

@@ -15,7 +15,24 @@ This guide is the single canon for JSG I–V, SpecChain, the SIRUS spec, the Nav
 
 The JSG books came first and the neutral drafts last. The order is inferred from renamed terms, because the dates embedded in the files are partly example values.
 
-&#91;embedded content: corpus lineage · 8 stages, 2 side branches\]
+```mermaid
+flowchart TB
+  seed["Game substrate (likely seed)<br/>Expectiminimax game graph; strategic vorticity"]
+  jsg13["JSG I → II → III<br/>Clamp says “Yellow”; proof_print; I₁–I₅ redefined in III"]
+  v13["V1–V3 hardening passes<br/>Anti-Goodhart meta-guard, dual approval, reversion timers"]
+  jsg4["Launchpad → JSG IV<br/>Governance as code; “Yellow” renamed “Amber”"]
+  jsg5["JSG V<br/>Acceptance calculus: grade lattice, Σ, compose_ev"]
+  pde["Dissipative-PDE program<br/>Calculus applied to Navier–Stokes; adds acceptance shocks"]
+  spec["SpecChain SCp1–5 and MDmaster<br/>proof_print renamed proof_surface; Loader, tail contracts"]
+  sirus["SIRUS spec master (three snapshots)<br/>SSOT discipline; Boolean decision with receipted Q′"]
+  ethics["Ethics rails, runtime note<br/>main.tex, Playbook, crit.tex, SIRUS_game.tex"]
+  drafts["Drafts 0–7 (last)<br/>Neutral rewrites; ethics rails dropped from must-fails"]
+  seed --> jsg13 --> v13 --> jsg4 --> jsg5 --> spec --> sirus --> drafts
+  jsg5 --> pde
+  sirus -.- ethics
+```
+
+*corpus lineage · 8 stages, 2 side branches*
 
 Solid arrows mean a stage builds on the one before it; the dashed line marks work from the same period. The PDE program branches off the JSG V calculus.
 
