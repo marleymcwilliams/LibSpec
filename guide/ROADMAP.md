@@ -4,7 +4,27 @@ Seven phases, each ending at a gate you can check yourself. You move on when a g
 
 ## At a glance
 
-_(Diagram in the source doc: project roadmap · 7 phases, 6 gates, 3 closing options.)_
+```mermaid
+flowchart TB
+  p0["Phase 0: Set up the workbench"] --> g0{"CI is green on main"}
+  g0 --> p1["Phase 1: Learn to read Lean"]
+  g0 --> p2["Phase 2: Freeze the statements"]
+  p1 --> g2{"Tagged statements-v1"}
+  p2 --> g2
+  g2 --> p3["Phase 3, Milestone 1: Algebraic core"]
+  p3 --> g3{"lake build green, no sorry"}
+  g3 --> p4["Phase 4, Milestone 2: Obligations, Loader, charge, policy"]
+  p4 --> g4{"lake build green, no sorry"}
+  g4 --> p5["Phase 5, Milestone 3: Analysis layer"]
+  p5 --> g5{"lake build green, no sorry"}
+  g5 --> p6["Phase 6: Guide v1, then choose"]
+  p6 --> g6{"Tagged v1.0"}
+  g6 --> c1("Certificates")
+  g6 --> c2("The compiler")
+  g6 --> c3("Stop")
+```
+
+*project roadmap · 7 phases, 6 gates, 3 closing options*
 
 Each diamond is a gate: the checklist at the end of that phase's section. Phase 1 feeds the same gate as Phase 2, because reviewing statements takes both.
 
@@ -17,6 +37,8 @@ You own the statements, Claude Code owns the proofs, and the kernel gives the ve
 **Claude Code owns the proofs.** It writes, repairs and refactors proof code. It never edits the statements file.
 
 **The kernel gives the verdict.** Nothing counts as proved until CI passes: the build is green, there is no `sorry`, and the axioms are only `propext`, `Classical.choice` and `Quot.sound`.
+
+**Every theorem needs teeth.** A theorem earns its place only if a plausible wrong implementation would fail it. Each theorem names such a mutant, and `JSG/Tests/Mutants.lean` proves that the mutant violates the statement. If even a gate that rejects everything would pass a theorem, the theorem says nothing about this gate. A mutant shows that a statement can fail, not that it catches the mistakes you will actually make, so take mutants from real defects in the corpus where you can: the v1 fold, the subadditive debit, the inverted No-Zeno inequality, the drafts' dropped must-fails.
 
 The stop rules:
 
@@ -62,10 +84,10 @@ Two companions keep it airtight. Set your editor to save with LF (in VS Code, `"
 
 **Gate**
 
-- [ ] `.gitattributes` is in the first commit, before any other file
-- [ ] CI is green on `main` with one trivial theorem
-- [ ] `archive/` holds every original file, committed once
-- [ ] `CLAUDE.md` is in place (starter below)
+- [x] `.gitattributes` is in the first commit, before any other file
+- [x] CI is green on `main` with one trivial theorem
+- [x] `archive/` holds every original file, committed once
+- [x] `CLAUDE.md` is in place (starter below)
 
 ## Phase 1: Learn to read Lean
 
@@ -73,12 +95,13 @@ The goal is to read a theorem statement and a short proof and explain each line.
 
 1. Start with the Natural Number Game, listed on the community's [learning resources](https://leanprover-community.github.io/learn.html) page, for tactic basics.
 2. Work through [Mathematics in Lean](https://leanprover-community.github.io/mathematics_in_lean/) chapters 2–4 (basics, logic, sets and functions) and chapter 7 (structures). That covers Milestone 1. Chapters 11–13 (topology, calculus, measure theory) wait until Milestone 3.
-3. Use [Loogle](https://loogle.lean-lang.org/) to search Mathlib by name or type shape. Most of Milestone 1 is finding the right existing lemma.
-4. Have Claude explain proofs line by line, but write the two easiest ones yourself: `debit_mono_digest` and `discharge_decreases`.
+3. Get comfortable with the two Mathlib types the revised core is built on: `ENNReal`, the extended non-negative reals, whose subtraction truncates at zero; and complete lattices, with `⊓` and `sInf`.
+4. Use [Loogle](https://loogle.lean-lang.org/) to search Mathlib by name or type shape. Most of Milestone 1 is finding the right existing lemma.
+5. Have Claude explain proofs line by line, but write the two easiest ones yourself: `combine_comm` and `expiry_tightens`.
 
 **Gate**
 
-- [ ] You proved `debit_mono_digest` without Claude writing it
+- [ ] You proved `combine_comm` without Claude writing it
 - [ ] You can explain every line of the Milestone 1 block of `Statements.lean` in plain English
 
 ## Phase 2: Freeze the statements
@@ -87,16 +110,17 @@ The goal is `Statements.lean` v1: the fixed target every later proof is judged a
 
 **You:**
 
-1. Settle the two open decisions in the master guide: sequential composition, and whether the normative rails are must-fails.
-2. Review each definition and theorem from the guide's Lean section. Fix anything that doesn't say what you mean, and give every theorem a plain-English docstring.
-3. Add two sanity checks per definition in `JSG/Tests/`: one `example` that should hold, and one that should fail to compile. For instance, a grade with an unknown axis must get a REJECT verdict. This is the SIRUS spec's must-fail idea, now checked by Lean.
+1. Adopt core v2 and the v2 Lean stubs from the master guide, then settle the remaining open decision: whether the normative rails are must-fails.
+2. Review each definition and theorem. Fix anything that doesn't say what you mean, and give every theorem a plain-English docstring.
+3. Write the controls in `JSG/Tests/`: must-pass inputs the gate must ACCEPT, must-fail inputs it must REJECT, and, for each theorem, one mutant where it fails and one witness instance where it holds. The compiler checks only that names exist, so these are what catch a statement with a real name used the wrong way round, such as swapped arguments to a relation. For instance, the always-REJECT gate is the mutant for `verdict_complete`.
 
-**Claude Code:** make the stubs compile with `sorry`, write the sanity checks you describe, and add a hash check on `Statements.lean` to `scripts/check.sh`.
+**Claude Code:** make the stubs compile with `sorry`, prove each mutant's counterexample and each witness instance in `JSG/Tests/Mutants.lean`, and add the statements check (a diff against the tag, per Phase 0) to `scripts/check.sh`.
 
 **Gate**
 
 - [ ] `Statements.lean` compiles, with `sorry` as its only gap
 - [ ] Every theorem has a docstring you wrote or approved
+- [ ] Every theorem's mutant counterexample and witness instance are proved, before any milestone proof starts; a counterexample that comes too easily is a warning that the statement may be false for everything
 - [ ] The file is tagged `statements-v1`, and any later change needs a `CHANGELOG.md` line saying whether it tightens or weakens
 
 ## Phases 3–5: The three proof milestones
@@ -105,8 +129,8 @@ Each milestone proves one block of `Statements.lean` and closes at the same gate
 
 | Milestone | Theorems | Read first | Expected difficulty |
 | --- | --- | --- | --- |
-| 1: Algebraic core | Grade lattice laws, `verdict_unknown`, `verdict_antitone`, `no_flip`, `fold_check_vacuous`, `admits_mono`, `mustFail_monotone` | Mathematics in Lean ch. 2–4, 7 | Low: mostly unfolding definitions and case splits |
-| 2: Termination and ledgers | `discharge_decreases`, `discharge_wf`, `safety_or_halt`, `debit_subadditive` | Mathematics in Lean ch. 5–6 | Low to medium: finding the right well-foundedness lemmas |
+| 1: Algebraic core | `combine_comm`, `combine_assoc`, `interchange`, `verdict_unknown`, `verdict_complete`, `residual_spec`, `fold_check_vacuous` | Mathematics in Lean ch. 2–4, 7; the `ENNReal` API | Low: case splits on axis kind, plus finding the right `ENNReal` lemmas |
+| 2: Obligations, Loader, charge, policy | Typed obligations, `Loader.safe`, `Loader.terminates`, `charge_append`, `charge_chatter`, `expiry_tightens`, `bridge` | Mathematics in Lean ch. 5–6 | Low to medium: Dershowitz–Manna and lattice lemmas take some finding |
 | 3: Analysis layer | CVaR tail-to-level, `dwell_lower_bound`, local KL–Fisher bound, DRO envelope identity | Mathematics in Lean ch. 11–13 | Medium to high: the statements need as much care as the proofs |
 
 Of Milestone 3's statements, only `dwell_lower_bound` is in `statements-v1`. Write and freeze the rest (a `statements-v2` tag) before any proof work on them starts.
@@ -115,8 +139,8 @@ Of Milestone 3's statements, only `dwell_lower_bound` is in `statements-v1`. Wri
 
 - [ ] `lake build` is green, with no `sorry` in the milestone's proof file
 - [ ] `#print axioms` on each theorem lists only `propext`, `Classical.choice` and `Quot.sound`
-- [ ] The hash check confirms `Statements.lean` is unchanged
-- [ ] One negative control: break one hypothesis or one number and confirm the build fails
+- [ ] The statements check confirms `Statements.lean` is unchanged
+- [ ] Each theorem's named mutant is proved to violate it, and every must-pass control is accepted
 - [ ] Layer-map rows are set to Proved, and the guide's text names the Lean theorem
 - [ ] A short note, in your words: what is now proved, and what it does not show
 
@@ -165,11 +189,15 @@ Paste this into the repo root in Phase 0. It turns the ground rules into standin
 - `lake build` passes with no errors, and no warnings in files you touched.
 - No `sorry`, `admit`, `axiom`, or native evaluation (`native_decide`, `decide +native`).
 - `#print axioms` on each target shows only propext, Classical.choice, Quot.sound.
+- Every theorem has a named mutant, and `JSG/Tests/Mutants.lean` proves the mutant violates it.
+  Prefer mutants taken from real defects in archive/ over invented ones.
+- Every theorem also has a witness instance in `JSG/Tests/` where it holds.
 - `scripts/check.sh` passes.
 
 ## How to work
 - One target per session unless told otherwise.
 - Search Mathlib (Loogle, exact?, apply?) before writing a helper lemma.
+- Treat any Mathlib name recalled from memory, yours or another model's, as a guess until Loogle confirms it.
 - Never weaken a hypothesis or change a statement to make a proof go through.
 - After three failed approaches, stop. Report what you tried, what blocked you,
   and whether the statement itself might be false.

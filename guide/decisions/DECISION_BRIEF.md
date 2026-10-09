@@ -1,5 +1,7 @@
 # Decision brief: sequential composition ⊗ and the normative rails
 
+> Decision 1 was resolved by core v2; this brief is kept as a record.
+
 Phase 2 prep for the two open decisions in [MASTER_GUIDE.md](../MASTER_GUIDE.md) (Roadmap, lines 317–318). Research only: this brief lays out what the sources say and what each option commits you to. It does not recommend an option.
 
 **Conventions**
