@@ -156,7 +156,7 @@ The goal is a tagged release that a stranger could clone and check. After it, yo
 
 - [ ] `README.md` and `REPRODUCE.md` explain how to build and check everything
 - [ ] Every layer-map row has a status and points to its Lean theorem or its reason for being out of scope
-- [ ] One run of the gold-standard check: Comparator, which already runs in CI, with the nanoda kernel added, as the [Lean reference](https://lean-lang.org/doc/reference/latest/ValidatingProofs/) describes
+- [ ] One full-strength Comparator run, the gold-standard check the [Lean reference](https://lean-lang.org/doc/reference/latest/ValidatingProofs/) describes: the nanoda kernel enabled and the full sandbox (landrun with the `systemd-run` wrapper from Comparator's README). CI's best-effort run, without nanoda or the wrapper, is the everyday check, not this one
 - [ ] Tagged `v1.0`
 
 **Then pick one:**
