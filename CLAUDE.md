@@ -27,3 +27,20 @@
 - After three failed approaches, stop. Report what you tried, what blocked you,
   and whether the statement itself might be false.
 - End every session with: files changed, theorems closed, ideas added to guide/IDEAS.md.
+
+## When to ask the human
+- Decide it yourself and log it in guide/LOG.md if it is reversible and doesn't change
+  what a statement means: layout, tactics, CI, wording, which lemma or mutant.
+- Exception: anything that makes a check weaker goes in the queue, even if reversible:
+  covering fewer files or theorems, permitting an axiom, turning off leanchecker or
+  Comparator, deleting a test or mutant. Making a check stronger is your call.
+- Queue it in guide/QUEUE.md if it changes a statement's meaning, a Norm-layer value, or
+  anything frozen. Each entry: question, recommended answer, what breaks if wrong,
+  whether it can be undone. At most three open entries; never block on one.
+- Reviewer notes follow the same rule: apply and log the reversible ones, queue the rest.
+- "Not yet" is a valid answer: if no current statement depends on a decision, defer it
+  to the milestone that needs it.
+- You may merge your own PR once CI is green if it touches none of: the statements and
+  every file the statements check covers, archive/, CLAUDE.md, .gitattributes, scripts/,
+  .github/, guide/decisions/. I merge everything else.
+- Don't prove combine_comm or expiry_tightens. I'm writing those myself (Phase 1).
