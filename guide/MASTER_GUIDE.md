@@ -130,7 +130,7 @@ Expiry removes a term from the meet, so it can only make E stricter. Thresholds 
 
 ## Lean 4 statement stubs (v2)
 
-This is an uncompiled sketch against Mathlib. Every theorem carries a `Mutant:` comment naming a plausible wrong implementation that fails it; a theorem without one doesn't earn its place. Confirm every Mathlib name with Loogle before relying on it, including `Multiset.IsDershowitzMannaLT`.
+Since Phase 2 the canonical text is `lean/JSG/Defs.lean` (definitions) and `lean/JSG/Statements.lean` (theorems), which compile against Mathlib v4.34.1; this sketch is kept in step with them for reading. Every theorem carries a `Mutant:` comment naming a plausible wrong implementation that fails it; a theorem without one doesn't earn its place. `lean/JSG/Tests/Mutants.lean` proves each mutant's counterexample and a witness instance. Confirm every Mathlib name with Loogle before relying on it.
 
 ```lean
 import Mathlib
@@ -163,15 +163,26 @@ abbrev Grade (ι : Type) := ι → Bound
 def combine (g h : Grade ι) : Grade ι := fun i => combineAxis (kind i) (g i) (h i)
 
 theorem combine_comm (g h : Grade ι) : combine kind g h = combine kind h g := by sorry
+-- Mutant: overwrite, where the later stage's grade replaces the earlier one.
 
 theorem combine_assoc (g h k : Grade ι) :
     combine kind (combine kind g h) k = combine kind g (combine kind h k) := by sorry
 -- Mutant: averaging budgets, (a + b) / 2, is commutative but not associative.
 
+/-- Sequential composition. Core v2 makes it `combine`; naming it separately lets
+    JSG V's rule be stated as a mutant of `interchange` (QUEUE.md, Q1). -/
+def seqComp (g h : Grade ι) : Grade ι := combine kind g h
+
+/-- Parallel composition, also `combine` in core v2. -/
+def parComp (g h : Grade ι) : Grade ι := combine kind g h
+
+/-- Interchange for a pair of composition operators: two pipelines run side by side
+    grade the same as their stages run side by side, one stage after another. -/
+def Interchange (seq par : Grade ι → Grade ι → Grade ι) : Prop :=
+  ∀ a b c d, par (seq a b) (seq c d) = seq (par a c) (par b d)
+
 /-- Sequential and parallel composition agree: interchange is an equation. -/
-theorem interchange (a b c d : Grade ι) :
-    combine kind (combine kind a b) (combine kind c d)
-      = combine kind (combine kind a c) (combine kind b d) := by sorry
+theorem interchange : Interchange (seqComp kind) (parComp kind) := by sorry
 -- Mutant: JSG V's rule (max on every axis in sequence, + on budgets in parallel).
 
 /-! ## 2. Verdicts and residuals -/
@@ -250,6 +261,8 @@ noncomputable def charge (A : ENNReal) (jumps : List E) : ENNReal :=
 /-- Additive under concatenation, so regrouping can't change it. -/
 theorem charge_append (A : ENNReal) (j₁ j₂ : List E) :
     charge A (j₁ ++ j₂) = charge A j₁ + charge A j₂ := by sorry
+-- Mutant: v1's merged-jump charge A · ‖Σ jumps‖, under which [v] ++ [-v] costs 0
+-- but [v] and [-v] cost 2A‖v‖.
 
 /-- Chattering is never free. -/
 theorem charge_chatter (A : ENNReal) (v : E) :
@@ -280,6 +293,8 @@ def fold (Rmax lam : ℝ) (rs : List ℝ) : ℝ :=
 
 theorem fold_check_vacuous (Rmax lam : ℝ) (h : 0 ≤ Rmax) (rs : List ℝ) :
     fold Rmax lam rs ≤ Rmax := by sorry
+-- Mutant: the uncapped fold, a plain weighted sum, whose nightly check can fail;
+-- the cap is what makes the check vacuous.
 
 /-! ## 6. Calibration -/
 
