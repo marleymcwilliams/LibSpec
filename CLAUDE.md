@@ -42,5 +42,7 @@
   to the milestone that needs it.
 - You may merge your own PR once CI is green if it touches none of: the statements and
   every file the statements check covers, archive/, CLAUDE.md, .gitattributes, scripts/,
-  .github/, guide/decisions/. I merge everything else.
+  .github/, guide/decisions/, the checks that live in lean/ (lean/ComparatorTargets.lean,
+  lean/AxiomAudit.lean, lean/JSG/Tests/Comparator/), and any existing file in
+  lean/JSG/Tests/. Adding a new test file stays self-mergeable. I merge everything else.
 - Don't prove combine_comm or expiry_tightens. I'm writing those myself (Phase 1).
