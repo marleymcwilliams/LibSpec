@@ -110,7 +110,7 @@ The goal is `Statements.lean` v1: the fixed target every later proof is judged a
 
 **You:**
 
-1. Adopt core v2 and the v2 Lean stubs from the master guide, then settle the remaining open decision: whether the normative rails are must-fails.
+1. Adopt core v2 and the v2 Lean stubs from the master guide. The rails decision is made (`guide/decisions/RAILS.md`): the rails are declared Norm-layer values that no v1 gate enforces, and persistent weakenings wait for the milestone that states the token bucket.
 2. Review each definition and theorem. Fix anything that doesn't say what you mean, and give every theorem a plain-English docstring.
 3. Write the controls in `JSG/Tests/`: must-pass inputs the gate must ACCEPT, must-fail inputs it must REJECT, and, for each theorem, one mutant where it fails and one witness instance where it holds. The compiler checks only that names exist, so these are what catch a statement with a real name used the wrong way round, such as swapped arguments to a relation. For instance, the always-REJECT gate is the mutant for `verdict_complete`.
 

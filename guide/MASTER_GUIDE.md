@@ -67,7 +67,7 @@ Twenty-two terms, each with one home. One is still an open decision: the SIRUS n
 
 ## Layer map
 
-Eleven components can be proved in Lean now and five more with analysis; the other eight are checked per instance, tested, open, or declared. Lean status is "Stub" wherever the Lean section below already states the theorem.
+Eleven components can be proved in Lean now and five more with analysis; the other eight are checked per instance, tested, open, or declared. Layers sort components by what justifies them, not by what enforces them: a Norm row is a declared value, and whether a gate also enforces it is a separate question. In v1 no gate enforces the Norm rows ([decisions/RAILS.md](decisions/RAILS.md)). Lean status is "Stub" wherever the Lean section below already states the theorem.
 
 | Component | Layer | Lean status | Source |
 | --- | --- | --- | --- |
@@ -118,13 +118,13 @@ The same mechanism covers thresholds, the frontier charge, the governance cap an
 
 **3. Typed obligations.** Each obligation o has a witness type W(o) and an authority stage. Discharging o requires a witness of type W(o) produced at authority(o), and a window passes only when every emitted obligation was discharged that way. The Loader's progress is measured by the Dershowitz–Manna order on its pending obligations, which allows one obligation to be replaced by finitely many smaller ones. Its safety is a separate theorem: an invariant Inv (L1–L10) preserved by every accepted step. A halt with rejection carries the remaining obligations and the axes still unknown as its certificate.
 
-**4. Policy lattice.** A policy maps dials into a complete lattice where larger is stricter; must-fail sets are dials valued in a powerset. The effective policy is a monotone baseline met with the active weakenings:
+**4. Policy lattice.** A policy maps dials into a complete lattice where larger is stricter. Must-fail classes are hard floors, not runtime dials: runtime weakenings can't touch them, and removing one takes a new statements version with a CHANGELOG line marking the weakening ([decisions/RAILS.md](decisions/RAILS.md)). The effective policy is a monotone baseline met with the active weakenings:
 
 ```latex
 E(t) = B(t) \wedge \bigwedge \{\, w : w \text{ active at } t \,\}
 ```
 
-Expiry removes a term from the meet, so it can only make E stricter. Thresholds are looser when larger, so a threshold dial stores its inverse, and the bridge theorem catches the mistake if it doesn't: if P₂ ⪰ P₁ then Accept(P₂) ⊆ Accept(P₁). Weakenings are priced by magnitude × duration against a token bucket: a reservoir of capacity C that refills at rate ρ per window, both of them dials. Without the refill this is the lifetime budget again, just draining more slowly. The bucket bounds the rate of weakening, not its persistence: a weakening that costs at most ρ per window can be renewed forever, so three options are open: set ρ to the standing weakening you accept, cap each weakening's cumulative duration, or raise each consecutive renewal's cost by a factor γ > 1, which any finite C and ρ eventually refuse. Escalation must be keyed to the dial being weakened, not to the request, or relabeling and brief lapses would reset it. It also needs a deliberate reset, such as decay after a quiet period, or one long episode leaves the dial effectively frozen.
+Expiry removes a term from the meet, so it can only make E stricter. Thresholds are looser when larger, so a threshold dial stores its inverse, and the bridge theorem catches the mistake if it doesn't: if P₂ ⪰ P₁ then Accept(P₂) ⊆ Accept(P₁). Weakenings are priced by magnitude × duration against a token bucket: a reservoir of capacity C that refills at rate ρ per window, both of them dials. Without the refill this is the lifetime budget again, just draining more slowly. The bucket bounds the rate of weakening, not its persistence: a weakening that costs at most ρ per window can be renewed forever, so three options are open: set ρ to the standing weakening you accept, cap each weakening's cumulative duration, or raise each consecutive renewal's cost by a factor γ > 1, which any finite C and ρ eventually refuse. Choosing among them waits for the milestone that states the token bucket, since no v1 statement depends on it. Escalation must be keyed to the dial being weakened, not to the request, or relabeling and brief lapses would reset it. It also needs a deliberate reset, such as decay after a quiet period, or one long episode leaves the dial effectively frozen.
 
 **Positive controls.** Every property above is a safety property, and a gate that rejects everything satisfies all of them. Two counterweights are required: a must-pass set MP of inputs that must ACCEPT, kept disjoint from the must-fail set, and a completeness lemma: complete evidence whose values are within θ is accepted. That lemma stays nearly definitional unless a statement ties each interval to the true value (lo ≤ truth ≤ hi). That enclosure is empirical, because truth is measured: it holds at a declared coverage level and belongs to the CI layer, or to the certificate layer when the interval comes from exact computation on a model. It is not a Lean item. The real guard against vacuity is the must-pass set together with the always-reject mutant.
 
@@ -288,8 +288,10 @@ def Calibrated {Inp : Type} (gate : Inp → Decision) (MP MF : Set Inp) : Prop :
   Disjoint MP MF ∧ (∀ x ∈ MP, gate x = .accept) ∧ (∀ x ∈ MF, gate x = .reject)
 -- Mutant: the always-REJECT gate fails this as soon as MP is nonempty.
 
-/-- The CI gate on must-fail sets: a new version keeps every failure class,
-    unless a signed weakening covers what it removes. -/
+/-- The CI gate on must-fail sets: a new version keeps every failure class
+    unless the removal is signed, that is, made in a new statements version with a
+    CHANGELOG line marking the weakening. Must-fail classes are hard floors:
+    runtime weakenings can't remove them. -/
 def mfGate {C : Type} (signed : Set C → Prop) (old new : Set C) : Prop :=
   old ⊆ new ∨ signed (old \ new)
 
@@ -327,7 +329,7 @@ Eighteen defects so far. The last seven came from an outside review of v1 and ar
 | Three incompatible definitions of Q, with clashing operator symbols | JSG V, PDE paper, SCp2, SIRUS spec | Proofs about one "Q" don't transfer to another | Adopt core v2's graded values, decision and receipted result |
 | Name collision on SIRUS | MDmaster, "SIRUS API Reference" and "SIRUS Unified Documentation" | Documentation for Bénard et al.'s rule-set algorithm was merged in, with "\[Unverified\]" stubs | Remove those sections; rename the project or add a disambiguation line |
 | Placeholder content addresses | SIRUS spec: 849 `b3:…` against 11 real digests | SSOT pointers don't bind anything yet | Generate digests in CI; fail the build on any `b3:…` |
-| Drafts drop must-fails that their own rule protects | SIRUS/main.tex rails vs Draft0–7 | The corpus breaks its own monotone-governance rule | Restore the rails as must-fails, or record the removal as a signed, expiring weakening |
+| Drafts drop must-fails that their own rule protects | SIRUS/main.tex rails vs Draft0–7 | The corpus breaks its own monotone-governance rule | Decided in [decisions/RAILS.md](decisions/RAILS.md): the rails are declared Norm-layer values that no v1 gate enforces. A rail can enter later as a must-fail class, which is a tightening and needs no weakening record |
 | Invariant numbering overloaded | JSG II vs III, PDE paper, SCp3–4 | "I₃" means different things in different files | Prefix by family, as in the glossary |
 | Navier–Stokes L4 is conditional | PDE paper Lemma 3.5 | It assumes a finite ledger sum, which is where the difficulty lies | Keep the spine in the open-math layer; let nothing else depend on it |
 | "If the CI passes, the work is correct" | Human\_Guide, step 4 | CI shows conformance, not correctness; cross-checking two agents misses errors they share | Reword: "If CI passes, the work conforms to the spec" |
@@ -366,11 +368,11 @@ Seven sources stay canonical, four merge into the guide, two split, and the rest
 
 ## Roadmap
 
-Two decisions remain, then freeze the glossary and prove in three milestones. Milestone 1 already holds a real catch: the fold check.
+The rails are decided and persistent weakenings are deferred ([decisions/RAILS.md](decisions/RAILS.md)); next, freeze the glossary and prove in three milestones. Milestone 1 already holds a real catch: the fold check.
 
 - [x] Decide sequential composition: resolved in core v2 (the same ⊕; rates are floors, spends are budgets)
-- [ ] Decide whether the normative rails are must-fails inside the gates or a declared layer outside them
-- [ ] Decide how persistent weakenings are handled: refill rate ρ as the accepted standing level, a cap on each weakening's cumulative duration, or renewal cost escalating by a factor γ, keyed to the dial
+- [x] Decide whether the normative rails are must-fails inside the gates or a declared layer outside them: declared Norm-layer values that no v1 gate enforces ([decisions/RAILS.md](decisions/RAILS.md))
+- [x] Decide how persistent weakenings are handled: not yet. The choice between refill rate ρ, a cap on each weakening's cumulative duration and renewal cost escalating by a factor γ moves to the milestone that states the token bucket ([decisions/RAILS.md](decisions/RAILS.md))
 - [ ] Freeze the glossary and run one rename pass: 𝒰 for Ω, proof\_surface, Amber, invariant prefixes, combine for join
 - [ ] Lean milestone 1: graded values, verdict and completeness, residuals, calibration, fold vacuity
 - [ ] Lean milestone 2: typed obligations, Loader safety and progress, frontier charge, policy lattice
