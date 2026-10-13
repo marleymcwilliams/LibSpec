@@ -46,14 +46,36 @@ else
   fail=1
 fi
 
+# Every file the statements' meaning depends on: Statements.lean, each project
+# module it imports (transitively; a missing one is still listed, so deleting it
+# shows up in the diff), the Lean toolchain, the Mathlib pin and the lakefile.
+statement_files() {
+  local queue=(JSG.Statements) seen=" " mod file imp
+  while [ "${#queue[@]}" -gt 0 ]; do
+    mod="${queue[0]}"
+    queue=("${queue[@]:1}")
+    case "$seen" in *" $mod "*) continue ;; esac
+    seen="$seen$mod "
+    file="lean/${mod//.//}.lean"
+    echo "$file"
+    [ -f "$root/$file" ] || continue
+    while read -r imp; do
+      case "$imp" in JSG | JSG.*) queue+=("$imp") ;; esac
+    done < <(sed -nE 's/^[[:space:]]*((public|private)[[:space:]]+)?(meta[[:space:]]+)?import[[:space:]]+(all[[:space:]]+)?([^[:space:]]+).*/\5/p' "$root/$file")
+  done
+  printf '%s\n' lean/lean-toolchain lean/lake-manifest.json lean/lakefile.toml
+}
+
 step "Statements unchanged since the latest statements-v* tag"
+mapfile -t covered < <(statement_files)
 tag="$(git -C "$root" tag -l 'statements-v*' --sort=-v:refname | head -n 1)"
 if [ -z "$tag" ]; then
-  echo "skipped: no statements-v* tag yet (created in Phase 2)"
-elif git -C "$root" diff --exit-code "$tag" -- lean/JSG/Statements.lean; then
-  echo "ok ($tag)"
+  echo "skipped: no statements-v* tag yet (created in Phase 2); it will cover:"
+  printf '  %s\n' "${covered[@]}"
+elif git -C "$root" diff --exit-code "$tag" -- "${covered[@]}"; then
+  echo "ok ($tag): ${covered[*]}"
 else
-  echo "FAIL: lean/JSG/Statements.lean differs from $tag"
+  echo "FAIL: files the statements depend on differ from $tag"
   fail=1
 fi
 
