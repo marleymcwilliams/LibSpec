@@ -163,14 +163,14 @@ The goal is a tagged release that a stranger could clone and check. After it, yo
 
 ## One sitting with Claude Code
 
-One sitting, one target. The same six steps every time keep sessions small enough to review.
+One sitting, one target. The same six steps every time keep sessions small enough to review. Claude Code settles reversible choices itself and logs them in `guide/LOG.md`. Anything that changes a statement's meaning, a Norm-layer value or anything frozen, or that weakens a check, waits in `guide/QUEUE.md` (CLAUDE.md, "When to ask the human").
 
 1. **Pick one target** from the current phase: one theorem, or one setup task. Write it as the first line of your prompt.
 2. **Brief Claude Code:** the target, the files it may touch, and "stop and report when the build is green, or after three approaches fail."
-3. **Read the diff when it stops.** If `Statements.lean` appears in it, reject the change.
+3. **Read the diff when it stops,** with any new `LOG.md` entries. If a file the statements check covers appears in it, reject the change.
 4. **Check the verdict:** run `scripts/check.sh` yourself, or read the CI result on the pull request.
 5. **Ask for a five-line explanation** of the proof in plain English, and paste it into the milestone note.
-6. **Close out:** update the layer map, merge, and move any new idea into `IDEAS.md`.
+6. **Close out:** answer open `QUEUE.md` entries ("not yet" is an answer), merge the PRs that are yours to merge, update the layer map, and move any new idea into `IDEAS.md`. Claude Code merges its own PRs once CI is green, unless they touch files CLAUDE.md reserves for you.
 
 ## CLAUDE.md starter
 
