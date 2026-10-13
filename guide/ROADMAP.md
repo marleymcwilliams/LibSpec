@@ -36,7 +36,7 @@ You own the statements, Claude Code owns the proofs, and the kernel gives the ve
 
 **Claude Code owns the proofs.** It writes, repairs and refactors proof code. It never edits the statements file.
 
-**The kernel gives the verdict.** Nothing counts as proved until CI passes: the build is green, there is no `sorry`, and the axioms are only `propext`, `Classical.choice` and `Quot.sound`.
+**The kernel gives the verdict.** Nothing counts as proved until CI passes: the build is green, there is no `sorry`, the axioms are only `propext`, `Classical.choice` and `Quot.sound`, and Comparator confirms the proof proves exactly its frozen statement.
 
 **Every theorem needs teeth.** A theorem earns its place only if a plausible wrong implementation would fail it. Each theorem names such a mutant, and `JSG/Tests/Mutants.lean` proves that the mutant violates the statement. If even a gate that rejects everything would pass a theorem, the theorem says nothing about this gate. A mutant shows that a statement can fail, not that it catches the mistakes you will actually make, so take mutants from real defects in the corpus where you can: the v1 fold, the subadditive debit, the inverted No-Zeno inequality, the drafts' dropped must-fails.
 
@@ -63,10 +63,13 @@ jsg-sirus/
 ├── lean/
 │   ├── lakefile.toml
 │   ├── lean-toolchain
-│   ├── JSG/Statements.lean  # the fixed challenge: definitions, theorems as sorry
-│   ├── JSG/Proofs/          # one file per milestone
-│   └── JSG/Tests/           # sanity examples and negative controls
+│   ├── JSG/Defs.lean        # frozen: the definitions the statements use
+│   ├── JSG/Statements.lean  # frozen challenge: theorem statements, as sorry
+│   ├── JSG/Proofs/          # one file per milestone, restating frozen theorems
+│   ├── JSG/Solution.lean    # imports every proof file; Comparator's solution
+│   └── JSG/Tests/           # sanity examples, negative controls, Comparator self-test
 ├── scripts/check.sh         # build, axiom audit, statements-unchanged check
+├── scripts/comparator.sh    # each proof against its frozen statement
 ├── CLAUDE.md
 └── .github/workflows/ci.yml
 ```
@@ -114,11 +117,11 @@ The goal is `Statements.lean` v1: the fixed target every later proof is judged a
 2. Review each definition and theorem. Fix anything that doesn't say what you mean, and give every theorem a plain-English docstring.
 3. Write the controls in `JSG/Tests/`: must-pass inputs the gate must ACCEPT, must-fail inputs it must REJECT, and, for each theorem, one mutant where it fails and one witness instance where it holds. The compiler checks only that names exist, so these are what catch a statement with a real name used the wrong way round, such as swapped arguments to a relation. For instance, the always-REJECT gate is the mutant for `verdict_complete`.
 
-**Claude Code:** make the stubs compile with `sorry`, prove each mutant's counterexample and each witness instance in `JSG/Tests/Mutants.lean`, and add the statements check (a diff against the tag, per Phase 0) to `scripts/check.sh`.
+**Claude Code:** make the stubs compile with `sorry`, and prove each mutant's counterexample and each witness instance in `JSG/Tests/Mutants.lean`. Two checks already run in CI: the statements check (a diff against the tag over every file the statements depend on) and Comparator.
 
 **Gate**
 
-- [ ] `Statements.lean` compiles, with `sorry` as its only gap
+- [ ] `Defs.lean` and `Statements.lean` compile, with `sorry` as the only gap; every definition the statements use is in `Defs.lean`, so the proofs import the same definitions
 - [ ] Every theorem has a docstring you wrote or approved
 - [ ] Every theorem's mutant counterexample and witness instance are proved, before any milestone proof starts; a counterexample that comes too easily is a warning that the statement may be false for everything
 - [ ] The file is tagged `statements-v1`, and any later change needs a `CHANGELOG.md` line saying whether it tightens or weakens
@@ -139,7 +142,8 @@ Of Milestone 3's statements, only `dwell_lower_bound` is in `statements-v1`. Wri
 
 - [ ] `lake build` is green, with no `sorry` in the milestone's proof file
 - [ ] `#print axioms` on each theorem lists only `propext`, `Classical.choice` and `Quot.sound`
-- [ ] The statements check confirms `Statements.lean` is unchanged
+- [ ] The statements check confirms that every file the statements depend on is unchanged: `Defs.lean`, `Statements.lean`, their project imports, the toolchain, the Mathlib pin and the lakefile
+- [ ] Comparator confirms that each theorem in `JSG/Proofs/` proves exactly its frozen statement with only the permitted axioms, and lists none of the milestone's theorems as not yet proved
 - [ ] Each theorem's named mutant is proved to violate it, and every must-pass control is accepted
 - [ ] Layer-map rows are set to Proved, and the guide's text names the Lean theorem
 - [ ] A short note, in your words: what is now proved, and what it does not show
@@ -152,7 +156,7 @@ The goal is a tagged release that a stranger could clone and check. After it, yo
 
 - [ ] `README.md` and `REPRODUCE.md` explain how to build and check everything
 - [ ] Every layer-map row has a status and points to its Lean theorem or its reason for being out of scope
-- [ ] One run of the gold-standard check: Comparator with the nanoda kernel against `Statements.lean`, as the [Lean reference](https://lean-lang.org/doc/reference/latest/ValidatingProofs/) describes
+- [ ] One run of the gold-standard check: Comparator, which already runs in CI, with the nanoda kernel added, as the [Lean reference](https://lean-lang.org/doc/reference/latest/ValidatingProofs/) describes
 - [ ] Tagged `v1.0`
 
 **Then pick one:**

@@ -31,3 +31,26 @@ jobs:
 
       - name: Forbidden tokens, axiom audit, statements check
         run: bash scripts/check.sh
+
+      # Comparator runs in this job so the required `build` check covers it.
+      # Its tools are small and cached; the cache key changes with the pins.
+      - name: Restore Comparator tools
+        id: comparator-tools
+        uses: actions/cache@v4
+        with:
+          path: ~/comparator-tools
+          key: comparator-tools-${{ runner.os }}-${{ hashFiles('scripts/build-comparator-tools.sh', 'lean/lean-toolchain') }}
+
+      - uses: actions/setup-go@v5
+        if: steps.comparator-tools.outputs.cache-hit != 'true'
+        with:
+          go-version: stable
+
+      - name: Build Comparator tools
+        if: steps.comparator-tools.outputs.cache-hit != 'true'
+        run: bash scripts/build-comparator-tools.sh "$HOME/comparator-tools"
+
+      - name: Comparator (each proof proves exactly its frozen statement)
+        run: |
+          export PATH="$HOME/comparator-tools/bin:$PATH"
+          bash scripts/comparator.sh

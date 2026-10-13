@@ -1,9 +1,12 @@
 # Working rules for this repo
 
 ## Roles
-- The human owns `lean/JSG/Statements.lean`. Never edit it.
-  If a statement looks wrong or unprovable, stop and explain why.
-- Proofs go in `lean/JSG/Proofs/`, helper lemmas in `lean/JSG/Lemmas/`.
+- The human owns `lean/JSG/Statements.lean` and `lean/JSG/Defs.lean`, the definitions it uses.
+  Never edit them. If a statement looks wrong or unprovable, stop and explain why.
+- Proofs go in `lean/JSG/Proofs/`. Each proof file imports `JSG.Defs` and restates frozen theorems
+  under their exact names; `lean/JSG/Solution.lean` imports every proof file, and Comparator
+  checks each one against its frozen statement. Helper lemmas go in `lean/JSG/Lemmas/`, never
+  in a proof file.
 - `archive/` is read-only.
 
 ## Definition of done
@@ -13,7 +16,7 @@
 - Every theorem has a named mutant, and `JSG/Tests/Mutants.lean` proves the mutant violates it.
   Prefer mutants taken from real defects in archive/ over invented ones.
 - Every theorem also has a witness instance in `JSG/Tests/` where it holds.
-- `scripts/check.sh` passes.
+- `scripts/check.sh` passes, and CI's Comparator step passes.
 
 ## How to work
 - Never push to `main`. Work on a branch and open a PR.
