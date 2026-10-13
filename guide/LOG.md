@@ -4,6 +4,30 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-13
 
+### Phase 2 stubs written; no compile fixes needed (#10)
+- **Decision:** the v2 stubs went into `lean/JSG/Defs.lean` (every inductive, structure and definition) and `lean/JSG/Statements.lean` (every theorem), with the `variable` lines in the stub's order. Both compiled on the first try against Mathlib v4.34.1, so there are no compile fixes to record. `Multiset.IsDershowitzMannaLT` exists, and `IsDershowitzMannaLT M N` means M is the smaller multiset, matching the stub's `progress`.
+- **Meaning check:** a scratch script elaborated the original single-file stub in a separate namespace and compared every declaration with the split files. 107 are identical in type and value. 4 differ only in the hidden universe names Lean generates for `noConfusion`, which embed the source module's name. `interchange` is definitionally equal to v2's equation, the Q1 change.
+- **Undo:** paste the stub back into one file. Comparator needs the split, so this would mean copying definitions into the solution.
+
+### Mutants for the three theorems that had none (#10)
+- **Decision:**
+  - `combine_comm`: overwrite, where the later stage's grade replaces the earlier one.
+  - `charge_append`: v1's merged-jump charge, a real corpus defect (PDE Lemma 10.1).
+  - `fold_check_vacuous`: the uncapped fold, whose nightly check can fail, which shows the cap is what makes the check vacuous.
+- **Mutant shapes that differ from their statement:**
+  - `expiry_tightens`: "revert to the most recent policy" needs an order, so its mutant works on lists, newest first.
+  - The two Loader mutants model a loader that couldn't be built: a skipped check breaks `inv_step`, and a retry breaks `progress`, which `retry_breaks_progress` also shows.
+- **Undo:** choose other mutants in `Statements.lean`'s comments and `Mutants.lean`.
+
+### Controls in `JSG/Tests/` (#10)
+- **Decision:** `Mutants.lean` holds a proved mutant counterexample and a proved witness instance for all 16 theorems, plus `Noninterfering` and `Calibrated`: 37 theorems. They use at most propext, Classical.choice and Quot.sound. The file imports only `JSG.Defs`, so no control can rest on an unproved theorem. `Calibration.lean` checks the real gate: `verdict` with θ = 1 accepts the must-pass set (known 0, known 1) and rejects the must-fail set (unknown, known 2).
+- **Your part:** ROADMAP Phase 2 has you choose the must-pass and must-fail inputs, so these sets are a starting point to change.
+- **Undo:** delete the files. That weakens a check, so it would go to the queue.
+
+### The guide's Lean sketch follows the Lean files (#10)
+- **Decision:** the sketch now says the Lean files are canonical and is kept in step with them for reading: the two-operator interchange and the three new Mutant lines.
+- **Undo:** revert the sketch's lines.
+
 ### Lean and Mathlib upgrades under the Comparator design (#6)
 - **Every upgrade is a new statements version.** An upgrade changes `lean/lean-toolchain` or `lean/lake-manifest.json`, which the statements check now covers. So it needs its own PR, a new `statements-vN` tag and a CHANGELOG line. The line usually says neither tightens nor weakens, and should say what moved. These files are yours to merge.
 - **Mathlib can change what a statement means.** It can rename a lemma or change a definition the statements use. If a statement no longer elaborates, or elaborates to something different, that's a statement change and goes to the queue.
