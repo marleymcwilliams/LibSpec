@@ -72,16 +72,16 @@ Eleven components can be proved in Lean now and five more with analysis; the oth
 | Component | Layer | Lean status | Source |
 | --- | --- | --- | --- |
 | Graded values: combine laws, interchange equation, residual threading | Lean now | Stub | JSG V §2 |
-| Receipt integrity: replaying the addressed content yields the grade | Lean now | Not started | JSG V §2 |
+| Receipt integrity: replaying the addressed content yields the grade | Lean now | Not started | SIRUS spec §0.5; JSG V §6 |
 | Verdict: unknown rejects; complete evidence within θ accepts | Lean now | Stub | SIRUS spec §1.2–1.3 |
 | Noninterference: metrics cannot change the grade | Lean now | Stub | SIRUS spec §1.4 |
-| Loader: invariant preserved; Dershowitz–Manna progress | Lean now | Stub | JSG V §3; PDE Lemma 2.1 |
-| Frontier charge: additive under regrouping; chattering never free | Lean now | Stub | MDmaster SCp3 |
-| Policy lattice: expiry tightens; bridge to acceptance | Lean now | Stub | PDE Lemma 10.1 |
-| Calibration: must-pass accepted, must-fail rejected, sets disjoint | Lean now | Stub | JSG IV policy conservativity |
+| Loader: invariant preserved; Dershowitz–Manna progress | Lean now | Stub | MDmaster SCp3; JSG V §3 |
+| Frontier charge: additive under regrouping; chattering never free | Lean now | Stub | PDE §10; MDmaster SCp2 |
+| Policy lattice: expiry tightens; bridge to acceptance | Lean now | Stub | JSG IV, Governance as Code |
+| Calibration: must-pass accepted, must-fail rejected, sets disjoint | Lean now | Stub | Core v2; Operational Playbook (must-fail coverage) |
 | Capped governance fold: bounded, with a vacuous nightly check | Lean now | Stub | JSG IV aggregator lemma |
 | Must-fail CI gate: accepted histories keep every unsigned failure class | Lean now | Stub | Draft0–7 |
-| Typed obligations (authority and witness); unknowns lease as interval width ≤ β | Lean now | Not started | PDE I4b |
+| Typed obligations (authority and witness); unknowns lease as interval width ≤ β | Lean now | Not started | JSG V §3; PDE §2.2, I4b |
 | CVaR tail-to-level step (C₀ = 1) | Lean + analysis | Not started | PDE Lemma 9.1 |
 | No-Zeno dwell bound, corrected | Lean + analysis | Stub | JSG I Lemma 1 |
 | Local KL–Fisher quadratic bound | Lean + analysis | Not started | JSG I FIM bound |
