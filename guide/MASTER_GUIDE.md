@@ -38,7 +38,7 @@ Solid arrows mean a stage builds on the one before it; the dashed line marks wor
 
 ## Canonical glossary
 
-Twenty-two terms, each with one home. One is still an open decision: the SIRUS name.
+Twenty-two terms, each with one home. The SIRUS name waits: not yet, since no v1 statement depends on it.
 
 | Canonical term | Meaning | Replaces or aliases | Home |
 | --- | --- | --- | --- |
@@ -62,7 +62,7 @@ Twenty-two terms, each with one home. One is still an open decision: the SIRUS n
 | Clamp states | Green, Amber, Red | "Yellow" | JSG IV |
 | Invariant families | Prefix by family: H1–H5 (governor, JSG III list), A1–A5 (PDE acceptance), L1–L10 (Loader), T11–T13 (tail contracts) | I₁–I₅ (three incompatible versions); I1–I13 | New |
 | Policy lattice **⪰** | Dials in a complete lattice, larger is stricter; E(t) = baseline ⊓ active weakenings; threshold dials store their inverse | "Strictest unexpired policy P\*"; ThresholdChange VC semantics | Core v2 |
-| **SIRUS** (this project) | The governance and evidence spec | Also the name of Bénard et al.'s random-forest rule-set algorithm; the two were merged in MDmaster | Open: rename or disambiguate |
+| **SIRUS** (this project) | The governance and evidence spec | Also the name of Bénard et al.'s random-forest rule-set algorithm; the two were merged in MDmaster | Not yet: no v1 statement depends on it |
 | Content address | BLAKE3-256 of canonical bytes | `b3:…` placeholders (849 in the master spec) | SIRUS spec §0.5 |
 
 ## Layer map
@@ -299,7 +299,8 @@ def mfGate {C : Type} (signed : Set C → Prop) (old new : Set C) : Prop :=
 theorem mfGate_monotone {C : Type} (signed : Set C → Prop) (MF : ℕ → Set C)
     (hg : ∀ t, mfGate signed (MF t) (MF (t + 1)))
     (hs : ∀ s, signed s → s = ∅) : Monotone MF := by sorry
--- Mutant: Draft0–7's history, which dropped GOLDEN_RULE_BREACH with nothing signed.
+-- Mutant: Draft0–7's history, which dropped GOLDEN_RULE_BREACH with nothing signed. That class
+-- sits outside the v1 gate (decisions/RAILS.md); the history still breaks the gate's rule.
 
 /-! ## 7. No-Zeno kernel (analysis layer, corrected form) -/
 
