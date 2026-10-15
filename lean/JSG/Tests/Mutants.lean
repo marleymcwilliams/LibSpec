@@ -97,9 +97,16 @@ theorem verdict_unknown_mutant :
   have := hc (fun _ => 0) (fun _ => Bound.unknown) () ENNReal.zero_lt_top rfl
   simp [verdictLo, Bound.unknown] at this
 
+/-- The threshold 1 on the single axis. -/
+def θone : Unit → ENNReal := fun _ => 1
+
+/-- Witness for `verdict_unknown` (θ = 1, an unknown grade, axis `()`): both hypotheses
+    and the conclusion. -/
 theorem verdict_unknown_witness :
-    verdict (fun _ : Unit => 1) (fun _ => Bound.unknown) = .reject := by
-  simp [verdict, Bound.unknown]
+    θone () < ⊤ ∧ (fun _ : Unit => Bound.unknown) () = Bound.unknown
+      ∧ verdict θone (fun _ => Bound.unknown) = .reject := by
+  refine ⟨by simp [θone], rfl, ?_⟩
+  simp [verdict, θone, Bound.unknown]
 
 /-! ## verdict_complete -/
 
@@ -113,8 +120,13 @@ theorem verdict_complete_mutant :
   have := hc (fun _ => 0) (k 0) (fun _ => rfl) (fun _ => le_rfl)
   simp [alwaysReject] at this
 
-theorem verdict_complete_witness : verdict (fun _ : Unit => 1) (k 1) = .accept := by
-  simp [verdict, k, Bound.known]
+/-- Witness for `verdict_complete` (θ = 1, the known grade 1): both hypotheses and the
+    conclusion. -/
+theorem verdict_complete_witness :
+    (∀ i, (k 1 i).lo = (k 1 i).hi) ∧ (∀ i, (k 1 i).lo ≤ θone i)
+      ∧ verdict θone (k 1) = .accept := by
+  refine ⟨fun _ => rfl, fun _ => by simp [k, Bound.known, θone], ?_⟩
+  simp [verdict, θone, k, Bound.known]
 
 /-! ## residual_spec -/
 
@@ -127,7 +139,12 @@ theorem residual_spec_mutant :
   have := (hc 1 1 1 ENNReal.one_ne_top le_rfl).mp le_rfl
   norm_num at this
 
-theorem residual_spec_witness : (1 : ENNReal) ≤ residual 1 0 ↔ (0 : ENNReal) + 1 ≤ 1 := by
+/-- Witness for `residual_spec` (θ = 1, x = 0, y = 1): both hypotheses and the
+    conclusion. -/
+theorem residual_spec_witness :
+    (1 : ENNReal) ≠ ⊤ ∧ (0 : ENNReal) ≤ 1
+      ∧ ((1 : ENNReal) ≤ residual 1 0 ↔ (0 : ENNReal) + 1 ≤ 1) := by
+  refine ⟨by simp, zero_le_one, ?_⟩
   simp [residual]
 
 /-! ## Noninterfering and no_flip -/
@@ -152,9 +169,13 @@ def constGrader (_e : Evidence Unit) : Grade Unit := k 0
 
 theorem noninterfering_witness : Noninterfering constGrader := fun _ _ _ => rfl
 
+/-- Witness for `no_flip` (a grader that ignores metrics, θ = 0): the hypothesis and the
+    conclusion. -/
 theorem no_flip_witness :
-    verdict (fun _ => 0) (constGrader ⟨(), []⟩)
-      = verdict (fun _ => 0) (constGrader ⟨(), [("confidence", 0.99)]⟩) := rfl
+    Noninterfering constGrader ∧
+      verdict (fun _ => 0) (constGrader ⟨(), []⟩)
+        = verdict (fun _ => 0) (constGrader ⟨(), [("confidence", 0.99)]⟩) :=
+  ⟨noninterfering_witness, rfl⟩
 
 /-! ## Loader.safe and Loader.terminates -/
 
@@ -178,7 +199,8 @@ theorem loader_safe_mutant :
   intro hc
   exact hc 3 2 (by simp [skipInv]) (Relation.ReflTransGen.single rfl) rfl
 
-theorem loader_safe_witness {s t : ℕ} (hs : countdown.Inv s)
+/-- `Loader.safe`'s conclusion for every pair of countdown states. -/
+theorem loader_safe_countdown {s t : ℕ} (hs : countdown.Inv s)
     (hr : Relation.ReflTransGen countdown.step s t) : countdown.Inv t := by
   induction hr with
   | refl => exact hs
@@ -187,6 +209,16 @@ theorem loader_safe_witness {s t : ℕ} (hs : countdown.Inv s)
     have h2 : _ ≤ 3 := ih
     show _ ≤ 3
     omega
+
+/-- Witness for `Loader.safe` (the countdown loader, from state 3 down to 1): both
+    hypotheses and the conclusion. -/
+theorem loader_safe_witness :
+    countdown.Inv 3 ∧ Relation.ReflTransGen countdown.step 3 1 ∧ countdown.Inv 1 :=
+  ⟨show 3 ≤ 3 from le_rfl,
+   Relation.ReflTransGen.tail (b := 2)
+     (Relation.ReflTransGen.single (show countdown.step 3 2 from rfl))
+     (show countdown.step 2 1 from rfl),
+   show 1 ≤ 3 by omega⟩
 
 /-- Mutant for `Loader.terminates`: a retry that re-emits the same obligation, so a
     state can step to itself. -/
@@ -251,9 +283,12 @@ theorem expiry_tightens_mutant :
   intro hc
   exact hc True [True, False] [False] ((List.Sublist.refl [False]).cons True) trivial
 
+/-- Witness for `expiry_tightens` (P = Prop, baseline True, one active weakening False
+    that expires): the hypothesis and the conclusion. -/
 theorem expiry_tightens_witness :
-    effective True ({False} : Set Prop) ≤ effective True (∅ : Set Prop) := by
-  simp [effective]
+    (∅ : Set Prop) ⊆ {False}
+      ∧ effective True ({False} : Set Prop) ≤ effective True (∅ : Set Prop) :=
+  ⟨Set.empty_subset _, by simp [effective]⟩
 
 /-! ## bridge -/
 
@@ -267,11 +302,13 @@ theorem bridge_mutant :
   have := hc (fun _ => k 1) (fun _ => 0) (fun _ => 1) (fun _ => zero_le_one) hacc
   simp [verdict, k, Bound.known] at this
 
+/-- Witness for `bridge` (θ₂ = 0 below θ₁ = 1, the known grade 0): the hypothesis and
+    the conclusion. -/
 theorem bridge_witness :
-    {x : Unit | verdict (fun _ => 0) ((fun _ => k 0) x) = .accept}
-      ⊆ {x : Unit | verdict (fun _ => 1) ((fun _ => k 0) x) = .accept} := by
-  intro _ _
-  simp [verdict, k, Bound.known]
+    (fun _ : Unit => (0 : ENNReal)) ≤ (fun _ => 1) ∧
+      {x : Unit | verdict (fun _ => 0) ((fun _ => k 0) x) = .accept}
+        ⊆ {x : Unit | verdict (fun _ => 1) ((fun _ => k 0) x) = .accept} :=
+  ⟨fun _ => zero_le_one, fun _ _ => by simp [verdict, k, Bound.known]⟩
 
 /-! ## fold_check_vacuous -/
 
@@ -284,8 +321,10 @@ theorem fold_check_vacuous_mutant :
   have := hc 0 1 le_rfl [1]
   norm_num [foldUncapped] at this
 
-theorem fold_check_vacuous_witness : fold 1 1 [2] ≤ 1 := by
-  norm_num [fold]
+/-- Witness for `fold_check_vacuous` (R_max = 1, λ = 1, one weakening of size 2): the
+    hypothesis and the conclusion. -/
+theorem fold_check_vacuous_witness : (0 : ℝ) ≤ 1 ∧ fold 1 1 [2] ≤ 1 :=
+  ⟨zero_le_one, by norm_num [fold]⟩
 
 /-! ## Calibrated -/
 
@@ -348,10 +387,17 @@ theorem dwell_lower_bound_mutant :
     (by norm_num)
   norm_num at this
 
+/-- The witness trajectory: signed distance 1 - t, moving at speed 1. -/
+def dWitness : ℝ → ℝ := fun t => 1 - t
+
+/-- Witness for `dwell_lower_bound` (S_max = 1, r = 1, t₁ = 0, t₂ = 2): all five
+    hypotheses and the conclusion. -/
 theorem dwell_lower_bound_witness :
-    (∀ s t : ℝ, |(1 - t) - (1 - s)| ≤ 1 * |t - s|) ∧ (1 : ℝ) - 0 = 1 ∧ (1 : ℝ) - 2 = -1
-      ∧ (2 * 1 / 1 : ℝ) ≤ 2 - 0 := by
-  refine ⟨fun s t => ?_, by norm_num, by norm_num, by norm_num⟩
+    (0 : ℝ) < 1 ∧ (∀ s t, |dWitness t - dWitness s| ≤ 1 * |t - s|) ∧ dWitness 0 = 1
+      ∧ dWitness 2 = -1 ∧ (0 : ℝ) ≤ 2 ∧ 2 * 1 / 1 ≤ (2 : ℝ) - 0 := by
+  refine ⟨one_pos, fun s t => ?_, by norm_num [dWitness], by norm_num [dWitness], by norm_num,
+    by norm_num⟩
+  simp only [dWitness]
   rw [show (1 - t) - (1 - s) = -(t - s) by ring, abs_neg, one_mul]
 
 end JSG.Tests.Mutants
