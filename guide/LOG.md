@@ -2,6 +2,26 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-10-15
+
+### Statements review report (#13)
+- **Decision:** `guide/STATEMENTS_REVIEW.md` shows, for each of the 16 theorems, the Prop its mutant refutes next to the statement, and says what differs. A script confirmed that all 74 quoted code lines match the sources apart from the omitted proofs.
+- **Why a file:** the side-by-side is review material for `statements-v1`, and Q2 and Q3 refer to it.
+- **Undo:** delete the file once the tag exists.
+
+### Witnesses prove their hypotheses (#11)
+- **Decision:** each witness now proves one conjunction for a single concrete instance: every hypothesis of its theorem, in the statement's order, then the conclusion. A few named fixtures (`θone`, `dWitness`) keep the hypotheses readable. `Loader.safe`'s general countdown lemma is kept as `loader_safe_countdown`, and a concrete instance (state 3 down to 1) is the witness.
+- **Undo:** go back to conclusion-only witnesses. That weakens a check, so it would go to the queue.
+
+### The statements check asks origin for tags (#12)
+- **Decision:** `check.sh` compares this clone's latest `statements-v*` tag with origin's and fails if they differ. In CI, being unable to reach origin fails too; locally, it skips with a note. Before any tag exists, it skips.
+- **Why:** this is how "tags missing" differs from "not frozen yet" without a marker file.
+- **Outside the repo:** a GitHub tag ruleset on `statements-v*` that blocks deleting or moving tags would close the last gap. That's a settings change for you.
+- **Undo:** revert #12. That weakens a check, so it would go to the queue.
+
+### The Q2 and Q3 proposals were checked before queueing (#13)
+- **Decision:** a scratch file, not committed, type-checked both restatements against the real `Defs` and proved that each one's mutant fails it: the un-inverted dial for the restated bridge, and a gate that accepts every change for `mfGate_signed`. No Milestone 1 theorem was proved.
+
 ## 2026-10-13
 
 ### Phase 2 stubs written; no compile fixes needed (#10)
