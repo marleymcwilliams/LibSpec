@@ -66,18 +66,42 @@ statement_files() {
   printf '%s\n' lean/lean-toolchain lean/lake-manifest.json lean/lakefile.toml
 }
 
+# Diffs the covered files against the latest statements-v* tag. origin is asked too:
+# once a tag exists there, a clone that lacks it fails here instead of skipping.
+# CI must be able to reach origin.
+statements_check() {
+  local local_tag remote_tag="" remote_out remote_ok=1
+  local_tag="$(git -C "$root" tag -l 'statements-v*' | sort -V | tail -n 1)"
+  if remote_out="$(git -C "$root" ls-remote --tags --refs origin 'statements-v*' 2>/dev/null)"; then
+    remote_tag="$(printf '%s\n' "$remote_out" | sed -n 's#.*refs/tags/##p' | sort -V | tail -n 1)"
+  else
+    remote_ok=0
+  fi
+  if [ "$remote_ok" -eq 1 ] && [ "$remote_tag" != "$local_tag" ]; then
+    echo "FAIL: origin's latest statements tag is '${remote_tag:-none}' but this clone's is '${local_tag:-none}'; fetch tags (git fetch --tags) or push the tag"
+    return 1
+  fi
+  if [ -z "$local_tag" ]; then
+    if [ "$remote_ok" -eq 0 ] && [ -n "${CI:-}" ]; then
+      echo "FAIL: CI couldn't ask origin for statements tags, so it can't tell 'not frozen yet' from 'tags missing'"
+      return 1
+    fi
+    echo "skipped: no statements-v* tag yet; once one exists, a missing tag fails. It will cover:"
+    printf '  %s\n' "${covered[@]}"
+    if [ "$remote_ok" -eq 0 ]; then echo "  (origin unreachable: checked local tags only)"; fi
+    return 0
+  fi
+  if git -C "$root" diff --exit-code "$local_tag" -- "${covered[@]}"; then
+    echo "ok ($local_tag): ${covered[*]}"
+  else
+    echo "FAIL: files the statements depend on differ from $local_tag"
+    return 1
+  fi
+}
+
 step "Statements unchanged since the latest statements-v* tag"
 mapfile -t covered < <(statement_files)
-tag="$(git -C "$root" tag -l 'statements-v*' --sort=-v:refname | head -n 1)"
-if [ -z "$tag" ]; then
-  echo "skipped: no statements-v* tag yet (created in Phase 2); it will cover:"
-  printf '  %s\n' "${covered[@]}"
-elif git -C "$root" diff --exit-code "$tag" -- "${covered[@]}"; then
-  echo "ok ($tag): ${covered[*]}"
-else
-  echo "FAIL: files the statements depend on differ from $tag"
-  fail=1
-fi
+statements_check || fail=1
 
 echo
 if [ "$fail" -ne 0 ]; then echo "check.sh: FAILED"; else echo "check.sh: passed"; fi

@@ -12,7 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 0 # tags are needed for the statements-unchanged check
+          # The statements check diffs against the latest statements-v* tag, and
+          # check.sh fails if this clone's latest tag differs from origin's.
+          fetch-depth: 0
+          fetch-tags: true
 
       # Installs Lean, fetches the Mathlib cache, runs `lake build`, then
       # replays every JSG module through the kernel with leanchecker.
