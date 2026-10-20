@@ -348,7 +348,7 @@ Four pieces are deferred to Milestone 2 or later: typed obligations with witness
 
 ## Known defects and proposed fixes
 
-Nineteen defects so far. The last seven came from an outside review of v1 and are fixed in core v2.
+Twenty defects so far. The last seven came from an outside review of v1 and are fixed in core v2.
 
 | Defect | Where | Why it matters | Proposed fix |
 | --- | --- | --- | --- |
@@ -364,6 +364,7 @@ Nineteen defects so far. The last seven came from an outside review of v1 and ar
 | "If the CI passes, the work is correct" | Human\_Guide, step 4 | CI shows conformance, not correctness; cross-checking two agents misses errors they share | Reword: "If CI passes, the work conforms to the spec" |
 | JSG V's Lax Exchange theorem runs against its own interchange law | JSG V §4, Lax Exchange Law; restated in the proofs appendix | The interchange law (§2) makes piping each subsystem first the worse order; the theorem, with ∘ read as function composition, and its proof's last sentence make wiring first the worse one. On a sum axis with x = 1, x′ = 0, y = 0, y′ = 1, piping first grades 2 and wiring first 1 | Moot in core v2: sequence and parallel both use ⊕, so interchange is an equation and JSG V's rule becomes the `interchange` mutant |
 | Unknown sits below every value | SCp1 Def 2.1 and Appendix A; SCp2 Assumption 3.2; SirusSC `Q.leq` | ⊥ ≤ x for every x, so a bare threshold check q ≤ θ accepts an unknown axis, as the `verdict_unknown` mutant that reads lo does. Only a separate guard that rejects ⊥ first (SCp1's I9, guard-first pricing) keeps it fail-closed | Core v2: unknown is \[0, ∞\] and the verdict reads hi, so the check itself rejects (`verdict_unknown`) |
+| SCp2 and MDmaster disagree on which axes carry the frontier debit | SCp2 §5, eq. (1)–(2) and Prop. 5.2 (F2); MDmaster.md:409, its SCp2 summary; SirusSC `greedy_upper_bound` | SCp2 prices max-axes only and pins the sum part at 0 (price\_π(e) ∈ Q\_M × {0}; F2: "On S-axes, (Δfr)\_S = 0"). Its max-fold doesn't double-charge repeats, so a crossing and its reversal cost no more than the larger of the two. MDmaster says the opposite: "Debits accrue only on sum-axes; max-axes remain invariant". The code charges both, max on M and sum on S, with S not pinned at 0. A reader of the summary takes the debit for a cumulative spend; the paper makes it an idempotent rate | Core v2's charge is total variation, additive under concatenation (`charge_append`): MDmaster's reading. SCp2's max-fold becomes a `charge_chatter` mutant (ROADMAP, Milestone 1 notes) |
 | Subadditive frontier debit lets regrouping net out chattering | PDE Lemma 10.1; v1 core object 4 | Jumps v and −v cost 2A‖v‖ charged separately and 0 merged | Charge total variation at the finest resolution |
 | `safety_or_halt` proves only termination | v1 Lean stubs; SCp3 | Well-foundedness is a variant, not an invariant, and a step counter satisfies any lexicographic rank | Prove invariant preservation separately; take progress from pending obligations |
 | ⊤ means both "unknown" and "infinitely bad" | JSG V; PDE I4b; SCp2 | The unknowns lease has no representation, since one unknown makes a whole budget axis ⊤ | Interval-valued axes |

@@ -136,6 +136,12 @@ Each milestone proves one block of `Statements.lean` and closes at the same gate
 | 2: Obligations, Loader, charge, policy | Typed obligations, `Loader.safe`, `Loader.terminates`, `charge_append`, `charge_chatter`, `expiry_tightens`, `bridge`, `mfGate_signed` | Mathematics in Lean ch. 5–6 | Low to medium: Dershowitz–Manna and lattice lemmas take some finding |
 | 3: Analysis layer | CVaR tail-to-level, `dwell_lower_bound`, local KL–Fisher bound, DRO envelope identity | Mathematics in Lean ch. 11–13 | Medium to high: the statements need as much care as the proofs |
 
+**Milestone 1 notes**, for right after the `statements-v1` tag:
+
+- Add two mutants taken from real defects to `JSG/Tests/Mutants.lean`, beside the current ones. Both are new controls, not statement changes.
+  - **`interchange`: SCp2's operator pair.** It uses ⋆ (+) in sequence and ⊎ (max) in parallel, which SirusSC implements as `Q.sequential` and `Q.hetero_join`. On a floor axis with a = 1, b = 0, c = 0, d = 1, parallel-of-sequences grades max(1 + 0, 0 + 1) = 1, but sequence-of-parallels grades max(1, 0) + max(0, 1) = 2.
+  - **`charge_chatter`: SCp2's max-fold debit (§5).** It doesn't double-charge repeats, so [v, −v] costs A‖v‖, not 2A‖v‖. `charge_chatter` is a Milestone 2 theorem, but its mutant goes in now with the other.
+
 **Milestone 2 notes**, for the milestone's closing note:
 
 - `Loader.safe` and `Loader.terminates` hold for any Loader, so Milestone 2's note must say that a concrete Loader (L1–L10) is still owed.
