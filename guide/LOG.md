@@ -30,6 +30,13 @@ Decisions Claude Code made without asking, because they are reversible and don't
 - **Why:** that note is written when the milestone closes, so the reminder sits next to it.
 - **Undo:** delete the sentence.
 
+### Triage of the archived repos (#17)
+- **Decision:** the brief's four fixes are applied where the sources bear them out, each quoted in the PR. One didn't verify as stated: SirusSC's Loader runs ten checks numbered I1–I10, but only I1 is SCp3's. The Milestone 2 note says so.
+- **Glossary:** SCp1's ∧ joins the Combine row (Def 2.2) and the Sequential composition row (Prop 7.4); SCp2's "∧ ≡ ⋆" is recorded as a misreading, no longer as an alias. The Unknown row now says SCp1 and SCp2 put ⊥ below every value, which the new defect row explains: "the information order" was SCp2's intent (§4.1, ⊥ "concretizes to the full concrete carrier"), not its order.
+- **`Statements.lean`, comment only, at your request:** `verdict_unknown`'s Mutant comment cites the new defect, and the guide's sketch matches. No statement changed; no tag exists, so no CHANGELOG line.
+- **Where the Milestone 2 notes live:** ROADMAP's milestone section, where the concrete-Loader reminder now heads a two-item list.
+- **Undo:** revert the PR's commit.
+
 ### `expiry_tightens`: the note, not a set-based test (#14)
 - **Decision:** the named mutant ("revert to the most recent policy") can't be stated on sets, so `STATEMENTS_REVIEW.md` explains why the list copy tests the same claim. The note also names a set-level candidate mutant (`sSup` for `sInf`) in case you want one. No new test was added.
 

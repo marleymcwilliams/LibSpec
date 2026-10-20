@@ -28,7 +28,9 @@ theorem interchange : Interchange (seqComp kind) (parComp kind) := by sorry
 /-- Fail-closed: an unknown axis rejects whenever its threshold is finite. -/
 theorem verdict_unknown (θ : ι → ENNReal) (g : Grade ι) (i : ι)
     (hθ : θ i < ⊤) (hu : g i = Bound.unknown) : verdict θ g = .reject := by sorry
--- Mutant: a verdict that reads `lo` instead of `hi` accepts unknowns.
+-- Mutant: a verdict that reads `lo` instead of `hi` accepts unknowns. A bare threshold
+-- check under SCp1's order does the same, since that order puts ⊥ below every value
+-- (a known defect in the master guide).
 
 /-- Completeness: complete evidence within θ is accepted. -/
 theorem verdict_complete (θ : ι → ENNReal) (g : Grade ι)
