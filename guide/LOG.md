@@ -9,6 +9,13 @@ Decisions Claude Code made without asking, because they are reversible and don't
 - **Also left out, on your review of #16:** SirusSC's `.pytest_cache/` (6 files) and Solanum's three biblatex control files (`*-blx.bib`). Both are generated, like the LaTeX intermediates the brief excluded.
 - **Undo:** add the file back with `git add -f`; git then applies its rules to the copy.
 
+### Three docstrings say no more than their theorems (#19)
+- **Decision:** Marley's wording for `Loader.safe` as given, and two small rewrites:
+  - `residual_spec` also needs θ finite (`hθ`). With θ = x = ⊤, stage one fits, the residual is 0, and y = 1 fails the residual check but passes the total check. So the docstring opens "When θ is finite and stage one fits within it".
+  - `charge_chatter`: "which is 0 only when A = 0 or v = 0" spells out what "never 0 unless A or v is" left implied, and `[v, -v]` is in code font, as Lean writes it.
+- **Also:** the guide's sketch matches. No statement changed, and no tag exists, so no CHANGELOG line.
+- **Undo:** restore the three old docstrings.
+
 ### `mfGate_monotone` dropped; the general form replaces it (#14)
 - **Decision:** Q3 left this call to Claude Code. `mfGate_monotone` is dropped rather than kept as a corollary.
 - **Why:** `mfGate_signed` implies it. Keeping both would freeze two statements that carry the same claim, and the corollary would need its own mutant, witness and proof.

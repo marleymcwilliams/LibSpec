@@ -38,7 +38,8 @@ theorem verdict_complete (θ : ι → ENNReal) (g : Grade ι)
     verdict θ g = .accept := by sorry
 -- Mutant: the always-REJECT gate, which satisfies every safety theorem here.
 
-/-- Checking stage two against stage one's residual is checking the total. -/
+/-- When θ is finite and stage one fits within it, checking stage two against the
+    residual it leaves is the same as checking the total. -/
 theorem residual_spec (θ x y : ENNReal) (hθ : θ ≠ ⊤) (hx : x ≤ θ) :
     y ≤ residual θ x ↔ x + y ≤ θ := by sorry
 -- Mutant: checking each stage against the full θ accepts x = y = θ.
@@ -52,7 +53,8 @@ theorem no_flip {E : Type} (θ : ι → ENNReal) (gradeOf : Evidence E → Grade
 
 /-! ## 3. Loader: safety and progress, kept separate -/
 
-/-- Safety: every reachable state satisfies the invariant. -/
+/-- Every state reachable from one that satisfies the invariant satisfies it too.
+    This holds for any Loader; it says nothing about a concrete one until one is built. -/
 theorem Loader.safe {S O : Type} [Preorder O] (L : Loader S O) {s t : S}
     (hs : L.Inv s) (hr : Relation.ReflTransGen L.step s t) : L.Inv t := by sorry
 -- Mutant: a step that skips one L-check still terminates but breaks this.
@@ -72,7 +74,8 @@ theorem charge_append (A : ENNReal) (j₁ j₂ : List E) :
 -- Mutant: v1's merged-jump charge A · ‖Σ jumps‖, under which [v] ++ [-v] costs 0
 -- but [v] and [-v] cost 2A‖v‖.
 
-/-- Chattering is never free. -/
+/-- Chattering costs twice a single jump: `[v, -v]` is charged 2·A·‖v‖, which is 0
+    only when A = 0 or v = 0. -/
 theorem charge_chatter (A : ENNReal) (v : E) :
     charge A [v, -v] = 2 * A * (‖v‖₊ : ENNReal) := by sorry
 -- Mutant: v1's merged-jump charge, under which (v, -v) costs 0.
