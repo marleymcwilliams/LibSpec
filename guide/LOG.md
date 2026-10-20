@@ -16,6 +16,12 @@ Decisions Claude Code made without asking, because they are reversible and don't
 - **Also:** the guide's sketch matches. No statement changed, and no tag exists, so no CHANGELOG line.
 - **Undo:** restore the three old docstrings.
 
+### The Lean toolchain is cached, and its download retried (#19)
+- **Decision:** CI restores `~/.elan` from the GitHub cache, keyed on `lean/lean-toolchain`. On a miss it installs elan and the toolchain itself, in up to five attempts 30, 60, 90 and 120 s apart. lean-action then finds the toolchain installed and doesn't fetch it.
+- **Why:** lean-action fetches the toolchain from releases.lean-lang.org once, with no retry. A single TLS error turned #14 and #17 red (the first attempts of runs 39391980839 and 39491370612), so red didn't mean the code was wrong.
+- **Still unretried:** lean-action reinstalls elan itself from GitHub on every run, which hasn't failed so far.
+- **Undo:** delete the two steps before lean-action.
+
 ### `mfGate_monotone` dropped; the general form replaces it (#14)
 - **Decision:** Q3 left this call to Claude Code. `mfGate_monotone` is dropped rather than kept as a corollary.
 - **Why:** `mfGate_signed` implies it. Keeping both would freeze two statements that carry the same claim, and the corollary would need its own mutant, witness and proof.
