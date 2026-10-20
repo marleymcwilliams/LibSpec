@@ -292,23 +292,31 @@ theorem expiry_tightens_witness :
 
 /-! ## bridge -/
 
-/-- Mutant: a threshold dial stored un-inverted, so "stricter" raises θ. -/
-theorem bridge_mutant :
-    ¬ ∀ (gradeOf : Unit → Grade Unit) (θ₁ θ₂ : Unit → ENNReal), θ₁ ≤ θ₂ →
-      {x | verdict θ₂ (gradeOf x) = .accept} ⊆ {x | verdict θ₁ (gradeOf x) = .accept} := by
+/-- `bridge`'s claim with the dial-to-threshold map as a parameter, so a wrong map can be
+    plugged in. `BridgeHolds threshold` is the statement at `ι = Unit`, with inputs of
+    type `Unit`. -/
+def BridgeHolds (thresholdOf : (Unit → ENNReal) → Unit → ENNReal) : Prop :=
+  ∀ (gradeOf : Unit → Grade Unit) (dial₁ dial₂ : Unit → ENNReal), dial₁ ≤ dial₂ →
+    {x | verdict (thresholdOf dial₂) (gradeOf x) = .accept}
+      ⊆ {x | verdict (thresholdOf dial₁) (gradeOf x) = .accept}
+
+/-- Mutant: a threshold dial stored un-inverted (`id` in place of `threshold`), so
+    "stricter" raises θ. -/
+theorem bridge_mutant : ¬ BridgeHolds id := by
   intro hc
-  have hacc : () ∈ {x : Unit | verdict (fun _ => 1) ((fun _ => k 1) x) = .accept} := by
+  have hacc :
+      () ∈ {x : Unit | verdict (id fun _ => (1 : ENNReal)) ((fun _ => k 1) x) = .accept} := by
     simp [verdict, k, Bound.known]
   have := hc (fun _ => k 1) (fun _ => 0) (fun _ => 1) (fun _ => zero_le_one) hacc
   simp [verdict, k, Bound.known] at this
 
-/-- Witness for `bridge` (θ₂ = 0 below θ₁ = 1, the known grade 0): the hypothesis and
-    the conclusion. -/
+/-- Witness for `bridge` (dial₁ = 0, so no limit, below dial₂ = 1; the known grade 1): the
+    hypothesis and the conclusion, with the real `threshold`. -/
 theorem bridge_witness :
     (fun _ : Unit => (0 : ENNReal)) ≤ (fun _ => 1) ∧
-      {x : Unit | verdict (fun _ => 0) ((fun _ => k 0) x) = .accept}
-        ⊆ {x : Unit | verdict (fun _ => 1) ((fun _ => k 0) x) = .accept} :=
-  ⟨fun _ => zero_le_one, fun _ _ => by simp [verdict, k, Bound.known]⟩
+      {x : Unit | verdict (threshold fun _ => (1 : ENNReal)) ((fun _ => k 1) x) = .accept}
+        ⊆ {x : Unit | verdict (threshold fun _ => (0 : ENNReal)) ((fun _ => k 1) x) = .accept} :=
+  ⟨fun _ => zero_le_one, fun _ _ => by simp [verdict, threshold, k, Bound.known]⟩
 
 /-! ## fold_check_vacuous -/
 
@@ -335,14 +343,14 @@ theorem calibrated_mutant : ¬ Calibrated (fun _ : Unit => Decision.reject) {()}
 theorem calibrated_witness : Calibrated (fun _ : Unit => Decision.accept) {()} ∅ :=
   ⟨by simp, fun _ _ => rfl, fun _ h => absurd h (by simp)⟩
 
-/-! ## mfGate_monotone -/
+/-! ## mfGate_signed -/
 
-/-- Failure classes for the mutant. GOLDEN_RULE_BREACH comes from the corpus
+/-- Failure classes for the gate's controls. GOLDEN_RULE_BREACH comes from the corpus
     (`SIRUS/main.tex`), though it sits outside the v1 gate (`decisions/RAILS.md`). -/
 inductive FailClass | goldenRuleBreach | other
   deriving DecidableEq
 
-/-- Mutant: Draft0–7's history, which dropped GOLDEN_RULE_BREACH with nothing signed. -/
+/-- Draft0–7's history, which dropped GOLDEN_RULE_BREACH. -/
 def draftHistory : ℕ → Set FailClass
   | 0 => {.goldenRuleBreach, .other}
   | _ => {.other}
@@ -350,7 +358,9 @@ def draftHistory : ℕ → Set FailClass
 /-- Nothing is signed: the only signable removal is the empty one. -/
 def nothingSigned (s : Set FailClass) : Prop := s = ∅
 
-theorem mfGate_monotone_mutant :
+/-- The real gate rejects the drafts' history when nothing is signed, and that history
+    doesn't only grow. -/
+theorem mfGate_rejects_draft_history :
     ¬ mfGate nothingSigned (draftHistory 0) (draftHistory 1) ∧ ¬ Monotone draftHistory := by
   have hmem : FailClass.goldenRuleBreach ∈ draftHistory 0 := by simp [draftHistory]
   have hnot : FailClass.goldenRuleBreach ∉ draftHistory 1 := by simp [draftHistory]
@@ -361,13 +371,59 @@ theorem mfGate_monotone_mutant :
     rw [show draftHistory 0 \ draftHistory 1 = ∅ from h] at this
     exact this
 
-/-- A history that keeps its classes: the gate accepts every step and it only grows. -/
+/-- A history that keeps its classes: the real gate accepts every step, and it only grows. -/
 def keptHistory : ℕ → Set FailClass := fun _ => {.goldenRuleBreach}
 
-theorem mfGate_monotone_witness :
+theorem mfGate_accepts_kept_history :
     (∀ t, mfGate nothingSigned (keptHistory t) (keptHistory (t + 1)))
       ∧ (∀ s, nothingSigned s → s = ∅) ∧ Monotone keptHistory :=
   ⟨fun _ => Or.inl subset_rfl, fun _ h => h, fun _ _ _ => le_rfl⟩
+
+/-- `mfGate_signed`'s claim with the gate as a parameter, so a wrong gate can be plugged
+    in, for histories of `FailClass`. -/
+def SignedRemovals (gate : (Set FailClass → Prop) → Set FailClass → Set FailClass → Prop)
+    (signed : Set FailClass → Prop) (MF : ℕ → Set FailClass) : Prop :=
+  (∀ t, gate signed (MF t) (MF (t + 1))) → ∀ {s t : ℕ}, s ≤ t → ∀ {c : FailClass},
+    c ∈ MF s → c ∉ MF t →
+      ∃ u, s ≤ u ∧ u < t ∧ c ∈ MF u \ MF (u + 1) ∧ signed (MF u \ MF (u + 1))
+
+/-- Mutant: a gate that accepts every change. -/
+def looseGate (_signed : Set FailClass → Prop) (_old _new : Set FailClass) : Prop := True
+
+/-- The loose gate accepts the drafts' history, in which GOLDEN_RULE_BREACH leaves in an
+    unsigned step. -/
+theorem mfGate_signed_mutant : ¬ SignedRemovals looseGate nothingSigned draftHistory := by
+  intro hc
+  have hmem : FailClass.goldenRuleBreach ∈ draftHistory 0 := by simp [draftHistory]
+  have hnot : FailClass.goldenRuleBreach ∉ draftHistory 1 := by simp [draftHistory]
+  obtain ⟨u, hu0, hu1, hin, hsig⟩ := hc (fun _ => trivial) (Nat.zero_le 1) hmem hnot
+  obtain rfl : u = 0 := by omega
+  rw [show draftHistory 0 \ draftHistory (0 + 1) = ∅ from hsig] at hin
+  exact hin
+
+/-- Signed: a removal of exactly GOLDEN_RULE_BREACH. -/
+def signsGoldenRule (s : Set FailClass) : Prop := s = {.goldenRuleBreach}
+
+/-- The drafts' history removes exactly GOLDEN_RULE_BREACH at step 0. -/
+theorem draft_removal : draftHistory 0 \ draftHistory 1 = {.goldenRuleBreach} := by
+  ext c
+  cases c <;> simp [draftHistory]
+
+/-- Witness for `mfGate_signed` (the drafts' history with its removal signed;
+    GOLDEN_RULE_BREACH from step 0 to step 1): all four hypotheses and the conclusion. -/
+theorem mfGate_signed_witness :
+    (∀ t, mfGate signsGoldenRule (draftHistory t) (draftHistory (t + 1))) ∧ 0 ≤ 1
+      ∧ FailClass.goldenRuleBreach ∈ draftHistory 0 ∧ FailClass.goldenRuleBreach ∉ draftHistory 1
+      ∧ ∃ u, 0 ≤ u ∧ u < 1 ∧ FailClass.goldenRuleBreach ∈ draftHistory u \ draftHistory (u + 1)
+          ∧ signsGoldenRule (draftHistory u \ draftHistory (u + 1)) := by
+  refine ⟨fun t => ?_, Nat.zero_le 1, by simp [draftHistory], by simp [draftHistory],
+    0, le_rfl, Nat.one_pos, ?_, draft_removal⟩
+  · cases t with
+    | zero => exact Or.inr draft_removal
+    | succ n => exact Or.inl fun _ hx => hx
+  · show FailClass.goldenRuleBreach ∈ draftHistory 0 \ draftHistory 1
+    rw [draft_removal]
+    exact Set.mem_singleton _
 
 /-! ## dwell_lower_bound -/
 

@@ -92,6 +92,10 @@ variable {P : Type} [CompleteLattice P]   -- larger = stricter
 /-- Baseline met with the weakenings active now. -/
 def effective (B : P) (active : Set P) : P := B ⊓ sInf active
 
+/-- A threshold dial is larger when stricter, so it stores the inverse of the threshold
+    the verdict reads: dial 0 means no limit (θ = ⊤), and dial ⊤ means θ = 0. -/
+noncomputable def threshold (dial : ι → ENNReal) : ι → ENNReal := fun i => (dial i)⁻¹
+
 /-- JSG IV's fold, kept to document its defect: the nightly check cannot fail. -/
 def fold (Rmax lam : ℝ) (rs : List ℝ) : ℝ :=
   rs.foldl (fun x y => min Rmax (x + lam * y)) 0
