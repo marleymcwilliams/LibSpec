@@ -6,7 +6,7 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ### Three old repos archived; Solanum's `.gitattributes` left out (#16)
 - **Decision:** `archive/Reach`, `archive/SirusSC` and `archive/Solanum` hold the files the brief listed, byte for byte, except `Solanum/jsg/.gitattributes`. Inside this repo its rules would apply to the copy: `*.pdf`, `*.png`, `*.svg`, `artifacts/**` and `papers/**/figures/**` go to Git LFS, and `* text=auto eol=lf` rewrites CRLF files to LF. Committed raw instead, those files show as modified in every clone.
-- **Also:** SirusSC's `.pytest_cache/` isn't on the brief's exclude list, so it's in, force-added past its own `.gitignore`. The biblatex helpers `*-blx.bib` aren't on the LaTeX list, so they're in too.
+- **Also left out, on your review of #16:** SirusSC's `.pytest_cache/` (6 files) and Solanum's three biblatex control files (`*-blx.bib`). Both are generated, like the LaTeX intermediates the brief excluded.
 - **Undo:** add the file back with `git add -f`; git then applies its rules to the copy.
 
 ### `mfGate_monotone` dropped; the general form replaces it (#14)
