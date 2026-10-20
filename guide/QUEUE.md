@@ -4,7 +4,13 @@ Questions only you can answer: anything that changes a statement's meaning, a No
 
 ## Open
 
+None.
+
+## Answered
+
 ### Q2. `bridge` can't fail on its named mutant
+
+**Answered 2026-10-20: yes.** Restate `bridge` over the fixed dial-to-threshold map that stores the inverse.
 
 - **Question:** `bridge` takes thresholds directly, so its named mutant, a threshold dial stored un-inverted, has nothing to plug into and can't fail it. Today's `bridge_mutant` refutes a copy with the hypothesis reversed instead. The guide's core object 4 says "the bridge theorem catches the mistake". Should `bridge` be restated over a dial-to-threshold map, or kept, given a mutant it does catch, and the guide's sentence fixed?
 - **Recommended answer:** Restate it. Add a fixed map to `Defs.lean` that stores the inverse, `noncomputable def threshold (dial : ι → ENNReal) : ι → ENNReal := fun i => (dial i)⁻¹`, and state the bridge over dials, larger meaning stricter: `dial₁ ≤ dial₂ → {x | verdict (threshold dial₂) (gradeOf x) = .accept} ⊆ {x | verdict (threshold dial₁) (gradeOf x) = .accept}`.
@@ -18,6 +24,8 @@ Questions only you can answer: anything that changes a statement's meaning, a No
 - **Can it be undone:** Yes, freely until `statements-v1` is tagged. After that, only with a new statements version and a CHANGELOG line.
 
 ### Q3. `mfGate_monotone` covers only histories with no signed removal
+
+**Answered 2026-10-20: yes,** the general form. Whether `mfGate_monotone` stays as a corollary was left to Claude Code; it was dropped (LOG.md).
 
 - **Question:** `mfGate_monotone` assumes `hs : ∀ s, signed s → s = ∅`, so it says nothing once any removal is signed, which is exactly when the gate matters. Should it be replaced by the general form, which follows from `hg` alone: every class that leaves MF leaves in a signed step?
 - **Recommended answer:** Yes. State it as:
@@ -35,8 +43,6 @@ Questions only you can answer: anything that changes a statement's meaning, a No
   - Checked in a scratch file, not committed: the statement type-checks, and the loose-gate mutant is proved to fail it.
 - **What breaks if wrong:** If the general form is wrong, for instance because a signed removal should also have to expire, the statement records only that the step was signed and would need another change. If you keep today's form, the theorem is silent about every history with a signed removal, and the layer map's claim stays unproved.
 - **Can it be undone:** Yes, freely until `statements-v1` is tagged. After that, only with a new statements version and a CHANGELOG line.
-
-## Answered
 
 ### Q1. State interchange over two named operators
 

@@ -133,8 +133,10 @@ Each milestone proves one block of `Statements.lean` and closes at the same gate
 | Milestone | Theorems | Read first | Expected difficulty |
 | --- | --- | --- | --- |
 | 1: Algebraic core | `combine_comm`, `combine_assoc`, `interchange`, `verdict_unknown`, `verdict_complete`, `residual_spec`, `fold_check_vacuous` | Mathematics in Lean ch. 2–4, 7; the `ENNReal` API | Low: case splits on axis kind, plus finding the right `ENNReal` lemmas |
-| 2: Obligations, Loader, charge, policy | Typed obligations, `Loader.safe`, `Loader.terminates`, `charge_append`, `charge_chatter`, `expiry_tightens`, `bridge` | Mathematics in Lean ch. 5–6 | Low to medium: Dershowitz–Manna and lattice lemmas take some finding |
+| 2: Obligations, Loader, charge, policy | Typed obligations, `Loader.safe`, `Loader.terminates`, `charge_append`, `charge_chatter`, `expiry_tightens`, `bridge`, `mfGate_signed` | Mathematics in Lean ch. 5–6 | Low to medium: Dershowitz–Manna and lattice lemmas take some finding |
 | 3: Analysis layer | CVaR tail-to-level, `dwell_lower_bound`, local KL–Fisher bound, DRO envelope identity | Mathematics in Lean ch. 11–13 | Medium to high: the statements need as much care as the proofs |
+
+`Loader.safe` and `Loader.terminates` hold for any Loader, so Milestone 2's note must say that a concrete Loader (L1–L10) is still owed.
 
 Of Milestone 3's statements, only `dwell_lower_bound` is in `statements-v1`. Write and freeze the rest (a `statements-v2` tag) before any proof work on them starts.
 

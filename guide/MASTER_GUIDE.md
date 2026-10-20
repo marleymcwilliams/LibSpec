@@ -124,7 +124,7 @@ The same mechanism covers thresholds, the frontier charge, the governance cap an
 E(t) = B(t) \wedge \bigwedge \{\, w : w \text{ active at } t \,\}
 ```
 
-Expiry removes a term from the meet, so it can only make E stricter. Thresholds are looser when larger, so a threshold dial stores its inverse, and the bridge theorem catches the mistake if it doesn't: if P₂ ⪰ P₁ then Accept(P₂) ⊆ Accept(P₁). Weakenings are priced by magnitude × duration against a token bucket: a reservoir of capacity C that refills at rate ρ per window, both of them dials. Without the refill this is the lifetime budget again, just draining more slowly. The bucket bounds the rate of weakening, not its persistence: a weakening that costs at most ρ per window can be renewed forever, so three options are open: set ρ to the standing weakening you accept, cap each weakening's cumulative duration, or raise each consecutive renewal's cost by a factor γ > 1, which any finite C and ρ eventually refuse. Choosing among them waits for the milestone that states the token bucket, since no v1 statement depends on it. Escalation must be keyed to the dial being weakened, not to the request, or relabeling and brief lapses would reset it. It also needs a deliberate reset, such as decay after a quiet period, or one long episode leaves the dial effectively frozen.
+Expiry removes a term from the meet, so it can only make E stricter. Thresholds are looser when larger, so a threshold dial stores its inverse (`threshold` in the stubs), and the bridge theorem catches the mistake if it doesn't: if P₂ ⪰ P₁ then Accept(P₂) ⊆ Accept(P₁). Weakenings are priced by magnitude × duration against a token bucket: a reservoir of capacity C that refills at rate ρ per window, both of them dials. Without the refill this is the lifetime budget again, just draining more slowly. The bucket bounds the rate of weakening, not its persistence: a weakening that costs at most ρ per window can be renewed forever, so three options are open: set ρ to the standing weakening you accept, cap each weakening's cumulative duration, or raise each consecutive renewal's cost by a factor γ > 1, which any finite C and ρ eventually refuse. Choosing among them waits for the milestone that states the token bucket, since no v1 statement depends on it. Escalation must be keyed to the dial being weakened, not to the request, or relabeling and brief lapses would reset it. It also needs a deliberate reset, such as decay after a quiet period, or one long episode leaves the dial effectively frozen.
 
 **Positive controls.** Every property above is a safety property, and a gate that rejects everything satisfies all of them. Two counterweights are required: a must-pass set MP of inputs that must ACCEPT, kept disjoint from the must-fail set, and a completeness lemma: complete evidence whose values are within θ is accepted. That lemma stays nearly definitional unless a statement ties each interval to the true value (lo ≤ truth ≤ hi). That enclosure is empirical, because truth is measured: it holds at a declared coverage level and belongs to the CI layer, or to the certificate layer when the interval comes from exact computation on a model. It is not a Lean item. The real guard against vacuity is the must-pass set together with the always-reject mutant.
 
@@ -276,16 +276,23 @@ variable {P : Type} [CompleteLattice P]   -- larger = stricter
 /-- Baseline met with the weakenings active now. -/
 def effective (B : P) (active : Set P) : P := B ⊓ sInf active
 
+/-- A threshold dial is larger when stricter, so it stores the inverse of the threshold
+    the verdict reads: dial 0 means no limit (θ = ⊤), and dial ⊤ means θ = 0. -/
+noncomputable def threshold (dial : ι → ENNReal) : ι → ENNReal := fun i => (dial i)⁻¹
+
 /-- Expiry can only make the policy stricter. -/
 theorem expiry_tightens (B : P) {a a' : Set P} (h : a' ⊆ a) :
     effective B a ≤ effective B a' := by sorry
 -- Mutant: "revert to the most recent policy", which can land on a weaker one.
 
-/-- The bridge: tighter thresholds never admit more inputs. -/
-theorem bridge {Inp : Type} (gradeOf : Inp → Grade ι) {θ₁ θ₂ : ι → ENNReal}
-    (h : θ₂ ≤ θ₁) :
-    {x | verdict θ₂ (gradeOf x) = .accept} ⊆ {x | verdict θ₁ (gradeOf x) = .accept} := by sorry
--- Mutant: a threshold dial stored un-inverted, so "stricter" raises θ.
+/-- The bridge: a stricter dial never admits more inputs. Dials are larger when
+    stricter, and `threshold` turns a dial into the threshold the verdict reads. -/
+theorem bridge {Inp : Type} (gradeOf : Inp → Grade ι) {dial₁ dial₂ : ι → ENNReal}
+    (h : dial₁ ≤ dial₂) :
+    {x | verdict (threshold dial₂) (gradeOf x) = .accept}
+      ⊆ {x | verdict (threshold dial₁) (gradeOf x) = .accept} := by sorry
+-- Mutant: a threshold dial stored un-inverted (`id` in place of `threshold`), so
+-- "stricter" raises θ.
 
 /-- JSG IV's fold, kept to document its defect: the nightly check cannot fail. -/
 def fold (Rmax lam : ℝ) (rs : List ℝ) : ℝ :=
@@ -310,12 +317,16 @@ def Calibrated {Inp : Type} (gate : Inp → Decision) (MP MF : Set Inp) : Prop :
 def mfGate {C : Type} (signed : Set C → Prop) (old new : Set C) : Prop :=
   old ⊆ new ∨ signed (old \ new)
 
-/-- Every history the gate accepts, with no signed removals, only grows. -/
-theorem mfGate_monotone {C : Type} (signed : Set C → Prop) (MF : ℕ → Set C)
-    (hg : ∀ t, mfGate signed (MF t) (MF (t + 1)))
-    (hs : ∀ s, signed s → s = ∅) : Monotone MF := by sorry
--- Mutant: Draft0–7's history, which dropped GOLDEN_RULE_BREACH with nothing signed. That class
--- sits outside the v1 gate (decisions/RAILS.md); the history still breaks the gate's rule.
+/-- Every failure class that leaves the must-fail set leaves in a signed step: in a
+    history the gate accepts, if a class is in MF at step s and gone at step t, some
+    step u between them removed it, and that removal was signed. -/
+theorem mfGate_signed {C : Type} (signed : Set C → Prop) (MF : ℕ → Set C)
+    (hg : ∀ t, mfGate signed (MF t) (MF (t + 1))) {s t : ℕ} (hst : s ≤ t) {c : C}
+    (hs : c ∈ MF s) (ht : c ∉ MF t) :
+    ∃ u, s ≤ u ∧ u < t ∧ c ∈ MF u \ MF (u + 1) ∧ signed (MF u \ MF (u + 1)) := by sorry
+-- Mutant: a gate that accepts every change, run on Draft0–7's history, which dropped
+-- GOLDEN_RULE_BREACH with nothing signed. That class sits outside the v1 gate
+-- (decisions/RAILS.md); the history still breaks the gate's rule.
 
 /-! ## 7. No-Zeno kernel (analysis layer, corrected form) -/
 
@@ -391,7 +402,7 @@ The rails are decided and persistent weakenings are deferred ([decisions/RAILS.m
 - [x] Decide how persistent weakenings are handled: not yet. The choice between refill rate ρ, a cap on each weakening's cumulative duration and renewal cost escalating by a factor γ moves to the milestone that states the token bucket ([decisions/RAILS.md](decisions/RAILS.md))
 - [ ] Freeze the glossary and run one rename pass: 𝒰 for Ω, proof\_surface, Amber, invariant prefixes, combine for join
 - [ ] Lean milestone 1: graded values, verdict and completeness, residuals, calibration, fold vacuity
-- [ ] Lean milestone 2: typed obligations, Loader safety and progress, frontier charge, policy lattice
+- [ ] Lean milestone 2: typed obligations, Loader safety and progress, frontier charge, policy lattice, the must-fail gate
 - [ ] Lean milestone 3 (analysis): CVaR tail-to-level, the corrected dwell bound, then the local KL–Fisher bound
 - [ ] CI: fail the build on any `b3:…` placeholder, on any must-fail removed without a signed weakening, and on any theorem without a mutant
 - [ ] Recover the SIRUS\_game runtime note and remove the SIRUS-algorithm sections from MDmaster
