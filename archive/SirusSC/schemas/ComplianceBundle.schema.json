@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ComplianceBundle",
+  "type": "object",
+  "properties": {
+    "attestation_receipt": {
+      "type": "string"
+    },
+    "guard_receipts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "omega_receipt": {
+      "type": "string"
+    },
+    "bundle_manifest": {
+      "type": "string"
+    },
+    "axis_catalog_digest": {
+      "type": "string"
+    },
+    "policy_digests": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "attestation_receipt",
+    "guard_receipts",
+    "omega_receipt",
+    "bundle_manifest",
+    "axis_catalog_digest",
+    "policy_digests"
+  ]
+}

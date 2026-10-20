@@ -1,0 +1,44 @@
+% Project macros and styles live here (shared across Parts)
+\definecolor{JSGBlue}{HTML}{1E88E5}
+\definecolor{JSGRed}{HTML}{E53935}
+
+% Claim/Evidence helpers
+\newcommand{\claim}[1]{\textbf{Claim:}~#1}
+\newcommand{\evidence}[1]{\textit{Evidence:}~#1}
+
+% Cross-part references (companion Part II)
+% See papers/common/xref.tex for \xref{} definition
+
+% Robust constant key normalization: accepts either 'tau' or '\\tau'
+% Requires xstring (loaded in jsg_common.tex)
+% Simplified constkey: assume plain names like 'tau' (not '\\tau')
+\providecommand{\constkey}[1]{\xdef\ConstKey{#1}}
+
+% Fallback: if xstring's \IfBeginWith is unavailable for any reason, use a
+% simplified constkey that assumes plain names (e.g., "tau" not "\tau").
+% (No-op fallback retained intentionally)
+
+% Constant reference helper: link to label const:<name> and print symbol constsym<name>
+\renewcommand{\constref}[1]{\constkey{#1}\hyperref[const:\ConstKey]{\ensuremath{\csname constsym\ConstKey\endcsname}}}
+
+% Clickable constant label (robust to '\\tau' vs 'tau')
+\renewcommand{\constlabel}[1]{\constkey{#1}\label{const:\ConstKey}}
+
+% Backward-compatibility alias for occasional typo
+\providecommand{\constantlabel}[1]{\constlabel{#1}}
+
+% Symbol definitions for constants (codes C1–C7)
+\renewcommand{\constsymSmax}{S_{\max}}
+\renewcommand{\constsymGmax}{G_{\max}}
+\renewcommand{\constsymkappamax}{\kappa_{\max}}
+\renewcommand{\constsymthetamin}{\theta_{\min}}
+\renewcommand{\constsymLF}{L_{\mathrm F}}
+\renewcommand{\constsymrtube}{r_{\mathrm{tube}}}
+\renewcommand{\constsymtaumin}{\tau_{\min}}
+\renewcommand{\constsymLpsi}{L_\psi}
+\renewcommand{\constsymF}{F}
+\renewcommand{\constsymchi}{\chi}
+\renewcommand{\constsymepsilon}{\epsilon}
+\renewcommand{\constsymrho}{\rho}
+\renewcommand{\constsymtau}{\tau}
+\renewcommand{\constsymetastar}{\eta^\star}

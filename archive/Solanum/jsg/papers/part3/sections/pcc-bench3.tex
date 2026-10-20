@@ -1,0 +1,172 @@
+% ==== Part III — Evidence Packs, Provenance Ladder, and Benchmarks (v2) =====
+\section{Evidence Packs, Provenance Ladder, and Benchmarks (v2)}\label{sec:pcc-bench-v2}
+
+\paragraph{Objective.}
+Make every claim \emph{replayable}. We promote Tier-1…4 artifacts to strict schemas with REQUIRED fields, define a stable \emph{proof print} (guard order: EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow\omega$), mandate solver fingerprints and tolerances, propagate clamp/quarantine states through the Ladder, fix a KPI row schema consumed by $\omega$-automata, and publish a benchmark suite with reference runs.
+
+\subsection{Tiered artifacts as strict schemas}\label{subsec:schemas}
+\emph{\layertag{Comp/Rep}}
+
+Any missing REQUIRED field \emph{fails CI} and blocks analysis/control updates.
+
+\begin{table}[t]
+\centering
+\renewcommand{\arraystretch}{1.08}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{2.9cm} >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Requirement (source)} \\
+\midrule
+window\_id, proof\_print\_id & hash & \textbf{REQUIRED}; stable IDs for the window and its guard-order proof print \\
+rollout\_mode & enum & \textbf{REQUIRED}; \{Shadow, Canary, BlueGreen\} (Def.~\ref{def:rollout-modes}) \\
+replay\_pack\_sha, seeds & hash, struct & \textbf{REQUIRED}; container SHA and PRNG seeds (Def.~\ref{def:pinned-env}) \\
+solver\_transcript\_id & hash & \textbf{REQUIRED}; QP/GKYP/DRO transcripts + tolerances (Subsec.~\ref{subsec:det-replay}) \\
+budget\_guard\_verdict & enum+struct & \textbf{REQUIRED}; on-time/timeout flags and per-solver durations (Def.~\ref{def:budget}, Prop.~\ref{prop:slo}) \\
+FIM\_hash, whitening\_hash & hash & \textbf{REQUIRED}; deterministic whitening (Rem.~\ref{rem:white-hash}) \\
+BY\_table & struct & \textbf{REQUIRED}; null audits and realized FDR panel (Def.~\ref{def:tierpacks}) \\
+$\kappa$, $M_t$, coverage\_panel & vec, scalar, struct & \textbf{REQUIRED}; coupling mass + HAC/MBB settings (Lem.~\ref{lem:Mt-ci}) \\
+$\chi$, clamp\_state & scalar, enum & \textbf{REQUIRED}; leakage + \{Green,Yellow,Red\} (Rule~\ref{rule:ef-clamp}) \\
+kl\_quad\_bounds, \texttt{ef\_guard\_id} & struct, hash & \textbf{REQUIRED}; EF radius verdict + stable guard id (Def.~\ref{def:ef-guard-op}) \\
+$\{\eta_k\}$, dual\_gap, envelope\_check\_verdict, \texttt{dvdrho\_id} & vec, scalar, bool, hash & \textbf{REQUIRED}; DRO envelope evidence (Def.~\ref{def:env-pre}) \\
+sprt\_params, sprt\_transcript\_id & struct, hash & \textbf{REQUIRED\(^\ast\)}; if promotion logic is enabled (Def.~\ref{def:sprt-params}) \\
+$C_{\text{salt}}$\,CI, cbf\_audit\_id & struct, hash & \textbf{REQUIRED}; tube saltation calibration + audit id (Lemma~\ref{lem:cbf-salt}) \\
+Hol, HarmMass & scalar, scalar & \textbf{REQUIRED}; DK/Wedin-backed plane drift metrics (Def.~\ref{def:hol-harm}) \\
+PR\_witness\_id, hitmap\_id & hash, hash & \textbf{REQUIRED\(^\dagger\)}; PR/GKYP witness + vertex hits (Prop.~\ref{prop:pr-consume}) \\
+switch\_stability\_id, cqlf\_hash & hash, hash & \textbf{REQUIRED\(^\ddagger\)}; basis-update stability evidence (Lemma~\ref{lem:deg-stab}) \\
+CVaR\_slacks & struct & \textbf{REQUIRED}; rights-plane tail metric (Remark~\ref{rem:cvar}) \\
+$\hat R_t$, $\log\hat R_t$ & scalar, scalar & \textbf{REQUIRED}; decision range and log-volume (Def.~\ref{def:range}) \\
+kpi\_row\_hash & hash & \textbf{REQUIRED}; hash of the KPI row consumed by automata (Subsec.~\ref{subsec:automata}) \\
+\bottomrule
+\end{tabularx}
+\caption{Tier-1 (Transport Pack) schema. \(\ ^\ast\)Required if promotions are permitted; \(\ ^\dagger\)if control is enabled; \(\ ^\ddagger\)if any basis update is attempted.}
+\label{tab:tier1-schema}
+\end{table}
+
+\paragraph{Tier-2 (Provenance Ladder).}
+Hash-chain telemetry\,$\rightarrow$\,features\,$\rightarrow$\,cumulants\,$\rightarrow$\,FDR\,$\rightarrow$\,MTC/IV\,$\rightarrow$\,calibrations (saltation/DK)\,$\rightarrow$\,QP/PR\,$\rightarrow$\,clamp/quarantine\,$\rightarrow$\,registries with: (i) mirrored signed sources; (ii) parity checks (MAPE \(\le 5\%\) for \(k\!\le\!4\) moments; CVaR\(_{0.95}\) preserved); (iii) row-hashes consumed by automata. \uses{\jsgiiSec{\lblSchemas}; Def.~\ref{def:tierpacks}.}
+
+\paragraph{Tier-3 (CIS).}
+One row per promotion with BY\-\(p\), MTC transcript (power), SPRT transcript linked to \texttt{sprt\_params}, clamp=Green, IV-badge. \uses{Rule~\ref{rule:promotion}; Prop.~\ref{prop:cis}.}
+
+\paragraph{Tier-4 ($\omega$-Automata).}
+Specs over KPI rows (e.g., \(G(M_t\!\le\!B_{\mathrm{saf}})\), \(G(h_i\!\ge\!0)\), \(F(\hat R_t\!\ge\!R_{\min})\), \(G(\text{clamp}\neq\text{Red})\)) with accept/reject + first counterexample hash. \uses{Def.~\ref{def:tierpacks}; \secref{subsec:ops-kpis}.}
+
+\subsection{Deterministic replay, proof prints, and solver transcripts}\label{subsec:det-replay}
+\emph{\layertag{Comp/Rep}}
+
+\textbf{Proof print.} Each window emits a compact card with stable IDs in guard order:
+\[
+\big[\ \texttt{ef\_guard\_id}\ \rightarrow\ \texttt{dvdrho\_id}\ \rightarrow\ \texttt{pr\_witness\_id}\ \rightarrow\ \texttt{cbf\_audit\_id}\ \rightarrow\ \texttt{switch\_stability\_id}\ \big].
+\]
+Determinism \(=\) (container SHA) \(+\) (seeds) \(+\) (solver settings). QP/GKYP/DRO transcripts log algorithm, version, tolerances, iteration caps, status, dual/primal residuals. Replays must match numeric fingerprints within \emph{absolute} \(1\!\times\!10^{-12}\) \emph{or} \emph{relative} \(1\!\times\!10^{-9}\); larger deltas require an explicit vendor/BLAS justification. \uses{\jsgiiSec{\lblSchemas}; Prop.~\ref{prop:pr-consume}; Def.~\ref{def:pinned-env}.}
+
+\subsection{Clamp \& quarantine propagation in the Ladder}\label{subsec:ladder-prop}
+\emph{\layertag{Inf/Comp}}
+
+The Ladder carries \texttt{clamp\_state} and \texttt{quarantine\_bit}. Downstream consumers must check: (i) CIS rows originate from windows with clamp=Green and \texttt{quarantine\_bit}=0; (ii) automata reject any run that consumes a quarantined row; (iii) KPI printers tighten \((\cutq,r)\) when sustained Yellow/Red is present. \uses{Rule~\ref{rule:dvdrho}; Rule~\ref{rule:ef-clamp}; Prop.~\ref{prop:cis}.}
+
+\subsection{Automata specifications, KPI row schema, and monitors}\label{subsec:automata}
+\emph{\layertag{Comp/Rep/Ctrl}}
+
+\paragraph{KPI row schema (consumed by $\omega$-automata).}
+Schema versioned and hashed; all fields have fixed names/units.
+
+\begin{table}[t]
+\centering
+\renewcommand{\arraystretch}{1.06}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}p{3.1cm} >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Column} & \textbf{Type/Units} & \textbf{Notes} \\
+\midrule
+window\_id, kpi\_row\_hash & hash & stable IDs \\
+rollout\_mode & enum & Shadow/Canary/BlueGreen \\
+clamp\_state, $\chi$, $r$, $q$ & enum, scalar, scalar, scalar & clamp FSM + EF radius and BY level \\
+$M_t$, $M_t$\,CI & scalar, interval & coupling mass with coverage panel id \\
+Hol, HarmMass & scalar, scalar & plane-drift metrics \\
+CVaR\_0.95(slack) & scalar & rights-plane tail \\
+$\hat R_t$, $\log\hat R_t$ & scalar, scalar & decision range \\
+$N_{\mathrm{cross}}$, $C_{\mathrm{fr}}N_{\mathrm{cross}}$, $t/\constref{taumin}$ & int, scalar, scalar & frontier ledger and dwell bound \\
+\texttt{ef\_guard\_id}, \texttt{dvdrho\_id} & hash, hash & EF and envelope proofs \\
+\texttt{pr\_witness\_id}, \texttt{cbf\_audit\_id}, \texttt{switch\_stability\_id} & hash, hash, hash & PR/CBF/switch evidence ids \\
+quarantine\_bit, realized\_FDR & bool, scalar & provenance + FDR \\
+budget\_guard\_verdict & enum+struct & on-time/timeout + timings \\
+\bottomrule
+\end{tabularx}
+\caption{KPI row schema consumed by $\omega$-automata; hashing produces \texttt{kpi\_row\_hash}.}
+\label{tab:kpi-schema}
+\end{table}
+
+\paragraph{Automata monitors.}
+LTL specs compiled to $\omega$-automata ingest KPI rows and accept iff each clause holds on the hashed stream; rejection logs the first counterexample’s \texttt{kpi\_row\_hash}. \uses{Def.~\ref{def:tierpacks}; \secref{subsec:automata}, \secref{subsec:bench}.}
+
+\subsection{Benchmark suite and reference runs}\label{subsec:bench}
+\emph{\layertag{Comp/Inf/Ctrl}}
+
+We publish five canonical benchmarks; each ships a reference replay pack and a target acceptance profile.
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Negative control.} Stationary data; expected: clamp stays Green; $|E_t|$ nonincreasing; promotions=0; PR margin stable; $\mathrm{CVaR}_{0.95}\!\ge\!0$. Include proof prints and KPI hashes.
+\item \textbf{Frontier grazing stress.} Inject controlled grazes; expected: dwell escalation + tube freeze; saltation replay passes; zero rights violations; $C_{\text{salt}}$ CI present.
+\item \textbf{Degeneracy collapse.} Shrink spectral gap; expected: HarmMass rises; basis updates blocked; CQLF or enforced $\tau_{\min}^{\mathrm{sw}}$; PR auto-shrink certifies.
+\item \textbf{Confounded IV.} Context-dependent exclusion breaks; expected: IV-badge \emph{denied}; no promotion; realized FDR within budget.
+\item \textbf{Model drift (Red clamp).} Drive $\chi>\constref{chiR}$; expected: fail-closed to HSIC/CVaR-only; promotions frozen; $\omega$-automata still accept rights/specs.
+\end{enumerate}
+
+Each benchmark includes: container SHA, seeds, solver transcripts, Tier-1 pack (Tab.~\ref{tab:tier1-schema}), KPI schema version, and accepted/rejected $\omega$-run with identical first counterexample hashes where applicable.
+
+\subsection{Numerical API (artifact tooling)}\label{subsec:api-artifacts}
+\emph{\layertag{Comp}}
+\begin{lstlisting}
+def make_proof_print(ids):
+    """
+    Assemble the guard-order proof print:
+    [ef_guard_id -> dvdrho_id -> pr_witness_id -> cbf_audit_id -> switch_stability_id]
+    Return a stable proof_print_id (hash) and a display card.
+    """
+
+def pack_tier1(window_id, hashes, stats, solver_logs, mode, budget_guard):
+    """
+    Validate and emit a Tier-1 pack. Raises on missing REQUIRED fields.
+    - hashes: {replay_pack_sha, FIM_hash, whitening_hash, pr_witness_id, hitmap_id,
+               ef_guard_id, dvdrho_id, cbf_audit_id, switch_stability_id,
+               cqlf_hash(opt), sprt_transcript_id(opt), proof_print_id}
+    - stats:  {kappa, M_t, coverage_panel, chi, clamp_state, kl_quad_bounds,
+               etas, dual_gap, envelope_verdict, sprt_params(opt),
+               C_salt_CI, Hol, Harm, CVaR_slacks, R_hat, log_R_hat, kpi_row_hash}
+    - solver_logs: ids for QP/GKYP/DRO transcripts with tolerances
+    - mode: rollout_mode; budget_guard: timings + verdict
+    """
+
+def ladder_chain(packs):
+    """
+    Build Tier-2 hash-chain; compute parity checks (moments MAPE, CVaR).
+    Carry clamp/quarantine states; return chain head hash and parity report.
+    """
+
+def kpi_row_emit(window, tier1, schema_version):
+    """
+    Construct the KPI row in Table 2 from Tier-1; return row + kpi_row_hash.
+    """
+
+def cis_append(row):
+    """
+    Append Tier-3 CIS row; require BY p, MTC power, sprt_transcript_id, clamp=Green,
+    and IV-badge transcript when applicable.
+    """
+
+def automata_check(specs, kpi_row_hashes):
+    """
+    Compile LTL to ω-automata; run acceptance on hashed KPI sequence.
+    Returns accept/reject and first counterexample hash on failure.
+    """
+\end{lstlisting}
+
+\subsection{Acceptance checks for evidence and benchmarks}\label{subsec:pcc-accept}
+\begin{acceptchecks}
+\item \textbf{Tier-1 completeness:} every consumed window has a Tier-1 pack that satisfies Tab.~\ref{tab:tier1-schema}; \texttt{proof\_print\_id} present; CI fails on any missing REQUIRED field.
+\item \textbf{Deterministic replay:} re-execution with \texttt{replay\_pack\_sha} and \texttt{seeds} reproduces solver fingerprints within abs \(1\!\times\!10^{-12}\) or rel \(1\!\times\!10^{-9}\); deviations carry explicit justification (Subsec.~\ref{subsec:det-replay}).
+\item \textbf{Proof print order:} the guard sequence in the proof print matches EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow$\omega$ and the IDs are consistent with Tier-1 and KPI rows.
+\item \textbf{KPI schema integrity:} KPI rows match Table~\ref{tab:kpi-schema} and hash to the logged \texttt{kpi\_row\_hash}; automata acceptance/rejection reproduces the reference profile (Subsec.~\ref{subsec:automata}, \ref{subsec:bench}).
+\item \textbf{Clamp/quarantine propagation:} any CIS row consumed by automata has clamp=Green and \texttt{quarantine\_bit}=0; violations cause automata rejection (Subsec.~\ref{subsec:ladder-prop}).
+\item \textbf{Benchmark reproducibility:} shipped packs for the five benchmarks replay with identical first counterexample hashes on the documented rejects (Subsec.~\ref{subsec:bench}).
+\end{acceptchecks}
+

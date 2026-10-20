@@ -1,0 +1,36 @@
+{
+  "merges": [
+    {
+      "name": "JSG_MERGE_1into2",
+      "title": "JSG Merge: Part I → II",
+      "out": "jsg/papers/merge/JSG_MERGE_1into2.tex",
+      "include": [
+        "part1:intro1",  "part2:intro2",
+        "part1:calc1",   "part2:calc2",
+        "part1:stoch1",  "part2:stoch2",
+        "part1:closure1", "part2:closure2",
+        "part1:entropy1", "part2:entropy2",
+        "part1:control1", "part2:ctrl2",
+        "part1:kernels1", "part2:kernels2",
+        "part1:adv-structures1", "part2:adv-structures2",
+        "part1:stats1",   "part2:stats2",
+        "part1:bench1",   "part2:tables2",
+        "part1:conclusion1", "part2:conclusion2",
+        "part1:alignment1"
+      ]
+    },
+    {
+      "name": "JSG_MERGE_2into3",
+      "title": "JSG Merge: Part II → III",
+      "out": "jsg/papers/merge/JSG_MERGE_2into3.tex",
+      "include": [
+        "part2:intro2", "part2:calc2", "part2:stoch2", "part2:closure2",
+        "part2:entropy2", "part2:ctrl2", "part2:kernels2", "part2:adv-structures2",
+        "part2:stats2", "part2:conclusion2",
+        "part3:intro3", "part3:ops3", "part3:closures3", "part3:sense3",
+        "part3:ctrl3", "part3:pcc-bench3", "part3:runbook3", "part3:deploy3",
+        "part3:gov3", "part3:related3", "part3:conclusion3", "part3:appendix3"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+\section{State Spaces and Hybrid Exterior Algebra}\label{sec:calc1}
+% ============================================================
+
+% Enforce the promised labels: Lemma 1, 2, 3 in this section.
+\setcounter{lemma}{0}
+
+This section fixes the geometric setting and proves the \emph{Hybrid Calculus Axioms}. New here:
+(i) a \emph{No-Zeno} lemma under strict transversality with an explicit dwell time $\tau_{\min}$ (Lemma~\ref{lem:no-zeno});
+(ii) a \emph{geometry-scaled} Jacobi-defect bound with curvature/incidence dependence (Lemma~\ref{lem:jacobi-upgraded});
+(iii) a DEC consistency result with a frontier term controlled by No-Zeno (Proposition~\ref{prop:dec-consistency}).
+
+\subsection{Whitney stratifications and tangent structures}
+
+\begin{definition}[Whitney stratified pseudomanifold]\label{def:whitney}
+Let $G$ be a second-countable, Hausdorff space with a finite disjoint decomposition $G=\bigsqcup_{i\in I} M_i$ into connected, smooth manifolds (strata), satisfying: (i) the frontier condition; (ii) Whitney $(a)$ and $(b)$ regularity for incident pairs $(M_i,M_j)$ with $M_i\prec M_j$. Each $M_i$ carries a smooth Riemannian metric $g_i$; the collection is a \emph{stratified Riemannian structure}.
+\end{definition}
+
+When needed we work in an ambient smooth manifold $\widetilde G$ and view strata as embedded submanifolds with induced metric and second fundamental form. We write $TG=\bigsqcup_i TM_i$ and denote the tangent \emph{cone} at $x\in\overline{M_i}$ by $C_xM_i$.
+
+\begin{definition}[Frontier-transversal vector fields]\label{def:transversal}
+A family $V=\{V_i\}_{i\in I}$ with $V_i\in\mathfrak X(M_i)$ is \emph{frontier-transversal} if for every incident pair $M_i\prec M_j$ and $x\in M_i\cap\overline{M_j}$ there exist extensions $\widetilde V_j$ to a tubular neighborhood of $M_i$ in $\widetilde G$ such that $\lim_{y\to x,\,y\in M_j}\mathrm{proj}_{T_xM_i}\widetilde V_j(y)$ exists and $\lim_{y\to x,\,y\in M_j}\mathrm{proj}_{N_xM_i}\widetilde V_j(y)=0$.
+\end{definition}
+
+\subsection{Filippov selection and No-Zeno}\label{subsec:filippov-nozeno}
+
+Trajectories may cross strata. We model dynamics by a differential inclusion $\dot x\in F(x)$ on $X=\Gamma\times G$ defined stratumwise and prolonged to frontiers by Filippov regularization. Write $x=(\gamma,g)$.
+
+\begin{definition}[Filippov regularization on stratified spaces]\label{def:filippov}
+Let $F_i: \Gamma\times M_i\rightrightarrows T(\Gamma\times M_i)$ be bounded, measurable with closed, convex values and locally one-sided Lipschitz in $x$. The Filippov regularization $\mathcal F$ associates to each $x\in\Gamma\times G$ the convex closure of essential values of $F_j$ in neighborhoods approaching $x$ along strata with $x$ in their closure. A Carath\'eodory solution is an absolutely continuous curve $x(\cdot)$ with $\dot x(t)\in \mathcal F(x(t))$ a.e.
+\end{definition}
+
+\begin{assumption}[Non-explosive frontier dynamics]\label{ass:nonexpl}
+(i) $F_i$ has linear growth and one-sided Lipschitz modulus $L_F$ on each stratum; (ii) there exists a Lyapunov function whose sublevel sets intersect only finitely many strata.
+\end{assumption}
+
+\begin{remark}[Normals on Whitney frontiers and failure set]\label{rem:tube-normal}
+Choose $n(x)$ as the unit normal field induced by a $C^1$ tubular neighborhood of the embedded frontier representative in the ambient $\widetilde G$. 
+Strict transversality may fail on a set of codimension $\ge 1$; the set of \emph{crossing times} that hit this failure set has one-dimensional Lebesgue measure $0$.
+\end{remark}
+
+\begin{lemma}[Transversality under $C^1$ perturbations]\label{lem:generic-trans}
+There exists a residual (dense $G_\delta$) set of $C^1$ perturbations of the stratumwise fields for which 
+$\inf_{x\in\Sigma}\inf_{v\in\mathcal F(x)}|\langle v,n(x)\rangle|\ge \alpha>0$.
+Equivalently, for a generic perturbation the evaluation map $(x,v)\mapsto\langle v,n(x)\rangle$ has $0$ as a regular value on $\Sigma$, so tangencies occur only on a set of codimension $\ge1$ and do not affect crossing-time measures. 
+\emph{Uses:} Sard-type argument on $\langle v,n\rangle$; $C^1$ tubular $n(\cdot)$ from Remark~\ref{rem:tube-normal}.
+\end{lemma}
+
+
+\begin{lemma}[No-Zeno under strict transversality]\label{lem:no-zeno}
+\emph{[\textup{Rep/Alg/Stoch}]} Let $\Sigma$ be a smooth frontier with unit normal $n$. Suppose one-sided Lipschitz per stratum and strict transversality:
+\[
+\inf_{x\in\Sigma}\ \inf_{v\in \mathcal F(x)}\ |\langle v,n(x)\rangle|\ \ge\ \alpha>0.
+\]
+Here $n(x)$ is as in Remark~\ref{rem:tube-normal}; by Lemma~\ref{lem:generic-trans} the hypothesis is generic under arbitrarily small $C^1$ perturbations. Then for any compact interval $[0,T]$, the number of crossings $N_{\mathrm{cross}}(0,T)$ is finite and obeys
+\[
+N_{\mathrm{cross}}(0,T)\ \le\ \frac{T}{\tau_{\min}},\qquad
+\tau_{\min}\ =\ \frac{1}{L_F}\,\log\!\Big(1+\frac{L_F\,r_{\mathrm{tube}}}{\alpha}\Big)\ \ \ge\ \ \frac{r_{\mathrm{tube}}}{\alpha+L_F r_{\mathrm{tube}}}\,.
+\]
+\begin{proofsketch}
+Within a tubular neighborhood of radius $r_{\mathrm{tube}}$ around $\Sigma$, let $d(t)$ be the signed normal distance to $\Sigma$ (positive on one side). Along a Filippov solution, $\dot d(t)=\langle \dot x(t),n\rangle+\underbrace{\langle x-\pi_\Sigma(x),\nabla n\rangle}_{\text{curvature}}$, with the curvature term bounded by $L_F d(t)$ due to one-sided Lipschitzness and smoothness of $n$. Strict transversality gives $\dot d\ge \alpha - L_F d$, whose comparison solution yields the time to move from $-r_{\mathrm{tube}}$ to $+r_{\mathrm{tube}}$ $\ge \tau_{\min}$; hence at most $T/\tau_{\min}$ crossings on $[0,T]$.
+\end{proofsketch}
+\uses{(C1) $r_{\mathrm{tube}}$; (C3) $L_F$ and $\tau_{\min}$.}
+\end{lemma}
+
+\subsection{Bigraded exterior calculus on $T\Gamma\oplus TG$}
+
+On a stratum $M_i\subset G$ the product $\Gamma\times M_i$ carries classical multivector calculus. Set
+$\Lambda^{p,q}(\Gamma,M_i):=\Lambda^p(T\Gamma)\,\hat\otimes\,\Lambda^q(TM_i)$. Operations (mixed wedge $\wedge$, interior contraction $\iota$, Schouten--Nijenhuis bracket $[\cdot,\cdot]_{SN}$) are standard and understood stratumwise.
+
+\subsection{Hybrid Calculus Axioms and geometry-scaled defect}\label{subsec:hybrid-axioms}
+
+\begin{lemma}[Hybrid Calculus Axioms]\label{lem:hybrid-axioms}
+\emph{[\textup{Alg}]} Let fields/forms be specified stratumwise with frontier-transversal compatibility (Def.~\ref{def:transversal}). Along any Filippov trajectory $x_t$, the classical identities hold a.e.\ inside strata: graded-commutativity, contraction antiderivation, and bracket derivation. Jacobi holds up to a frontier defect $\Delta_{\mathrm{fr}}$ with
+\[
+\int_0^T\|\Delta_{\mathrm{fr}}(x_t)\|\,dt \ \le\ C_{\mathrm{fr}}(U,T)\,N_{\mathrm{cross}}(0,T),
+\]
+where $C_{\mathrm{fr}}$ depends on uniform bounds on fields and their first derivatives near frontiers and one-sided Lipschitz moduli.
+\begin{proofsketch}
+Test Jacobi on a smooth partition subordinate to a frontier tube. The only non-canceling terms are distributional fluxes supported on $\Sigma$, controlled by jumps of contractions across $\Sigma$; these are bounded by uniform field norms and Lipschitz moduli, yielding the stated $L^1$ estimate per crossing.
+\end{proofsketch}
+\uses{(C2) $S_{\max},G_{\max}$; (C3) one-sided Lipschitz $L_F$.}
+\end{lemma}
+
+\begin{lemma}[Jacobi defect with explicit geometry/angle scaling]\label{lem:jacobi-upgraded}
+\emph{[\textup{Alg}]}
+Under the hypotheses of Lemma~\ref{lem:hybrid-axioms} with frontier curvature $\kappa_{\max}$, tube radius $r_{\mathrm{tube}}$, and minimal nonzero incidence angle $\anglesep$, the per-crossing defect obeys
+\[
+\int_0^T\!\|\Delta_{\mathrm{fr}}(x_t)\|\,dt \ \le\ C_{\mathrm{fr}}\cdot N_{\mathrm{cross}}(0,T),\quad
+C_{\mathrm{fr}}\ \le\ (\|S\|_\infty+\|\nabla S\|_\infty)\,\Big(1+\absconst{1}\,\kappa_{\max} r_{\mathrm{tube}}\Big)\,\frac{\absconst{2}}{\sin\anglesep}\!,
+\]
+with absolute constants $\absconst{1},\absconst{2}$ independent of units, uniformly on compact sublevel sets.
+\begin{proofsketch}
+The tube interaction time scales like $r_{\mathrm{tube}}/\sin\theta$; curvature perturbs $n$ by $O(\kappa_{\max}r_{\mathrm{tube}})$. The distributional commutator across $\Sigma$ is controlled by jumps in contractions bounded by $\|S\|_\infty+\|\nabla S\|_\infty$, yielding the product form. 
+\end{proofsketch}
+\uses{(C1) $\kappa_{\max},\anglesep,r_{\mathrm{tube}}$; (C2) $S_{\max},G_{\max}$; (C3) $\tau_{\min}$.}
+\end{lemma}
+
+\begin{proposition}[Frontier-compatibility of derivations]\label{prop:graph-deriv}
+\emph{[\textup{Alg}]} If derivations $D_i$ agree in the frontier-transversal sense, their induced actions on $\Lambda^{\bullet,\bullet}$ satisfy the axioms with the same defect bound as in Lemma~\ref{lem:hybrid-axioms}.
+\uses{(C1) frontier tubes; (C2) $S_{\max},G_{\max}$; (C3) one-sided Lipschitz.}
+\end{proposition}
+
+\subsection*{Numerical API (Frontier calculus: crossings, dwell time, geometry-scaled defect)}
+\emph{\layertag{Rep/Alg/Comp}} This API detects frontier crossings, estimates a uniform dwell time $\widehat{\tau}_{\min}$ and a per-crossing Jacobi-defect budget $\widehat{C}_{\mathrm{fr}}$, and applies the frontier \emph{freeze} rule used later by control and estimation layers.
+
+\paragraph{Inputs.}
+(i) A signed-distance or implicit frontier model $\phi(x)$ on $X=\Gamma\times G$ (positive/negative on adjacent strata);  
+(ii) time-stamped states/velocities $(x_t,\dot{x}_t)$;  
+(iii) tubular radius $r_{\mathrm{tube}}$; (iv) field bounds $S_{\max},G_{\max}$ and geometric moduli $\kappa_{\max},\theta_{\min}$ (cf.\ \S\ref{sec:symbol-registry});  
+(v) optional discrete mesh for DEC.
+
+\paragraph{Outputs.}
+Crossing log with times and incidence estimates; $\widehat{\tau}_{\min}$; $\widehat{C}_{\mathrm{fr}}$; freeze intervals; optional DEC error audit.
+
+\begin{lstlisting}
+# == 2.1 Frontier tube & normals ==============================================
+def build_frontier_tube(phi, r_tube):
+    # Returns callable: signed distance d(x), unit normal n(x) on |phi(x)|<=r_tube
+    def d(x): return phi(x)                    # assume phi ~ signed dist near frontier
+    def n(x):                                  # robust normal from gradient
+        g = grad_phi(x); return g / max(norm(g), 1e-12)
+    return d, n
+
+# == 2.2 Crossing detection & incidence metrics ===============================
+def detect_crossings(times, x, d, n, theta_min):
+    # Returns list of crossings with normal component v_n and incidence angle
+    crossings = []
+    for k in range(1, len(times)):
+        if d(x[k-1]) * d(x[k]) <= 0:          # sign change (robustify with hysteresis)
+            v = (x[k] - x[k-1]) / (times[k]-times[k-1])
+            v_n = abs(dot(v, n(x[k])))
+            theta = max(theta_min, arccos( min(1.0, max(-1.0, dot(normalize(v), n(x[k])))) ))
+            crossings.append({"t": times[k], "v_n": v_n, "theta": theta})
+    return crossings
+
+# == 2.3 Dwell time estimator (No-Zeno proxy) =================================
+def estimate_dwell_time(crossings, horizon_T):
+    # use nearest-neighbor spacing between crossings
+    if len(crossings) < 2: return {"tau_min_hat": horizon_T, "N_cross": len(crossings)}
+    gaps = [crossings[i]["t"] - crossings[i-1]["t"] for i in range(1, len(crossings))]
+    tau_hat = max(min(gaps), 0.0)
+    return {"tau_min_hat": tau_hat, "N_cross": len(crossings), "gaps": gaps}
+
+# == 2.4 Geometry-scaled defect budget =======================================
+def estimate_C_fr(S_max, G_max, kappa_max, theta_vals):
+    # heuristic upper bound: curvature + shallow incidence amplify interaction time
+    inv_sin = [1.0/max(1e-3, sin(theta)) for theta in theta_vals]   # ~ 1/sin(theta)
+    amp = max(inv_sin) if inv_sin else 1.0
+    C0 = c_calib * (S_max + G_max) * (1.0 + kappa_max) * amp        # c_calib via unit tests
+    return {"C_fr_hat": C0}
+
+# == 2.5 Freeze rule scheduling ==============================================
+def schedule_freeze(crossings, tau_min_hat):
+    # freeze on [t_k - eps, t_k + eps], with eps chosen <= tau_min_hat/2
+    eps = 0.5 * tau_min_hat
+    return [{"t0": c["t"] - eps, "t1": c["t"] + eps} for c in crossings]
+
+# == 2.6 Optional DEC audit ===================================================
+def dec_consistency(mesh_h, k_order, N_cross):
+    # stratumwise O(h^k) + frontier O(h^k) per crossing
+    err = C_dec * (mesh_h**k_order) * (1 + N_cross)
+    return {"dec_err_bound": err, "k": k_order, "h": mesh_h}
+
+# == 2.7 Orchestration ========================================================
+def frontier_runtime(times, x, phi, r_tube, S_max, G_max, kappa_max, theta_min, mesh=None):
+    d, n = build_frontier_tube(phi, r_tube)
+    crossings = detect_crossings(times, x, d, n, theta_min)
+    dwell = estimate_dwell_time(crossings, horizon_T=times[-1]-times[0])
+    Cfr = estimate_C_fr(S_max, G_max, kappa_max, [c["theta"] for c in crossings])
+    freezes = schedule_freeze(crossings, dwell["tau_min_hat"])
+    audit = dec_consistency(mesh.h, mesh.k, dwell["N_cross"]) if mesh else {}
+    log = {"N_cross": dwell["N_cross"], "tau_min_hat": dwell["tau_min_hat"],
+           "C_fr_hat": Cfr["C_fr_hat"], "freezes": freezes, **audit}
+    return log
+\end{lstlisting}
+
+\paragraph{Acceptance checks.}
+(i) Logs report $N_{\mathrm{cross}}$, $\widehat{\tau}_{\min}$, and $\widehat{C}_{\mathrm{fr}}$;  
+(ii) freeze intervals are non-overlapping and contained in the tube;  
+(iii) optional DEC audit prints $O(h^k)+N_{\mathrm{cross}}O(h^k)$.
+
+\uses{\constref{rtube}, \constref{LF}, \constref{thetamin}, \constref{kappamax}, \constref{Smax}, \constref{Gmax}.}
+
+
+\subsection{DEC interoperation with frontier term}\label{subsec:dec}
+Let $\mathcal T_h$ be a shape-regular simplicial (or cubical) mesh on each $M_i$ with mesh size $h$, and let $W_h$ denote Whitney forms. Denote by $\mathsf W_h:\Omega^\bullet\!\to\!\Omega_h^\bullet$ the Whitney projection and by $\mathsf R_h$ its de Rham inverse (integration on chains). Assume crossings satisfy Lemma~\ref{lem:no-zeno} and fields are $C^{k+1}$ on strata.
+
+\begin{proposition}[DEC consistency with frontier term and cut-cell quadrature]\label{prop:dec-consistency}
+\emph{[\textup{Alg/Comp}]}
+Assume either \emph{(a)} fitted meshes with uniform angle bounds on cut cells, or \emph{(b)} unfitted meshes with a ghost-penalty/aggregate stabilization on the tube. 
+For $0\le r\le k$ and each stratum $M_i$,
+\[
+\| \mathsf W_h(\omega\wedge\eta)-\mathsf W_h\omega\wedge_h \mathsf W_h\eta \|_{L^2(M_i)} \le C\,h^{k-r}\|\omega\|_{H^{k}}\|\eta\|_{H^{k}},
+\]
+and similarly for brackets. Along any Filippov trajectory $x_t$ on $[0,T]$,
+\[
+\int_0^T \|\Delta_{\mathrm{fr},h}(x_t)\|\,dt \ \le\ C\,h^{k-r}\,T\ +\ \underbrace{C_{\mathrm{quad}}\,h^{\cutq}\,T}_{\text{cut-cell quadrature, } \cutq\ge k}\ +\ C_{\mathrm{fr}}\,N_{\mathrm{cross}}(0,T).
+\]
+Thus the total defect is $O(h^{k-r}T+h^{\cutq}T)+O(C_{\mathrm{fr}}\,T/\tau_{\min})$.
+\uses{Shape regularity or ghost-penalty on cut cells; Lem.~\ref{lem:no-zeno}; Lem.~\ref{lem:jacobi-upgraded}.}
+\end{proposition}
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:calc1}.}
+\begin{enumerate}[leftmargin=*]
+\item All later bounds that invoke frontier disturbance (e.g., ISS in \S\ref{sec:control1}) reference both $\tau_{\min}$ (Lemma~\ref{lem:no-zeno}) and $C_{\mathrm{fr}}$ (Lemma~\ref{lem:jacobi-upgraded}).
+\item Any occurrence of $N_{\mathrm{cross}}$ appears only inside expressions dominated by $T/\tau_{\min}$ on finite horizons.
+\item The DEC bridge exposes explicit $h$-rates and a frontier contribution that scales as $C_{\mathrm{fr}}\,T/\tau_{\min}$.
+\end{enumerate}
+\end{mdframed}
+
+% ============================================================

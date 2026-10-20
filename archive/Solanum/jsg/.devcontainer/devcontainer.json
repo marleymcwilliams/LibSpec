@@ -1,0 +1,18 @@
+{
+  "name": "jsg-dev",
+  "build": {
+    "dockerfile": "../Dockerfile",
+    "context": ".."
+  },
+  "features": {},
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "eamodio.gitlens",
+        "valentjn.vscode-ltex" 
+      ]
+    }
+  },
+  "postCreateCommand": "pip3 install pre-commit && pre-commit install"
+}

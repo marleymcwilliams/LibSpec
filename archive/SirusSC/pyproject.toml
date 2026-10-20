@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "specchain"
+version = "0.1.0"
+description = "SpecChain reference scaffold (Parts 1–5)"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["pydantic>=2", "jsonschema>=4", "click>=8"]

@@ -1,0 +1,48 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\input{../common/jsg_common.tex}
+\input{../common/macros.tex}
+\input{../common/xref.tex}
+\addbibresource{../common/refs.bib}
+
+\title{JSG Merge: Part I → II (Composed)}
+\author{JSG Authors}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+% Wrapper identifier for conditional text in modules
+\newcommand{\JSGWrap}{C}
+
+% Shared tenets and registries (un-numbered)
+\input{../common/tenets.tex}
+
+% Sections (generated from manifest)
+\input{../part1/sections/intro1.tex}
+\input{../part2/sections/intro2.tex}
+\input{../part1/sections/calc1.tex}
+\input{../part2/sections/calc2.tex}
+\input{../part1/sections/stoch1.tex}
+\input{../part2/sections/stoch2.tex}
+\input{../part1/sections/closure1.tex}
+\input{../part2/sections/closure2.tex}
+\input{../part1/sections/entropy1.tex}
+\input{../part2/sections/entropy2.tex}
+\input{../part1/sections/control1.tex}
+\input{../part2/sections/ctrl2.tex}
+\input{../part1/sections/kernels1.tex}
+\input{../part2/sections/kernels2.tex}
+\input{../part1/sections/adv-structures1.tex}
+\input{../part2/sections/adv-structures2.tex}
+\input{../part1/sections/stats1.tex}
+\input{../part2/sections/stats2.tex}
+\input{../part1/sections/bench1.tex}
+\input{../part2/sections/tables2.tex}
+\input{../part1/sections/conclusion1.tex}
+\input{../part2/sections/conclusion2.tex}
+\input{../part1/sections/alignment1.tex}
+
+\nocite{*}
+\printbibliography
+\end{document}

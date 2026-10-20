@@ -1,0 +1,178 @@
+\section{Strategic Series and Cross-Cumulants}\label{sec:stoch1}
+% ============================================================
+
+We formalize strategic fields on $\Gamma$ and $G$, define scalar evaluation functionals, and construct mixed cumulants under invariant or windowed laws. New in this draft: (i) measurability and $L^2$ conditions for $T_{u,v}$ (Lemma~\ref{lem:meas-3}); (ii) a corrected factorization statement that separates the \emph{global} ``separating dictionary'' case from the \emph{finite-$K$} practical case (Proposition~\ref{prop:factorization}); (iii) a quantitative windowed stability bound (Lemma~\ref{lem:window-stability}).
+
+\subsection{Strategic series and evaluation functionals}
+
+On each stratum $M_i\subset G$, take the bigraded series $\hat S=\sum_{p,q}S^{(p,q)}$ with
+\[
+S^{(p,q)}\in \Gamma\big(\Lambda^p(T\Gamma)\,\hat\otimes\,\Lambda^q(TM_i)\big).
+\]
+For covectors $u\in\Lambda^p(T^*\Gamma)$ and $v\in\Lambda^q(T^*G)$ define the scalar \emph{evaluation functional}
+\[
+T_{u,v}(x)\ :=\ \iota_{u\otimes v}\,\hat S(x)\,,
+\qquad x=(\gamma,g)\in \Gamma\times M_i,
+\]
+interpreted stratumwise (Lemma~\ref{lem:hybrid-axioms} ensures algebraic well-posedness a.e. along Filippov trajectories).
+
+\subsection{Existence of laws and windowing}
+
+Under Assumption~\ref{ass:nonexpl}, standard Lyapunov/tightness arguments deliver invariant laws $\mu$ for $(X_t)_{t\ge0}$ when the drift/diffusion contracts on average; otherwise we use \emph{windowed laws} on $[t-\tau,t]$:
+\[
+\mu_{[t-\tau,t]}\ :=\ \frac{1}{\tau}\int_{t-\tau}^{t}\delta_{X_s}\,ds.
+\]
+All statements below hold either for $\mu$ or uniformly in $t$ for $\mu_{[t-\tau,t]}$ when $\tau$ exceeds the local mixing time.
+
+\begin{lemma}[Measurability and $L^2$ of evaluation functionals]\label{lem:meas-3}
+\emph{[\textup{Stoch/Alg}]} Suppose on each stratum $M_i$: (i) $S^{(p,q)}$ is Borel and locally square-integrable; (ii) $(u,v)$ have at most polynomial growth in charts; (iii) crossings satisfy Lemma~\ref{lem:no-zeno}. Then $T_{u,v}$ is Borel on $X=\Gamma\times G$ and $T_{u,v}\in L^2(\mu)$ (or $L^2(\mu_{[t-\tau,t]})$).
+\begin{proofsketch}
+Carath\'eodory measurability of contractions in local charts and the frontier-transversal compatibility (Def.~\ref{def:transversal}) yield Borel measurability; local $L^2$ on strata and finite crossing count ensure global $L^2$ under $\mu$ or window averages.
+\end{proofsketch}
+\uses{(C2) $S_{\max}$ bounds; (C3) No-Zeno $\tau_{\min}$; Rep charts.}
+\end{lemma}
+
+\subsection{Mixed cumulants and factorization}\label{subsec:cumulants}
+
+Let $\mathcal T_K=\{T^{(m)}_{p,q}\}_{1\le p+q\le K}$ be a centered, whitened finite dictionary (Section~\ref{sec:entropy1}). For a finite list $(Z_1,\ldots,Z_m)$ drawn from $\mathcal T_K$, define the (alternating) joint cumulant $\kappa(Z_1,\ldots,Z_m)$ via the usual moment--cumulant M\"obius inversion; we write $\kappa_{p,q}$ for degree $(p,q)$ cumulants.
+
+\begin{proposition}[Factorization via vanishing mixed cumulants]\label{prop:factorization}
+\emph{[\textup{Stoch/Inf}]}
+Consider $\gamma$-only statistics and $G$-only statistics drawn from (possibly infinite) dictionaries.
+
+\emph{(i) Global, separating dictionary.}
+If the dictionary separates points and the cumulant generating function is analytic near $0$, then
+\[
+\gamma\ \perp\ G\ \bigm|\ Y \qquad \Longleftrightarrow \qquad \kappa_{p,q}=0\ \ \text{for all }p,q\ge 1.
+\]
+
+\emph{(ii) Finite-$K$ implication with quantitative residual.}
+Fix total order $K\in\{2,3,\dots\}$ and a centered, whitened finite dictionary $\mathcal T_K$. If $\kappa_{p,q}=0$ for all $p,q\ge1$ with $p+q\le K$, then for any polynomial functional $F$ of $\mathcal T_K$ with total degree $\le K$,
+\[
+\Big|\,\mathbb E[F(\gamma,G)]\ -\ \mathbb E[F_\Gamma(\gamma)]\,\mathbb E[F_G(G)]\,\Big|
+\ \le\ C_K(F)\,\sum_{p+q\ge K+1}\ \|\kappa_{p,q}\|,
+\]
+where $C_K(F)$ depends only on $K$ and the coefficients of $F$ in the whitened basis. In particular, the log-moment generating function satisfies
+\[
+\psi(\theta_\Gamma,\theta_G)\ =\ \psi_\Gamma(\theta_\Gamma)+\psi_G(\theta_G)\ +\ R_{K+1}(\theta),
+\qquad |R_{K+1}(\theta)|\ \le\ C'_K\!\sum_{p+q\ge K+1}\|\kappa_{p,q}\|\,\|\theta\|^{p+q},
+\]
+for $\|\theta\|$ within the EF radius of Section~\ref{sec:entropy1}.
+\begin{proofsketch}
+(i) follows from the L\'evy--Khintchine/moment--cumulant expansion with a separating dictionary. (ii) truncates the series at total degree $K$; the remainder aggregates neglected mixed cumulants with combinatorial coefficients (Bell polynomials) that are bounded by $C_K(F)$ after whitening. The EF radius control comes from Theorem~\ref{thm:FIMbound}/Remark~\ref{rem:hessian-lip}.
+\end{proofsketch}
+\uses{(C5) whitened $F=\FIM(0)\!\succ0$, EF radius $r\le \epsilon/L_\psi$.}
+\end{proposition}
+
+\paragraph{Interpretation (cross-terms).}
+Cross-terms in $\hat S$ map to \emph{mixed} cumulants $\kappa_{p,q}$: nonzero $\kappa_{p,q}$ for $p,q\ge1$ are the irreducible coupling certificates between decision flow on $\Gamma$ and structure updates on $G$. Proposition~\ref{prop:factorization} formalizes the ``no cross-term $\Rightarrow$ factorization up to order $K$'' claim used in closure policies.
+
+\subsection{Windowed stability under drift}\label{subsec:window-stability}
+
+Let $L$ be the $W_1$ drift speed of the ground-truth law across time (Section~\ref{sec:closure1}). For windowed cumulants computed on $[t-\tau,t]$ and $[s-\tau,s]$ with $|t-s|\ll \tau$:
+
+\begin{lemma}[Windowed stability of mixed cumulants]\label{lem:window-stability}
+\emph{[\textup{Stoch}]}
+If each statistic in $\mathcal T_K$ is $L_T$-Lipschitz in $d_X$, then for $p+q\le K$,
+\[
+\Big|\kappa_{p,q}^{(t,\tau)}-\kappa_{p,q}^{(s,\tau)}\Big|
+\ \le\ C_{p,q}\,L_T\ \frac{|t-s|}{\tau}\ +\ o_\tau(1),
+\]
+uniformly on compact sublevel sets. The constant $C_{p,q}$ depends only on $p,q$ and the dictionary normalization.
+\begin{proofsketch}
+Write cumulants as multilinear polynomials in moments; bound each moment difference by the Kantorovich--Rubinstein dual with $L_T$ and the window averaging factor $|t-s|/\tau$, then propagate through the multilinear map.
+\end{proofsketch}
+\uses{(C4) $\tau$; Lipschitz statistics; window laws $\mu_{[t-\tau,t]}$.}
+\end{lemma}
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:stoch1}.}
+\begin{enumerate}[leftmargin=*]
+\item Proposition~\ref{prop:factorization} \emph{(ii)} is the only statement invoked when working with a finite dictionary; any ``$\Leftrightarrow$'' claim elsewhere references \emph{(i)} with a separating dictionary.
+\item All $L^2$ and measurability claims for $T_{u,v}$ cite Lemma~\ref{lem:meas-3}.
+\item Any time-variation bounds for windowed cumulants cite Lemma~\ref{lem:window-stability} with explicit dependence on $|t-s|/\tau$.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (Strategic series, windowed cumulants, finite-\texorpdfstring{$K$}{K} tests)}
+\emph{\layertag{Stoch/Inf/Comp}} This API constructs test functionals $T_{u,v}$, performs invariant whitening, computes windowed cumulants up to order $K\le 3$ by streaming U-statistics, and runs a finite-$K$ factorization test (â‡', not â‡'').
+
+\paragraph{Inputs.}
+(i) Centered raw features/features-of-forms for letters $a^{(m)}_{p,q}$;  
+(ii) symmetry group actions (frames on $\Gamma$, graph isomorphisms on $G$) for invariant whitening;  
+(iii) window spec $(\tau,\text{stride})$; (iv) target order $K\in\{2,3\}$.
+
+\paragraph{Outputs.}
+Per-window $\widehat{\mathbf k}_K$, FIM norm, HAC/BB hooks (from Section~9), and a BH/BY-controlled finite-$K$ factorization report.
+
+\begin{lstlisting}
+# == 3.1 Invariant whitening ===================================================
+def orbit_invariant_cov(features, group_actions, nsamp=128):
+    # Monte Carlo over group actions to enforce symmetry-invariant inner product
+    Sigma = 0
+    for g in sample(group_actions, nsamp):
+        Xg = apply_action(features, g)           # permute/rotate letters
+        Sigma += cov(Xg)
+    Sigma /= nsamp
+    return Sigma
+
+def whiten_dictionary(features, Sigma):
+    W = inv(cholesky(Sigma))                    # Fisher/whitening map
+    return features @ W.T, W                    # whitened letters, map
+
+# == 3.2 Test functionals T_{u,v} =============================================
+def build_T_uv(letters, u, v):
+    # u,v are contraction descriptors into bigraded series \hat S
+    def T(x): 
+        # evaluate contractions using current \hat S and x=(\gamma,G)
+        return contract(u, v, letters, x)
+    return T
+
+# == 3.3 Streaming cumulants (order <= 3) =====================================
+def stream_cumulants(T_stream, K=3):
+    # maintains running moments and converts to cumulants via M\"obius inversion
+    state = init_u_stats(K)
+    for Tt in T_stream: update_u_stats(state, Tt, K)
+    return u_to_cumulants(state, K)             # dict of kappa_{p,q}^{(m)}
+
+# == 3.4 Windowed pipeline =====================================================
+def windowed_cumulants(data_stream, letters, Sigma, K, win_size, stride):
+    T_wh, W = whiten_dictionary(letters, Sigma)
+    windows = sliding_windows(data_stream, win_size, stride)
+    out = []
+    for w in windows:
+        kappa = stream_cumulants(eval_T_stream(T_wh, w), K=K)
+        kvec  = flatten_kappa(kappa)            # stack by (p,q,m)
+        F     = fisher_at_P0(T_wh)              # = I if fully whitened
+        fim_norm = sqrt(kvec.T @ inv(F) @ kvec)
+        out.append({"window": w.id, "kappa": kappa, "kvec": kvec, "fim_norm": fim_norm})
+    return out
+
+# == 3.5 Finite-K factorization test (BH/BY) ==================================
+def finiteK_factorization_test(window_out, groups, q=0.1, method="BH"):
+    # H0: selected entries of mixed cumulants == 0  (vanish up to K)
+    pvals = {}
+    for win in window_out:
+        pvals[win["window"]] = test_zero_kappa(win["kvec"])  # HAC/BB from section 9
+    # group by bidegree/stratum per section 9
+    rejections = {}
+    for gid, P in groups.items():
+        rejections[gid] = fdr_bh(P, q) if method=="BH" else fdr_by(P, q)
+    return {"pvals": pvals, "reject": rejections}
+
+# == 3.6 Diagnostics ===========================================================
+def mixing_diagnostic(series, max_lag=64):
+    ac = autocorr(series, max_lag)
+    return {"ac_tail": ac[-5:], "mix_flag": (abs(ac[max_lag])<0.1)}
+\end{lstlisting}
+
+\paragraph{Acceptance checks.}
+(i) Whitening uses orbit-averaged $\Sigma$ (equivariant);  
+(ii) each window reports $\|\widehat{\mathbf k}_K\|_{\FIM^{-1}}$;  
+(iii) finite-$K$ test declares only the $\Rightarrow$ direction (vanishing up to $K$ $\Rightarrow$ factorization up to $K$), with BH/BY and group structure as in Section~9;  
+(iv) mixing diagnostic is logged for each window.
+
+\uses{Invariant whitening (Assumption~\ref{ass:inv-whiten}); Fisher $F$; Section~9 HAC/BB/FDR.}
+
+
+% ============================================================

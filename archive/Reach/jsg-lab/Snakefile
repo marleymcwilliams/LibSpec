@@ -1,0 +1,17 @@
+rule all:
+    input: "reports/summary.md"
+
+rule prepare:
+    output: directory("data/processed")
+    shell: "python -m scripts.prepare_data"
+
+rule train:
+    input: "data/processed"
+    output: directory("runs")
+    shell: "python -m scripts.train"
+
+rule eval:
+    input: "runs"
+    output: "reports/summary.md"
+    shell: "python -m scripts.eval"
+

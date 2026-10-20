@@ -1,0 +1,7 @@
+$pdf_mode = 1;                # pdflatex
+$interaction = 'nonstopmode';
+$bibtex = 'bibtex';
+$print_file_names = 1;
+$pdflatex = 'pdflatex -halt-on-error -file-line-error -interaction=nonstopmode %O %S';
+add_cus_dep('glo', 'gls', 0, 'makeglossaries');
+$clean_ext .= ' %R.run.xml %R.bbl %R.bcf %R.blg %R.fls %R.fdb_latexmk %R.out %R.toc %R.aux %R.log %R.synctex.gz';

@@ -1,0 +1,209 @@
+﻿\section{Benchmarks and Application Domains}\label{sec:bench1}
+% ============================================================
+
+This section provides \emph{executable} protocols and an \emph{auto-report} that compiles the exact quantities our guarantees require (ISS/PR, frontier terms, cumulant CIs/FDR, plane degeneracy metrics). All protocols reuse the same pipeline (windows, cumulants, SVD planes, Dirac projection, PR checks, DRO closure) and differ only by environment adapters. The auto-report consumes windowed JSON logs produced by Section~Section~6--9.
+
+\subsection{Reproducibility pack (common to all domains)}\label{subsec:bench-repro}
+
+\paragraph{Artifacts.} (i) Raw/processed data (or generator seeds); (ii) YAML configs; (iii) source with fixed versions; (iv) lockfile; (v) seeds; (vi) per-window JSON logs (metrics, CI, PR margins); (vii) notebooks to render Tables~A--D and the figures below.
+
+\paragraph{Config schema (minimal).} Keys controlling windows, cumulant order $K$, bootstrap and HAC settings, Oustaloup band/order, degeneracy threshold $\varepsilon_{\mathrm{gap}}$, and DRO radius policy $(c,\tau)$ are identical across domains.
+
+\begin{mdframed}\small\ttfamily
+windows:\{size: 2048, stride: 512\}\quad
+stats:\{order\_K:[2,3], hac\_c:1.0, bb\_B:1000\}\quad
+svd:\{gap\_thresh: 0.1\}\quad
+control:\{oustaloup:\{N:7, band:[0.5,8.0]\}, pr\_margin\_min:0.05\}\quad
+dro:\{c:1.5, tau:2048\}
+\end{mdframed}
+
+\subsection{Negative control: factorized ground truth}\label{subsec:neg-control}
+
+\paragraph{Design.} Construct data with $\gamma\perp G$ by design (independent factors or blocked randomization); generate statistics with the same dictionary, whitening, and windowing as treatment runs.
+
+\paragraph{Targets.} For each window $w$:
+\[
+\|\widehat\kappa_{\mathrm{mix}}^{(w)}\|_{\FIM^{-1}}\ \text{CI includes }0,\qquad
+\widehat\eta^{\star (w)}\approx 0\quad \text{in the DRO dual.}
+\]
+
+\paragraph{Pass/Fail.} \emph{Pass} if: (i) the HAC ellipsoid for $\mathbf k_K^{(w)}$ contains the origin in at least $95\%$ of windows, \emph{and} (ii) the median $\widehat\eta^\star$ across windows is within a small neighborhood of $0$ (tunable, e.g.\ $\le 0.1$). Otherwise \emph{fail}. Also report the BH/BY-adjusted discovery count; it should be $0$ (up to the nominal FDR).
+
+\paragraph{Uses:} \textit{(Stoch/Inf/Clos)} HAC policy (Section~\ref{sec:stats1}), DRO dual (Section~\ref{sec:closure1}), invariant whitening (Section~\ref{sec:adv-structures1}).
+
+\subsection{Degeneracy stress: near-multiplicity of top singular values}\label{subsec:degstress}
+
+\paragraph{Design.} Create episodes where the constrained operator $A_{UV}$ satisfies $\sigma_1\approx\sigma_2$ for an extended interval by tuning environment parameters (e.g., symmetric contact geometry). Trigger the $k$-plane policy when $\Delta\sigma=\sigma_1-\sigma_2<\varepsilon_{\mathrm{gap}}$.
+
+\paragraph{Targets.} For each window:
+\begin{itemize}[leftmargin=*]
+\item bootstrap CI for $\Delta\sigma$ (CBB/MBB, $b\sim n^{1/3}$);
+\item principal-angle bands (Davis--Kahan/Wedin) between successive selected planes;
+\item chatter rate (fraction of windows with max principal angle above a small threshold while not in a frontier tube);
+\item safety/goal metrics (e.g., $d_{\min}$ in robotics) unchanged relative to non-degenerate runs.
+\end{itemize}
+
+\paragraph{Pass/Fail.} \emph{Pass} if: (i) the $k$-plane mode engages when $\widehat\Delta\sigma$ CI intersects $0$; (ii) the empirical principal angles respect the certified Wedin band in all but a $\le 5\%$ tail; (iii) chatter rate $\le 1\%$ outside frontier tubes; (iv) no degradation in domain safety metric beyond CI overlap.
+
+\paragraph{Uses:} \textit{(Ctrl/Comp)} degeneracy guard (Section~\ref{sec:kernels1}), bootstrap CI (Section~\ref{sec:stats1}), frontier freeze (Section~\ref{sec:control1}).
+
+\subsection{Common auto-report (Tables \& Figures)}\label{subsec:auto-report}
+
+\paragraph{Table A: Config.} Windows, $K$, HAC bandwidth $b_{\mathrm{HAC}}$, bootstrap $(b,B)$, controller $(N,[\omega_L,\omega_H])$, PR margin summary.
+
+\paragraph{Table B: Domain metrics.} Means $\pm$ CIs and effect sizes (Cliff's $\delta$) vs.\ baselines.
+
+\paragraph{Table C: Statistical layer.} $\|\widehat{\mathbf k}_K\|_{\FIM^{-1}}$ with HAC ellipsoid, BH/BY discoveries by bidegree, negative-control checks.
+
+\paragraph{Table D: Control layer.} PR margin \([ \min,\max]\), spectral gaps, \% time in $k$-plane mode, frontier crossings, ISS terms:
+\[
+C_0 N_{\mathrm{cross}}(0,t),\qquad \frac{C_0}{\tau_{\min}}\,t.
+\]
+
+\paragraph{Figure 1.} Lead-time/performance curves (or generalization curves in neuroscience).  
+\paragraph{Figure 2.} Degeneracy/stability (gap CI and principal-angle bands).  
+\paragraph{Figure 3.} Windowed drift: $\widehat L_t$, $\rho_t=c\,\widehat L_t\,\tau$, and $\widehat\eta^\star_t$ trajectories.
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:bench1}.}
+\begin{enumerate}[leftmargin=*]
+\item Negative control passes both: origin-inclusion for $\mathbf k_K$ and $\widehat\eta^\star\approx 0$.
+\item Degeneracy stress satisfies: $k$-plane engagement on gap-CI touch, Wedin-certified principal angles, low chatter, preserved safety metric.
+\item Auto-report prints HAC taper/$b_{\mathrm{HAC}}$, bootstrap $(b,B)$, FDR $q$, PR margin range, \% time in $k$-plane, frontier counts, and the explicit ISS frontier terms.
+\end{enumerate}
+\end{mdframed}
+
+\begin{mdframed}
+\textbf{Auto-report additions (Section 10).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Whitening leakage alarms:} log $\chi(t)$ and flag any $\chi(t)>\chi_{\max}$ with the window id.
+\item \emph{DRO metric sensitivity:} compute $\|\partial_\epsilon\theta^*(0)\|$ from Prop.~\ref{prop:dro-metric-sens} and print as ``DRO-metric sensitivity''.
+\end{itemize}
+\end{mdframed}
+
+\subsection*{Numerical API (auto-report aggregation for Section~10)}
+
+\begin{lstlisting}
+# === Inputs ==============================================================
+logs:         iterable of per-window JSON events from Section~Section~6--9
+domain:       {"robotics","neuroscience","finance",...}
+alpha:        0.05
+fdr_q:        0.1
+
+# === Collectors ==========================================================
+state agg = {
+  "config": {}, "windows": [],
+  "hac": [], "bootstrap": [],
+  "kappa": [], "kappa_fim_norm": [],
+  "fdr": {"pvals_by_group": {}},
+  "pr": [], "svd": [], "angles": [],
+  "frontier": {"N_cross":0, "events":[]},
+  "iss": [], "drift": [], "dro_dual": []
+}
+
+function ingest(logs):
+    for evt in logs:
+        switch evt["evt"]:
+          case "hac":
+            agg["hac"].append(evt)                        # name, b_HAC, taper
+          case "bootstrap":
+            agg["bootstrap"].append(evt)                  # name, method, b, B
+          case "report":
+            if "kappa" in evt["name"]:
+                agg["kappa"].append(evt)
+                if "fim_norm" in evt["meta"]:
+                    agg["kappa_fim_norm"].append({"window":evt["meta"]["window"],
+                                                  "norm":evt["meta"]["fim_norm"]})
+          case "fim_contraction_test":
+            agg["pr"].append({"window":evt["window"], "n_full":evt["||k||"],
+                              "n_dirac":evt["||Pi k||"], "n_hopf":evt["||Pi<=K k||"]})
+          case "ctrl_update":
+            agg["pr"].append({"window":evt["t"], "eps":evt["pr_eps"], "cert":evt["pr_cert"]})
+          case "plane_select":
+            agg["svd"].append({"window":evt["window"], "sigma_top":evt["sigma_top"], "gap":evt["gap"],
+                               "k_mode":evt["k_mode"], "degenerate":evt["degenerate"]})
+            if evt["angles_L"] is not None:
+                agg["angles"].append({"window":evt["window"], "max_angle": max(evt["angles_L"]+evt["angles_R"])})
+          case "frontier_enter":
+            agg["frontier"]["N_cross"] = evt["N_cross"]
+            agg["frontier"]["events"].append(evt)
+          case "iss_budget":
+            agg["iss"].append({"t":evt["t"], "H_bound":evt["H_bound"],
+                               "frontier_linear":evt["frontier_term_linear"],
+                               "frontier_switch":evt["frontier_term"]})
+          case "push_Lip_check":
+            pass                                           # optional: store for Section~8 audit
+          case "grad_ci":
+            pass                                           # Section~7 already logs CIs
+          case "adaptive_radius":
+            agg["drift"].append({"window":evt["window"], "Lhat":evt["Lhat"], "rho":evt["rho"]})
+          case "dro_dual":
+            agg["dro_dual"].append({"window":evt["window"], "eta_star":evt["eta_star"]})
+
+# === Table builders ======================================================
+function table_A_config():
+    # extract unique config values from logs (band, N, hac/boot, order K)
+    return {...}  # dict ready for LaTeX tabular
+
+function table_B_domain_metrics(domain_metrics_series):
+    # mean \\\\pm CI via Section~9 bootstrap helpers; effect size vs baseline
+    return {...}
+
+function table_C_stats():
+    # FIM norms, HAC ellipsoid info, FDR summary
+    # Build grouped p-values by (p,q) and stratum; run BH/BY
+    groups = agg["fdr"]["pvals_by_group"]
+    reject = hierarchical_fdr(groups)
+    return {"fim_norms": agg["kappa_fim_norm"], "fdr": reject}
+
+function table_D_control():
+    pr_eps = [e["eps"] for e in agg["pr"] if "eps" in e]
+    kplane_frac = mean([s["k_mode"]>2 for s in agg["svd"]])
+    gap_series = [s["gap"] for s in agg["svd"]]
+    N_cross = agg["frontier"]["N_cross"]
+    frontier_lin = max([r["frontier_linear"] for r in agg["iss"]], default=0.0)
+    return {"pr_eps_min": min(pr_eps, default=0.0),
+            "pr_eps_max": max(pr_eps, default=0.0),
+            "kplane_frac": kplane_frac,
+            "gap_min": min(gap_series, default=NaN),
+            "gap_max": max(gap_series, default=NaN),
+            "N_cross": N_cross,
+            "frontier_linear": frontier_lin}
+
+# === Negative-control and degeneracy checks =============================
+function check_negative_control():
+    origin_hits = fraction_windows_origin_included(agg["kappa"], alpha)
+    eta_med = median([d["eta_star"] for d in agg["dro_dual"]])
+    return {"origin_rate": origin_hits, "eta_med": eta_med,
+            "pass": (origin_hits>=0.95 and abs(eta_med)<=0.1)}
+
+function check_degeneracy():
+    k_engage = fraction([s["k_mode"]>2 for s in agg["svd"] where gap_CI_touches_zero(window)])
+    chatter = fraction([a["max_angle"]>angle_thresh and not in_frontier(window) for a in agg["angles"]])
+    wedin_ok = fraction_windows_principal_angles_within_band(agg["angles"], agg["svd"]) >= 0.95
+    return {"k_plane_engagement": k_engage, "chatter": chatter,
+            "wedin_cert": wedin_ok,
+            "pass": (k_engage>0 and chatter<=0.01 and wedin_ok)}
+
+# === Render to LaTeX tables/figures =====================================
+function render_report(domain_metrics_series):
+    A = table_A_config()
+    B = table_B_domain_metrics(domain_metrics_series)
+    C = table_C_stats()
+    D = table_D_control()
+    neg = check_negative_control()
+    deg = check_degeneracy()
+    # Write \begin{tabular}... snippets or pipe to a template engine
+    return {"A":A,"B":B,"C":C,"D":D,"neg":neg,"deg":deg}
+
+\end{lstlisting}
+
+\paragraph{Guards and good practice.}
+- \emph{Completeness.} Fail the CI render if any table is missing its HAC/BB hyperparameters or FDR $q$.  
+- \emph{Stability.} For very small gaps (machine epsilon), force $k$-plane mode for a hold interval; annotate in Table D.  
+- \emph{Transparency.} Always print both frontier terms in the ISS row: $C_0 N_{\mathrm{cross}}$ and $(C_0/\tau_{\min})t$.
+
+\paragraph{Uses:} \textit{(Comp/Stats/Ctrl/Clos)} Section~6 PR/ISS logs; Section~7 plane selection + degeneracy logs; Section~8 FIM contraction tests; Section~9 HAC/BB/FDR; Section~4 adaptive $\rho_t$ and $\eta^\star$.
+
+
+% ============================================================

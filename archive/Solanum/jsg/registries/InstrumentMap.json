@@ -1,0 +1,10 @@
+{
+  "instruments": [
+    {
+      "name": "gkyp",
+      "version": "1.0",
+      "description": "GKYP certificate generator",
+      "hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  ]
+}

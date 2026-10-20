@@ -1,0 +1,144 @@
+% ==== Part III — Sensing, Whitening, and Identification (v2) ================
+\section{Sensing, Whitening, and Identification (v2)}\label{sec:sense-v2}
+
+\paragraph{Goal.}
+Turn raw telemetry into \emph{auditable} evidence about coupling and safety: windowing $\to$ Fisher/whitening $\to$ mixed cumulants $\to$ leakage/clamp state $\to$ promotion gates (MTC$>$correlation) guarded by the DRO envelope check. All outputs feed Tier-1…4 artifacts and the KPI panel; each window emits a \emph{proof print} with stable IDs in the guard order EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow\omega$ (cf. \secref{subsec:frontier-closure}).
+
+\subsection{Windowing, Fisher objects, and whitening}\label{subsec:window-fim}
+\emph{\layertag{Stoch/Inf/Comp}}
+
+Let a rolling window of length $\constref{tau}$ produce telemetry $Z_t=(X_t,Y_t,U_t)$ with features $\phi_t$. Compute the window Fisher object,
+\[
+F_t \equiv \constref{F}\ :=\ \mathbb{E}_t\!\big[\nabla_\theta \ell(\theta;Z)\,\nabla_\theta \ell(\theta;Z)^\top\big],
+\]
+and any numerically stable whitener $W_t$ with $W_t^\top W_t=F_t$. Define \emph{whitened} features and the windowed cumulant vector by
+\[
+\tilde\phi_t:=W_t\,\phi_t,\qquad
+\kappa_t := \text{vec of selected mixed cumulants of }(\tilde\phi_t,Y_t,U_t)\,.
+\]
+The \emph{coupling mass} is $M_t=\kappa_t^\top F_t^{-1}\kappa_t$ (Def.~\ref{def:coupling-mass}). The EF radius uses \emph{EF}~tolerance $\varepsilon$ (distinct from PR margins): $r=\varepsilon/\constref{Lpsi}$ (Thm.~\ref{thm:FIMbound}).
+
+\uses{(C4) $\constref{tau}$; (C5) $\constref{F},\constref{Lpsi}$; (C10) $\varepsilon$.}
+
+\begin{remark}[Whitening audit \& hashes]\label{rem:white-hash}
+Tier-1 must include \texttt{FIM\_hash} and \texttt{whitening\_hash}; parity jobs re-derive $(F_t,W_t)$ and require bit-match within tolerance. A stable \texttt{ef\_guard\_id} (below) binds any Fisher-quadratic usage to a specific guard verdict. 
+\uses{\jsgiiSec{\lblSchemas}; Def.~\ref{def:tierpacks}.}
+\end{remark}
+
+\subsection{Coverage policy and variance for $M_t$}\label{subsec:coverage}
+\emph{\layertag{Stoch/Comp}}
+
+Report $M_t$ with dependence-aware uncertainty. For smooth functionals, compute HAC (Newey–West) CIs; for non-smooth panels or stress tests, use block bootstrap (MBB/CBB). Publish a \emph{coverage panel} per window:
+\[
+\texttt{coverage}=\{\texttt{method}\in\{\text{HAC},\text{MBB},\text{CBB}\},\ \texttt{bandwidth/blocklen},\ \texttt{CI}\}.
+\]
+Bandwidth/block length are \emph{pre-registered} selectors (Defaults \& Knobs) learned via pilot ACF decay and logged as part of Tier-1. CI render \emph{fails} if any selector is missing.
+
+\uses{(C5) $F$; KPI panel in \secref{subsec:ops-kpis}.}
+
+\begin{lemma}[Consistent uncertainty for $M_t$]\label{lem:Mt-ci}
+Under standard mixing and moment conditions on $\{\kappa_t\}$, HAC variance of $M_t$ exists and yields asymptotically valid Wald intervals; MBB/CBB give finite-sample coverage with block length chosen by pilot ACF decay.
+\uses{(C5) $F$; KPI \textit{Realized FDR}/\textit{Provenance coverage} in \secref{subsec:ops-kpis}.}
+\end{lemma}
+
+\subsection{Leakage clamp FSM and EF guard}\label{subsec:clamp}
+\emph{\layertag{Inf/Stoch/Comp}}
+
+Compute leakage $\constref{chi}(t)$ (conditioning proxy). Enforce the local EF neighborhood \emph{before} any Fisher-quadratic use:
+
+\begin{definition}[EF guard $\&$ clamp (Δ)]\label{def:ef-guard-op}
+Run \texttt{kl\_quad\_bounds$(\varepsilon,\hat L_\psi,r)$}. On \textbf{pass}, emit a stable \texttt{ef\_guard\_id} and allow Fisher-quadratic proxies; on \textbf{fail}, \emph{fail-closed} to HSIC \& CVaR-only sensing. Apply the clamp FSM with deterministic thresholds:
+\[
+\text{Green: }\chi\le\constref{chiG},\quad
+\text{Yellow: }\constref{chiG}<\chi\le\constref{chiR},\quad
+\text{Red: }\chi>\constref{chiR},
+\]
+triggering shrink/relax of $(r,\cutq)$ exactly as Rule~\ref{rule:ef-clamp}. The \texttt{ef\_guard\_id} is recorded in the window’s \emph{proof print} and propagated in KPI rows consumed by $\omega$-automata.
+\uses{Thm.~\ref{thm:FIMbound}; Rule~\ref{rule:ef-clamp}; (C10) thresholds.}
+\end{definition}
+
+\begin{remark}[Clamp determinism \& mirrors]\label{rem:clamp-determinism}
+Clamp transitions are a pure function of $\chi(t)$ and pre-registered thresholds; mirrored signed sources in the Ladder must reproduce identical transitions on replay.
+\uses{\secref{subsec:schemas}; \secref{subsec:ladder-prop}.}
+\end{remark}
+
+\subsection{Promotion discipline: MTC, IV-badge, and CIS rows}\label{subsec:mtc-iv}
+\emph{\layertag{Inf/Stoch/Comp}}
+
+\begin{definition}[Promotion gates]\label{def:mtc-iv}
+A candidate index enters $E_t$ only if Rule~\ref{rule:promotion} passes: \emph{(i)} held-out transport improvement $\Delta \widehat R_{\mathrm{DRO}}\ge$ MDE at power $\ge0.8$; \emph{(ii)} SPRT on $M_t$ accepts low-coupling; \emph{(iii)} clamp=Green; \emph{(iv)} if using instruments, an IV-badge transcript (relevance $F>10$, preregistered exclusion across contexts, ablation sign) is attached. Record one CIS row per promotion with these fields.
+\uses{\jsgiiDef{\lblMTC}; \jsgiiDef{\lblIVbadge}; Rule~\ref{rule:promotion}; Def.~\ref{def:tierpacks}.}
+\end{definition}
+
+\begin{proposition}[CIS completeness]\label{prop:cis}
+A CIS row is \emph{valid} iff it contains: BY-thresholded $p$; MTC transcript with achieved power; SPRT transcript \emph{with parameters} (below) and verdict; clamp state=Green; and IV-badge fields when applicable.
+\uses{\jsgiiSec{\lblSchemas}; Rule~\ref{rule:promotion}; Def.~\ref{def:tierpacks}.}
+\end{proposition}
+
+\subsection{SPRT and the DRO envelope precondition}\label{subsec:sprt-dvdrho}
+\emph{\layertag{Stoch/Inf/Comp}}
+
+\begin{definition}[Envelope precondition]\label{def:env-pre}
+Before running any SPRT on $M_t$, verify the DRO envelope identity $d\,\mathbb E[\varphi_\eta]/d\rho\approx \constref{etastar}$ within $5\%$; otherwise, quarantine the window and block promotions (Rule~\ref{rule:dvdrho}). Emit a \texttt{dvdrho\_id} for the proof print.
+\uses{\jsgiiThm{\lblDROenv}; \jsgiiDef{\lblQuarantine}; Rule~\ref{rule:dvdrho}.}
+\end{definition}
+
+\begin{definition}[SPRT parameterization (Δ)]\label{def:sprt-params}
+For $M_t$, register $\texttt{sprt\_params}=\{H_0,B_{\mathrm{saf}},H_1,B_{\mathrm{risk}},\delta,\alpha,\beta\}$, where $H_0:\ M_t\le B_{\mathrm{saf}}$ and $H_1:\ M_t\ge B_{\mathrm{risk}}=B_{\mathrm{saf}}+\delta$. Tier-1 MUST log \texttt{sprt\_params} (or its hash) and the SPRT transcript (boundaries, stopping time, verdict). The same identifier appears in the proof print and CIS rows when a promotion is granted.
+\uses{Rule~\ref{rule:promotion}; KPI in \secref{subsec:ops-kpis}.}
+\end{definition}
+
+\begin{lemma}[Well-posed SPRT]\label{lem:sprt-wellposed}
+Given Defs.~\ref{def:env-pre}–\ref{def:sprt-params}, the sequential test on $M_t$ has controlled error $(\alpha,\beta)$ and monotone likelihood ratio in the low-coupling regime; transcripts must log stopping time and boundaries.
+\uses{Rule~\ref{rule:promotion}; KPI in \secref{subsec:ops-kpis}.}
+\end{lemma}
+
+\subsection{Numerical API (sensing side)}\label{subsec:api-sense}
+\emph{\layertag{Comp}}
+\begin{lstlisting}
+def make_fim_and_whitener(grads):
+    # grads: [n x p] score samples for window
+    F = grads.T @ grads / len(grads)
+    W = stable_factor(F)  # chol or svd-based as needed
+    return F, W
+
+def mixed_cumulants(whitened_feats, y, u, orders=("xy","xu","yuu")):
+    # return vectorized set of windowed mixed cumulants
+    ...
+
+def hac_ci(series, bandwidth):
+    # Newey--West variance + CI for scalar series
+    ...
+
+def block_boot_ci(series, block_len, nboot=2000):
+    # MBB/CBB CI for scalar series
+    ...
+
+def kl_quad_bounds(kappa, F, eps, Lpsi):
+    # returns {verdict, r, ef_guard_id}; MUST PASS before Fisher-quadratic use
+    ...
+
+def dvdrho_check(etas, rho_grid, phi_trace, tol=0.05):
+    # finite-diff dE[varphi]/d rho vs. eta*; returns {pass, gap, dvdrho_id}
+    ...
+
+def sprt_Mt(mt_stream, sprt_params, seed=None):
+    """
+    Sequential test transcript with explicit parameters:
+    sprt_params = {H0, B_saf, H1, B_risk, delta, alpha, beta}
+    Returns boundaries, stopping_time, verdict, and a stable transcript_id.
+    """
+    ...
+\end{lstlisting}
+
+\subsection{Acceptance checks for sensing \& identification}\label{subsec:sense-accept}
+\begin{acceptchecks}
+\item \textbf{Deterministic whitening:} Tier-1 includes \texttt{FIM\_hash} and \texttt{whitening\_hash}; parity job reconstructs $(F,W)$ and matches within tolerance (Rem.~\ref{rem:white-hash}).
+\item \textbf{EF guard present:} a \emph{passing} \texttt{kl\_quad\_bounds} with $(\varepsilon,\hat L_\psi,r)$ is logged \emph{before} any Fisher-quadratic proxy; \texttt{ef\_guard\_id} appears in the window proof print and KPI row (Def.~\ref{def:ef-guard-op}).
+\item \textbf{Clamp determinism:} clamp transitions (Green/Yellow/Red) and $(r,\cutq)$ shrink/relax events match $\chi(t)$ thresholds and reproduce under mirrored sources (Rem.~\ref{rem:clamp-determinism}).
+\item \textbf{Coverage panel:} $M_t$ reports HAC or block-bootstrap CI with the pre-registered bandwidth/block length; CI render fails if missing (Lem.~\ref{lem:Mt-ci}).
+\item \textbf{Envelope precondition:} dv/d$\rho$ vs.\ $\eta^\star$ reproduces $\le 5\%$ gap; failing windows show \texttt{quarantine\_bit}=1 and \texttt{dvdrho\_id} in the proof print (Def.~\ref{def:env-pre}).
+\item \textbf{SPRT completeness (Δ):} Tier-1 contains \texttt{sprt\_params} (or its hash) and the SPRT transcript; CIS rows reference the same parameters and transcript id (Def.~\ref{def:sprt-params}, Prop.~\ref{prop:cis}).
+\item \textbf{CIS completeness:} each promotion row contains BY-$p$, MTC power, SPRT transcript, clamp=Green, and IV-badge (Prop.~\ref{prop:cis}).
+\end{acceptchecks}
+

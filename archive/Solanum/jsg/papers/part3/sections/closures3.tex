@@ -1,0 +1,126 @@
+% ==== Part III — Foundational Closures and Reused Guarantees (v2) ===========
+\section{Foundational Closures and Reused Guarantees (v2)}\label{sec:closures-v2}
+
+\paragraph{Purpose.}
+This section binds JSGIII’s runtime rules to the specific numbered guarantees reused from JSGI/JSGII. Each closure restates exactly \emph{what} is assumed and \emph{what} is certified, with constants drawn from the Symbol Registry, and provides a replayable acceptance test. A per-window \emph{proof print} (Δ) records the fixed guard-consumption order EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow\omega$ alongside stable IDs (\texttt{ef\_guard\_id}, \texttt{dvdrho\_id}, \texttt{pr\_witness\_id}, \texttt{cbf\_audit\_id}).
+
+\subsection{Frontier calculus: No-Zeno and geometry-scaled defect}\label{subsec:frontier-closure}
+\emph{\layertag{Geom/Alg/Ctrl}}
+
+\begin{lemma}[No-Zeno dwell and crossing bound]\label{lem:nozeno-impl}
+If the closed-loop vector field satisfies a one-sided Lipschitz condition with constant $\constref{LF}$ and frontier crossings are strictly transversal (principal-angle separation $\ge \constref{thetamin}$), then the minimum dwell $\constref{taumin}>0$ exists and
+\[
+N_{\mathrm{cross}}(0,t)\ \le\ \frac{t}{\constref{taumin}}.
+\]
+\uses{\jsgiLem{\lblNoZeno}; (C1) $\constref{thetamin}$; (C3) $\constref{LF},\constref{taumin}$.}
+\end{lemma}
+
+\begin{lemma}[Jacobi-defect budget with geometric pricing]\label{lem:jacobi-upgraded}
+Let $C_{\mathrm{fr}}=C_{\mathrm{fr}}(\constref{kappamax},\constref{thetamin},\constref{rtube},\constref{Smax},\constref{Gmax})$ denote the per-crossing constant from the frontier calculus. Then
+\[
+\int_0^T\!\|\Delta_{\mathrm{fr}}\|\,\mathrm dt\ \le\ C_{\mathrm{fr}}\ N_{\mathrm{cross}}(0,T)
+\ \le\ C_{\mathrm{fr}}\ \frac{T}{\constref{taumin}}.
+\]
+\uses{\jsgiLem{\lblJacobiDefect}; \jsgiLem{\lblNoZeno}; (C1) $\constref{kappamax},\constref{thetamin},\constref{rtube}$; (C2) $\constref{Smax},\constref{Gmax}$; (C3) $\constref{taumin}$.}
+\end{lemma}
+
+\begin{proposition}[ISS budget printout with frontier spend]\label{prop:iss-spend}
+Under band-limited PR control and the frontier conditions above, the windowed storage $H$ obeys
+\[
+H(t)\ \le\ \beta(H(0))\ +\ \int_0^t \gamma(\|w(\tau)\|)\,\mathrm d\tau\ +\ C_{\mathrm{fr}}\,N_{\mathrm{cross}}(0,t),
+\]
+and hence $H(t)\le \beta(\cdot)+\int\gamma(\cdot)+ (C_{\mathrm{fr}}/\constref{taumin})\,t$.
+\uses{\jsgiThm{\lblISS}; Lem.~\ref{lem:jacobi-upgraded}; (C6) PR margin $\constref{epsilon}$.}
+\end{proposition}
+
+\begin{proposition}[Conservativity link (Δ)]\label{prop:cons-link}
+If the clamp is not Green or if the PR margin crowds $\constsymPRmargin$, enforce conservative range policy $\hat R_t$ non-increase. With the ledger from Lem.~\ref{lem:jacobi-upgraded},
+\[
+\hat R_{t+\tau}-\hat R_t\ \le\ \underbrace{\Gamma(\text{guard degradation})}_{\le 0}\ +\ \underbrace{\Xi\big(C_{\mathrm{fr}}\,N_{\mathrm{cross}}(t,t+\tau)\big)}_{\le 0},
+\]
+so any positive drift flags a policy violation.
+\uses{Prop.~\ref{prop:iss-spend}; \secref{subsec:range}; Rule~\ref{rule:ef-clamp}.}
+\end{proposition}
+
+\begin{acceptchecks}
+\item \textbf{No-Zeno:} window report prints $\constref{taumin}$ and verifies $N_{\mathrm{cross}}\le t/\constref{taumin}$ using logged crossing times (\jsgiLem{\lblNoZeno}).
+\item \textbf{Defect ledger:} prints both $C_{\mathrm{fr}} N_{\mathrm{cross}}$ and $(C_{\mathrm{fr}}/\constref{taumin})t$; values must match within numerical tolerance (\jsgiLem{\lblJacobiDefect}).
+\item \textbf{Proof print presence (Δ):} the window’s proof print includes \{\texttt{pr\_witness\_id}, \texttt{cbf\_audit\_id}\} in EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow\omega$ order.
+\end{acceptchecks}
+
+\subsection{Spectral stability: DK/Wedin plane drift and holonomy budget}\label{subsec:dk-wedin}
+\emph{\layertag{Alg/Rep/Ctrl}}
+
+\begin{lemma}[Tube-level plane drift]\label{lem:usc-planes}
+Let $\vartheta_j=\angle(U_j^+,U_j^-)$ be the principal-angle increment of the actuation plane across crossing $j$ and $\delta_{\mathrm{gap},j}$ the spectral gap of the Jacobian. Then
+\[
+\vartheta_j\ \le\ \frac{c_{\mathrm{DK}}}{\max(\delta_{\mathrm{gap},j},\eta_{\mathrm{cal}})}\,\|\Delta J_j\|_2.
+\]
+\uses{DK/Wedin calibration record in \jsgiiSec{\lblSchemas}; (C9) $\eta_{\mathrm{cal}}$, \constref{Hol}, \constref{Harm}.}
+\end{lemma}
+
+\begin{proposition}[Holonomy and Harmonic Rotational Mass]\label{prop:hol-harm}
+Define $\constref{Hol}(0,T)=\sum_j \vartheta_j$ and $\constref{Harm}=\sum_j \frac{\vartheta_j}{\max(\delta_{\mathrm{gap},j},\eta_{\mathrm{cal}})}$. If \constref{Harm} trends upward over $k$ windows, block basis updates and \emph{k}-escalate.
+\uses{(C9) \constref{Hol}, \constref{Harm}, $\eta_{\mathrm{cal}}$; Rule~\ref{rule:frontier-freeze}.}
+\end{proposition}
+
+\begin{acceptchecks}
+\item \textbf{Plane-drift audit:} for each logged crossing, recompute SVDs and verify $\angle(U^+,U^-)\le (1+\eta_{\mathrm{cal}})\,c_{\mathrm{DK}}\,\|\Delta J\|_2/\max(\delta_{\mathrm{gap}},\eta_{\mathrm{cal}})$.
+\item \textbf{HarmMass trigger:} acceptance requires that any HarmMass-triggered \emph{k}-escalation is present in the log for the matching windows.
+\end{acceptchecks}
+
+\subsection{Local EF neighborhood: KL–Fisher quadratic and clamp}\label{subsec:ef-guard}
+\emph{\layertag{Inf/Stoch/Comp}}
+
+\begin{theorem}[Local KL–cumulant equivalence \& operational radius]\label{thm:FIMbound}
+Inside the EF ball of radius $r=\varepsilon/\constref{Lpsi}$,
+\[
+\frac{1-\varepsilon}{2}\,\normFIM{\kappa(\theta)}^2\ \le\ D_{\mathrm{KL}}(P_\theta\|P_0)\ \le\ \frac{1+\varepsilon}{2}\,\normFIM{\kappa(\theta)}^2.
+\]
+\uses{\jsgiiThm{\lblEFradius}; (C5) $\constref{F},\constref{Lpsi}$; (C10) $\varepsilon$.}
+\end{theorem}
+
+\begin{definition}[EF guard with leakage clamp (Δ)]\label{def:kl-guard}
+Before any Fisher-quadratic proxy is used, enforce \texttt{kl\_quad\_bounds$(\varepsilon,\hat L_\psi,r)$}. Emit \texttt{ef\_guard\_id} and record it in the proof print; if the leakage metric $\constref{chi}(t)$ exits Green, shrink $(r,\cutq)$ and freeze promotions; on Red, fail-closed to HSIC/CVaR-only sensing until cleared.
+\uses{Rule~\ref{rule:ef-clamp}; (C5) $\constref{chi}$; (C10) thresholds.}
+\end{definition}
+
+\begin{acceptchecks}
+\item \textbf{kl\_quad\_bounds present:} Tier-1 must show a \emph{passing} \texttt{kl\_quad\_bounds} with $(\varepsilon,\hat L_\psi,r)$ and matching \texttt{ef\_guard\_id} \emph{before} any use of $\normFIM{\cdot}^2$ proxies (\jsgiiThm{\lblEFradius}).
+\item \textbf{Clamp FSM transcript:} transitions and shrink events for $(r,\cutq)$ must match $\chi(t)$ thresholds (Green/Yellow/Red) in the pack.
+\end{acceptchecks}
+
+\subsection{DRO envelope identity and quarantine semantics}\label{subsec:dro-envelope}
+\emph{\layertag{Stoch/Inf/Comp}}
+
+\begin{proposition}[Envelope identity check]\label{prop:kkt}
+For soft-transport risk $v(\constref{rho})$ with dual optimizer $\constref{etastar}$,
+\[
+\frac{\mathrm d}{\mathrm d\constref{rho}}\ \mathbb E[\varphi_{\eta}]\ \approx\ \constref{etastar},
+\]
+and mismatch $>5\%$ invalidates inference for that window.
+\uses{\jsgiiThm{\lblDROenv}; (C4) $\constref{rho}$; (C7) $\constref{etastar}$.}
+\end{proposition}
+
+\begin{definition}[Window quarantine]\label{def:window-quarantine-impl}
+If the envelope check fails, mark the window as quarantined: freeze promotions, exclude from adaptive updates/FDR accounting, and continue safety-only monitoring. Emit a stable \texttt{dvdrho\_id} and include it in the proof print.
+\uses{\jsgiiDef{\lblQuarantine}; Rule~\ref{rule:promotion}.}
+\end{definition}
+
+\begin{acceptchecks}
+\item \textbf{dv/d$\rho$ vs. $\eta^\star$:} finite-difference grid reproduces the same accept/reject and logs the identical \texttt{quarantine\_bit}; \texttt{dvdrho\_id} appears in the proof print.
+\end{acceptchecks}
+
+\subsection{PR certificate and ISS linkage}\label{subsec:pr-iss}
+\emph{\layertag{Ctrl/Rep}}
+
+\begin{proposition}[Band-limited PR $\Rightarrow$ ISS with priced defects]\label{prop:pr-iss}
+If the controller is certified $(\constref{epsilon},[\constsymomegal,\constsymomegau])$-PR on the uncertainty polytope, then the ISS bound in Prop.~\ref{prop:iss-spend} holds with the frontier spend term.
+\uses{Prop.~\ref{prop:gkyp-witness}; \jsgiThm{\lblISS}; (C12) $\constsymomegal,\constsymomegau,\constsymPRmargin$.}
+\end{proposition}
+
+\begin{acceptchecks}
+\item \textbf{PR witness replay:} GKYP tuple $(\Omega,\epsilon,P,Q)$ re-verifies; if margin crowds $\constref{PRmargin}$, the log must show auto-shrink of $\Omega$ and re-certification. The proof print includes \texttt{pr\_witness\_id}.
+\item \textbf{ISS budget row:} window panel prints $\{\epsilon, C_{\mathrm{fr}}, N_{\mathrm{cross}}, t/\constref{taumin}\}$ and matches the ledger.
+\item \textbf{Guard order (Δ):} the proof print lists IDs in EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow\omega$ order; automata consume the same row-hash sequence.
+\end{acceptchecks}

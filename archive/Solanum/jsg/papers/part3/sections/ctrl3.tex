@@ -1,0 +1,146 @@
+% ==== Part III — Control Synthesis, Safety Invariance, PR Certification =====
+\section{Control Synthesis, Safety Invariance, and PR Certification (v2)}\label{sec:ctrl-v2}
+
+\paragraph{Aim.}
+Translate geometric and statistical contracts into \emph{auditable} control: a CLF/CBF-QP with frontier-aware relaxation and an explicit residual lower bound (LB), band-limited PR certificates with GKYP witnesses, consolidated switching-stability guards (with CQLF hash), and a measurable decision range $\hat R_t$ together with its numerically stable log-volume $\log \hat R_t$. Each window emits a control-side \emph{proof print} that includes \texttt{pr\_witness\_id}, \texttt{cbf\_audit\_id}, and \texttt{switch\_stability\_id} in the global EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow\omega$ order.
+
+\subsection{Model, admissible set, and projection}\label{subsec:model-proj}
+\emph{\layertag{Ctrl/Rep}}
+
+\begin{definition}[Piecewise control-affine strata]\label{def:pwa}
+On each stratum $s$, the dynamics are locally control-affine:
+$(
+\dot x = f_s(x) + g_s(x)\,u,\quad u\in\mathcal U,
+)$
+with frontier tubes of radius $\constref{rtube}$ separating strata. Barriers $h_i(x)\ge 0$ encode rights-plane invariants.
+\uses{(C1) $\constref{rtube}$; Rule~\ref{rule:frontier-freeze}.}
+\end{definition}
+
+\begin{definition}[Admissible control set and projection]\label{def:proj}
+Let $\mathcal U=\{u: A_u u\le b_u\}$ be the actuator polytope and
+$(
+\mathcal U_{\mathrm{safe}}(x):=\{u\in\mathcal U:\ L_f h_i + L_g h_i\,u\ge -\gamma_i h_i\ \forall i\}
+)$
+the instantaneous safe set (off-tube). Define the projection
+$(
+\Pi_{\mathrm{safe}}(u):=\arg\min_{v\in \mathcal U_{\mathrm{safe}}(x)}\|v-u\|^2;
+)$
+inside frontier tubes apply the freeze rule (Rule~\ref{rule:frontier-freeze}) and the one-step relaxed audit (Lemma~\ref{lem:cbf-salt}).
+\uses{Rule~\ref{rule:frontier-freeze}; Lem.~\ref{lem:cbf-salt}.}
+\end{definition}
+
+\subsection{CLF/CBF-QP with frontier-aware relaxation}\label{subsec:clf-cbf-qp}
+\emph{\layertag{Ctrl/Alg}}
+
+\begin{lemma}[QP synthesis with explicit residual LB]\label{lem:qp}
+Given a control Lyapunov function $V$ and barrier set $\{h_i\}$, solve at each step
+\[
+\begin{aligned}
+\min_{u,\ s,\ \{\xi_i\}\ge 0}\quad
+& \tfrac{1}{2}\|u-u_{\mathrm{ref}}\|^2 + \lambda_V s + \sum_i \lambda_i \xi_i \\
+\text{s.t.}\quad
+& L_f V + L_g V\,u \le -\alpha V + s,\\
+& \begin{cases}
+L_f h_i + L_g h_i\,u \ge -\gamma_i h_i - \xi_i,& \text{off-tube},\\[2pt]
+h_i^+ \ge h_i^- - \sigma_i - \xi_i,\ \ \sigma_i=L_{h_i}\,\constsymsalt\,\|\delta x\|,& \text{inside tube},
+\end{cases}\\
+& A_u u \le b_u,\quad u\in\mathcal U.
+\end{aligned}
+\]
+Define the \emph{residual lower bound}
+$(
+\mathrm{LB}_i:=h_i^+-h_i^-+\sigma_i
+)$
+for each barrier step inside tubes. If any $\mathrm{LB}_i<0$, \emph{reject the $\omega$-run} and set \texttt{cbf\_audit\_id} in the proof print.
+\uses{Lemma~\ref{lem:cbf-salt}; (C11) $\constsymsalt$ and $\mathrm{CVaR}_{0.95}$; Rule~\ref{rule:frontier-freeze}.}
+\end{lemma}
+
+\begin{remark}[Rights-plane tail risk]\label{rem:cvar}
+Log the distribution of barrier slacks and compute $\mathrm{CVaR}_{0.95}$; breach triggers Freeze\,+\,Dwell escalation (Rule~\ref{rule:rights-cvar}) and blocks promotions.
+\uses{(C11) $\mathrm{CVaR}_{0.95}$; Rule~\ref{rule:rights-cvar}.}
+\end{remark}
+
+\subsection{Band-limited PR certification and auto-retune}\label{subsec:pr-cert}
+\emph{\layertag{Ctrl/Rep}}
+
+Linearize on-window and certify $(\epsilon,[\constsymomegal,\constsymomegau])$-PR via GKYP; export $(\Omega,\epsilon,P,Q,\text{descriptor})$, a vertex hitmap, and a stable \texttt{pr\_witness\_id}. If realized margins approach $\constsymPRmargin$, automatically shrink $\Omega$ and re-certify before any control update.
+
+\begin{proposition}[PR witness consumption]\label{prop:pr-consume}
+Control updates are allowed only when a matching GKYP witness is present for the current uncertainty set; absent or crowded-margin witnesses force $\Omega$-shrink and re-certification \emph{before} actuation. The window proof print must include \texttt{pr\_witness\_id}.
+\uses{Prop.~\ref{prop:gkyp-witness}; (C12) $\constsymomegal,\constsymomegau,\constsymPRmargin$.}
+\end{proposition}
+
+\subsection{Switching stability for mixed-plane control (consolidated)}\label{subsec:switch}
+\emph{\layertag{Ctrl/Alg}}
+
+\begin{lemma}[Degeneracy gate and stability witness]\label{lem:deg-stab}
+Let $\Delta\sigma$ denote the spectral-gap change across a proposed basis update. If $\mathrm{CI}(\Delta\sigma)$ contains $0$, block the update. Otherwise require either (i) a CQLF certificate $P\succ 0$ that covers the active modes (emit \texttt{cqlf\_hash}), or (ii) a minimum switch-dwell $\tau_{\min}^{\mathrm{sw}}$. On failure, \emph{k}-escalate (Definition~\ref{def:hol-harm}). Record a stable \texttt{switch\_stability\_id} in the proof print.
+\uses{Lemma~\ref{lem:switching}; (C3) dwell; (C9) \constref{Harm}.}
+\end{lemma}
+
+\subsection{Decision range computation and reporting}\label{subsec:range}
+\emph{\layertag{Ctrl/Rep}}
+
+\begin{definition}[Estimated decision range and log-volume]\label{def:range}
+Let $\mathcal U^\star_t$ be the active feasible set returned by the QP at time $t$ and $J_t:=\partial x_{t+1}/\partial u_t$ the local input map. Define
+\[
+\hat R_t\ :=\ \prod_{i\le r}\ \sigma_i\big(J_t|_{\mathcal U^\star_t}\big),\qquad
+\log \hat R_t\ :=\ \sum_{i\le r}\ \log \sigma_i\big(J_t|_{\mathcal U^\star_t}\big).
+\]
+Report both $\hat R_t$ and $\log \hat R_t$ per window. Enforce \emph{conservative mode} (non-increasing $\hat R_t$) whenever clamp $\neq$ Green or PR margins crowd $\constsymPRmargin$ (Prop.~\ref{prop:cons-link}).
+\uses{\secref{subsec:ops-kpis}; Prop.~\ref{prop:cons-link}.}
+\end{definition}
+
+\subsection{Safe lever selection (normative dictionary)}\label{subsec:levers}
+\emph{\layertag{Ctrl/Rep}}
+
+\begin{rulex}{Lever policy}\label{rule:lever-policy}
+Enumerate governance levers $\mathcal L$ (e.g., TRO/PI, SLA, anti-commandeering, audit scope). Run safe-UCB over $\mathcal L$ with feasibility set
+$(
+\{\text{QP feasible} \wedge \text{CVaR tails OK} \wedge \text{PR witness valid}\}
+)$
+and reward equal to \emph{curvature-per-collateral} (ISS improvement per unit rights/fiscal/holonomy cost). Log chosen lever and anchors.
+\uses{Rule~\ref{rule:levers}; (C11) CVaR; (C12) PR certificate.}
+\end{rulex}
+
+\subsection{Numerical API (control side)}\label{subsec:api-ctrl}
+\emph{\layertag{Comp}}
+\begin{lstlisting}
+def qp_step(x, u_ref, data, tube_flag, params):
+    """
+    Build and solve the CLF/CBF-QP with frontier-aware audit.
+    Return u*, residual LBs, slacks, feasibility flags, and a cbf_audit_id.
+    """
+    ...
+
+def project_safe(u, x, Au, bu, h_set):
+    # Euclidean projection onto instantaneous safe set (off-tube)
+    ...
+
+def gkyp_pr_witness(A, B, C, D, Omega, polytope):
+    """
+    Solve GKYP LMI; return (epsilon, P, Q, descriptor, hitmap, pr_witness_id).
+    """
+    ...
+
+def switch_stability_transcript(gaps, modes):
+    """
+    CI(Delta sigma); if non-degenerate, try CQLF; else set tau_min^sw.
+    Return {verdict, tau_min_sw or P, cqlf_hash (opt), switch_stability_id}.
+    """
+    ...
+
+def decision_range(J, U_active, r):
+    # compute top-r singular values and their log-sum for the active set
+    ...
+\end{lstlisting}
+
+\subsection{Acceptance checks for control}\label{subsec:ctrl-accept}
+\begin{acceptchecks}
+\item \textbf{QP feasibility \& invariance:} off-tube constraints satisfy $L_f h_i + L_g h_i\,u \ge -\gamma_i h_i$; inside tubes, all $\mathrm{LB}_i:=h_i^+-h_i^-+\sigma_i\ge 0$ or the $\omega$-run is rejected and \texttt{cbf\_audit\_id} is present (Lemma~\ref{lem:cbf-salt}, Lemma~\ref{lem:qp}).
+\item \textbf{Saltation replay:} recompute $K$ from stored $(F^\pm,n)$ and verify $\|K-I\|_{\mathrm{obs}}\le \overline C_{\mathrm{salt}}(1+0.1)$ (Lemma~\ref{lem:cbf-salt}).
+\item \textbf{PR witness replay:} $(\Omega,\epsilon,P,Q)$ re-verifies for the logged uncertainty set; if margin crowds $\constsymPRmargin$, logs show $\Omega$-shrink and re-certification. The proof print contains \texttt{pr\_witness\_id} (Prop.~\ref{prop:pr-consume}).
+\item \textbf{Switching stability (consolidated):} any basis update is preceded by CI$(\Delta\sigma)\not\ni 0$ and followed by either a valid CQLF (log \texttt{cqlf\_hash}) or enforced $\tau_{\min}^{\mathrm{sw}}$; else \emph{k}-escalation is present. The proof print includes \texttt{switch\_stability\_id} (Lemma~\ref{lem:deg-stab}).
+\item \textbf{Decision range policy:} $\hat R_t$ (and $\log \hat R_t$) trend is $\uparrow$ in Green and non-increasing in conservative modes; KPI rows match Tier-1 logs (Prop.~\ref{prop:cons-link}).
+\item \textbf{Rights-plane CVaR:} $\mathrm{CVaR}_{0.95}\ge 0$; breaches trigger Rule~\ref{rule:rights-cvar} with freeze+dwell transcript present (Remark~\ref{rem:cvar}).
+\end{acceptchecks}

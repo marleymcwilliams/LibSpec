@@ -1,0 +1,310 @@
+\section{Entropy-Aware Projected Control}\label{sec:control1}
+% ============================================================
+
+We formalize a Dirac projection $\Pi$ and band-limited fractional controllers. New here: 
+(i) a proof that $D_i$ is a Dirac structure (maximally isotropic) under rank-regularity (Lemma~\ref{lem:dirac-isotropy}); 
+(ii) a \emph{frontier freeze} rule; 
+(iii) verifiable PR conditions via KYP or phase-margin bounds (Lemmas~\ref{lem:oust-pr-kyp}--\ref{lem:oust-pr-phase}); 
+(iv) an ISS theorem with an \emph{explicit} frontier term scaling as $t/\tau_{\min}$ (Theorem~\ref{thm:ISS}); 
+(v) entropy-aware gain adaptation via either an admissible-set projection (KYP) or a two-time-scale separation.
+
+% Ensure downstream numbering: Definition 6; Lemmas 7--10; Theorem 3.
+\setcounter{definition}{5}
+\setcounter{lemma}{6}
+\setcounter{theorem}{2}
+
+\subsection{Port-Hamiltonian plant and Dirac projection}
+
+On each stratum $M_i$, a port-Hamiltonian form reads
+\[
+\dot x \in J_i(x)\sharp dH(x) - R_i(x)\sharp dH(x) + G_i(x)u,\qquad y=G_i(x)^{\!*} dH(x),
+\]
+with skew $J_i=-J_i^{\!*}$, positive semidefinite $R_i\succeq 0$, and storage $H\ge 0$. 
+
+\begin{definition}[Dirac projection from strategic fields]\label{def:dirac-proj}
+Given $\hat S$ and a linear operator $\mathbb A_i(x;G):T_x\Gamma\to \mathbb R^r$ (from the $J$-aligned plane selection of Section~\ref{sec:kernels1}), define
+\[
+\mathcal X_i(x):=\ker \mathbb A_i(x;G),\qquad \mathcal X_i^0(x):=\{e\in T_x^*\Gamma:\ e(f)=0\ \forall f\in \mathcal X_i(x)\}.
+\]
+Set the Dirac structure $D_i(x):=\mathcal X_i(x)\oplus \mathcal X_i^0(x)\subset T_x\Gamma\oplus T_x^*\Gamma$ and let $\Pi_i(x)$ be the orthogonal projector onto $D_i(x)$ for the energetic pairing $\langle e,f\rangle$.
+\end{definition}
+
+\begin{lemma}[Maximal isotropy and smoothness of $D_i$]\label{lem:dirac-isotropy}
+\emph{[\textup{Ctrl/Rep}]} If $\mathbb A_i(\cdot;G)$ has constant rank on $M_i$ (rank drops only on frontiers), then $D_i:=\mathcal X_i\oplus \mathcal X_i^0$ is maximally isotropic in $T\Gamma\oplus T^*\Gamma$ and forms a smooth subbundle on $M_i$. Consequently, $\Pi_i$ depends smoothly on $x$ along strata.
+\uses{(C1) rank-regularity per stratum; annihilator geometry.}
+\end{lemma}
+
+\begin{lemma}[Supply-rate preservation]\label{lem:supply}
+\emph{[\textup{Ctrl}]} Orthogonal projection onto a maximally isotropic subspace preserves the supplied power: if $\Pi_i((f,e),(u,y))=((\tilde f,\tilde e),(\tilde u,\tilde y))$ then
+\[
+\langle e,f\rangle + u^\top y \ =\ \langle \tilde e,\tilde f\rangle + \tilde u^\top \tilde y.
+\]
+\uses{Energetic pairing; Dirac isotropy.}
+\end{lemma}
+
+\begin{rulex}{Frontier projection freeze}\label{rule:frontier-freeze}
+During an instantaneous stratum crossing (frontier tube), hold $\Pi$ fixed at its pre-crossing value; reproject immediately after the crossing.
+\uses{(C3) dwell $\tau_{\min}$ from Lemma~\ref{lem:no-zeno}; (C1) frontier tube; (C2) bounded fields.}
+\end{rulex}
+
+\subsection{Band-limited fractional controllers and PR checks}\label{subsec:oust}
+
+Let $C_N(s)$ be an $N$th-order Oustaloup approximation of $s^\alpha$ on $[\omega_L,\omega_H]$ with a state-space realization $(A,B,C,D)$ after bilinear (band) mapping.
+
+\begin{lemma}[GKYP sufficiency for band-limited PR]\label{lem:oust-pr-gkyp}
+\emph{[\textup{Ctrl}]}
+Let $(A,B,C,D)$ realize $C_N(s)$ after the bilinear band map. There exist $P=P^\top\!\succ0$ and a Hermitian multiplier $Q=Q^\top\succeq0$ such that the frequency-interval GKYP LMI
+\[
+\begin{bmatrix} A & B \\ I & 0 \end{bmatrix}^{\top}\!\left(\Xi(\omega_L,\omega_H)\otimes P\right)\!\begin{bmatrix} A & B \\ I & 0 \end{bmatrix}
+\; +\;
+\begin{bmatrix} C & D \end{bmatrix}^{\top} \Pi_{\mathrm{PR}} \begin{bmatrix} C & D \end{bmatrix}
+\;\preceq\; -\,\epsilon I
+\]
+holds, where $\Xi(\omega_L,\omega_H)$ is the standard frequency-interval multiplier and 
+$\Pi_{\mathrm{PR}}=\begin{bmatrix}0 & I\\ I & 0\end{bmatrix}$ encodes positive realness.
+Then $C_N$ is $(\epsilon,[\omega_L,\omega_H])$-positive real. 
+\emph{Note:} the bilinear band map recovers the same inequality on the unit circle.
+\uses{(C6) PR margin $\epsilon$; GKYP (frequency-interval) multipliers.}
+\end{lemma}
+
+\begin{lemma}[Phase-margin sufficiency]\label{lem:oust-pr-phase}
+\emph{[\textup{Ctrl}]} If $\max_{\omega\in[\omega_L,\omega_H]}|\arg C_N(j\omega)-\alpha\pi/2|<\frac\pi2-\delta$ and $\mathrm{DC}$ gain $K_0>0$, then $\Re\, C_N(j\omega)\ge \epsilon(\delta,K_0)>0$ on the band. 
+\uses{(C6) phase-error bound $\Rightarrow$ PR margin $\epsilon(\delta,K_0)$.}
+\end{lemma}
+
+\paragraph{Admissible gain policy (verifiable).}
+Let $g\in\mathbb R^p$ denote controller gains (e.g., scalings of $C_N$ sections). Define the \emph{PR-admissible set}
+\[
+\mathcal G\ :=\ \{\,g:\ \exists\,P\succ0\ \text{s.t.\ KYP}(A(g),B(g),C(g),D(g);P)\ \text{holds on }[\omega_L,\omega_H]\,\}.
+\]
+At run time, set $g\leftarrow \mathrm{proj}_{\mathcal G}(g_{\mathrm{nom}}\cdot \phi(\|\kappa_{\mathrm{mix}}\|_{\FIM^{-1}}))$ with a Lipschitz, monotone $\phi(\cdot)$; log the achieved PR margin from Lemma~\ref{lem:oust-pr-kyp} for audit.
+
+\paragraph{Two-time-scale alternative.}
+Assume \emph{(TTS)}: $\dot g = \varepsilon\,\Xi(\|\kappa_{\mathrm{mix}}\|)$ with $0<\varepsilon\ll 1$ (slower than plant), and $g(t)$ remains within an open PR band for all $t$. Then the PR margin is preserved by averaging.
+
+\subsection{Closed-loop interconnection and ISS under switching}
+
+\begin{lemma}[Storage jump at a crossing]\label{lem:storage-jump}
+Across any instantaneous crossing $t_k$, the storage satisfies
+\[
+H(x(t_k^+))-H(x(t_k^-))\ \le\ C_{\mathrm{fr}},
+\]
+with $C_{\mathrm{fr}}$ from Lemma~\ref{lem:jacobi-upgraded}. Summing the jumps and using Lemma~\ref{lem:no-zeno} yields the $t/\tau_{\min}$ contribution in the ISS bound.
+\end{lemma}
+
+\begin{theorem}[Passivity $\Rightarrow$ ISS with frontier defects]\label{thm:ISS}
+\emph{[\textup{Ctrl}]} Suppose on each stratum $M_i$: 
+(i) there exists a storage $H$ with $\dot H\le y^\top u - \alpha\|y\|^2$; 
+(ii) interconnection via $\Pi$ preserves power (Lemma~\ref{lem:supply}); 
+(iii) $C_N$ is $(\epsilon,[\omega_L,\omega_H])$-PR (Lemma~\ref{lem:oust-pr-kyp} or \ref{lem:oust-pr-phase}); 
+(iv) frontier crossings are finite on finite horizons (Lemma~\ref{lem:no-zeno}); 
+(v) the frontier defect obeys Lemma~\ref{lem:jacobi-upgraded}. Then the closed loop is ISS and, for all $t\ge0$,
+\[
+\boxed{\
+H(x(t)) \ \le\ \beta\!\big(H(x(0))\big) \ +\ \int_0^t \gamma\!\big(\|w(\tau)\|\big)\,d\tau \ +\ C_0\,N_{\mathrm{cross}}(0,t)\,,
+}
+\]
+with $C_0=C_0\!\big(\constref{Smax},\constref{Gmax},\constref{kappamax},\constref{thetamin}\big)$ as in Lem.~\ref{lem:jacobi-upgraded}. 
+By Lem.~\ref{lem:no-zeno}, $N_{\mathrm{cross}}(0,t)\le t/\constref{taumin}$, hence
+\[
+\boxed{\ H(x(t)) \ \le\ \beta(H(x(0))) + \int_0^t \gamma(\|w(\tau)\|)\,d\tau \ +\ \frac{C_0}{\constref{taumin}}\ t.\ }
+\]
+\uses{ $\constref{taumin}$ (No-Zeno), geometry-scaled defect $C_0(\cdot)$, PR margin $\epsilon$.}
+\end{theorem}
+
+\paragraph{Entropy-aware gains (guaranteed variants).}
+\begin{description}[leftmargin=*,style=nextline]
+\item[Projection policy (preferred).] Use the admissible set $\mathcal G$; the gain update is $g\leftarrow\mathrm{proj}_{\mathcal G}(g_{\mathrm{nom}}\cdot \phi(\|\kappa_{\mathrm{mix}}\|_{\FIM^{-1}}))$. Since $\mathcal G$ is PR-certified by KYP, the PR margin $\epsilon$ is preserved pointwise in time, and Theorem~\ref{thm:ISS} applies verbatim.
+\item[Two-time-scale policy.] Under \emph{(TTS)}, average the dissipation inequality over windows of length $\gg 1/\varepsilon$; the effective margin is $\epsilon+O(\varepsilon)$, hence ISS with slightly perturbed constants.
+\end{description}
+
+\begin{mdframed}
+\textbf{Design/implementation checklist (auto-audit).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Dirac $\Pi$}: log rank of $\mathbb A_i$, detect/flag frontier freeze events, and record crossing times.
+\item \emph{PR checks}: implement \texttt{check\_positive\_real(C\_N, band, $\epsilon$)} using Lemma~\ref{lem:oust-pr-kyp} (primary) or Lemma~\ref{lem:oust-pr-phase} (fallback); log the achieved margin per window.
+\item \emph{Entropy-aware}: record $\|\kappa_{\mathrm{mix}}\|_{\FIM^{-1}}$, chosen $g$, whether projection to $\mathcal G$ occurred, and the \emph{(TTS)} flag if used.
+\item \emph{ISS budget}: report $\alpha$, $\epsilon$, $C_0$, $N_{\mathrm{cross}}(0,t)$ and its bound $t/\tau_{\min}$ alongside $H(x(t))$.
+\end{itemize}
+\end{mdframed}
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:control1}.}
+\begin{enumerate}[leftmargin=*]
+\item The ISS inequality shows the frontier term as $C_0 N_{\mathrm{cross}}(0,t)$ and then substitutes $N_{\mathrm{cross}}\le t/\tau_{\min}$.
+\item Any use of ``entropy-aware gains'' references either the admissible-set projection (\texttt{proj\_}\(\mathcal G\)) or the two-time-scale assumption; PR preservation is explicit.
+\item Logs include PR margin on $[\omega_L,\omega_H]$, counts of frontier freezes/crossings, and the realized $t/\tau_{\min}$ bound.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (Dirac, PR checks, gain projection, ISS budget)}
+
+\begin{lstlisting}
+# --- Inputs (conceptual types) ----------------------------------------------
+Dirac:
+  A_i(x;G)                     # per-stratum constraint operator (Definition 6)
+  build_dirac_projection(A_i)  # returns Pi_i(x) with energetic inner product
+
+Controller:
+  oustaloup_ss(alpha, N, band, K) -> (A,B,C,D)   # state-space for C_N(s)=K s^alpha approx on [wL,wH]
+  band = [wL, wH]
+
+Metrics:
+  energy_pairing(e,f) = <e,f>   # energetic pairing
+  H(x)                          # storage
+  kappa_mix_norm := ||kappa_mix||_{FIM^{-1}}     # from Section~5/Section~3
+
+Logging:
+  log_json(dict)
+  now() -> t
+
+# --- Frontier handling -------------------------------------------------------
+state frontier = { crossing:false, last_cross_t:None, N_cross:0 }
+
+function on_frontier_enter():
+    frontier.crossing = true
+    frontier.N_cross += 1
+    frontier.last_cross_t = now()
+    freeze_Pi_and_controller_state()         # Rule: Frontier projection freeze (Section 6)
+    log_json({"evt":"frontier_enter", "t": frontier.last_cross_t, "N_cross": frontier.N_cross})
+
+function on_frontier_exit():
+    frontier.crossing = false
+    reproject_Pi_post_event()                # recompute Pi on new stratum
+    log_json({"evt":"frontier_exit", "t": now(), "N_cross": frontier.N_cross})
+
+# --- KYP positive-real checker (band-limited) --------------------------------
+# Maps [wL,wH] to the unit circle via a bilinear band map, then runs a KYP LMI.
+# If an SDP solver is unavailable, falls back to dense frequency sampling + phase-margin test.
+
+function check_PR_band(A,B,C,D, band, eps_min=0.0, sdp_solver=None, grid_pts=512):
+    (Aw,Bw,Cw,Dw) = bilinear_band_map(A,B,C,D, band)  # stable map of band to unit circle
+    if sdp_solver is not None:
+        # Continuous-time PR LMI (after mapping the band):
+        # Find P >> 0 and epsilon >= 0 s.t.
+        #   [A^T P + P A,      P B - C^T;
+        #    B^T P - C,   -(D + D^T)]  <=  -epsilon I
+        (feasible, P, eps) = sdp_solver_PR(Aw,Bw,Cw,Dw)
+        if feasible and eps >= eps_min:
+            return {"pr_ok": True, "eps": eps, "cert":"KYP", "P": P}
+    # Fallback: phase-margin sufficiency (Lemma 10)
+    w = logspace(log10(band[0]), log10(band[1]), grid_pts)
+    phi_err_max = 0.0; min_Re = +inf
+    for wi in w:
+        H = freqresp_ct(A,B,C,D, wi)
+        min_Re = min(min_Re, Re(H))
+        phi_err_max = max(phi_err_max, abs(arg(H) - alpha*pi/2))
+    if min_Re > 0:
+        eps = min_Re                            # crude PR margin proxy
+        return {"pr_ok": True, "eps": eps, "cert":"phase", "phi_err_max": phi_err_max}
+    return {"pr_ok": False, "eps": 0.0, "cert":"none", "phi_err_max": phi_err_max}
+
+# --- Admissible gain set projection  G  --------------------------------------
+# If C_N depends affinely on gains g (common in cascaded Oustaloup sections), the set
+#   G = { g : exists P >> 0 s.t. KYP(A(g),B(g),C(g),D(g);P) holds on [wL,wH] }
+# is convex. We implement a practical projection by:
+#   (1) try KYP feasibility at g; if infeasible, (2) bisection on a scalar scale s in [s_min,s_max]
+#       toward a feasible point; (3) optional convex QP if an affine parametrization is available.
+
+function project_to_G(g_nom, phi_kappa, model, band, sdp_solver, s_bounds=[0.3, 2.0], tol=1e-3):
+    g_target = g_nom * phi_kappa              # entropy-aware scaling
+    if KYP_feasible(model, g_target, band, sdp_solver):
+        return g_target, {"projected": False, "scale": 1.0}
+    # Bisection on scalar scale s to nearest feasible:
+    s_lo, s_hi = s_bounds[0], s_bounds[1]
+    # Ensure bracket: expand outward if necessary
+    for it in 1..6:
+        if KYP_feasible(model, g_nom*s_lo, band, sdp_solver): break
+        s_lo *= 0.7
+    for it in 1..6:
+        if KYP_feasible(model, g_nom*s_hi, band, sdp_solver): break
+        s_hi *= 1.4
+    if not KYP_feasible(model, g_nom*s_hi, band, sdp_solver):
+        # give up: return last feasible baseline (conservative)
+        return g_nom, {"projected": True, "scale": 1.0, "note":"fallback_to_baseline"}
+    # Bisection to tolerance
+    for it in 1..20:
+        s_mid = 0.5*(s_lo + s_hi)
+        if KYP_feasible(model, g_nom*s_mid, band, sdp_solver):
+            s_hi = s_mid
+        else:
+            s_lo = s_mid
+        if abs(s_hi - s_lo) < tol * s_hi: break
+    g_feas = g_nom * s_hi
+    return g_feas, {"projected": True, "scale": s_hi}
+
+# Helper: feasibility wrapper
+function KYP_feasible(model, g, band, sdp_solver):
+    (A,B,C,D) = model.ss(g)                   # affine in g
+    res = check_PR_band(A,B,C,D, band, eps_min=0.0, sdp_solver=sdp_solver)
+    return res["pr_ok"]
+
+# --- Runtime controller synthesis & audit ------------------------------------
+function controller_step(alpha, N, band, g_nom, kappa_mix_norm, model, sdp_solver):
+    phi = phi_entropy(kappa_mix_norm)         # monotone Lipschitz policy
+    (g, proj_info) = project_to_G(g_nom, phi, model, band, sdp_solver)
+    (A,B,C,D) = model.ss(g)
+    pr = check_PR_band(A,B,C,D, band, eps_min=0.0, sdp_solver=sdp_solver)
+    log_json({"evt":"ctrl_update",
+              "kappa_mix_norm": kappa_mix_norm,
+              "phi": phi,
+              "g_nom": g_nom, "g_used": g,
+              "proj": proj_info, "pr_cert": pr["cert"], "pr_eps": pr["eps"]})
+    return (A,B,C,D), pr
+
+# --- ISS budget tracker (explicit frontier term) -----------------------------
+state iss = { H0: None, alpha_bar: None, eps_PR: None, C0: None, tau_min: None }
+
+function iss_init(H0, alpha_bar, eps_PR, C0, tau_min):
+    iss.H0 = H0; iss.alpha_bar = alpha_bar; iss.eps_PR = eps_PR; iss.C0 = C0; iss.tau_min = tau_min
+
+function iss_bound(t, input_energy_int):
+    # H(x(t)) <= e^{-alpha_bar t} H0 + input_energy_int + C0 * N_cross(0,t)
+    N = frontier.N_cross
+    bound_switch = iss.C0 * N
+    bound_linear = (iss.C0 / iss.tau_min) * t
+    H_bound = exp(-iss.alpha_bar * t) * iss.H0 + input_energy_int + bound_switch
+    log_json({"evt":"iss_budget",
+              "t": t, "H_bound": H_bound,
+              "N_cross": N, "C0": iss.C0,
+              "tau_min": iss.tau_min, "frontier_term": bound_switch,
+              "frontier_term_linear": bound_linear})
+    return H_bound, {"frontier_term": bound_switch, "frontier_term_linear": bound_linear}
+
+# --- One-call loop integration (per control tick) ----------------------------
+function control_tick(x, env, model, params):
+    if frontier_event_detected(env): on_frontier_enter()
+    (A,B,C,D), pr = controller_step(params.alpha, params.N, params.band,
+                                    params.g_nom, kappa_mix_norm(x),
+                                    model, params.sdp_solver)
+    if frontier.crossing:             # freeze rule during instantaneous crossing
+        hold_controller_state()       # keep last (A,B,C,D) until exit
+    u = apply_dirac_and_controller(x, A,B,C,D)   # \Pi from build_dirac_projection(A_i)
+    env.step(u)
+    if frontier_exit_detected(env): on_frontier_exit()
+    # ISS audit
+    H_t = H(x)
+    input_energy = params.input_integral.update(y_times_u=...)    # accumulate \int_0^t \gamma(||w||) d\tau if available
+    H_bound, ft = iss_bound(t=now(), input_energy_int=input_energy)
+    # Periodic audit log
+    log_json({"evt":"tick", "t": now(), "H": H_t, "H_bound": H_bound,
+              "pr_eps": pr["eps"], "N_cross": frontier.N_cross, "k_plane": params.k_plane_mode})
+\end{lstlisting}
+
+\paragraph{Guards, tests, and good practice.}
+- **Bilinear map sanity.** Validate the band map with a unit-gain integrator: the mapped discrete pole should land exactly on the unit circle at the designated band center.  
+- **SDP fallback.** If an SDP solver isn't available, the phase-margin grid (Lemma 10) is a *sufficient* test. Log `pr\_cert âˆˆ {KYP, phase, none}` so failures are visible.  
+- **Projection stability.** If repeated projections keep shrinking gains, widen the band or increase \(N\) (Oustaloup order) to reduce phase error; both actions typically expand \(\mathcal G\).  
+- **Freeze discipline.** During any flagged crossing, hold \(\Pi\) and controller internal state (integrators/filters) fixed, then reproject immediately after exit---this is your boxed rule.  
+- **Audit completeness.** Each window should have: `pr\_eps`, `N\_cross`, `tau\_min`, `C0`, and the bound terms. These tie directly to Theorem 3 and your acceptance checks.
+
+\paragraph{Mini unit tests.}
+1) **PR checker:** For a known PR network (e.g., \(C(s)=K/(1+s)\)) on a narrow band, KYP must return `pr\_ok=True` and \(\epsilon>0\).  
+2) **Projection:** Intentionally scale gains to violate PR; `project\_to\_G` should return a scaled \(g\) with `projected=True` and `check\_PR\_band(...)=True`.  
+3) **ISS budget:** Simulate a run with zero input and no crossings; ensure the logged bound decays as \(e^{-\underline\alpha t}\) and the frontier terms remain zero; then inject synthetic crossings and verify the linear-in-\(t\) bound via \(\tau_{\min}\).
+
+\paragraph{``Uses:'' (implicit for Section~6).}
+\emph{Uses: } (C6) PR margin; (C3) \(\tau_{\min}\) from Lemma 1; (C7) \(C_{\mathrm{fr}}\) via Lemma 3; energetic pairing; band \([\omega_L,\omega_H]\); Oustaloup order \(N\); freeze rule.
+
+
+% ============================================================

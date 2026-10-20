@@ -1,0 +1,99 @@
+% ============================================================
+\section{Conclusions \& Deployment Notes}\label{sec:conclusion2}
+% ============================================================
+
+\paragraph{Summary.}
+Part~II delivers a \emph{proof-carrying governor}: geometry is \emph{spent} via saltation inside ISS with a per-crossing \emph{Frontier Spend Ledger} (\S\ref{sec:calc2}); identifiability is \emph{gated} by instruments + \emph{IV badges} and MTC with power (\S\ref{sec:stoch2}); robustness is \emph{witnessed} by KKT traces with unique $\eta^\star$ and envelope checks (\S\ref{sec:closure2}); EF radii are \emph{enforced} by deterministic leakage clamps and a window \emph{quarantine} policy (\S\ref{sec:entropy2}, \S\ref{sec:stats2}); control claims are \emph{certified} by GKYP/PR over uncertainty with a vertex/extremal \emph{hitmap} and an automatic \emph{band-retuning} rule (\S\ref{sec:ctrl2}); algebra is \emph{registry-bound} with an associator budget (\S\ref{sec:adv-structures2}); and reporting is \emph{deterministically replayable} with coverage KPIs, automata evidence (row-hashes), and realized-FDR tightening (\S\ref{sec:stats2}). Plane drift is bounded and acted upon via holonomy KPIs, the small-gap \emph{Harmonic Rotational Mass} panel, and a gap-calibrated degeneracy policy (\S\ref{sec:kernels2}).
+
+% ------------------------------------------------------------
+\subsection*{Deployment plan (staged rollout)}
+
+\begin{constbox}
+\textbf{Release gates (must pass to promote an environment).}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Preflight (offline, synthetic).}
+Negative-control suite passes; BY realized-FDR audit $\le 0.9\,\cutq$ on null streams; IV-badge harness validated on seeded causal graphs; Replay Pack builds with image SHA; registries (Merge/Context) present; quarantine reasons taxonomy registered.
+\item \textbf{Staging (shadow).}
+(i) \emph{No-Zeno} counters (\S\ref{sec:calc2}) satisfied; (ii) PR/GKYP witnesses feasible on the stated \emph{uncertainty descriptor}; (iii) \emph{vertex/extremal hitmap} exported; (iv) envelope slope check $dv/d\rho{=}\eta^\star$ within $5\%$ (\S\ref{sec:closure2}); (v) \emph{quarantine hygiene}: quarantined windows excluded from discovery/FDR and adaptive training; (vi) coverage $\ge 99\%$, latency $\le$ one window (\S\ref{sec:stats2}); (vii) clamp determinism reproduces from Ladder; (viii) IV badges attached to any $E_t$ promotions (relevance HAC-CI + BY-vetted exclusion + ablation $\Delta\kappa$).
+\item \textbf{Canary (bounded blast-radius).}
+No rights-plane violations; one-sided CI for \emph{conservativity residual} $\le 0$ (\S\ref{sec:ctrl2}); Saltation Calibration replay within $+10\%$; \emph{Frontier Spend Ledger} populated with $(\hat\nu_{\min},c_\Sigma,\kappa_{\max},r_{\mathrm{tube}})$ CIs; DK/Wedin calibration within slack; spectral-gap CI at active rank excludes $0$ or mixed-plane/certified dwell engaged; automata witnesses include \emph{consumed\_evidence} row-hashes.
+\item \textbf{Production.}
+All KPIs at target (App.~\ref{app:kpi-registry}); weekly realized-FDR panel green two consecutive weeks; coverage $\ge 99\%$ sustained; Harmonic Rotational Mass non-increasing; \emph{Chatter} index $=0$; PR band-retuning policy active when margins drift to $\constref{epsilon}$; risk-posture transitions (tighten/freezes) logged.
+\end{enumerate}
+\end{constbox}
+
+% ------------------------------------------------------------
+\subsection*{Rollback \& fail-closed policy}
+Any of the following triggers immediate \emph{freeze+dwell}, promotion freeze, EF-radius tighten, and safe-bandit fallback to a previously verified lever (\S\ref{sec:ctrl2}):
+\begin{enumerate}[leftmargin=*]
+\item rights-plane violation or one-sided residual lower bound $<0$ (CBF); 
+\item \textsf{Conservativity Violation} (residual CI lower $>0$);
+\item clamp \textsc{Red} persisting $>m$ windows or \emph{coverage} $<99\%$ for $m$ windows (\S\ref{sec:stats2});
+\item realized-FDR $>0.9\,\cutq$ (weekly) or missing IV badges on promotions;
+\item DK-bound violation or spectral-gap CI containing $0$ without $k$-escalation/mixed-plane engagement;
+\item PR sampling validation shows minimum sampled margin $<\constref{epsilon}$ or vertex/extremal \emph{hitmap} shifts beyond tolerance;
+\item missing automata \emph{consumed\_evidence} row-hashes or Ladder link.
+\end{enumerate}
+Automatic actions: (i) shrink $(r,q)$ per posture policy; (ii) raise PR margin target if feasible; (iii) shrink band $[\omega_\ell,\omega_u]$ via the retuning rule; (iv) enforce minimum dwell for controller switching; (v) disable cross-channel merges in \textsc{Red}.
+
+% ------------------------------------------------------------
+\subsection*{Operational runbook (SRE-facing)}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Daily.}
+Verify Ladder coverage $\ge 99\%$ and latency $\le$ one window; inspect \emph{Frontier Spend Ledger} and Frontier Health (duty-cycle, $p_{\mathrm{graze}}$, $\hat\nu_{\min}$ CIs); confirm PR sampling validation vs.\ certificate band and update \emph{hitmap}; re-monitor last 24h automata with \emph{consumed\_evidence} hashes; check quarantine hygiene and risk-posture state.
+\item \textbf{Weekly.}
+Run realized-FDR audit (synthetic null); deterministically tighten $(\cutq,r)$ and freeze promotions $m$ windows if $>0.9\cutq$; rebuild Replay Pack image and record SHA; review dual-gap trend and $\eta^\star$ bracket; evaluate Harmonic Rotational Mass and holonomy/N$_{\mathrm{cross}}$; review safe-bandit logs (gain/cost, CVaR forecasts, zero-violation constraint).
+\item \textbf{On clamp \textsc{Yellow/Red}.}
+Shrink $(r,\cutq)$ per policy; disable cross-channel merges in \textsc{Red}; switch sensing to HSIC/CVaR-only triggers; freeze promotions and log posture transition.
+\item \textbf{When degeneracy detected.}
+If CI$(\Delta\sigma)$ contains $0$, escalate plane dimension $k$ or engage mixed-plane controller; attempt common-$V$; else enforce minimum dwell (record $\tau_{\mathrm{dwell}}$).
+\item \textbf{If PR infeasible or margins crowd $\constref{epsilon}$.}
+Activate band-retuning (shrink $[\omega_\ell,\omega_u]$ per rule); inspect uncertainty \emph{hitmap} for dominating vertices/extremals; if necessary, raise PR margin and reduce admissible set until sampling validation passes.
+\item \textbf{If coverage drops $<99\%$.}
+Pause promotions; re-run ingestion audit; tighten $(r,q)$; backfill hashes; resume only after coverage $\ge 99\%$ for $m$ consecutive windows.
+\end{enumerate}
+
+% ------------------------------------------------------------
+\subsection*{Configuration \& versioning}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Registries (required).} \emph{MergeRegistry.json}, \emph{ContextRegistry.json}, and the windowed \emph{Instrument Map} (hashes in Ladder); IV-badge thresholds (first-stage $F>10$, BY-$q$) pinned.
+\item \textbf{Risk posture \& quarantine.} Finite-state posture (NOMINAL/TIGHTENED) params $(\gamma_q,\gamma_r,m)$; quarantine reasons taxonomy; posture transitions logged with evidence (realized FDR, coverage).
+\item \textbf{Uncertainty descriptors.} Polytope vertex ids or LFT structure hash + scaling metadata; \emph{hitmap} export schema and band-retuning policy file.
+\item \textbf{Frontier \& degeneracy artifacts.} Spend-Ledger schema; DK calibration ids; spectral-gap MBB parameters $(b,B)$.
+\item \textbf{Automata evidence.} Monitor specs and a \emph{consumed\_evidence} row-hash linking contract; re-monitor script ids.
+\item \textbf{Determinism.} Seeds, solver tolerances, Docker image SHA, and ordered replay scripts recorded in the Transport Pack.
+\end{itemize}
+
+% ------------------------------------------------------------
+\subsection*{SLOs \& monitors (minimum set)}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Safety SLOs.} Rights-Plane Violations $=0$; one-sided CBF residual lower bound $\ge 0$; CVaR$_{0.95}$ slacks $\le$ budget; \textsf{Conservativity} residual CI lower $\le 0$.
+\item \textbf{Auditability SLOs.} Coverage $\ge 99\%$; latency $\le$ one window; automata re-monitor bit-for-bit; \emph{consumed\_evidence} hashes present; posture transitions reproducible; quarantine hygiene satisfied.
+\item \textbf{Performance SLOs.} Median $M_t$ $\downarrow\ge 20\%$ over $2\tau^\ast$; $\widehat R_t$ non-decreasing (subject to I$_5$); dual gap $\le 10^{-4}$; holonomy/N$_{\mathrm{cross}}$ and Harmonic Rotational Mass non-increasing; spectral-gap CI excludes $0$ at active rank (or certified mixed-plane/dwell in effect); \emph{Chatter} index $=0$; realized-FDR $\le 0.9\cutq$.
+\end{itemize}
+
+% ------------------------------------------------------------
+\subsection*{Data protection \& compliance (practical minimum)}
+Minimize PII at ingest; hash/chunk raw telemetry; store windowed statistics and hashes; pre-register contexts for IV tests (Context Registry) and ensure partition reproducibility; maintain a normative dictionary mapping venue/legal levers to controller contracts (e.g., freeze/dwell via TRO/PI, apportionment SLA) for court-legible deployments.
+
+% ------------------------------------------------------------
+\subsection*{Known limitations \& future work}
+Higher-order ($K{\ge}4$) cumulants are budgeted and escalated selectively; common-$V$ may fail for some mixed-plane sets (fallback: dwell); PR certificates depend on declared uncertainty sets—automated region synthesis and adaptive band design are future work; cross-platform numerical determinism may require container-level BLAS pinning; bootstrap costs rise with window size—consider variance-reduced resampling.
+
+\begin{mdframed}
+\textbf{Environment acceptance checklist (one page).}
+\begin{enumerate}[leftmargin=*]
+\item Negative-controls $\checkmark$; realized-FDR audit $\checkmark$ with posture policy enforced (tighten/freeze if $>0.9\cutq$); Replay SHA recorded.
+\item \emph{Quarantine hygiene} $\checkmark$ (discovery/FDR excludes quarantined windows; reasons logged).
+\item Saltation \& DK calibration replays $\checkmark$ (residuals within bounds); Frontier Spend Ledger populated with CI-bearing constituents.
+\item PR/GKYP certificate feasible on \emph{uncertainty descriptor}; \emph{hitmap} exported; band-retuning rule configured; sampling validation $\checkmark$.
+\item Envelope slope check $\checkmark$; dual gap $\le 10^{-4}$; $\eta^\star$ bracket width $\downarrow$.
+\item Coverage $\ge 99\%$ and latency $\le$ one window; coverage-triggered clamp policy tested.
+\item Degeneracy response configured (gap CI, $k$-escalation or mixed-plane + dwell); \emph{Chatter} index monitor active.
+\item CIS entries for promotions include \emph{IV badges} and MTC power; CIS cross-links to automata rejecting runs when applicable.
+\item Automata re-monitor $\checkmark$ with \emph{consumed\_evidence} row-hashes; Ladder completeness $\ge 99\%$.
+\end{enumerate}
+\end{mdframed}

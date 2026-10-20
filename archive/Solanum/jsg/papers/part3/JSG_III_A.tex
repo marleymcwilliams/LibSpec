@@ -1,0 +1,37 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\input{../common/jsg_common.tex}
+\input{../common/macros.tex}
+\input{../common/xref.tex}
+\addbibresource{../common/refs.bib}
+
+\title{Joint Strategic Geometry III (A)}
+\author{JSG Authors}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+% Wrapper identifier for conditional text in modules
+\newcommand{\JSGWrap}{A}
+
+% Shared tenets and registries (un-numbered)
+\input{../common/tenets.tex}
+
+% Sections (generated from manifest)
+\input{sections/intro3.tex}
+\input{sections/ops3.tex}
+\input{sections/closures3.tex}
+\input{sections/sense3.tex}
+\input{sections/ctrl3.tex}
+\input{sections/pcc-bench3.tex}
+\input{sections/runbook3.tex}
+\input{sections/deploy3.tex}
+\input{sections/gov3.tex}
+\input{sections/related3.tex}
+\input{sections/conclusion3.tex}
+\input{sections/appendix3.tex}
+
+\nocite{*}
+\printbibliography
+\end{document}

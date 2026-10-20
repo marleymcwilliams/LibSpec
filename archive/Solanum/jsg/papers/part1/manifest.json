@@ -1,0 +1,25 @@
+{
+  "roman": "I",
+  "title": "JSG Part I",
+  "author": "JSG Authors",
+  "wrappers": {
+    "A": {
+      "title_suffix": "(A)",
+      "include": [
+        "calc1",
+        "stoch1",
+        "closure1",
+        "entropy1"
+      ]
+    },
+    "B": {
+      "title_suffix": "(B)",
+      "include": [
+        "control1",
+        "kernels1",
+        "adv-structures1",
+        "stats1"
+      ]
+    }
+  }
+}

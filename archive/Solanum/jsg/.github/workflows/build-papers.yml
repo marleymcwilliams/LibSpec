@@ -1,0 +1,22 @@
+name: build-papers
+on: [push, pull_request]
+jobs:
+  latex:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: papers/part2
+          root_file: |
+            JSG_II_A.tex
+            JSG_II_B.tex
+          latexmk_use_xelatex: false
+      - name: Upload PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: jsg-pdfs
+          path: papers/part2/*.pdf
+      - name: PR summary
+        if: github.event_name == 'pull_request'
+        run: python tools/latex_ci_summary.py

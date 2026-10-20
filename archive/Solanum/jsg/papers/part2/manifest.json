@@ -1,0 +1,39 @@
+{
+  "roman": "II",
+  "title": "JSG Part II",
+  "author": "JSG Authors",
+  "wrappers": {
+    "A": {
+      "title_suffix": "(A)",
+      "include": [
+        "intro2",
+        "calc2",
+        "stoch2",
+        "closure2",
+        "entropy2",
+        "ctrl2",
+        "kernels2",
+        "adv-structures2",
+        "stats2",
+        "conclusion2",
+        "tables2"
+      ]
+    },
+    "B": {
+      "title_suffix": "(B)",
+      "include": [
+        "intro2",
+        "calc2",
+        "stoch2",
+        "closure2",
+        "entropy2",
+        "ctrl2",
+        "kernels2",
+        "adv-structures2",
+        "stats2",
+        "conclusion2",
+        "tables2"
+      ]
+    }
+  }
+}

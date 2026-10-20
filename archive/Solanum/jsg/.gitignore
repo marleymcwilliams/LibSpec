@@ -1,0 +1,50 @@
+# LaTeX build artifacts
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.brf
+*.fdb_latexmk
+*.fls
+*.glg
+*.glo
+*.gls
+*.ist
+*.log
+*.nav
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.vrb
+*.snm
+
+# Build directories
+build/
+dist/
+site/
+
+# Figures cache
+papers/**/figures/*.pdf
+papers/**/figures/*.png
+papers/**/figures/*.svg
+
+# Python
+__pycache__/
+.pytest_cache/
+*.pyc
+.venv/
+venv/
+
+# OS/IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.code-workspace
+
+# Misc
+.env
+.env.*
+*.tmp
+*.bak

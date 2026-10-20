@@ -1,0 +1,94 @@
+% ==== Symbol Registry (one page) ============================================
+\section*{Symbol Registry (standing constants and moduli)}\label{sec:symbol-registry}
+\noindent\emph{All constants are understood as \textbf{uniform on compact sublevel sets} of the Lyapunov/energy functions in use. Codes C1--C7 are stable across drafts.}
+
+\\begin{standbox}[Symbol Registry (standing constants and moduli)]
+\\begin{enumerate}[leftmargin=*,itemsep=2pt,label=\\textbf{C\\arabic*}]
+\\item  $ \\kappa_{\\max}\\constlabel{kappamax},\\ \\theta_{\\min}\\constlabel{thetamin},\\ r_{\\mathrm{tube}}\\constlabel{rtube} $: Frontier geometry � curvature/defect bounds; minimum principal-angle separation; tube radius for freeze  \\& detection. Used in \\S\\ref{sec:calc2}, \\S\\ref{sec:ctrl2}.
+\\item  $S_{ \\max}\\constlabel{Smax},\\ G_{\\max}\\constlabel{Gmax} $: Uniform bounds for decision/environment vector fields on strata ($ \\|S\\|\\le \\constref{Smax} $ on $ \\Gamma $, $ \\|G\\|\\le \\constref{Gmax} $ on $G$). Used in  \\S\\ref{sec:calc2}, \\S\\ref{sec:ctrl2}.
+\\item  $L_{ \\mathrm F}\\constlabel{LF},\\ \\tau_{\\min}\\constlabel{taumin} $: One-sided Lipschitz for Filippov extension; minimum dwell time ensuring No-Zeno. Used in Lem.~ \\ref{lem:nozeno-impl}, Thm.~\\ref{thm:ISS2}.
+\\item  $ \\tau\\constlabel{tau},\\ \\rho\\constlabel{rho} $: Sliding window length and DRO radius (Wasserstein or KL ball). Adaptive policy in  \\S\\ref{sec:closure2}, \\S\\ref{sec:entropy2}.
+\\item  $F \\constlabel{F},\\ \\chi\\constlabel{chi},\\ L_\\psi\\constlabel{Lpsi} $: Fisher objects --  \\constref{F} (windowed) Fisher information; \\constref{Lpsi} Hessian-Lipschitz for log-partition; \\constref{chi} Fisher leakage. Used in \\S\\ref{sec:stoch2}, \\S\\ref{sec:entropy2}.
+\\item  $ \\epsilon\\constlabel{epsilon} $: PR margin / band for controllers and rights-plane slack; also small-equivalence parameter in KL--Fisher bounds. 
+\\item  $ \\eta ^ \\star\\constlabel{etastar} $: Inner dual optimizer for soft-transport DRO; logged for KKT diagnostics and sensitivity. 
+\\end{enumerate}
+\\end{standbox}
+
+\begin{abstract}
+Part~II converts the Joint Strategic Geometry program into a \emph{proof-carrying governor}. Every runtime claim about coupling, range, and safety is falsifiable via logged witnesses: (i) KKT traces and dual gaps for soft-transport DRO; (ii) GKYP/LMI feasibility certificates (band endpoints, margin $\constref{epsilon}$, uncertainty set, dual multipliers) for PR; (iii) $\omega$-automata accepting/rejecting runs for LTL specs; and (iv) a hash-chained Provenance Ladder. Two technical closures make the geometry operational: a \emph{saltation--defect} bound parameterized by $(\constref{kappamax},\constref{thetamin},\constref{rtube})$ that `spends' the frontier-defect budget inside the ISS supply rate and sharpens the Decision-Range Conservativity bound; and a \emph{holonomy budget} that limits rotational mass via Davis--Kahan/Wedin plane-drift across crossings.
+
+Sensing is windowed and \emph{identifiable}: Effective Coupling Space $E_t$ is certified by mixed cumulants with FDR control, then stress-tested by \emph{instruments/interventions} on $\Gamma$ or $G$. A \emph{Minimum Transfer Condition (MTC)} promotes a discovery only if it (a) reduces held-out transport error, (b) passes a calibrated SPRT on $M_t$, and (c) preserves Fisher conditioning. The KL--Fisher neighborhood is made \emph{operational} by $r=\varepsilon/\constref{Lpsi}$ with an automatic \emph{leakage clamp} driven by $\constref{\chi}(t)$ that shrinks $r$ and freezes new discoveries when conditioning degrades.
+
+Control is a CLF/CBF-QP projected by $\Pi$ with frontier-aware CBF invariance and PR certification on a band; Decision Range $R_t$ is the reported admissible-control volume. A normative dictionary maps legal/fiscal levers (TRO/PI, SLA, anti-commandeering, etc.) to concrete controller contracts. We ship a four-tier artifact (Transport Pack, Provenance Ladder, Coupling ID Sheet with MTC badges, Automata Evidence) and a benchmark suite (negative control, degeneracy stress, formal-spec acceptance). The result is a governor that measurably reduces coupling mass $M_t$, increases decision range $R_t$ subject to I$_5$, and remains auditable end-to-end.
+\end{abstract}
+
+\noindent\textbf{Keywords:} information geometry; Fisher metric; mixed cumulants; DRO; PR control; CBF/CLF-QP; formal methods; $\omega$-automata; provenance; benchmarks.
+
+% ============================================================
+\section{Introduction and Scope}\label{sec:intro2}
+% ============================================================
+
+\paragraph{Purpose (delta from Part I and from the prior draft).}
+This Part~II turns the Part~I geometry into a \emph{proof-carrying governor} with end-to-end, \emph{deterministic, replayable} witnesses. Every claim about coupling ($M_t$), decision range ($R_t$), and safety (I$_1$--I$_5$) is falsifiable via per-window artifacts and acceptance checks. Relative to the previous draft, this revision converts schematic guarantees into \emph{numerical contracts} that auditors can recompute from the Transport Pack + Provenance Ladder alone (no hidden config), and tightens identifiability and control with pre-registered contexts, powered promotions, robust PR certificates, and explicit quarantine/fail-closed policies.
+
+\paragraph{What is new (certificate-first commitments).}
+Each item below has a concrete witness and a pass/fail acceptance check in the windowed pipeline.
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{Numerical saltation contracts \& replay check.} For every frontier tube we now \emph{publish} the evaluated constant $C_{\mathrm{salt}}(\constref{kappamax},\constref{thetamin},\constref{rtube},\hat\nu_{\min},\constref{Smax},\constref{Gmax})$ and ship a \emph{Saltation Calibration} replay that recomputes $\|K{-}I\|$ from logged $(F^\pm,n)$ and asserts $\|K{-}I\|\le C_{\mathrm{salt}}(1{+}0.1)$. Failures raise a Frontier Health alarm. 
+\item \textbf{Grazing detection \& dwell modulation.} We log a grazing probability $p_{\mathrm{graze}}$ from angular margins (empirical $\sin\theta$ vs.\ threshold) and \emph{increase} $\constref{taumin}$ inside tubes when $p_{\mathrm{graze}}$ is high; events are counted in the Frontier Health KPI.
+\item \textbf{Decision-range conservativity, \emph{instantiated}.} We specify a computable loss function $f\!\left(C_{\mathrm{fr}},\constref{taumin},d(x,\partial\mathcal C)\right)$ (declared in Sec.~\ref{sec:ctrl2}) and export a per-window \emph{residual} $\big(R_t{-}R_t'\big)-f(\cdot)$ with CI; any positive residual yields a rejecting \emph{Conservativity Violation} automata run.
+\item \textbf{KL--Fisher radius as a runtime \emph{guard}, not a lemma.} The quadratic proxy is \emph{invoked only if} \texttt{kl\_quad\_bounds} logs $\|\bm\kappa\|_{\FIM^{-1}}\le r=\varepsilon/\widehat{\constref{Lpsi}}$. Else we fail-closed and fall back to nonparametric alarms (HSIC/CVaR). Leakage is handled by a \emph{three-state clamp} (Green/Yellow/Red) with deterministic hysteresis.
+\item \textbf{Identifiability with a \emph{Context Registry} \& \emph{Instrument Map}.} Promotions relying on instruments are blocked unless the instrument/context pair is pre-registered and its invariance tests (BY at level $\cutq$) are non-rejecting in the Map.
+\item \textbf{MTC with power: \emph{MDE-gated} transfer.} Gate (i) of MTC requires that the DRO improvement $\Delta\hat R_{\mathrm{DRO}}$ not only exclude $0$ but also achieve \emph{power} $\ge 0.8$ for a pre-registered minimal detectable effect $\Delta_{\min}$ (HAC variance). Achieved power is logged on the CIS badge.
+\item \textbf{SPRT preconditioned by DRO sensitivity.} Before consuming SPRT outcomes, we check the envelope identity $dv/d\rho=\eta^\star$ by a finite-difference slope vs.\ $\eta^\star$ match ($\le5\%$); failure invalidates the SPRT for that window.
+\item \textbf{Adaptive $K$ (finite-degree cumulants).} Under clamp+high residual HSIC with stagnant $|E_t|$, we escalate to $K{=}4$ (BY-controlled, budgeted); the active $K$ is recorded in the CIS.
+\item \textbf{PR as a \emph{robust} certificate.} GKYP is enforced over an explicit \emph{uncertainty set} (polytopic vertices or LFT). We export band $(\omega_\ell,\omega_u)$, margin $\constref{epsilon}$, $(P,Q)$, vertex/LFT ids, and transcript id.
+\item \textbf{Rights-plane tail protection.} Frontier slack $\sigma_i$ is guarded by a \emph{CVaR}$_{0.95}$ budget; if exceeded, we escalate to freeze+dwell regardless of PR margin.
+\item \textbf{Lever selection as a \emph{safe UCB} bandit.} We replace heuristics with a conservative UCB over levers, hard-constrained by QP safety (\#CBF violations $=0$). We log posteriors/CI per lever and the chosen action.
+\item \textbf{Deterministic Replay Pack \& automata re-monitor.} We ship a pinned container (image SHA), a single replay script, and hashes of consumed KPI rows; a \emph{re-monitor} reproduces automata verdicts exactly from the Provenance Ladder. Any mismatch is a hard failure.
+\item \textbf{New KPIs.} (i) \emph{Coupling Regret} $M_t-M_t^\circ$ vs.\ a decoupled baseline (HAC CI); (ii) \emph{Holonomy per crossing} $\mathrm{Hol}/N_{\mathrm{cross}}$; (iii) \emph{Provenance latency}. A \emph{dual-gap trend} panel alarms if the DRO dual gap plateaus $>10^{-4}$ for $m$ windows.
+\item \textbf{Clamp-policy FDR audit.} Weekly null-stream audits estimate realized FDR; if it exceeds $0.9\cutq$, we tighten to $\cutq\leftarrow 0.9\cutq$ and log “Clamp Policy Evidence.”
+\item \textbf{Frontier Spend Ledger with CIs (fix).} Per crossing we log $C_{\mathrm{salt}}$ constituents $(\hat\nu_{\min},c_\Sigma,\kappa_{\max},\constref{rtube})$ with \emph{MBB CIs} and charge the ISS \emph{frontier-spend} entry; the ledger feeds the Frontier Health panel and I$_4$ accounting.
+\item \textbf{Gap-calibrated plane switching (fix).} Plane updates are \emph{blocked} when the rank-$k$ gap CI for $\Delta\sigma$ contains $0$; the system either escalates $k$ or engages mixed-plane control with a switching-stability witness (CQLF or dwell).
+\item \textbf{Rights-plane residual audit at crossings (fix).} We compute a one-sided CI for $h_i^+-h_i^-+\sigma_i$ per crossing; a negative lower bound triggers a \emph{hard} tube failure and a rejecting automaton run with evidence.
+\item \textbf{IV Badge (fix).} CIS badges now include (i) first-stage relevance with HAC CI and $F\!>\!10$, (ii) BY-vetted exclusion across contexts, and (iii) an observed \emph{drop} in the target $\kappa_{p,q}^{(m)}$ under instrument ablation/micro-intervention.
+\item \textbf{Window quarantine (fix).} If the envelope precondition $dv/d\rho{=}\eta^\star$ fails, the entire window is \emph{quarantined}: no promotions, no model updates, no FDR accounting—monitoring only. Quarantine status and cause are logged in the Ladder.
+\item \textbf{Audit feedback as a state machine (fix).} When realized FDR $>\!0.9\cutq$, we deterministically (i) shrink $r\!\leftarrow\!\gamma_r r$, (ii) tighten $\cutq\!\leftarrow\!0.9\cutq$, and (iii) \emph{freeze} promotions for $m$ windows; all steps are artifacted.
+\item \textbf{PR robustness hitmap \& band retuning (fix).} We export a vertex/extremal \emph{hitmap} showing margin bottlenecks and apply an automatic \emph{band-shrink} rule when sampled margins drift toward $\constref{epsilon}$.
+\item \textbf{Provenance coverage KPI (fix).} Coverage $=$ reproducible\_rows / total\_rows is tracked with alarms; coverage drops trigger clamp tightening and are recorded as policy evidence.
+\item \textbf{Automata $\rightarrow$ KPI row links (fix).} Every rejecting run includes witness traces \emph{and} the exact KPI row hashes it consumed; any mismatch is surfaced in CIS and treated as a hard failure.
+\end{enumerate}
+
+\paragraph{Core objects (operational recap).}
+On each window $[t-\constref{tau},t]$ we compute
+\[
+M_t=\bm\kappa_t^\top \FIM_t^{-1}\bm\kappa_t,\qquad
+E_t=\{(p,q,m): \kappa_{p,q}^{(m)}\neq 0\ \text{post-BY at level }\cutq\ \text{and MTC-passed}\},
+\]
+and report the \emph{Decision Range} $R_t=\mathrm{vol}_r(U_t)$ for the admissible control set (PR margin $\ge\constref{epsilon}$, CBFs satisfied, actuator/venue limits). The EF radius $r=\varepsilon/\widehat{\constref{Lpsi}}$ is enforced by a logged guard; clamps shrink $r$ and discovery level $\cutq$ and freeze promotions in \textsc{Red}. Frontier spending uses a \emph{numerical} $C_{\mathrm{salt}}$ with a replay check and a CI-bounded ledger entry, and the Decision-Range Conservativity bound is instantiated with an explicit $f(\cdot)$ (Sec.~\ref{sec:ctrl2}). Switching across control planes is protected by a \emph{common-$V$} (if feasible) or a minimum dwell certificate with logged dwell; updates respect the \emph{gap-calibrated} gate.
+
+\paragraph{Contributions (audit-ready).}
+\begin{itemize}[leftmargin=*,itemsep=2pt]
+\item \emph{C-1 (Saltation spending, numerical):} $C_{\mathrm{salt}}$ computed per tube with CI constituents; \emph{Saltation Calibration} replay; Frontier Spend Ledger and Frontier Health KPI with $p_{\mathrm{graze}}$.
+\item \emph{C-2 (Holonomy budget \& switching stability):} DK/Wedin plane-drift with \emph{holonomy per crossing}; mixed-plane control guarded by \emph{common-$V$} or dwell; \emph{gap-calibrated} plane updates.
+\item \emph{C-3 (KL--Fisher radius as a guard):} EF radius from $\widehat{\constref{Lpsi}}$ with \emph{runtime} \texttt{kl\_quad\_bounds}; deterministic clamp policy and weekly realized-FDR audits driving a risk-state machine.
+\item \emph{C-4 (Identifiability beyond correlation):} Context Registry + Instrument Map; invariance tests; micro-interventions; \emph{powered} MTC gate with MDE; \emph{IV Badge} with ablation drop in $\kappa$.
+\item \emph{C-5 (SPRT via DRO dual):} envelope precondition $dv/d\rho=\eta^\star$ before SPRT; \emph{window quarantine} on failure; \emph{dual-gap trend} KPI.
+\item \emph{C-6 (PR witness over uncertainty):} GKYP PR on a band with polytopic/LFT uncertainty; witness export $(P,Q)$, vertices/LFT, transcript id; \emph{hitmap} and \emph{band retuning}.
+\item \emph{C-7 (Rights-plane tail risk):} CBF slack CVaR guard with freeze escalation; one-sided CI residual at crossings.
+\item \emph{C-8 (Curvature per collateral, safely learned):} lever selection via safe UCB with zero-violation constraint; regret logged.
+\item \emph{C-9 (Four-tier artifacts + Replay Pack):} Transport Pack, Provenance Ladder, CIS with MTC \& IV badges, Automata Evidence with \emph{row-hash links} and \emph{re-monitor}; pinned container SHA.
+\item \emph{C-10 (Provenance coverage):} coverage KPI and alarms; clamp coupling on degradation.
+\end{itemize}
+
+\paragraph{Design contracts (runtime).}
+Layer tags \texttt{[Rep/Alg/Stoch/Inf/Clos/Ctrl/Comp]} annotate claims and APIs; each theorem that uses EF quadratic proxies \emph{must} include a passing \texttt{kl\_quad\_bounds} witness in the artifact. Every window logs
+\[
+(\hat L_t,\rho_t,\eta_t^\star,\text{dual gap},M_t,E_t,\text{MTC power/MDE},R_t,\constref{chi}_t,\text{PR cert id},\text{switching cert},\text{automata ids},C_{\mathrm{salt}},p_{\mathrm{graze}},\text{gap-CI},\text{coverage\%},\text{quarantine flag})
+\]
+and the replay manifests (container SHA, solver tolerances, seeds). Acceptance checks are deterministic and fail-closed.
+
+\paragraph{Roadmap.}
+\S\ref{sec:calc2} finalizes the hybrid calculus with \emph{numerical} saltation spending (with CIs), grazing detection, and ISS accounting; \S\ref{sec:stoch2} operationalizes mixed cumulants with \emph{Context Registry}, MDE-powered MTC, SPRT preconditions with \emph{window quarantine}, and $K$-escalation; \S\ref{sec:closure2} details DRO KKT logging, envelope checks, the dual-gap KPI, and the risk-state feedback; \S\ref{sec:entropy2} enforces the EF radius/clamp as a \emph{runtime guard}; \S\ref{sec:ctrl2} exports GKYP/PR witnesses over uncertainty with a \emph{hitmap} and \emph{band retuning}, frontier-aware CBFs with CVaR guards and one-sided crossing residuals, an explicit conservativity $f(\cdot)$, and safe-bandit lever selection; \S\ref{sec:kernels2} provides constrained SVD with \emph{gap-calibrated} switching stability certificates and a holonomy budget; \S\ref{sec:adv-structures2} verifies quasi-shuffle invariants under whitening; \S\ref{sec:stats2} tightens KPIs (including coverage), adds regret/latency panels, and ships automata re-monitor links to KPI row hashes.
+
+

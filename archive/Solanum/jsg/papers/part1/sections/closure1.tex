@@ -1,0 +1,341 @@
+\section{Hierarchical Closure: BBGKY Analogy and DRO}\label{sec:closure1}
+% ============================================================
+
+We pose closure as a Wasserstein--KL distributionally robust optimization (DRO) and derive a tractable soft-transport dual. New here:
+(i) a stratified \emph{reference measure} $\lambda$ that is \emph{refinement invariant} (Definition~\ref{def:ref-measure}, Proposition~\ref{prop:refinement});
+(ii) measurability and stratum-Lipschitz properties of the soft potential $\varphi_\eta$ (Lemma~\ref{lem:varphi-meas});
+(iii) differentiability of $\mathcal R_\rho$ in $(\theta,\eta)$ with an envelope/KKT system and explicit gradients (Proposition~\ref{prop:kkt});
+(iv) an \emph{adaptive radius} policy with guarantees that expose finite-sample $W_1$ rates via an effective transport dimension $d_{\mathrm{eff}}$ (Definition~\ref{def:adaptive}, Theorem~\ref{thm:adaptive-radius}).
+
+\subsection{DRO objective and soft-transport dual}
+
+Given a whitened statistic dictionary up to order $K$ (Section~\ref{sec:entropy1}), we fit $\theta$ by
+\begin{equation}\label{eq:DRO}
+\min_{\theta\in\Theta}\ \underbrace{\sup_{Q:\ W_1(Q,\hat P)\le \rho}\ D_{\mathrm{KL}}(Q\Vert P_\theta)}_{:=\ \mathcal R_\rho(\theta)}\ +\ \lambda_{\mathrm{hopf}}\,\big\|(\mathrm{id}-\Pi_{\le K})\,\hat S\big\|^2.
+\end{equation}
+Here $W_1$ is computed with a ground metric $d_X$ on $X=\Gamma\times G$, and the second term penalizes Hopf-residual energy (Section~\ref{sec:adv-structures1}).
+
+\begin{definition}[Stratified reference with continuous+atomic split]\label{def:ref-measure}
+Write $\lambda=\lambda_{\cont}+\lambda_{\atom}$ with
+\[
+\lambda_{\cont}:=\sum_{i\in I} w_i\,\mathcal H^{\dim M_i}\!\!\restriction_{M_i},\qquad
+\lambda_{\atom}:=\sum_{j\in J} w'_j\,\delta_{D_j},
+\]
+normalized on compacta and refinement-invariant (Prop.~\ref{prop:lambda-refinement}). 
+For any model $P_\theta$, write $P_\theta=P^{\cont}_\theta+P^{\atom}_\theta$ with $P^{\cont}_\theta\ll\lambda_{\cont}$ and $P^{\atom}_\theta\ll\lambda_{\atom}$.
+\end{definition}
+
+\begin{proposition}[Refinement-invariant stratified reference measure]\label{prop:lambda-refinement}
+\emph{[\textup{Stoch/Clos}]}
+Let $G=\bigsqcup_i M_i$ be Whitney-stratified. Choose weights $c_i \propto \mathcal H^{\dim M_i}(M_i\cap K)$ on compacta $K$ (Hausdorff volume of top-dimensional pieces restricted to $K$) and assign atom weights $c'_j$ continuously under refinements so that $\sum_i c_i+\sum_j c'_j=1$ on $K$. 
+If two stratifications admit a common refinement, the induced measures $\lambda$ are mutually absolutely continuous and the inner value $\mathcal R_\rho(\theta)$ is identical for both. 
+\begin{proofsketch}
+Use Carath\'eodory's construction on the stratified $\sigma$-algebra and note that Hausdorff measures agree up to equivalence across common refinements on each piece; atomic mass continuity prevents mass creation under partitioning. The dual integral defining $\varphi_\eta$ is invariant under equivalent $\lambda$.
+\end{proofsketch}
+\uses{Whitney stratification; Hausdorff measures; Carath\'eodory extension.}
+\end{proposition}
+
+\begin{lemma}[Differentiability and KKT envelope]\label{lem:dv-kkt}
+\emph{[\textup{Stoch/Clos/Inf}]}
+Assume: (i) $dP_\theta/d\lambda$ is $C^1$ in $\theta$ on each $\Gamma\times M_i$; 
+(ii) there exists an $L^1(\lambda)$ envelope $G$ with $\sup_{\|\theta\|\le r,\ \eta\in[0,\eta_{\max}]}\big\|\partial_\theta \log\frac{dP_\theta}{d\lambda}\big\|\le G$; and (iii) $d_X$ is continuous. Then
+\[
+\nabla_\theta \mathcal R_\rho(\theta)\ =\ \nabla_\theta \mathbb E_{\hat P}\!\left[\varphi_{\eta^\star}(\cdot;\theta)\right]
+\ =\ \mathbb E_{\hat P}\!\left[\frac{\int e^{-\eta^\star d_X(z,\cdot)}\,\partial_\theta \frac{dP_\theta}{d\lambda}(z)\,d\lambda(z)}{\int e^{-\eta^\star d_X(z,\cdot)}\,\frac{dP_\theta}{d\lambda}(z)\,d\lambda(z)}\right],
+\]
+and the KKT system holds with $\eta^\star\ge 0$ solving $\rho=\mathbb E_{\hat P}[\partial_\eta \varphi_\eta]$. 
+\begin{proofsketch}
+Carath\'eodory measurability (Lemma~\ref{lem:varphi-meas}) + dominated convergence (envelope) justify interchanging $\nabla_\theta$ and the integral; apply the envelope theorem for the inner infimum in $\eta$.
+\end{proofsketch}
+\uses{Envelope $G\in L^1$; Lem.~\ref{lem:varphi-meas}.}
+\end{lemma}
+
+\begin{remark}[Finite-sample $W_1$ drift rates and $\delta$ in Thm.~\ref{thm:adaptive-radius}]\label{rem:w1-rates}
+\emph{[\textup{Stoch/Clos}]}
+With $n$ points per window and effective transport dimension $d_{\mathrm{eff}}$,
+\(
+|\hat L_t - L| = O_{\mathbb P}\!\big(n^{-1/d_{\mathrm{eff}}}\big)
+\)
+in the worst case, and improves to
+\(
+O_{\mathbb P}(n^{-1/2})
+\)
+under bounded transport dimension / sub-Gaussian dictionary tails. 
+Choose $\delta$ in Theorem~\ref{thm:adaptive-radius} accordingly to set $(c,\tau)$ pragmatically.
+\uses{Window size $n$; dictionary tails/transport-dimension assumption.}
+\end{remark}
+
+
+With $P_\theta\ll\lambda$ and continuous $d_X$, the inner sup admits the Donsker--Varadhan/Kantorovich dual
+\[
+\mathcal R_\rho(\theta)
+\ =\ \inf_{\eta\ge 0}\Big\{\eta\rho+\mathbb E_{\hat P}[\varphi_\eta(\cdot;\theta)]\Big\},
+\quad
+\varphi_\eta(x;\theta)\ :=\ \log \int \exp\!\big(-\eta d_X(z,x)\big)\,\frac{dP_\theta}{d\lambda}(z)\,d\lambda(z).
+\]
+
+\begin{lemma}[Measurability and stratum-Lipschitz of $\varphi_\eta$]\label{lem:varphi-meas}
+\emph{[\textup{Stoch/Clos}]} If $d_X$ is continuous and $z\mapsto \frac{dP_\theta}{d\lambda}(z)$ is stratumwise continuous, then $x\mapsto \varphi_\eta(x;\theta)$ is Borel on $X$ and locally Lipschitz on each $\Gamma\times M_i$.
+\begin{proofsketch}
+Carath\'eodory's criterion applies to $(x,z)\mapsto e^{-\eta d_X(z,x)}\,dP_\theta/d\lambda(z)$; local dominated convergence on strata yields stratum-Lipschitzness of $\varphi_\eta$.
+\end{proofsketch}
+\uses{(C1) stratum charts; continuity of $d_X$; stratumwise continuity of $dP_\theta/d\lambda$.}
+\end{lemma}
+
+\subsection{Differentiability and KKT system}\label{subsec:kkt}
+
+\begin{proposition}[Differentiability and KKT for the soft-transport dual]\label{prop:kkt}
+\emph{[\textup{Clos/Inf}]} Suppose for some $r>0$, $\eta\in[0,\eta_{\max}]$, and all $\|\theta\|\le r$:
+(i) $dP_\theta/d\lambda$ is $C^1$ stratumwise with an $L^1(\lambda)$ envelope uniform in $(\theta,\eta)$;
+(ii) $\varphi_\eta(x;\theta)$ from Lemma~\ref{lem:varphi-meas} is $\hat P$-integrable.
+Then $\mathcal R_\rho(\theta)$ is $C^1$ on $\{\|\theta\|\le r\}$, and the inner minimization over $\eta\ge 0$ admits KKT conditions with
+\[
+\partial_\eta \Big(\eta\rho+\mathbb E_{\hat P}[\varphi_\eta]\Big)\bigg|_{\eta=\eta^\star}\ =\ 0
+\quad\Longleftrightarrow\quad
+\rho\ =\ \mathbb E_{\hat P}\Big[\underbrace{\mathbb E_{Z\sim Q_{\eta^\star,\theta}^x}\big[d_X(Z,x)\big]}_{:=\ \bar d_\eta(x;\theta)}\Big],
+\]
+where $Q_{\eta,\theta}^x$ is the Gibbs kernel on $X$ with density
+\[
+\frac{dQ_{\eta,\theta}^x}{d\lambda}(z)\ \propto\ e^{-\eta d_X(z,x)}\,\frac{dP_\theta}{d\lambda}(z).
+\]
+Moreover,
+\[
+\nabla_\theta \mathcal R_\rho(\theta)\ =\ \mathbb E_{\hat P}\Big[\ \mathbb E_{Z\sim Q_{\eta^\star,\theta}^x}\big[\ \nabla_\theta \log (dP_\theta/d\lambda)(Z)\ \big]\ \Big].
+\]
+If $\eta\mapsto \mathbb E_{\hat P}[\varphi_\eta]$ is strictly convex (e.g.\ when $d_X$ is non-degenerate on supports), then $\eta^\star$ is unique and the envelope theorem applies.
+\begin{proofsketch}
+Differentiate $\varphi_\eta$ under the integral using the uniform $L^1$ envelope; apply Danskin's theorem/envelope theorem at the $\eta$-minimizer. The $\partial_\eta$ identity is the well-known soft-transport moment. The $\theta$-gradient follows from the log-derivative trick inside the Gibbs kernel.
+\end{proofsketch}
+\uses{Dominated convergence envelope; (C5) EF radius context; (C4) window integrability.}
+\end{proposition}
+
+%% NEW: KKT/gradient with mixed parts
+\begin{corollary}[KKT and gradient under $\lambda_{\cont}+\lambda_{\atom}$]\label{cor:kkt-mixed}
+With Definition~\ref{def:ref-measure}, the soft-transport dual reads
+$\mathcal R_\rho(\theta)=\inf_{\eta\ge0}\{\eta\rho+\mathbb E_{\hat P}[\varphi_\eta]\}$ with
+\[
+\varphi_\eta(x;\theta)=\log\!\Big(\int e^{-\eta d_X(z,x)}\,\frac{dP^{\cont}_\theta}{d\lambda_{\cont}}(z)\,d\lambda_{\cont}(z)\ +\ \sum_{D\in\mathrm{Atoms}} e^{-\eta d_X(D,x)}\,\frac{dP^{\atom}_\theta}{d\lambda_{\atom}}(D)\Big).
+\]
+The KKT condition is $\rho=\mathbb E_{\hat P}[\bar d_\eta(x;\theta)]$ with $\bar d_\eta$ the $Q^{x}_{\eta,\theta}$-expectation over the \emph{product} measure, and
+\[
+\nabla_\theta \mathcal R_\rho(\theta)=\mathbb E_{\hat P}\!\Big[\mathbb E_{Z\sim Q^{x}_{\eta^\star,\theta}}\big[\nabla_\theta\log(dP^{\cont}_\theta\!/d\lambda_{\cont})(Z)\big]\Big]\ +\ \sum_{D}\ \hat P(\{x\})\,\pi_{\eta^\star,\theta}(D\mid x)\,\nabla_\theta\log\frac{dP^\atom_\theta}{d\lambda_{\atom}}(D).
+\]
+\end{corollary}
+
+%% NEW: strict monotonicity of g(eta) and uniqueness
+\begin{lemma}[Uniqueness of $\eta^\star$ by strict decrease]\label{lem:gprime}
+If $d_X(\cdot,x)$ is not $\lambda$-a.e.\ constant for each $x$ (GKYP-type nondegeneracy), then for fixed $(\theta,x)$
+\[
+g_x'(\eta)=-\operatorname{Var}_{Q^{x}_{\eta,\theta}}\!\big[d_X(Z,x)\big]\ <\ 0.
+\]
+Hence $g(\eta):=\mathbb E_{\hat P}[g_x(\eta)]$ is strictly decreasing and the KKT root $\eta^\star$ is unique.
+\end{lemma}
+
+\begin{proposition}[DRO-metric sensitivity]\label{prop:dro-metric-sens}
+Let $d_X^\epsilon=d_X+\epsilon\,\delta d$ with $\delta d$ Lipschitz and $\theta^*(\epsilon)$ be the minimizer of \eqref{eq:DRO}. 
+Under the IFT assumptions for the outer problem,
+\(
+\partial_\epsilon \theta^*(0)= - \big[\nabla^2_\theta \mathcal R_\rho(\theta^*)\big]^{-1}\,\nabla_{\theta}\mathbb E_{\hat P}\!\left[\partial_\epsilon \varphi_{\eta^*}(\cdot;\theta^*)\right],
+\)
+with $\partial_\epsilon \varphi_{\eta^*}(x;\theta)=-\eta^*\,\mathbb E_{Q^{x}_{\eta^*,\theta}}[\delta d(Z,x)]$. 
+\emph{Report:} log $\|\partial_\epsilon\theta^*(0)\|$ as ``DRO-metric sensitivity''.
+\end{proposition}
+
+\paragraph{Numerical note.}
+Compute $\varphi_\eta$ with log-sum-exp stabilization; sample from $Q_{\eta^\star,\theta}^x$ via importance sampling or short-run MCMC confined to a stratum (accept/reject at frontiers).
+
+\subsection{Adaptive radius policy: finite-sample rates}\label{subsec:adaptive}
+
+\begin{definition}[Adaptive radius policy]\label{def:adaptive}
+\emph{[\textup{Clos/Stoch}]} For window size $\tau$ with $n$ effective observations and transport dimension $d_{\mathrm{eff}}$ for $(X,d_X)$ on the window, define a pilot drift estimate
+\[
+\hat L_t\ :=\ \tfrac{1}{\tau}\,W_1\!\big(\hat P_{[t-\tau,t]},\hat P_{[t-2\tau,t-\tau]}\big),\qquad
+\rho_t\ :=\ c\,\hat L_t\,\tau\quad (c\ge 1).
+\]
+\uses{(C4) $\tau,\rho$; (C1) metric measurability.}
+\end{definition}
+
+\begin{theorem}[Containment and regret under finite-sample $W_1$ rates]\label{thm:adaptive-radius}
+\emph{[\textup{Clos}]} Let $P_{[t-\tau,t]}$ and $P_{[t-2\tau,t-\tau]}$ be the true window laws with $W_1$ drift speed $L$. Suppose $\hat P$'s are empirical with $n$ effective points and
+\[
+|\hat L_t - L|\ \le\ \delta_{n,d_{\mathrm{eff}}}
+\quad\text{with}\quad
+\delta_{n,d_{\mathrm{eff}}}=\begin{cases}
+C\,n^{-1/d_{\mathrm{eff}}} & \text{(worst-case, no moment/low-dim assumptions)},\\[2pt]
+C'\,n^{-1/2} & \text{(under bounded transport dimension / sub-Gaussian tails)}.
+\end{cases}
+\]
+Then with $\rho_t=c\,\hat L_t\,\tau$:
+\begin{enumerate}[leftmargin=*]
+\item (\emph{Containment}) $P_{[t-\tau,t]} \in \mathcal W_1(\hat P_{[t-\tau,t]},\rho_t)$ with probability $\ge 1-\alpha$ for a choice of $c=c(\alpha)$ depending on the tail bound of $\delta_{n,d_{\mathrm{eff}}}$.
+\item (\emph{Regret drift term}) The drift contribution in $D_{\mathrm{KL}}(P\Vert P_{\widehat\theta})$ scales as
+\[
+\mathrm{Regret}_\mathrm{drift}\ \le\ C_d \big(L+\delta_{n,d_{\mathrm{eff}}}\big)\,\tau.
+\]
+\end{enumerate}
+\begin{proofsketch}
+Triangle inequality for $W_1$ and concentration of empirical $W_1$ around truth give the containment for appropriate $c$. The regret bound follows from the dual representation with Lemma~\ref{lem:varphi-meas} (Lipschitz in $x$) and Proposition~\ref{prop:kkt} to control the variation of $\varphi_{\eta^\star}$ across adjacent windows.
+\end{proofsketch}
+\uses{(C4) $\tau$; Lipschitz constants from Lemma~\ref{lem:varphi-meas}; envelope from Proposition~\ref{prop:kkt}.}
+\end{theorem}
+
+\subsection{Error decomposition (updated)}
+With the adaptive radius, the standard decomposition becomes
+\[
+D_{\mathrm{KL}}(P\Vert P_{\widehat\theta})
+\ \le\ C_a\big\|(\mathrm{id}-\Pi_{\le K})\hat S\big\|^2\ +\ C_e n^{-1/2}\ +\ C_d\big(L+\delta_{n,d_{\mathrm{eff}}}\big)\,\tau,
+\]
+where the last term replaces the purely qualitative drift piece and is reported per window in logs together with $\eta^\star$.
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:closure1}.}
+\begin{enumerate}[leftmargin=*]
+\item Every use of the soft-transport dual references Definition~\ref{def:ref-measure} and Lemma~\ref{lem:varphi-meas}; claims about invariance under re-stratification cite Proposition~\ref{prop:refinement}.
+\item KKT/gradient statements cite Proposition~\ref{prop:kkt} and list the envelope hypotheses; implementations log $\eta^\star$.
+\item The adaptive radius and regret bounds cite Theorem~\ref{thm:adaptive-radius} with explicit $n$ and $d_{\mathrm{eff}}$ dependence; runs log $\widehat L_t$, $\rho_t$, $\eta^\star$.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (soft-transport dual, gradients, and logging)}
+
+\begin{lstlisting}
+# Ground types (conceptual)
+Metric dX(x,z)                      # ground metric on X = Gamma x G
+Model  P_theta                      # exponential-family or other density; exposes:
+                                    #   logpdf(z; theta), score(z; theta) = grad_theta logpdf
+Measure lambda                      # refinement-invariant reference (Def.~4)
+Sampler draw_from_lambda(stratum, m)  # draws z~lambda restricted to a stratum (or global)
+Projector Pi_leqK                   # Hopf projector used in residual penalty
+Logger log_json(dict)               # appends a JSON line to the run log
+
+# ---------- Core primitives (stable numerics) ----------
+function varphi_eta(x_batch, theta, eta, dX, P_theta, lambda, strata_policy):
+    # returns: vector phi[i] = varphi_eta(x_i; theta)
+    for each x in x_batch:
+        S = 0.0            # log-sum-exp accumulator (log domain)
+        w_sum = 0.0
+        # importance base: sample M support points from lambda (same stratum as x by default)
+        Z = draw_from_lambda(strata_policy(x), M)
+        # compute log-weights with log-sum-exp stabilization
+        for z in Z:
+            \ell = -eta * dX(z, x) + logpdf_P_over_lambda(z; theta, P_theta, lambda)
+            # standard log-sum-exp trick
+            if S == 0.0: S = \ell
+            else:
+                if \ell > S: w_sum = exp(S - \ell) * w_sum + 1.0; S = \ell
+                else:        w_sum = w_sum + exp(\ell - S)
+        phi[x] = S + log(w_sum) - log(M)        # Monte Carlo approx. to log \int ...
+    return phi
+
+function soft_transport_kernel(x, theta, eta, dX, P_theta, lambda, strata_policy):
+    # returns a closure that can sample/reweight from Q_{eta,theta}^x via importance weights on lambda
+    Z = draw_from_lambda(strata_policy(x), M)
+    L = [ -eta*dX(z,x) + logpdf_P_over_lambda(z; theta, P_theta, lambda) for z in Z ]
+    S = max(L); w = [ exp(\ell - S) for \ell in L ]; w = w / sum(w)   # normalized weights
+    return (Z, w)   # usage: E_{Q}[f] \approx sum_j w[j] * f(Z[j])
+
+# ---------- Inner solver for \eta^\star ----------
+function eta_star(rho, x_batch, theta, dX, P_theta, lambda, strata_policy,
+                  bracket=[1e-6, 1e3], tol=1e-5, M=512):
+    # solve g(eta) = E_x E_{Q_{eta,theta}^x}[ dX(Z,x) ] - rho = 0
+    function g(eta):
+        acc = 0.0
+        for x in x_batch:
+            (Z,w) = soft_transport_kernel(x, theta, eta, dX, P_theta, lambda, strata_policy)
+            acc += sum_j w[j] * dX(Z[j], x)
+        return acc / len(x_batch) - rho
+    # bracket monotone root (g is decreasing in eta under mild conditions)
+    a,b = bracket
+    if g(a) < 0: return a
+    if g(b) > 0: increase b geometrically until g(b) < 0 or b > 1e6
+    # Brent or bisection (robust)
+    while |b-a| > tol*(1+min(|a|,|b|)):
+        c = 0.5*(a+b)
+        if g(c) > 0: a = c else: b = c
+    return 0.5*(a+b)
+
+# ---------- Risk and gradient ----------
+function R_rho(theta, x_batch, rho, dX, P_theta, lambda, strata_policy, M=1024):
+    eta = eta_star(rho, x_batch, theta, dX, P_theta, lambda, strata_policy, M=M/2)
+    phi = varphi_eta(x_batch, theta, eta, dX, P_theta, lambda, strata_policy)
+    return eta*rho + mean(phi), eta
+
+function grad_R_rho(theta, x_batch, eta, dX, P_theta, lambda, strata_policy, M=1024):
+    # \nabla_\theta R_rho(\theta) = E_x E_{Q_{eta,theta}^x}[ score(Z; theta) ]
+    g = 0 (shape like theta)
+    for x in x_batch:
+        (Z,w) = soft_transport_kernel(x, theta, eta, dX, P_theta, lambda, strata_policy)
+        g += sum_j w[j] * score(Z[j]; theta)
+    return g / len(x_batch)
+
+# ---------- Adaptive radius and drift logging ----------
+function adaptive_radius(window_curr, window_prev, c, dX, effective_n, d_eff_hint=None):
+    # window_curr/prev: datasets; c >= 1
+    \hat W1 = empirical_W1(window_curr, window_prev, dX)      # same metric used in dual
+    \hat L  = \hat W1 / window_length_tau
+    rho_t   = c * \hat L * window_length_tau
+    # optional: rate hint for monitoring (not used in computation)
+    if d_eff_hint is None: rate = C / sqrt(effective_n) else: rate = C / (effective_n)^(1/d_eff_hint)
+    return rho_t, \hat L, \hat W1, rate
+
+# ---------- One-call convenience wrapper per window ----------
+function dro_step(theta, window_curr, window_prev, config):
+    # 1) adaptive radius (logs drift)
+    rho_t, \hat L, \hat W1, rate_hint = adaptive_radius(window_curr, window_prev,
+                            config.c_radius, dX=config.dX, effective_n=config.n_eff,
+                            d_eff_hint=config.d_eff)
+    # 2) pick minibatch x_batch from window_curr (or full window)
+    x_batch = minibatch(window_curr, size=config.batch)
+    # 3) compute risk and eta*
+    R, eta = R_rho(theta, x_batch, rho_t, config.dX, config.P_theta, config.lambda, config.strata_policy, M=config.M_mc)
+    # 4) gradient (for optimizer)
+    g = grad_R_rho(theta, x_batch, eta, config.dX, config.P_theta, config.lambda, config.strata_policy, M=config.M_mc)
+    # 5) Hopf residual (for penalty term and audit)
+    S_resid = norm( (Id - Pi_leqK) @ hatS(window_curr) )^2
+    # 6) structured logging
+    log_json({
+        "window_t": config.t_id,
+        "rho_t": rho_t,
+        "L_hat": \hat L,
+        "W1_hat": \hat W1,
+        "eta_star": eta,
+        "R_rho": R,
+        "hopf_residual": S_resid,
+        "n_eff": config.n_eff,
+        "rate_hint": rate_hint,
+        "M_mc": config.M_mc,
+        "batch": config.batch
+    })
+    return R + config.lambda_hopf * S_resid, g
+\end{lstlisting}
+
+\paragraph{Recommended defaults and guards.}
+\begin{itemize}[leftmargin=*]
+\item \emph{Bracketing for \(\eta^\star\).} Start with \([10^{-6},10^3]\); expand the right endpoint by \(\times 10\) if \(g(b)>0\). Enforce a hard cap (e.g., \(10^8\)) and fall back to \(\eta^\star=b\) if the bracket fails---log this.
+\item \emph{Monte Carlo budget.} Use \(M=512\)--\(2048\) per \(x\); reuse samples across nearby \(\eta\) during the 1-D solve (common-random-numbers variance reduction).
+\item \emph{Stratum policy.} By default, draw \(Z\) from the \emph{same} stratum as \(x\); allow ``cross-stratum'' proposals only if the frontier tube flag is raised (then freeze \(\Pi\) and \(\theta\) as in Section~6/Section~7).
+\item \emph{Stability.} All integrals in \(\varphi_\eta\) and kernel weights use log-sum-exp. Clip \(\eta\) to avoid \(\exp(-\eta d)\) underflow; report the clip in the log.
+\item \emph{EF models.} For exponential families, \texttt{score(z;theta)} is available in closed form; cache \(F=\mathrm{FIM}(0)\) for whitening and preconditioning. Use a Fisher preconditioner for the optimizer step.
+\item \emph{Unit tests.} (i) At \(\rho=0\), verify \(\eta^\star\!=\!0\), \(R_\rho(\theta)=\mathbb E[\log \frac{dP_\theta}{d\lambda}(X)]\). (ii) If \(d_X\equiv 0\), confirm \(\eta^\star\) arbitrary and \(R_\rho\) reduces to the log-normalizer term. (iii) Under independence (negative control), \(\eta^\star\approx 0\) and the Hopf residual dominates the objective.
+\end{itemize}
+
+\paragraph{Minimal config stub (to mirror your Section~10 API).}
+\begin{lstlisting}
+config := \{
+  dX: ground\_metric\_on\_X,\quad
+  P\_theta: ef\_model,\quad
+  lambda: stratified\_reference\_measure,\quad
+  strata\_policy: same\_stratum\_by\_default,\quad
+  c\_radius: 1.0,\quad
+  t\_id: window\_index,\quad
+  n\_eff: effective\_sample\_size,\quad
+  d\_eff: None\ |\ estimated\_transport\_dimension,\quad
+  M\_mc: 1024,\quad
+  batch: 2048,\quad
+  lambda\_hopf: 1e-2
+\}
+\end{lstlisting}
+
+
+% ============================================================
+% ============================================================

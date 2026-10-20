@@ -1,0 +1,165 @@
+% ============================================================
+\section{Computational Statistics and Reporting}\label{sec:stats2}
+% ============================================================
+
+\noindent\textbf{Scope.}
+This layer standardizes \emph{how} we summarize uncertainty (HAC/Bootstrap CIs, CVaR), \emph{what} we publish (KPIs, alarms), and \emph{which witnesses} we export (automata runs, GKYP transcripts, DRO traces). All statistics are computed per window $[t-\constref{tau},t]$ with provenance hashes and are radius-gated by Sec.~\ref{sec:entropy2}. Windows flagged as \emph{quarantined} (e.g., failed envelope precondition; Sec.~\ref{sec:closure2}) are \emph{excluded} from discovery/inference aggregates but remain visible for safety monitors and ledgers.
+
+% ------------------------------------------------------------
+\subsection*{Estimators and confidence procedures}
+
+\paragraph{HAC CLT for smooth functionals.}
+Let $Z_k$ be a stationary $\alpha$-mixing sequence with summable coefficients and let $\theta=\theta(\mathbb E[Z])$ be a smooth functional (e.g., entries of $\bm\kappa$, $M_t$, band-sampled PR margins).
+Define the Newey–West estimator with bandwidth $b$:
+\[
+\widehat{\mathrm{Var}}_{\mathrm{HAC}}(\hat\theta)
+=\Gamma_0+\sum_{h=1}^{b}w_h(\Gamma_h+\Gamma_h^\top),
+\quad
+w_h=1-\frac{h}{b+1},
+\]
+where $\Gamma_h$ are lag-$h$ sample autocovariances of the score.
+Wald CIs use $\mathcal N(0,\widehat{\mathrm{Var}}_{\mathrm{HAC}})$; $b$ is picked by plug-in and logged.
+
+\begin{lemma}[HAC CLT (ops)]\label{lem:hac2}
+\emph{\layertag{Stoch/Comp}}
+Under $\alpha$-mixing and smoothness, HAC-based Wald CIs are valid for $\theta$; radius gating (Sec.~\ref{sec:entropy2}) ensures Lipschitz score bounds.
+\end{lemma}
+
+\paragraph{Moving block bootstrap (MBB) for non-smooths.}
+For functionals with kinks/counts (e.g., $|E_t|$, $\widehat R_t=\prod_{i\le r}\sigma_i$, spectral gaps),
+use block length $b=o(\constref{tau})$ and $B$ resamples.
+\begin{proposition}[Block bootstrap validity]\label{prop:bb2}
+\emph{\layertag{Stoch/Comp}}
+If $b\to\infty$, $b/\constref{tau}\to 0$, the MBB consistently estimates the sampling distribution; percentile or BCa CIs are valid.
+\end{proposition}
+
+\paragraph{Tail risk.}
+For any KPI stream $Z$, report $\mathrm{CVaR}_{0.95}(Z)$ via Rockafellar–Uryasev program (Sec.~\ref{sec:closure2}); export $(\tau^\star,\lambda^\star)$.
+
+% ------------------------------------------------------------
+\subsection*{Quarantine, coverage, and realized error rates}
+
+\paragraph{Window quarantine (selection hygiene).}
+If a preconditioned check fails (e.g., envelope $dv/d\rho=\eta^\star$ mismatch; Sec.~\ref{sec:closure2}), mark the window \textsf{quarantined} and \emph{exclude} it from discovery tallies (FDR, $E_t$, cumulant CIs) and adaptive policy training. Safety KPIs (rights-plane, CVaR slacks) still consume quarantined windows. The Provenance Ladder records \texttt{quarantine=true}, \texttt{reason}, and hashes.
+
+\paragraph{Provenance coverage.}
+Define $\mathrm{Coverage}=\frac{\#\text{rows with ladder hashes}}{\#\text{ingested rows}}$ per window and a rolling CI. Coverage drops degrade auditability and can bias inference; they are wired to clamp decisions (below).
+
+\paragraph{Realized FDR (null streams).}
+Weekly, synthesize null streams (pre-registered seeds) and compute realized FDR for the raw BH/BY layer and the promoted $E_t$ after MTC gating. If $\widehat{\mathrm{FDR}}_{\mathrm{real}}>0.9\cutq$, deterministically tighten:
+$q\leftarrow0.9q$, $r\leftarrow \gamma_r r$ (default $\gamma_r=0.8$), and \emph{freeze} promotions for $m$ windows (default $m=3$), logging “Clamp Policy Evidence”.
+
+% ------------------------------------------------------------
+\subsection*{KPI definitions, targets, and alarms}
+
+\begin{constbox}
+\textbf{KPIs (definitions $\to$ targets $\to$ alarms).}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Coupling Mass} $M_t=\bm\kappa_t^\top\FIM_t^{-1}\bm\kappa_t$ (HAC CI). \\
+Target: median $\downarrow\ge20\%$ over $2\tau^\ast$; \emph{Alarm}: CI upper $>B_{\mathrm{saf}}$ or $\constref{chi}$ spikes with $|E_t|$ growth (conditioning leak).
+\item \textbf{Effective Breadth} $|E_t|$ (BY@\,$\cutq$, then MTC). \\
+Target: non-increasing on stationary tasks; \emph{Alarm}: any promotion missing MTC or Context Registry entry.
+\item \textbf{Decision Range} $\widehat R_t=\prod_{i\le r} \sigma_i$ (ellipsoid proxy, bootstrap CI). \\
+Target: monotone $\uparrow$ subject to I$_5$; \emph{Alarm}: $\mathrm{CVaR}_{0.95}$ drop beyond band, or conservativity bound violated (Sec.~\ref{sec:ctrl2}).
+\item \textbf{Fisher Drift \& Conditioning} $d_{\mathrm F}(P_{t-\constref{\tau}},P_t)$ \& radius $r=\varepsilon/\widehat{\constref{Lpsi}}$ with leakage $\constref{chi}$. \\
+Target: within budgets; \emph{Alarm}: two consecutive budget hits $\Rightarrow$ clamp (Sec.~\ref{sec:entropy2}); EF-quadratic use blocked when \texttt{kl\_quad\_bounds} fails.
+\item \textbf{Holonomy / Rotational Mass} (Prop.~\ref{prop:holonomy}). \\
+Target: decreasing; \emph{Alarm}: rising with flat $N_{\mathrm{cross}}$ or small-gap \emph{HarmMass} increase (Sec.~\ref{sec:kernels2}).
+\item \textbf{Harmonic Rotational Mass} $\displaystyle \mathrm{HarmMass}=\sum_j \frac{\vartheta_j}{\max(\delta_{\mathrm{gap},j},\underline\delta)}$. \\
+Target: flat or $\downarrow$; \emph{Alarm}: sustained rise $\Rightarrow$ $k$-escalation or mixed-plane control.
+\item \textbf{Frontier Health} $(\constref{\taumin}, C_{\mathrm{salt}}, C_{\mathrm{fr}}, \text{duty}, p_{\mathrm{graze}})$. \\
+Target: duty $\le10\%$; \emph{Alarm}: $\hat\nu_{\min}\le0$ (transversality failure).
+\item \textbf{Chatter Index} $\mathrm{Chatter}:=\frac{\#\text{off-frontier switches violating dwell}}{\#\text{switches}}$ and dwell drift $\Delta\constref{\taumin}$. \\
+Target: $0$ chatter; \emph{Alarm}: any violation $\Rightarrow$ switching-stability action (Sec.~\ref{thm:switch-stab}).
+\item \textbf{Rights-Plane Violations} $\#\{i:\,h_i(x)<0\}$ and residual lower bound (one-sided CI). \\
+Target: $0$; \emph{Alarm}: any violation or residual lower bound $<0$ $\Rightarrow$ rejecting automaton.
+\item \textbf{Provenance Coverage \& Latency} coverage \%, $\mathrm{Lat}_t=t_{\text{hash}}{-}t_{\text{ingest}}$. \\
+Target: coverage $\ge99\%$, latency $\le$ one window; \emph{Alarm}: shortfall $\Rightarrow$ clamp-tighten (q,r) and freeze promotions $m$ windows.
+\item \textbf{Dual-Gap Trend} $(G_t,\mathrm{bw}_t)$ for DRO (Sec.~\ref{sec:closure2}). \\
+Target: $G_t\le 10^{-4}$, $\mathrm{bw}_t\downarrow$; \emph{Alarm}: plateau $>10^{-4}$ for $m$ windows $\Rightarrow$ \textsf{DRO Convergence Alarm}.
+\item \textbf{Realized FDR} from null streams (raw \& promoted). \\
+Target: $\le 0.9\cutq$; \emph{Alarm}: $>0.9\cutq$ $\Rightarrow$ deterministic tighten and freeze (this section).
+\end{enumerate}
+\end{constbox}
+
+% ------------------------------------------------------------
+\subsection*{$\omega$-Automata evidence (first-class outputs)}
+Specifications are compiled to Büchi/Streett automata:
+\[
+\textsf{G}(M_t\!\le\!B_{\mathrm{saf}}),\quad
+\textsf{G}(h_i\!\ge\!\epsilon_{\min}),\quad
+\textsf{F}(R_t\!\ge\!R_{\min}),\quad
+\textsf{Freeze}\ \textsf{U}\ \textsf{Decoupled}.
+\]
+Per window we export:
+(i) automaton id and type, (ii) run start/end indices, (iii) accepting/rejecting label, (iv) witness set (visited accepting states), (v) \emph{consumed\_evidence} with exact KPI row hashes (timestamp, KPI-hash), (vi) quarantine flags used by the monitor, and (vii) linked artifacts (QP transcript id, GKYP cert id, DRO trace id).
+
+\begin{proposition}[Monitor correctness contract]\label{prop:omega-contract}
+\emph{\layertag{Comp}}
+Given the logged proposition stream (KPI thresholds, CBF flags, freeze state) and \textsf{quarantine} marks, recomputing the automata produces identical verdicts and runs. Any mismatch or missing row hash is a hard failure.
+\end{proposition}
+
+% ------------------------------------------------------------
+\subsection*{Reporting pipeline and dashboards}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{Ingest} $\to$ build $(\FIM_t,W_t)$, compute $\constref{chi}$, apply clamp state (Sec.~\ref{sec:entropy2}); compute coverage \& latency; tag quarantined windows.
+\item \textbf{KPI compute} $\to$ HAC/Bootstrap CIs; CVaR; Hol/HarmMass; Chatter; record alarms. Quarantined windows \emph{excluded} from discovery/FDR and adaptive training.
+\item \textbf{Certificates} $\to$ export PR/GKYP witness, DRO KKT trace, automata runs; attach transcript ids and \emph{consumed\_evidence} hashes.
+\item \textbf{Risk posture} $\to$ weekly null-stream realized-FDR panel; deterministic tighten (q,r,freeze) when out of bounds; coverage-triggered tighten when coverage $<99\%$.
+\item \textbf{Dashboard update} $\to$ rolling $3\tau^\ast$ panels with targets, CIs, CVaR, alarms; tooltips link to artifacts and registry hashes.
+\end{enumerate}
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# HAC + Bootstrap
+def hac_cov(scores, bandwidth=None): ...
+def wald_ci(theta_hat, var_hat, level=0.95): ...
+def mbb_ci(series, functional, block_len, B=1000, method="BCa"): ...
+
+# CVaR and alarms
+def cvar(value_stream, alpha=0.95): ...
+def raise_alarm(name, evidence): ...
+
+# Coverage, quarantine, and realized FDR
+def provenance_coverage(row_hashes, total_rows): ...
+def mark_quarantine(window_id, reason): ...
+def realized_fdr(null_stream_seeds, raw_pvals, promoted_flags, q): ...
+def tighten_from_fdr(fdr_real, q, r, gamma_q=0.9, gamma_r=0.8, freeze_m=3): ...
+
+# Chatter and conditioning dashboards
+def chatter_index(switch_log, tau_dwell): ...
+def conditioning_panel(Lpsi_hat_series, epsilon): ...
+def harmonic_mass(angles, gaps, delta_floor): ...
+
+# Automata monitors
+def build_omega_automata(specs): ...
+def run_monitors(prop_stream, automata, quarantine_flags): ...
+def export_automata_witness(run, links, consumed_evidence): ...
+
+# Dashboard & artifacts
+def update_kpi_dashboard(kpis, cis, cvars, alarms, links, posture): ...
+def link_artifact(kind, id_hash): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window unless noted).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Stat soundness:} HAC bandwidth/logs present; MBB $(b,B)$ recorded; recomputation reproduces CIs within numerical tolerance.
+\item \emph{Tail control:} CVaR slack $\ge 0$ for guarded KPIs; violations export rejecting automata run ids.
+\item \emph{Quarantine hygiene:} quarantined windows excluded from discovery/FDR and adaptive training; Ladder logs \texttt{quarantine=true} with reason.
+\item \emph{Coverage \& latency:} coverage $\ge 99\%$ and latency $\le$ one window; shortfall triggers deterministic clamp tighten (q,r) and a promotion freeze; events logged.
+\item \emph{Realized FDR:} weekly null audit recorded; if $\widehat{\mathrm{FDR}}_{\mathrm{real}}>0.9\cutq$ then $q,r$ tightened and promotions frozen for $m$ windows (policy log present).
+\item \emph{Witness completeness:} GKYP transcript id, DRO dual gap ($\le 10^{-4}$), $\eta^\star$ trace, automata witness with \emph{consumed\_evidence} hashes present.
+\item \emph{Clamp determinism:} given $\constref{chi}$ history and coverage/FDR panels, recomputed clamp states match (Sec.~\ref{sec:entropy2}).
+\item \emph{Chatter/holonomy:} $\mathrm{Chatter}=0$; rising \emph{HarmMass} with flat $N_{\mathrm{cross}}$ or any chatter triggers logged corrective action ($k$-escalation, mixed-plane, dwell).
+\end{itemize}
+\end{mdframed}
+
+% ------------------------------------------------------------
+\subsection*{Benchmarking hooks (pointers)}
+Negative control, degeneracy stress, and formal-spec acceptance reuse this reporting layer and must pass with 100\% correct automata verdicts on the spec suite; ranges and masses respect the CI targets with synthetic ground truth; realized-FDR tightening engages deterministically when audits exceed threshold.
+
+\subsection*{Notes on reproducibility}
+All dashboards regenerate from the Transport Pack + Provenance Ladder alone; no hidden state or mutable environment is required. Seeds, bandwidths, block lengths, solver tolerances, registry hashes, and risk-posture transitions (tighten/freezes) are logged and versioned.

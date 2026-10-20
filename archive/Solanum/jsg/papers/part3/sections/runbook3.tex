@@ -1,0 +1,117 @@
+% ==== Part III — Failure Cookbook & Operations Runbook (v2) ==================
+\section{Failure Cookbook \& Operations Runbook (v2)}\label{sec:runbook-v2}
+
+\paragraph{Intent.}
+Codify \emph{deterministic}, proof-carrying responses to certificate failures. For each trigger we list (i) \textbf{Detection}, (ii) \textbf{Immediate action} (always safe and reversible), (iii) \textbf{Stabilization} (what must hold before unfreezing), and (iv) \textbf{Evidence} (Tier-1/2 fields and IDs). All actions must preserve the guard order printed in the window’s \emph{proof print} (EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow$\omega$, Subsec.~\ref{subsec:det-replay}).
+
+\subsection{Runtime triggers and actions}\label{subsec:triggers}
+\emph{\layertag{Ctrl/Inf/Rep}}
+
+\begin{table}[t]
+\centering
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.0cm} >{\raggedright\arraybackslash}p{4.2cm} >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Trigger} & \textbf{Immediate action} & \textbf{Stabilization \& Unfreeze criteria (Evidence)} \\
+\midrule
+\textbf{Clamp $\to$ Yellow} (Rule~\ref{rule:ef-clamp}) &
+Shrink EF radius $r$ and BY level $\cutq$ (pre-registered factors); freeze promotions; keep control on. &
+Two consecutive windows with $\chi\le\constref{chiG}$ and a \emph{passing} \texttt{kl\_quad\_bounds}; CIS unchanged. \textit{Evidence:} clamp transcript, $(\varepsilon,\hat L_\psi,r)$, BY table, \texttt{ef\_guard\_id}. \\ \addlinespace
+\textbf{Clamp $\to$ Red} (Rule~\ref{rule:ef-clamp}) &
+Fail-closed to HSIC/CVaR-only sensing; freeze promotions; disable Fisher-quadratic proxies. &
+Return to Green and passing \texttt{kl\_quad\_bounds} \emph{before} enabling Fisher proxies. \textit{Evidence:} Red interval KPI rows, HSIC/CVaR reports, guard re-pass with \texttt{ef\_guard\_id}. \\ \addlinespace
+\textbf{DRO envelope fail} (Prop.~\ref{prop:kkt}) &
+Set \texttt{quarantine\_bit}=1; block promotions and adaptive updates. &
+Finite-difference $dv/d\rho$ matches $\constref{etastar}$ within $5\%$. \textit{Evidence:} $\{\eta_k\}$ trace, $\rho$-grid, envelope verdict, \texttt{dvdrho\_id}; CIS shows zero new rows. \\ \addlinespace
+\textbf{Rights-plane CVaR breach} (Rule~\ref{rule:rights-cvar}) &
+Apply Frontier Freeze (Rule~\ref{rule:frontier-freeze}) $+$ Dwell Escalation (Rule~\ref{rule:grazing}); reject run if any $\mathrm{LB}<0$. &
+$\mathrm{CVaR}_{0.95}\ge 0$ for two windows and all tube-audit residuals nonnegative. \textit{Evidence:} slack distribution, CVaR value, residual LBs, freeze timestamps, \texttt{cbf\_audit\_id}. \\ \addlinespace
+\textbf{Saltation replay fail} (Lemma~\ref{lem:cbf-salt}) &
+Reject $\omega$-run; quarantine window; mark tube-id as suspect. &
+New calibration with $\|K-I\|_{\mathrm{obs}}\le \overline C_{\mathrm{salt}}(1+0.1)$; updated tube params. \textit{Evidence:} $(F^\pm,n)$, $K$ replay, $C_{\mathrm{salt}}$ CI, \texttt{cbf\_audit\_id}. \\ \addlinespace
+\textbf{HarmMass rise (trend)} (Def.~\ref{def:hol-harm}) &
+Block basis updates; \emph{k}-escalate actuation plane. &
+HarmMass Theil–Sen slope CI $\le 0$ over $k$ windows and plane-drift audit passes. \textit{Evidence:} SVD tuples, gap ledger, escalation transcript, Hol/HarmMass KPI fields. \\ \addlinespace
+\textbf{PR margin crowds $\constsymPRmargin$} (Prop.~\ref{prop:gkyp-witness}) &
+Auto-shrink uncertainty set $\Omega$; re-certify GKYP; hold updates until witness present. &
+Fresh witness $(\Omega,\epsilon,P,Q)$ verifying margin $\ge \constsymPRmargin$. \textit{Evidence:} GKYP logs, hitmap, old/new $\Omega$, \texttt{pr\_witness\_id}. \\ \addlinespace
+\textbf{No-Zeno suspicion} ($N_{\mathrm{cross}}>\!t/\constref{taumin}$) &
+Escalate dwell (Rule~\ref{rule:grazing}); freeze basis; log crossings. &
+Count satisfies bound for two windows; positive normal-speed CI. \textit{Evidence:} crossing times, $\constref{taumin}$, speed CI, Frontier Spend ledger. \\ \addlinespace
+\textbf{Realized FDR $>0.9\cutq$} (KPI) &
+Deterministically tighten $\cutq$; freeze promotions until BY panel returns within budget. &
+BY panel within budget in next audit; CIS unchanged. \textit{Evidence:} BY table, null audits, clamp transcript. \\ \addlinespace
+\textbf{Provenance coverage $<99\%$} (KPI) &
+Freeze promotions; clamp one level stricter; rerun parity jobs. &
+Coverage $\ge99\%$ and parity MAPE $\le5\%$ for $k\le4$ moments. \textit{Evidence:} Ladder parity report, missing-hops remediation. \\ \addlinespace
+\textbf{Budget guard timeout} (Def.~\ref{def:budget}) &
+Enter conservative mode: disable promotions, keep last verified PR witness, and skip noncritical solvers until debt clears. &
+On-time ratio $\ge 99\%$ and queue length $\le 1$ window for two windows. \textit{Evidence:} \texttt{budget\_guard\_verdict}, solver timings, PR witness id. \\ \addlinespace
+\textbf{Guard-order violation} (proof print) &
+Fail-closed for the violating consumer; recompute guards in order; reject window if order cannot be restored. &
+Next window emits a consistent proof print EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF and automata accept. \textit{Evidence:} \texttt{proof\_print\_id} sequence, consumer IDs. \\
+\bottomrule
+\end{tabularx}
+\caption{Failure cookbook: triggers $\rightarrow$ deterministic actions $\rightarrow$ unfreeze criteria. All actions preserve guard order and are replayable.}
+\label{tab:fail-cookbook}
+\end{table}
+
+\subsection{Freeze windows, dwell management, and tube hygiene}\label{subsec:freeze-hygiene}
+\emph{\layertag{Geom/Ctrl/Rep}}
+
+\begin{definition}[Freeze window]\label{def:freeze-window}
+A contiguous index set $W$ where Rule~\ref{rule:frontier-freeze} applies. During $W$, updates to actuation basis, $\mathcal U$ policy, and CIS are disabled; CLF/CBF-QP uses the last off-tube basis and tube-aware audit (Lemma~\ref{lem:cbf-salt}); KPI rows carry \texttt{proof\_print\_id} with PR witness present but not \emph{consumed} for control updates until unfreeze.
+\uses{Rule~\ref{rule:frontier-freeze}; Lem.~\ref{lem:cbf-salt}; Subsec.~\ref{subsec:det-replay}.}
+\end{definition}
+
+\begin{proposition}[Dwell \& tube retune]\label{prop:tube-retune}
+If grazing probability $\constref{pgraze}$ exceeds $\constref{pthr}$ or $\mathrm{CI}(\constref{nuhat})$ touches $0$, set
+$\constref{taumin}\leftarrow (1+\constref{gammadwell})\constref{taumin}$ and
+$\constref{rtube}\leftarrow \constref{rtube}/(1+\constref{gammadwell})$, and log the change with tube-id and timestamps. Revert only after two windows with positive normal-speed CI and no chatter events.
+\uses{Rule~\ref{rule:grazing}; (C1) $\constref{rtube}$; (C3) $\constref{taumin}$; (C8) $\constref{pgraze},\constref{gammadwell},\constref{nuhat}$.}
+\end{proposition}
+
+\subsection{Runbook checks: what operators must verify}\label{subsec:runbook-checks}
+\emph{\layertag{Rep}}
+
+\begin{acceptchecks}
+\item \textbf{Trigger fidelity:} for each row in Tab.~\ref{tab:fail-cookbook}, the log shows the matching trigger value, the exact timestamped immediate action, and the unfreeze event that met the listed criteria; KPI rows and the Ladder reflect the same sequence.
+\item \textbf{Freeze integrity:} during any Freeze window (Def.~\ref{def:freeze-window}), CIS is unchanged; solver transcripts reference the frozen basis; PR witnesses produced in $W$ are recorded but \emph{not} consumed by control until unfreeze; \texttt{proof\_print\_id} is present.
+\item \textbf{Dwell/tube hygiene:} if dwell escalated, evidence shows updated $\constref{taumin}$ and $\constref{rtube}$, plus positive normal-speed CI before unfreeze (Prop.~\ref{prop:tube-retune}).
+\item \textbf{Rights-plane safety:} any window with $\mathrm{LB}<0$ leads to $\omega$-run rejection (Lemma~\ref{lem:cbf-salt}); CVaR breaches show Rule~\ref{rule:rights-cvar} transcript and freeze timestamps.
+\item \textbf{Quarantine propagation:} when \texttt{quarantine\_bit}=1, there are no new CIS rows; automata reject any attempt to consume quarantined rows (Subsec.~\ref{subsec:ladder-prop}).
+\item \textbf{Clamp/FDR discipline:} $(r,\cutq)$ shrink/relax events match clamp transitions and realized-FDR rows; promotions frozen outside Green (Rule~\ref{rule:ef-clamp}).
+\item \textbf{Budget guard compliance:} timeouts flip to conservative mode and clear before promotions resume; \texttt{budget\_guard\_verdict} appears in Tier-1 and KPI rows (Def.~\ref{def:budget}, Prop.~\ref{prop:slo}).
+\end{acceptchecks}
+
+\subsection{Operator quick-reference (minimal API)}\label{subsec:runbook-api}
+\emph{\layertag{Comp}}
+\begin{lstlisting}
+def trigger_dispatch(event, state, logs):
+    """
+    Route a runtime trigger to deterministic actions per Table 6.
+    Returns updated state and an 'unfreeze_criteria' closure to evaluate.
+    Guard order is enforced via the window proof_print_id.
+    """
+    ...
+
+def unfreeze_ready(state, evidence):
+    """
+    Evaluate the stabilization criteria for the active trigger(s).
+    Requires matching Tier-1 fields and KPI row hashes.
+    """
+    ...
+
+def apply_freeze(state, tube_id=None):
+    """
+    Enter Freeze window; snapshot basis, disable promotions, mark transcripts.
+    Record proof_print_id and freeze timestamps in Tier-1.
+    """
+    ...
+
+def escalate_dwell(state, gamma):
+    """
+    Increase tau_min and shrink r_tube; log tube-id and timestamps; update KPI.
+    """
+    ...
+\end{lstlisting}

@@ -1,0 +1,156 @@
+% ==== Part III — Deployment and Self-Scaling (v2) ============================
+\section{Deployment and Self-Scaling (v2)}\label{sec:deploy-v2}
+
+\paragraph{Objective.}
+Ship a \emph{deterministic} bring-up that boots sensing $\to$ guards $\to$ control $\to$ evidence with guardrails on, then run closed-loop \emph{self-scaling} that (i) tightens EF/FDR when conditioning degrades, (ii) auto-retunes PR bands using GKYP hitmaps, and (iii) manages dwell/tube hygiene from grazing diagnostics—while respecting compute/SLO budgets and leaving a replayable trace. Every window emits a \emph{proof print} (IDs only) showing EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow$\omega$ consumption in order.
+
+\subsection{Environment pinning and reproducible builds}\label{subsec:pinning}
+\emph{\layertag{Comp/Rep}}
+
+\begin{definition}[Pinned environment]\label{def:pinned-env}
+All deployments must pin: container image (SHA), solver versions/tolerances, PRNG seeds, CPU/GPU flags. The pinned tuple
+\[
+\langle\texttt{replay\_pack\_sha},\ \texttt{seeds},\ \texttt{solver\_transcript\_id}\rangle
+\]
+is recorded in Tier-1 (Tab.~\ref{tab:tier1-schema}). KPI rows additionally carry \texttt{rollout\_mode} $\in\{\text{Shadow},\text{Canary},\text{BlueGreen}\}$ and a per-window \texttt{proof\_print\_id}. 
+\uses{\jsgiiSec{\lblSchemas}; \secref{subsec:det-replay}.}
+\end{definition}
+
+\begin{proposition}[Deterministic cold boot]\label{prop:cold-boot}
+A cold boot that ingests a reference telemetry slice and runs one window must reproduce: FIM/whitening hashes, $M_t$, clamp verdict, and (if enabled) a PR witness within numeric tolerance. Let $\delta_{\mathrm{fp}}^{\mathrm{abs}}=10^{-12}$ and $\delta_{\mathrm{fp}}^{\mathrm{rel}}=10^{-9}$; value-wise checks pass if
+$(
+|x^{\mathrm{replay}}\!-\!x^{\mathrm{ref}}|\le \delta_{\mathrm{fp}}^{\mathrm{abs}}+\delta_{\mathrm{fp}}^{\mathrm{rel}}|x^{\mathrm{ref}}|
+)$.
+Deviations require an annotated solver/runtime-change note.
+\uses{Rem.~\ref{rem:white-hash}; Prop.~\ref{prop:pr-consume}.}
+\end{proposition}
+
+\subsection{Bring-up script (five phases)}\label{subsec:bringup}
+\emph{\layertag{Comp/Inf/Ctrl}}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Telemetry \& hashing.} Start windowing of length $\constref{tau}$; create \texttt{window\_id} and compute \texttt{FIM\_hash}/\texttt{whitening\_hash}.
+\uses{Def.~\ref{def:tierpacks}; Rem.~\ref{rem:white-hash}.}
+\item \textbf{EF guard on.} Estimate $\hat L_\psi$; set $r=\varepsilon/\hat L_\psi$ and run \texttt{kl\_quad\_bounds}; initialize clamp FSM to Green; stamp \texttt{ef\_guard\_id}.
+\uses{Thm.~\ref{thm:FIMbound}; Rule~\ref{rule:ef-clamp}.}
+\item \textbf{Control core.} Enable CLF/CBF-QP with frontier-aware audit; start CVaR monitoring; freeze basis in tubes; stamp \texttt{cbf\_audit\_id}.
+\uses{Lemma~\ref{lem:cbf-salt}; Rule~\ref{rule:frontier-freeze}; Rule~\ref{rule:rights-cvar}.}
+\item \textbf{PR witness.} Linearize on-window; solve GKYP; store $(\Omega,\epsilon,P,Q,\text{descriptor})$ and vertex hitmap; stamp \texttt{pr\_witness\_id}.
+\uses{Prop.~\ref{prop:gkyp-witness}.}
+\item \textbf{DRO/SPRT gate (quarantinable).} Fit soft-transport; verify envelope $d\mathbb E[\varphi_\eta]/d\rho\approx \constref{etastar}$; if fail, set \texttt{quarantine\_bit}=1 and skip promotion logic; stamp \texttt{dvdrho\_id}.
+\uses{Prop.~\ref{prop:kkt}; Rule~\ref{rule:dvdrho}.}
+\end{enumerate}
+
+\paragraph{Proof print (per-window).}
+Emit a compact record \texttt{proof\_print\_id} $:= H(\texttt{ef\_guard\_id}\!\Vert\!\texttt{dvdrho\_id}\!\Vert\!\texttt{pr\_witness\_id}\!\Vert\!\texttt{cbf\_audit\_id}\!\Vert\!\texttt{omega\_monitor\_id})$ that the automata also ingest; any guard-order violation fails closed for that window.
+\uses{\secref{subsec:automata}; \secref{subsec:det-replay}.}
+
+\subsection{Self-scaling loops}\label{subsec:self-scaling}
+\emph{\layertag{Inf/Ctrl/Rep}}
+
+\paragraph{(A) EF/FDR clamp loop.}
+Every window, compute leakage $\constref{chi}(t)$ and realized FDR from BY null audits. Let hysteresis constants be pre-registered as
+$(
+(\chi_G,\chi_Y,\chi_R)=(\constref{chiG},\constref{chiY},\constref{chiR})
+)$
+and FDR relax/tighten policy $(0.9\cutq,\ 2\text{ windows})$.
+
+\begin{rulex}{Clamp-driven EF radius and FDR adaptation}\label{rule:clamp-adapt}
+If clamp enters Yellow: shrink $(r,\cutq)$ deterministically by factors (e.g., $r\!\leftarrow\!0.8r$, $\cutq\!\leftarrow\!0.8\cutq$), freeze promotions. If Red: fail-closed to HSIC/CVaR-only. When Green for two consecutive windows and realized FDR $\le 0.9\cutq$, allow $(r,\cutq)$ to relax by at most $10\%$ per window. All transitions appear in Tier-1 and Ladder parity.
+\uses{Rule~\ref{rule:ef-clamp}; \secref{subsec:ops-kpis}.}
+\end{rulex}
+
+\paragraph{(B) PR band auto-retune.}
+Consume the GKYP vertex hitmap to adapt the uncertainty set and band endpoints.
+
+\begin{rulex}{Hitmap-driven PR retune}\label{rule:pr-retune}
+If realized PR margin approaches $\constsymPRmargin$, shrink $\Omega$ toward hit vertices; re-certify and stamp a fresh \texttt{pr\_witness\_id}. If margin $>\constsymPRmargin$ for $k$ windows and clamp stays Green, widen $\Omega$ one notch (pre-registered step).
+\uses{Prop.~\ref{prop:gkyp-witness}; Prop.~\ref{prop:pr-consume}; (C12) $\constsymPRmargin$.}
+\end{rulex}
+
+\paragraph{(C) Dwell/tube hygiene loop.}
+Use grazing diagnostics to adjust dwell and tube radius.
+
+\begin{rulex}{Grazing-driven dwell/tube retune}\label{rule:dwell-retune}
+If $\mathrm{CI}(\constref{nuhat})$ touches $0$ or $\constref{pgraze}>\constref{pthr}$, set $\constref{taumin}\!\leftarrow\!(1+\constref{gammadwell})\constref{taumin}$ and $\constref{rtube}\!\leftarrow\!\constref{rtube}/(1+\constref{gammadwell})$; log tube-id and timestamps. Revert only after two windows with positive normal-speed CI and no chatter.
+\uses{Rule~\ref{rule:grazing}; \secref{subsec:freeze-hygiene}.}
+\end{rulex}
+
+\subsection{Resource sizing and real-time budgets}\label{subsec:res-sizing}
+\emph{\layertag{Comp/Rep}}
+
+\begin{definition}[Per-window compute budget]\label{def:budget}
+Let $T_{\mathrm{win}}$ be the wall-clock deadline per window. Enforce
+\[
+T_{\mathrm{fim}}+T_{\mathrm{cum}}+T_{\mathrm{guard}}+T_{\mathrm{qp}}+T_{\mathrm{gkyp}}+T_{\mathrm{dro}}\ \le\ T_{\mathrm{win}},
+\]
+with timeouts \(T_{\mathrm{qp}}\le \alpha_{\mathrm{qp}}T_{\mathrm{win}},\ \ T_{\mathrm{gkyp}}\le \alpha_{\mathrm{gkyp}}T_{\mathrm{win}},\ \ T_{\mathrm{dro}}\le \alpha_{\mathrm{dro}}T_{\mathrm{win}}\) (e.g., $0.25,0.25,0.25$). The budget guard prints \texttt{budget\_guard\_verdict} $\in\{\text{OK},\text{TIMEOUT}\}$ in Tier-1.
+\uses{\jsgiiSec{\lblSchemas} (solver transcripts).}
+\end{definition}
+
+\begin{proposition}[Backlog and SLO]\label{prop:slo}
+Maintain queue length $\le 1$ window and on-time ratio $\ge 99\%$. Any timeout triggers conservative mode: disable promotions, keep control with last verified PR witness, and skip noncritical solvers until debt is cleared.
+\uses{Rule~\ref{rule:ef-clamp}; Prop.~\ref{prop:pr-consume}.}
+\end{proposition}
+
+\begin{remark}[Sizing hints]\label{rem:sizing}
+Choose block length for MBB/CBB from pilot ACF; pick HAC bandwidth to keep $T_{\mathrm{guard}}$ sublinear in features. Prefer Cholesky for well-conditioned FIMs; fall back to SVD if condition number exceeds a pre-registered threshold.
+\uses{\secref{subsec:coverage}.}
+\end{remark}
+
+\subsection{Rollout modes and guard topology}\label{subsec:rollout-modes}
+\emph{\layertag{Rep/Alg}}
+
+\begin{definition}[Rollout modes]\label{def:rollout-modes}
+\textbf{Shadow:} run full sensing/control offline; emit Tier-1…4; no actuation. \textbf{Canary:} enable actuation on a small slice with stricter clamps $(r,\cutq)$ and tighter PR margin. \textbf{Blue/green:} maintain two pinned stacks; switch pointer only when all automata accept on the target stack for $k$ consecutive windows. KPI rows must include \texttt{rollout\_mode}.
+\uses{Def.~\ref{def:tierpacks}; \secref{subsec:automata}.}
+\end{definition}
+
+\begin{proposition}[Guard topology invariants]\label{prop:guard-top}
+Across modes, always: (i) EF guard precedes any Fisher-quadratic use; (ii) quarantine forbids promotion; (iii) PR witness precedes control updates; (iv) CBF saltation audit gates tube steps; (v) the \texttt{proof\_print\_id} order matches EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow$\omega$.
+\uses{Rule~\ref{rule:ef-clamp}; Rule~\ref{rule:dvdrho}; Prop.~\ref{prop:pr-consume}; Lemma~\ref{lem:cbf-salt}.}
+\end{proposition}
+
+\subsection{Acceptance checks for deployment \& scaling}\label{subsec:deploy-accept}
+\begin{acceptchecks}
+\item \textbf{Cold boot determinism:} a reference cold boot reproduces FIM/whitening hashes, $M_t$, clamp state, and (if present) PR witness within $(\delta_{\mathrm{fp}}^{\mathrm{abs}},\delta_{\mathrm{fp}}^{\mathrm{rel}})$ (Prop.~\ref{prop:cold-boot}).
+\item \textbf{Proof-print order:} each window carries a \texttt{proof\_print\_id} whose decoded sequence lists EF $\rightarrow$ DRO $\rightarrow$ PR $\rightarrow$ CBF $\rightarrow$ $\omega$; violations fail closed and are logged.
+\item \textbf{Clamp/FDR loop:} $(r,\cutq)$ shrink/relax events exactly match clamp transitions and realized-FDR rows; promotions frozen outside Green (Rule~\ref{rule:clamp-adapt}).
+\item \textbf{PR retune loop:} any margin crowding $\constsymPRmargin$ shows $\Omega$-shrink and a fresh GKYP witness; optional widen only after $k$ Green windows (Rule~\ref{rule:pr-retune}).
+\item \textbf{Dwell/tube loop:} dwell/tube changes match grazing triggers; revert only after normal-speed CI $>0$ for two windows (Rule~\ref{rule:dwell-retune}).
+\item \textbf{Budget/SLO:} solver durations satisfy Def.~\ref{def:budget}; timeouts flip to conservative mode and clear before promotions resume (Prop.~\ref{prop:slo}); Tier-1 shows \texttt{budget\_guard\_verdict}.
+\item \textbf{Mode integrity:} KPI rows include \texttt{rollout\_mode}; Shadow emits Tier-1…4 without actuation; Canary/Blue–Green switches occur only after $k$ consecutive automata acceptances (Def.~\ref{def:rollout-modes}).
+\end{acceptchecks}
+
+\subsection{Minimal deployment API}\label{subsec:deploy-api}
+\emph{\layertag{Comp}}
+\begin{lstlisting}
+def bring_up(window, params):
+    """
+    Phase-ordered boot: hashing -> EF guard -> CLF/CBF-QP -> GKYP -> DRO check.
+    Stamps ef_guard_id, cbf_audit_id, pr_witness_id, dvdrho_id, proof_print_id.
+    Returns initial Tier-1 pack and guard states.
+    """
+    ...
+
+def scale_loops(state, kpis):
+    """
+    Execute self-scaling loops:
+    - clamp/FDR adaptation (Rule 7.3A),
+    - PR band retune from hitmaps (Rule 7.3B),
+    - dwell/tube hygiene (Rule 7.3C).
+    """
+
+def budget_guard(timings, caps, T_win):
+    """
+    Enforce per-window compute budget; emit budget_guard_verdict and
+    toggle conservative mode on timeout.
+    """
+
+def rollout_switch(mode_from, mode_to, proofs):
+    """
+    Enforce rollout-mode preconditions (automata acceptance, pinned env,
+    proof_print order). Update rollout_mode in KPI rows.
+    """
+    ...
+\end{lstlisting}

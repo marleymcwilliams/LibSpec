@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OmegaReceipt",
+  "type": "object",
+  "properties": {
+    "predicate_id": {
+      "const": "OMEGA_HORIZON"
+    },
+    "inputs_digest": {
+      "type": "string"
+    },
+    "computed_k": {
+      "type": "number"
+    },
+    "verdict": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "predicate_id",
+    "inputs_digest",
+    "computed_k",
+    "verdict"
+  ]
+}

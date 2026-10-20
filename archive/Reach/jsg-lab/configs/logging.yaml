@@ -1,0 +1,7 @@
+run_dir: "runs"
+jsonl_name: "events.jsonl"
+mlflow:
+  enabled: true
+  tracking_uri: "file:./mlruns"
+uses_tags: true
+

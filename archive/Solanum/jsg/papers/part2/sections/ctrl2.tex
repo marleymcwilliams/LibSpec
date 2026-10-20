@@ -1,0 +1,163 @@
+% ============================================================
+\section{Projected Control: PR Certification and ISS Budgets}\label{sec:ctrl2}
+% ============================================================
+
+\noindent\textbf{Controller stack (frontier-aware).}
+At each step we solve a CLF/CBF-QP on the active stratum and then project via the Dirac structure $\Pi$; inside frontier tubes of radius $\constref{rtube}$ we \emph{freeze} $\Pi$ and enforce dwell $\ge\constref{taumin}$ (I$_1$), charging the saltation spend to the ISS budget (Lem.~\ref{lem:saltation-bound}, Thm.~\ref{thm:ISS2}). The admissible set is guarded by PR on a band with margin $\constref{epsilon}$.
+
+% ------------------------------------------------------------
+\subsection*{CLF/CBF-QP with frontier guards and slack tail control}
+Consider $\dot x=f(x)+g(x)u$ (stratum-local). Pick CLF $V$ and CBFs $\{h_i\}$; enumerate assumptions (relative degree, smoothness) in the artifact.
+
+\[
+\begin{aligned}
+\min_{u,\ \delta\ge0,\ s\ge 0}\quad & \tfrac12\,u^\top R\,u + \alpha\,\delta^2 + \beta\,\|s\|_1 \\
+\text{s.t.}\qquad & L_f V(x)+L_g V(x)\,u \le -\lambda_V V(x) + \delta \\
+& L_f h_i(x)+L_g h_i(x)\,u \ge -\gamma_i\,h_i(x) - s_i \qquad \text{(off-tube)}\\
+& h_i^+ \ge h_i^- - \sigma_i \ \ \text{on tubes},\quad \sigma_i:=L_{h_i}\,C_{\mathrm{salt}}\,\|\delta x\| \ \ (\text{Lemma \ref{lem:cbf-frontier}})\\
+& u\in \mathcal U_{\text{act}},\ \ \text{PR margin}(u;\Omega)\ge \constref{epsilon}.
+\end{aligned}
+\]
+We track the \emph{soft-CBF slack stream} $\{s_i\}$ off-tube and the \emph{tube slack} $\{\sigma_i\}$ on-tube.
+
+\paragraph{CVaR guard on safety slack (rights-plane first).}
+Define $\mathrm{CVaR}_{1-\alpha}(s_i)$ and $\mathrm{CVaR}_{1-\alpha}(\sigma_i)$ via Rockafellar–Uryasev. Impose budgets
+\[
+\mathrm{CVaR}_{1-\alpha}(s_i) \le S_{\max,i},\qquad
+\mathrm{CVaR}_{1-\alpha}(\sigma_i) \le \Sigma_{\max,i}.
+\]
+If either budget is violated on the rolling window, \emph{escalate immediately} to freeze+dwell (regardless of PR margin), then re-enter with tightened gains $\gamma_i\uparrow$ and a reduced decision band (Sec.~\ref{sec:entropy2} clamp). CVaR witnesses are exported per window (Sec.~\ref{sec:closure2}).
+
+% ------------------------------------------------------------
+\subsection*{PR on a band with explicit uncertainty}
+Let $(A,B,C,D)$ be the linearization on the active stratum; we certify PR on $\Omega=[\omega_\ell,\omega_u]$ with margin $\constref{epsilon}$ over a declared uncertainty set $\mathcal U$:
+
+\begin{definition}[Uncertainty set for GKYP]\label{def:unc-set}
+\emph{\layertag{Ctrl/Rep}}
+Either (i) \textbf{Polytopic:} $\mathcal U=\mathrm{conv}\{(A_j,B_j,C_j,D_j)\}_{j=1}^J$ from vertices taken at a hashed operating-region grid; or (ii) \textbf{LFT:} $(A,B,C,D)=\mathcal F_\ell(M,\Delta)$ with $\Delta\in\mathbb D$ (structured, norm-bounded). We log vertex IDs or LFT structure, operating-region hash, and sampling grids.
+\end{definition}
+
+\begin{theorem}[Finite-frequency GKYP PR certificate over $\mathcal U$]\label{thm:gkyp-unc}
+\emph{\layertag{Ctrl}}
+Fix band $\Omega$ and margin $\constref{epsilon}$. If there exist $P\succ0$, $Q\succeq0$ s.t.
+\[
+\mathcal L(P,Q;A,B,C,D,\Omega,\constref{epsilon}) \ \preceq\ 0
+\]
+for all $(A,B,C,D)\in\mathcal U$ (all vertices for polytopes; all extremals of $\mathbb D$ for LFT in a standard scaling), where $\mathcal L(\cdot)$ denotes the GKYP LMI with band multiplier, then $G(s)=C(sI-A)^{-1}B+D$ is PR with margin $\constref{epsilon}$ for all models in $\mathcal U$ and all $\omega\in\Omega$.
+\begin{proofsketch}
+Generalized KYP with finite-frequency multipliers; robust feasibility holds by convexity over vertices or by scaled small-gain/IQC arguments for LFT extremals.
+\end{proofsketch}
+\end{theorem}
+
+\begin{remark}[Witness export, hitmap, and sample validation]\label{rem:hitmap}
+We export $\Omega$, $\constref{epsilon}$, uncertainty descriptor (vertex IDs or LFT hash), $(P,Q)$, dual multipliers, solver transcript. A dense frequency sweep (post-check) is logged with minimum sampled PR margin and a \emph{vertex/LFT hitmap} $\mathsf{Hit}=\{(\text{id}, \min_{\omega\in\Omega}\text{PRmargin}_{\text{id}}(\omega))\}$ highlighting the tight models. The hitmap drives retuning (Def.~\ref{def:band-retune}).
+\end{remark}
+
+\begin{definition}[Automatic band retuning]\label{def:band-retune}
+\emph{\layertag{Ctrl/Alg}}
+If the sampled minimum PR margin over $\Omega$ falls below $\constref{epsilon}(1+\eta_{\mathrm{band}})$ with $\eta_{\mathrm{band}}\in[0,0.2]$, \emph{shrink} the band by the smallest symmetric factor $\gamma_\Omega\in(0,1)$ such that the post-check minimum sampled margin recovers $\ge \constref{epsilon}(1+\eta_{\mathrm{band}})$; log $(\gamma_\Omega,\eta_{\mathrm{band}})$ and the hitmap. Under clamp \textsc{Red} (Sec.~\ref{sec:entropy2}), retuning is disabled.
+\end{definition}
+
+% ------------------------------------------------------------
+\subsection*{Lever selection as a safe bandit}\label{sec:ctrl2-bandit}
+Let $\mathcal L$ be feasible \emph{levers} (venue/policy toggles, PR margin raise, intervention intensity, allocation). Define the (negative) coupling gain and collateral cost:
+\[
+\mathrm{gain}(\ell) := -\frac{d}{ds}\Big\|\bm\kappa_s\Big\|_{\FIM^{-1}}\!\Big|_{s=0,\ell},\qquad
+\mathrm{cost}(\ell) := \lambda_R\,\Delta[-\log R_t] + \lambda_{\$}\,\text{budget}_\ell.
+\]
+
+\paragraph{Curvature-per-collateral objective.}
+Define the \emph{curvature damping per collateral} index
+\[
+\mathrm{CPC}(\ell)\ :=\ \frac{\text{ISS decay gain}_\ell}{\mathrm{cost}(\ell)}
+\ \approx\
+\frac{\lambda_V \Delta V^{\downarrow}_\ell + c_{\mathrm{fr}}\Delta C_{\mathrm{fr}}^{\downarrow} + c_{\mathrm{hol}}\Delta \mathrm{Hol}^{\downarrow}}{\lambda_R\,\Delta[-\log R_t] + \lambda_{\$}\,\text{budget}_\ell},
+\]
+estimated from small-tilt experiments within the EF ball (Sec.~\ref{sec:entropy2}). The safe-UCB selects
+\[
+\ell_t = \arg\max_{\ell\in\mathcal L_t}\ \widehat{\mathrm{CPC}}_\ell(t)
++ c\sqrt{\tfrac{\log t}{N_\ell(t)}}
+\quad\text{s.t.}\quad
+\texttt{is\_safe}(\ell)=\textsf{true},
+\]
+where \texttt{is\_safe} requires: (i) QP feasibility with CBF/PR constraints; (ii) predicted CVaR slack budgets will not be violated; (iii) no clamp upgrade (Sec.~\ref{sec:entropy2}).
+
+\begin{definition}[Normative dictionary (venue-aligned levers)]\label{def:normative}
+\emph{\layertag{Rep/Ctrl}}
+Each lever $\ell$ binds to a venue-specific instrument: \emph{Projector-Freeze TRO/PI} (frontier freeze), \emph{Apportionment SLA} (rate limits), \emph{Records anchor} (evidence gating), \emph{FACA-by-function} (advisory breadth), \emph{OTA/GAO concurrence} (procurement guard), \emph{State anti-commandeering} (jurisdictional scope). We log the mapping $(\ell\!\mapsto\!\text{instrument},\ \text{venue},\ \text{scope})$ and include it in the CIS notes.
+\end{definition}
+
+\paragraph{Telemetry.}
+We log per-lever posteriors (mean/variance), UCB scores, safety verdicts, and observed regret; CPC predictions must match the observed sign on $\Delta\|\bm\kappa\|_{\FIM^{-1}}$.
+
+% ------------------------------------------------------------
+\subsection*{Mixed-plane controller: switching stability}
+When constrained SVD (Sec.~\ref{sec:kernels2}) flags degeneracy ($\Delta\sigma$ CI contains $0$), we activate a mixed-plane controller (convex combination of QPs) with a formal stability witness:
+
+\begin{theorem}[Common-$V$ or dwell-time certificate]\label{thm:switch-stab}
+\emph{\layertag{Ctrl}}
+Let $\{A_i,B_i\}$ be linearizations tied to QP choices at the mixture vertices. If there exists $P\succ 0$ with $A_i^\top P+P A_i \prec 0$ for all $i$ (CQLF), then any convex mixing/scheduling is exponentially stable. If no CQLF exists, enforce a minimum dwell-time $\tau_{\mathrm{dwell}}$ between controller switches; with Lipschitz $f,g$ and bounded disturbances on the EF ball, there exists $\tau_{\min}^{\mathrm{switch}}>0$ that guarantees ISS under the observed switch schedule. We log the feasible $P$ (hash) or the enforced $\tau_{\mathrm{dwell}}$.
+\begin{proofsketch}
+Quadratic common Lyapunov suffices for arbitrary switching; otherwise standard average dwell-time ISS arguments with bounded inter-switch energy.
+\end{proofsketch}
+\end{theorem}
+
+% ------------------------------------------------------------
+\subsection*{Decision Range conservativity (operational form)}
+Let $R_t=\mathrm{vol}_r(U_t)$ or its ellipsoidal proxy $\widehat R_t$ (Sec.~\ref{sec:kernels2}). Under I$_1$–I$_5$ and Lem.~\ref{lem:cbf-frontier}, range loss satisfies
+\[
+R_t' \ \ge\ R_t\;-\;f\!\left(C_{\mathrm{fr}},\constref{taumin},d(x,\partial\mathcal C)\right).
+\]
+\textbf{Telemetry and audit.} We export the \emph{one-sided} CI (lower bound) for
+\(
+\mathsf{Res}_t:=(R_t-R_t')-f(\cdot)
+\)
+via a block bootstrap; the \emph{Conservativity} automaton enters a rejecting run iff the CI lower bound $>0$, and the run links $(C_{R,\mathrm{fr}},C_{R,\mathrm{cbf}})$, the PR witness id, and row hashes (Sec.~\ref{sec:stats2}).
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# CLF/CBF-QP + frontier relaxation + CVaR guard
+def solve_clf_cbf_qp(x, V, h_list, R, lambda_V, gamma_list, pr_guard, U_act): ...
+def cvar_slack_budget(slack_stream, alpha=0.95): ...
+def escalate_freeze_if_cvar_exceeds(budget, measured_cvar): ...
+
+# GKYP PR with uncertainty (polytope or LFT)
+def gkyp_pr_cert_uncertainty(unc_set, band, eps): ...
+def export_pr_witness(cert, unc_descriptor, transcript_id): ...
+def pr_frequency_sweep(models, band, grid): ...
+def pr_vertex_hitmap(sweep_results): ...
+def auto_band_retune(sweep_results, eps, eta_band=0.1): ...
+
+# Safe-bandit lever selection (curvature-per-collateral)
+def estimate_cpc(kappa, F_inv, iss_terms, lever, small_tilt_budget): ...
+def qp_safety_check(lever, pr_witness, cvar_forecast, clamp_state): ...
+def safe_ucb_step(levers, posteriors, safety_checker, t, c): ...
+
+# Switching stability
+def cqlf_search(models): ...          # returns (feasible, P) or (False, None)
+def enforce_min_dwell(schedule, tau_dwell): ...
+
+# Range & residual (one-sided CI)
+def range_proxy_volume(U_polytope, rank_r): ...
+def conservativity_residual(R, R_prime, C_fr, tau_min, dist_to_barrier): ...
+def residual_lower_CI(residual_series, block_len, B=1000): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Frontier guard:} inside tubes, $\Pi$ frozen and dwell $\ge\constref{taumin}$; tube slack $\sigma_i$ respects the bound from Lem.~\ref{lem:cbf-frontier}; saltation spend logged (Lem.~\ref{lem:saltation-bound}).
+\item \emph{PR witness over uncertainty:} GKYP LMI feasible for all vertices (or LFT extremals); $(P,Q)$, multipliers, transcript, and uncertainty descriptor exported; dense frequency sweep passes with sampled margin $\ge \constref{epsilon}$.
+\item \emph{Hitmap \& retuning:} vertex/LFT hitmap exported; if sampled minimum margin $<\constref{epsilon}(1+\eta_{\mathrm{band}})$ then band retuning (Def.~\ref{def:band-retune}) applied and logged; disabled in clamp \textsc{Red}.
+\item \emph{Slack CVaR guard:} $\mathrm{CVaR}_{0.95}(s_i)\le S_{\max,i}$ and $\mathrm{CVaR}_{0.95}(\sigma_i)\le \Sigma_{\max,i}$; any violation triggers freeze+dwell event in the Provenance Ladder.
+\item \emph{Safe-bandit logs:} chosen lever $\ell_t$ has a recorded CPC posterior (mean/var), UCB score, safety check=\textsf{true}; observed $\Delta\|\bm\kappa\|_{\FIM^{-1}}$ matches predicted sign.
+\item \emph{Switching stability:} either CQLF feasible (export $P$ hash) \emph{or} enforced $\tau_{\mathrm{dwell}}\!\ge\!\tau_{\min}^{\mathrm{switch}}$; no chattering (non-frontier switches respect dwell).
+\item \emph{Conservativity residual:} lower CI for $\mathsf{Res}_t$ $\le 0$; any positive lower bound emits a labeled rejecting \textsf{Conservativity} run with linked constants and PR witness id.
+\end{itemize}
+\end{mdframed}
+
+% ------------------------------------------------------------
+\subsection*{Integration with ISS budget and holonomy}
+Between crossings, CLF/CBF decay holds; at crossings, saltation jumps are charged against $C_{\mathrm{fr}}$ (Thm.~\ref{thm:ISS2}). Plane drift is throttled by the holonomy budget (Prop.~\ref{prop:holonomy}); the \emph{Hol/N$_{\mathrm{cross}}$} KPI (Sec.~\ref{sec:stats2}) localizes rotational mass, triggering $k$-escalation or lever changes when rising. Band retuning (Def.~\ref{def:band-retune}) is audit-bound and disabled under clamp \textsc{Red}.

@@ -1,0 +1,12 @@
+name: acceptance
+on: [push, pull_request]
+jobs:
+  accept:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check acceptance artifacts
+        run: python tools/check_acceptance.py --root artifacts --require frontier-ledger pr-witness dro-kkt automata-evidence

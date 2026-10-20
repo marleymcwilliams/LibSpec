@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CBF_AUDIT",
+  "type": "object",
+  "properties": {
+    "predicate_id": {
+      "const": "CBF_LEDGER_INTEGRITY"
+    },
+    "packet_sequence_digest": {
+      "type": "string"
+    },
+    "iss_initial": {
+      "type": "string"
+    },
+    "iss_final": {
+      "type": "string"
+    },
+    "verdict": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "predicate_id",
+    "packet_sequence_digest",
+    "iss_initial",
+    "iss_final",
+    "verdict"
+  ]
+}

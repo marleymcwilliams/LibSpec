@@ -1,0 +1,158 @@
+% ============================================================
+\section{DRO Closure: Tuning, KKT Logging, and Sensitivity}\label{sec:closure2}
+% ============================================================
+
+\noindent\textbf{Setup (windowed, radius-gated).}
+Fix a window $[t-\constref{tau},t]$ with empirical law $\hat P_t$ sourced from the Provenance Ladder.
+Let $\ell_\theta(x)$ be convex in $\theta$ and measurable in $x$.
+We define the \emph{soft-transport} DRO risk at radius $\constref{rho}$ using either a KL ball or a Wasserstein-$c$ ball; both are handled by a unified, \emph{smooth} dual.
+Whenever quadratic EF proxies are used downstream, we require a passing guard \texttt{kl\_quad\_bounds} (Sec.~\ref{sec:entropy2}).
+
+% ------------------------------------------------------------
+\paragraph{Primal (fixed $\theta$).}
+\[
+\mathcal R_{\mathrm{DRO}}(\theta;\constref{rho})
+~:=~
+\sup_{Q\in\mathcal P}~\Big\{~\mathbb E_Q[\ell_\theta(X)]:~\mathbf D(Q\|\hat P_t)\le \constref{rho}~\Big\},
+\]
+where $\mathbf D$ is either $(i)$ KL or $(ii)$ Wasserstein-$c$ with continuous, $1$-homogeneous cost $c$ on the EF ball.
+
+% ------------------------------------------------------------
+\paragraph{Unified dual with deterministic smoothing.}
+\textbf{KL case:}\quad
+$\displaystyle \mathcal R_{\mathrm{DRO}}
+=\inf_{\eta>0}\Big\{\eta\,\constref{rho}+\frac{1}{\eta}\log \mathbb E_{\hat P_t}\!\big[e^{\eta\,\ell_\theta(X)}\big]\Big\}$.
+
+\noindent
+\textbf{Wasserstein-$c$ case (smoothed):}\quad
+$\displaystyle \mathcal R_{\mathrm{DRO}}
+=\inf_{\eta\ge 0}\Big\{\eta\,\constref{rho}+\mathbb E_{\hat P_t}\big[\tilde\phi_\eta(X;\theta)\big]\Big\}$,
+with $c$-transform $\phi_\eta(x;\theta){:=}\sup_{y}\{\ell_\theta(y)-\eta\,c(x,y)\}$ replaced by a log-sum-exp smoothing
+\[
+\tilde\phi_\eta(x;\theta):=\tau_{\mathrm{lse}}\log\!\int\!\exp\!\big(\tfrac{\ell_\theta(y)-\eta c(x,y)}{\tau_{\mathrm{lse}}}\big)\,d\mu(y)
+\]
+over a compact EF ball, where $\tau_{\mathrm{lse}}\!>\!0$ is chosen so that the \emph{smoothing bias} satisfies
+\[
+0 \le \mathbb E_{\hat P_t}[\tilde\phi_\eta-\phi_\eta] \le \varepsilon_{\mathrm{lse}}
+\qquad\text{(logged, target }\varepsilon_{\mathrm{lse}}\le 10^{-4}\text{)}.
+\]
+We log $(\tau_{\mathrm{lse}},\varepsilon_{\mathrm{lse}})$ and fail-closed if the bias bound is not met.
+
+% ------------------------------------------------------------
+\begin{theorem}[Strong duality \& uniqueness of $\constref{etastar}$]\label{thm:duality-uniq}
+\emph{\layertag{Clos/Inf}}
+Assume: (i) $\ell_\theta$ convex, lsc in $\theta$; (ii) $\mathbf D$ as above with $c$ convex, lsc, coercive; (iii) $\hat P_t$ supported within the EF ball of radius $r$.
+Then $\mathcal R_{\mathrm{DRO}}$ equals its dual, the dual objective is strictly convex in $\eta$, and the minimizer $\eta^\star$ is unique.
+For the smoothed Wasserstein dual, $\tilde\eta^\star\to\eta^\star$ as $\tau_{\mathrm{lse}}\downarrow 0$ with bias bounded by $\varepsilon_{\mathrm{lse}}$.
+\begin{proofsketch}
+Fenchel–Rockafellar (KL) and convex conjugacy of $c$-transforms (Wasserstein); strict convexity from log-mgf curvature (KL) or Moreau envelope (smoothed $c$-transform), compactness from radius gating.
+\end{proofsketch}
+\uses{(C4) \constref{rho}; (C5) \constref{F}, \constref{Lpsi}; (C7) \constref{etastar}.}
+\end{theorem}
+
+% ------------------------------------------------------------
+\paragraph{Tail protection via CVaR (embedded).}
+For any KPI stream $Z_t$ (e.g., $M_t$ or slack), embed the Rockafellar–Uryasev epigraph:
+$\mathrm{CVaR}_{1-\alpha}(Z)=\min_{\tau}\{\tau+\tfrac{1}{\alpha}\mathbb E[(Z-\tau)_+]\}$,
+with multiplier $\lambda_{\mathrm{CVaR}}\!\ge\!0$ in the joint program; log $(\tau^\star,\lambda_{\mathrm{CVaR}}^\star)$.
+
+% ------------------------------------------------------------
+\begin{proposition}[KKT witness fields]\label{prop:kkt-ops2}
+\emph{\layertag{Clos/Inf}}
+Under convexity in $\theta$ and strict convexity in $\eta$, the KKT tuple
+\[
+\left(\eta^\star,\ \lambda_{\mathrm{CVaR}}^\star,\ \tau^\star,\ \text{(band/PR/CBF) multipliers}\right)
+\]
+exists and is unique in $(\eta^\star,\lambda_{\mathrm{CVaR}}^\star)$.
+Per window export: (i) $\eta^\star$ bracket/trace, (ii) dual gap, (iii) CVaR complementary slackness, (iv) AD vs FD gradient RMS, (v) solver transcript id, (vi) $(\tau_{\mathrm{lse}},\varepsilon_{\mathrm{lse}})$ if Wasserstein.
+\end{proposition}
+
+% ------------------------------------------------------------
+\begin{theorem}[$\rho$-sensitivity \& envelope identity]\label{thm:rho-sense}
+\emph{\layertag{Clos}}
+Let $v(\rho)=\mathcal R_{\mathrm{DRO}}(\theta;\rho)$. Under Thm.~\ref{thm:duality-uniq}, $v$ is differentiable and
+\[
+\frac{dv}{d\rho}\Big|_{\rho=\constref{rho}}=\eta^\star,
+\qquad
+\nabla_\theta \mathcal R_{\mathrm{DRO}}(\theta;\rho) = \mathbb E_{\hat P_t}\big[\nabla_\theta \tilde\phi_{\eta^\star}(X;\theta)\big],
+\]
+with Lipschitz constant controlled by $\eta^\star$ and the EF radius $r$.
+We use this identity \emph{as a precondition} for consuming SPRT outcomes (Sec.~\ref{sec:stoch2}) and to gate promotions via the quarantine hook below.
+\begin{proofsketch}
+Danskin–Envelope theorem with unique $\eta^\star$; interchange of $\nabla_\theta$ and $\mathbb E$ justified by bounded EF ball and Lipschitz $\ell_\theta$.
+\end{proofsketch}
+\end{theorem}
+
+% ------------------------------------------------------------
+\paragraph{Deterministic replay \& Dual-Gap Trend KPI.}
+We pin solver tolerances, seeds, and the evaluation order in a minimal \emph{Replay Pack} (container SHA logged).
+Track a \textbf{Dual-Gap Trend} KPI: dual gap $\le 10^{-4}$ (KL) or bias-compensated gap $\le 10^{-4}$ (Wasserstein) and a shrinking $\eta^\star$ bracket. If the dual gap \emph{plateaus above} $10^{-4}$ for $m$ consecutive windows, emit a \textsf{DRO Convergence Alarm} (tuning review of $\rho$, smoothing, or conditioning).
+
+% ------------------------------------------------------------
+\paragraph{Reference measure $\lambda$ (refinement-invariant, artifacted).}
+\begin{definition}[Stratified reference $\lambda$]\label{def:ref2}
+\emph{\layertag{Rep/Inf}}
+Let $G=\bigsqcup_{s\in\mathcal S} S_s$ be a Whitney stratification.
+Define $\lambda=\lambda_{\cont}+\lambda_{\atom}$ with
+$\lambda_{\cont} := \sum_{s} w_s\,\mathcal H^{\dim S_s}\!\!\restriction S_s$ and
+$\lambda_{\atom}:=\sum_{p} a_p\,\delta_p$ for isolated singularities.
+Set the window reference $P_0$ as the independence projection of $(\Gamma,G)$ against $\lambda$; export the digest $\{w_s\},\{a_p\},\text{mesh-hash}$ in the Transport Pack.
+\end{definition}
+
+\begin{lemma}[Refinement invariance]\label{lem:refinement}
+\emph{\layertag{Rep}}
+Under stratified mesh refinements that preserve total weights, $P_0$ and $\FIM_t$ are invariant to first order on the EF ball; $(\FIM_t,W_t,\eta^\star)$ change by $O(r^2)$.
+\begin{proofsketch}
+Local change-of-variables with Jacobian $\approx I$ on $r$-balls; atoms preserve total weight; Fisher is second-order in cumulants.
+\end{proofsketch}
+\end{lemma}
+
+% ------------------------------------------------------------
+\subsection*{Quarantine hook (precondition \textrightarrow{} action)}
+If the finite-difference slope check around $\rho$ does not match $\eta^\star$ within tolerance (Sec.~\ref{thm:rho-sense}), set \textsf{envelope\_ok}=\textsf{false}.
+The pipeline must then mark the window \textsf{quarantined} per Def.~\ref{def:win-quarantine} (Sec.~\ref{sec:stoch2}): promotions frozen, no adaptive updates, safety-only monitoring.
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# Duals, smoothing, and gradients
+def eta_star(losses, radius, div="KL", tol=1e-8, maxit=200): ...
+def phi_eta(samples, theta, eta, div="Wc", lse_temp=1e-2): ...
+def lse_bias_bound(temp, support_radius, lipschitz_ell, lipschitz_c): ...
+def dro_value_grad(theta, eta, data, div="Wc", lse_temp=1e-2): ...
+
+# Sensitivity + envelope precondition
+def bracket_eta(losses, radius, div="KL"): ...
+def envelope_slope(v_rho_minus, v_rho_plus, h): ...
+def check_envelope_precondition(eta_star, slope, tol=0.05): ...
+
+# CVaR epigraph + witnesses
+def cvar_enforce(z_stream, alpha=0.95): ...
+def kkt_witness_pack(eta_trace, dual_gap, cvar_slack, transcript_id, lse_params=None): ...
+
+# Replay + trends
+def log_replay_manifest(container_sha, seeds, solver_tol): ...
+def dual_gap_trend_monitor(gaps, threshold=1e-4, horizon_m=3): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window unless noted).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Dual gap \& smoothing bias:} dual gap $\le 10^{-4}$ (KL) or bias-compensated gap $\le 10^{-4}$ (Wasserstein); $(\tau_{\mathrm{lse}},\varepsilon_{\mathrm{lse}})$ logged with $\varepsilon_{\mathrm{lse}}\le 10^{-4}$.
+\item \emph{Envelope identity (precondition):} finite-difference slope vs.\ $\eta^\star$ matches within $5\%$ (Thm.~\ref{thm:rho-sense}); failing precondition \emph{must} trigger the quarantine hook (Sec.~\ref{sec:stoch2}).
+\item \emph{Gradients:} AD vs FD RMS $\le 1\%$ for $\nabla_\theta \mathcal R_{\mathrm{DRO}}$ (radius-gated).
+\item \emph{CVaR slack:} $\ge 0$ with $(\tau^\star,\lambda_{\mathrm{CVaR}}^\star)$ exported; violations emit rejecting automata runs linked in the artifact.
+\item \emph{Replay determinism (weekly):} container SHA + seeds + solver tolerance logged; replays reproduce $\eta^\star$, gaps, slopes bitwise.
+\item \emph{Trend alarm (panel-level):} if dual gap plateaus $>10^{-4}$ for $m$ windows, raise \textsf{DRO Convergence Alarm} and log auto-tuning actions (e.g., $\rho$ adjust, $\tau_{\mathrm{lse}}$ refine).
+\item \emph{Reference digest:} recomputation of $\FIM_t$ from $\{w_s\},\{a_p\}$ and mesh-hash matches within $1\%$ RMS; mismatch is a hard failure.
+\end{itemize}
+\end{mdframed}
+
+% ------------------------------------------------------------
+\paragraph{Tuning policy (runtime).}
+Pick a nominal $\constref{rho}$ to meet the negative-control benchmark; adapt by:
+(i) $\rho\uparrow$ if frequent $H_1$ SPRT accepts coincide with small $\eta^\star$ (under-robust),
+(ii) $\rho\downarrow$ if $\eta^\star$ persistently large and $R_t$ erodes (over-robust),
+(iii) hold $\rho$ under \textsc{Red} clamp; refine $\tau_{\mathrm{lse}}$ to keep $\varepsilon_{\mathrm{lse}}$ within target.
+All updates are hash-logged with pre/post $\eta^\star$, envelope-slope checks, and replay manifests.
