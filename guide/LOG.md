@@ -5,7 +5,7 @@ Decisions Claude Code made without asking, because they are reversible and don't
 ## 2026-10-20
 
 ### The axiom audit covers the controls (#18)
-- **Decision:** `AxiomAudit.lean` now imports `JSG.Tests.Mutants` and `JSG.Tests.Calibration` and audits every theorem they declare, 43 today. Before this it audited only `smoke` and the proofs. The forbidden-token scan catches a literal `sorry` in the tests, but not an axiom that a tactic brings in, such as `bv_decide`'s `Lean.ofReduceBool`. The change makes a check stronger, so it's Claude Code's call (CLAUDE.md).
+- **Decision:** `AxiomAudit.lean` now imports `JSG.Tests.Mutants` and `JSG.Tests.Calibration` and audits every theorem they declare: 42 today, plus 20 equation and `sizeOf` lemmas that Lean generates for their definitions. Before this it audited only `smoke` and the proofs. The forbidden-token scan catches a literal `sorry` in the tests, but not an axiom that a tactic brings in, such as `bv_decide`'s `Lean.ofReduceBool`. The change makes a check stronger, so it's Claude Code's call (CLAUDE.md).
 - **How:** a small `#audit_module` command prints `#print axioms` for each theorem in a module, so a control added later is audited without anyone listing it. It fails if the module isn't imported or declares no theorem, so a renamed module can't pass with nothing checked.
 - **Undo:** delete the two `#audit_module` lines, the command and the two imports.
 
