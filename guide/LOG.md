@@ -31,6 +31,11 @@ Decisions Claude Code made without asking, because they are reversible and don't
 ### Compiled on CI, not locally (#14)
 - **Decision:** this machine had 2.3 GB free, with a Lean worker from 2026-10-15 holding 13.3 GB, so no local Mathlib load was added. The branch was compiled with a manually started CI run before the PR was opened.
 
+### `combine_comm` lands in `Proofs/Milestone1.lean`, and the axiom audit lists it (#15)
+- **Decision:** the proof file is `lean/JSG/Proofs/Milestone1.lean`, one file per milestone as ROADMAP's layout says. It holds Marley's proof from `lean/Scratch.lean` (lines 35–41) verbatim, under the statements' `variable` line. `AxiomAudit.lean` now imports `JSG.Solution` and `JSG.Tests.Smoke` instead of `JSG`, and prints `combine_comm`'s axioms.
+- **Why the import changes:** a proof restates its theorem under the frozen name, so it can't be imported alongside `JSG.Statements`, which `JSG` brings in. The audit asks for every closed theorem to be listed. Comparator already checks the proof's axioms; this adds `check.sh`'s own audit, so the check is stronger.
+- **Undo:** restore `import JSG` in `AxiomAudit.lean` and drop the `combine_comm` line.
+
 ## 2026-10-15
 
 ### Statements review report (#13)
