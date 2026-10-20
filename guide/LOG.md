@@ -2,6 +2,35 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-10-20
+
+### `mfGate_monotone` dropped; the general form replaces it (#14)
+- **Decision:** Q3 left this call to Claude Code. `mfGate_monotone` is dropped rather than kept as a corollary.
+- **Why:** `mfGate_signed` implies it. Keeping both would freeze two statements that carry the same claim, and the corollary would need its own mutant, witness and proof.
+- **What stays:** its two controls are kept as tests of the real gate, renamed `mfGate_rejects_draft_history` and `mfGate_accepts_kept_history`. No test was deleted.
+- **Undo:** add `mfGate_monotone` back as a theorem in `Statements.lean`; that's a statements change.
+
+### Controls for the restated theorems (#14)
+- **Decision:** `BridgeHolds` and `SignedRemovals` in `Mutants.lean` state each claim with the map or gate as a parameter, so a mutant plugs into the same claim. The mutants are `id` for the dial map, and a gate that accepts every change, run on the drafts' history.
+- **What changed:** the new `bridge_mutant` is, Prop for Prop, the old reversed-hypothesis copy, so nothing is lost. The old bridge witness tested a statement that no longer exists; its replacement uses the real `threshold`. `mfGate_signed`'s witness is the drafts' history with its removal signed.
+- **Undo:** revert the two sections of `Mutants.lean`.
+
+### `mfGate_signed` assigned to Milestone 2 (#14)
+- **Decision:** ROADMAP's Milestone 2 row and MASTER_GUIDE's milestone list now include the must-fail gate. `mfGate_monotone` had been in neither, as #3 reported.
+- **Why Milestone 2:** it sits with the policy-lattice theorems, and its proof is an induction on steps.
+- **Undo:** move it to another milestone.
+
+### The concrete-Loader reminder (#14)
+- **Decision:** besides the note in `STATEMENTS_REVIEW.md`, ROADMAP's milestone section says that Milestone 2's note must record that a concrete Loader (L1–L10) is still owed.
+- **Why:** that note is written when the milestone closes, so the reminder sits next to it.
+- **Undo:** delete the sentence.
+
+### `expiry_tightens`: the note, not a set-based test (#14)
+- **Decision:** the named mutant ("revert to the most recent policy") can't be stated on sets, so `STATEMENTS_REVIEW.md` explains why the list copy tests the same claim. The note also names a set-level candidate mutant (`sSup` for `sInf`) in case you want one. No new test was added.
+
+### Compiled on CI, not locally (#14)
+- **Decision:** this machine had 2.3 GB free, with a Lean worker from 2026-10-15 holding 13.3 GB, so no local Mathlib load was added. The branch was compiled with a manually started CI run before the PR was opened.
+
 ## 2026-10-15
 
 ### Statements review report (#13)

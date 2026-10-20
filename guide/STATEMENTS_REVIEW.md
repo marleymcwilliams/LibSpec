@@ -1,6 +1,6 @@
 # Statements review: mutants and witnesses
 
-Review support before `statements-v1` is tagged. Nothing here changes a statement. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement.
+Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2 and Q3 restatements of `bridge` and the must-fail gate. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement.
 
 **How to read it.**
 - **Same Prop:** the mutant refutes the statement's own named definition with the mutant plugged in.
@@ -19,26 +19,40 @@ Review support before `statements-v1` is tagged. Nothing here changes a statemen
 | `verdict_complete` | Restated copy | `verdict` → `alwaysReject` |
 | `residual_spec` | Restated copy | `residual` → `residualFull` |
 | `no_flip` | **Not refuted**: the conclusion fails only for a grader that breaks the hypothesis | `inflatingGrader` isn't `Noninterfering` (`noninterfering_mutant`, the same Prop) |
-| `Loader.safe` | Restated copy **without the `Loader` structure** | A bare step relation with no `inv_step`; no `Loader` can fail the statement |
-| `Loader.terminates` | Restated copy **without the `Loader` structure** | A bare relation with no `progress`; `retry_breaks_progress` shows the retry can't be a `Loader` |
+| `Loader.safe` | Restated copy **without the `Loader` structure** | A bare step relation with no `inv_step`; no `Loader` can fail the statement ([note](#note-loadersafe-and-loaderterminates-hold-for-any-loader)) |
+| `Loader.terminates` | Restated copy **without the `Loader` structure** | A bare relation with no `progress`; `retry_breaks_progress` shows the retry can't be a `Loader` ([note](#note-loadersafe-and-loaderterminates-hold-for-any-loader)) |
 | `charge_append` | Restated copy | `charge` → `chargeMerged`; `E` = ℝ |
 | `charge_chatter` | Restated copy | `charge` → `chargeMerged`; `E` = ℝ |
-| `expiry_tightens` | Restated copy, **different shape** | Lists and `Sublist` instead of sets and `⊆`; `revertRecent` for `effective`; `P` = Prop |
-| `bridge` | Restated copy **with the hypothesis reversed** | `θ₂ ≤ θ₁` became `θ₁ ≤ θ₂`; `verdict` unchanged ([Q2](QUEUE.md)) |
+| `expiry_tightens` | Restated copy, **different shape** | Lists and `Sublist` instead of sets and `⊆`; `revertRecent` for `effective`; `P` = Prop ([note](#note-why-expiry_tightens-is-tested-on-lists)) |
+| `bridge` | Restated copy (`BridgeHolds`) | `threshold` → `id`, the un-inverted dial (restated over dials after [Q2](QUEUE.md)) |
 | `fold_check_vacuous` | Restated copy | `fold` → `foldUncapped` |
-| `mfGate_monotone` | **Not refuted**: the same Props for a history the gate rejects | No gate is mutated; the drafts' history fails `hg` ([Q3](QUEUE.md)) |
+| `mfGate_signed` | Restated copy (`SignedRemovals`), at the drafts' history | `mfGate` → `looseGate`, a gate that accepts every change (replaces `mfGate_monotone` after [Q3](QUEUE.md)) |
 | `dwell_lower_bound` | Restated copy **with a different hypothesis** | JSG I's lemma: "speed at least α" replaces "speed at most `Smax`" |
 
 The two definitions with Mutant lines, `Noninterfering` and `Calibrated`, are refuted on their own Props.
 
 **What this means.**
-- **9 theorems** have a mutant that plugs a wrong implementation into the statement: `interchange` through its own Prop, and 8 through faithful copies that swap one definition.
-- **`bridge`'s mutant refutes a different statement.** No wrong implementation currently fails `bridge`. See [Q2](QUEUE.md).
-- **`mfGate_monotone`'s mutant is a history, not a gate.** The real gate rejects that history, so the theorem's hypothesis fails and the theorem isn't touched. A gate that accepts every change, run on the same history, would fail it. See [Q3](QUEUE.md).
+- **11 theorems** have a mutant that plugs a wrong implementation into the claim: `interchange` through its own Prop, and 10 through faithful copies that swap one definition, map or gate.
 - **`no_flip`** is proved by `rw` and holds for every grader that satisfies `Noninterfering`. Its mutant shows the hypothesis carries the weight; the real work is proving `Noninterfering` for each concrete grader, which is deferred.
-- **`Loader.safe` and `Loader.terminates`** hold for every `Loader`, because `inv_step` and `progress` are fields you must prove to build one. Their mutants are relations that can't be built as Loaders. They get teeth when a concrete Loader is defined (Milestone 2); not yet.
-- **`expiry_tightens`'s mutant has a different shape by necessity:** "revert to the most recent policy" needs an order, so it works on lists.
+- **`Loader.safe` and `Loader.terminates`** hold for every `Loader`; see the note below. A concrete Loader is still owed.
+- **`expiry_tightens`'s mutant is list-based by necessity**; see the note below for why it tests the same claim.
 - **`dwell_lower_bound`** has no definition to mutate, so its mutant is the wrong lemma, JSG I's.
+
+### Note: why `expiry_tightens` is tested on lists
+
+`expiry_tightens` is stated on sets, and `effective` ignores order. Its named mutant, "revert to the most recent policy", can't be stated on sets, because "most recent" needs an order that a set doesn't have. So `expiry_tightens_mutant` states the same claim for ordered active lists:
+
+- **Expiry** is `List.Sublist`: entries are removed and the rest keep their order. A sublist's entries are a subset of the original's, so every expiry on lists is also an expiry on sets.
+- **The conclusion** is the same comparison: the policy before expiry is at most as strict as the policy after.
+- **For the real `effective`,** the set claim implies the list claim, applied to each list's set of entries. So the list claim asks nothing extra of `effective`; it only lets the effective-policy function read the order, which `revertRecent` needs. `revertRecent` fails it.
+
+What the copy doesn't show is a set-level implementation failing `expiry_tightens` as stated. If you want that too, one candidate mutant is meeting the baseline with `sSup` of the active weakenings instead of `sInf`, so the strictest weakening wins. It fails with baseline True, active {True}, and expiry to ∅.
+
+### Note: `Loader.safe` and `Loader.terminates` hold for any Loader
+
+Both hold for every `Loader` by construction. Building one requires proving `inv_step` and `progress`, and the two theorems only lift those fields from one step to whole runs. Their mutants are step relations that can't be built as Loaders. So the theorems can't catch a wrong Loader; they can only catch a wrong idea of what a Loader must prove.
+
+**A concrete Loader (L1–L10) is still owed.** When Milestone 2 proves these theorems, its milestone note must say so. ROADMAP's Milestone 2 now carries that reminder.
 
 ## Side by side
 
@@ -168,16 +182,20 @@ theorem expiry_tightens_mutant :
     ¬ ∀ (B : Prop) (a a' : List Prop), a'.Sublist a → revertRecent B a ≤ revertRecent B a'
 ```
 
-### 13. `bridge`: restated copy with the hypothesis reversed
+### 13. `bridge`: restated copy with the map swapped
 ```lean
 -- Statement
-theorem bridge {Inp : Type} (gradeOf : Inp → Grade ι) {θ₁ θ₂ : ι → ENNReal}
-    (h : θ₂ ≤ θ₁) :
-    {x | verdict θ₂ (gradeOf x) = .accept} ⊆ {x | verdict θ₁ (gradeOf x) = .accept}
--- Mutant: θ₁ ≤ θ₂ instead of θ₂ ≤ θ₁; nothing is plugged in
-theorem bridge_mutant :
-    ¬ ∀ (gradeOf : Unit → Grade Unit) (θ₁ θ₂ : Unit → ENNReal), θ₁ ≤ θ₂ →
-      {x | verdict θ₂ (gradeOf x) = .accept} ⊆ {x | verdict θ₁ (gradeOf x) = .accept}
+theorem bridge {Inp : Type} (gradeOf : Inp → Grade ι) {dial₁ dial₂ : ι → ENNReal}
+    (h : dial₁ ≤ dial₂) :
+    {x | verdict (threshold dial₂) (gradeOf x) = .accept}
+      ⊆ {x | verdict (threshold dial₁) (gradeOf x) = .accept}
+-- The claim with the map as a parameter
+def BridgeHolds (thresholdOf : (Unit → ENNReal) → Unit → ENNReal) : Prop :=
+  ∀ (gradeOf : Unit → Grade Unit) (dial₁ dial₂ : Unit → ENNReal), dial₁ ≤ dial₂ →
+    {x | verdict (thresholdOf dial₂) (gradeOf x) = .accept}
+      ⊆ {x | verdict (thresholdOf dial₁) (gradeOf x) = .accept}
+-- Mutant: the un-inverted dial
+theorem bridge_mutant : ¬ BridgeHolds id
 ```
 
 ### 14. `fold_check_vacuous`: restated copy
@@ -190,16 +208,24 @@ theorem fold_check_vacuous_mutant :
     ¬ ∀ (Rmax lam : ℝ), 0 ≤ Rmax → ∀ rs : List ℝ, foldUncapped Rmax lam rs ≤ Rmax
 ```
 
-### 15. `mfGate_monotone`: not refuted; the same Props for a history the gate rejects
+### 15. `mfGate_signed`: restated copy with the gate swapped
 ```lean
 -- Statement
-theorem mfGate_monotone {C : Type} (signed : Set C → Prop) (MF : ℕ → Set C)
-    (hg : ∀ t, mfGate signed (MF t) (MF (t + 1)))
-    (hs : ∀ s, signed s → s = ∅) : Monotone MF
--- Mutant: hg fails for this history, and the history isn't monotone
-theorem mfGate_monotone_mutant :
-    ¬ mfGate nothingSigned (draftHistory 0) (draftHistory 1) ∧ ¬ Monotone draftHistory
+theorem mfGate_signed {C : Type} (signed : Set C → Prop) (MF : ℕ → Set C)
+    (hg : ∀ t, mfGate signed (MF t) (MF (t + 1))) {s t : ℕ} (hst : s ≤ t) {c : C}
+    (hs : c ∈ MF s) (ht : c ∉ MF t) :
+    ∃ u, s ≤ u ∧ u < t ∧ c ∈ MF u \ MF (u + 1) ∧ signed (MF u \ MF (u + 1))
+-- The claim with the gate as a parameter, for histories of FailClass
+def SignedRemovals (gate : (Set FailClass → Prop) → Set FailClass → Set FailClass → Prop)
+    (signed : Set FailClass → Prop) (MF : ℕ → Set FailClass) : Prop :=
+  (∀ t, gate signed (MF t) (MF (t + 1))) → ∀ {s t : ℕ}, s ≤ t → ∀ {c : FailClass},
+    c ∈ MF s → c ∉ MF t →
+      ∃ u, s ≤ u ∧ u < t ∧ c ∈ MF u \ MF (u + 1) ∧ signed (MF u \ MF (u + 1))
+-- Mutant: a gate that accepts every change, on the drafts' history
+theorem mfGate_signed_mutant : ¬ SignedRemovals looseGate nothingSigned draftHistory
 ```
+
+The old `mfGate_monotone` controls stay as tests of the real gate: `mfGate_rejects_draft_history` and `mfGate_accepts_kept_history`.
 
 ### 16. `dwell_lower_bound`: restated copy with a different hypothesis
 ```lean
@@ -226,11 +252,12 @@ Nine witnesses proved only their conclusion, or skipped some hypotheses. [#11](h
 | `no_flip` | `hni` | proved in a separate theorem | proved together |
 | `Loader.safe` | `hs`, `hr` | assumed, for every pair of states | a concrete pair (3 down to 1) |
 | `expiry_tightens` | `h : a' ⊆ a` | conclusion only | all proved |
-| `bridge` | `h : θ₂ ≤ θ₁` | conclusion only | all proved |
+| `bridge` | `h : dial₁ ≤ dial₂` (was `θ₂ ≤ θ₁`) | conclusion only | all proved, with the real `threshold` |
 | `fold_check_vacuous` | `h : 0 ≤ Rmax` | conclusion only | all proved |
 | `dwell_lower_bound` | `hS`, `hlip`, `h₁`, `h₂`, `ht` | missed `hS` and `ht` | all proved |
+| `mfGate_signed` | `hg`, `hst`, `hs`, `ht` | new after Q3 | all proved: the drafts' history with its removal signed |
 
 The remaining witnesses already covered everything:
 - `combine_comm`, `combine_assoc`, `interchange`, `charge_append` and `charge_chatter` have no hypotheses.
 - `Loader.terminates` has only typeclass instances, which Lean finds for ℕ.
-- `mfGate_monotone`'s witness already proved `hg` and `hs`.
+- `mfGate_monotone`'s witness already proved `hg` and `hs`; it stays as `mfGate_accepts_kept_history`.

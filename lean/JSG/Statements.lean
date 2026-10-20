@@ -84,11 +84,14 @@ theorem expiry_tightens (B : P) {a a' : Set P} (h : a' ⊆ a) :
     effective B a ≤ effective B a' := by sorry
 -- Mutant: "revert to the most recent policy", which can land on a weaker one.
 
-/-- The bridge: tighter thresholds never admit more inputs. -/
-theorem bridge {Inp : Type} (gradeOf : Inp → Grade ι) {θ₁ θ₂ : ι → ENNReal}
-    (h : θ₂ ≤ θ₁) :
-    {x | verdict θ₂ (gradeOf x) = .accept} ⊆ {x | verdict θ₁ (gradeOf x) = .accept} := by sorry
--- Mutant: a threshold dial stored un-inverted, so "stricter" raises θ.
+/-- The bridge: a stricter dial never admits more inputs. Dials are larger when
+    stricter, and `threshold` turns a dial into the threshold the verdict reads. -/
+theorem bridge {Inp : Type} (gradeOf : Inp → Grade ι) {dial₁ dial₂ : ι → ENNReal}
+    (h : dial₁ ≤ dial₂) :
+    {x | verdict (threshold dial₂) (gradeOf x) = .accept}
+      ⊆ {x | verdict (threshold dial₁) (gradeOf x) = .accept} := by sorry
+-- Mutant: a threshold dial stored un-inverted (`id` in place of `threshold`), so
+-- "stricter" raises θ.
 
 theorem fold_check_vacuous (Rmax lam : ℝ) (h : 0 ≤ Rmax) (rs : List ℝ) :
     fold Rmax lam rs ≤ Rmax := by sorry
@@ -97,12 +100,16 @@ theorem fold_check_vacuous (Rmax lam : ℝ) (h : 0 ≤ Rmax) (rs : List ℝ) :
 
 /-! ## 6. Calibration -/
 
-/-- Every history the gate accepts, with no signed removals, only grows. -/
-theorem mfGate_monotone {C : Type} (signed : Set C → Prop) (MF : ℕ → Set C)
-    (hg : ∀ t, mfGate signed (MF t) (MF (t + 1)))
-    (hs : ∀ s, signed s → s = ∅) : Monotone MF := by sorry
--- Mutant: Draft0–7's history, which dropped GOLDEN_RULE_BREACH with nothing signed. That class
--- sits outside the v1 gate (decisions/RAILS.md); the history still breaks the gate's rule.
+/-- Every failure class that leaves the must-fail set leaves in a signed step: in a
+    history the gate accepts, if a class is in MF at step s and gone at step t, some
+    step u between them removed it, and that removal was signed. -/
+theorem mfGate_signed {C : Type} (signed : Set C → Prop) (MF : ℕ → Set C)
+    (hg : ∀ t, mfGate signed (MF t) (MF (t + 1))) {s t : ℕ} (hst : s ≤ t) {c : C}
+    (hs : c ∈ MF s) (ht : c ∉ MF t) :
+    ∃ u, s ≤ u ∧ u < t ∧ c ∈ MF u \ MF (u + 1) ∧ signed (MF u \ MF (u + 1)) := by sorry
+-- Mutant: a gate that accepts every change, run on Draft0–7's history, which dropped
+-- GOLDEN_RULE_BREACH with nothing signed. That class sits outside the v1 gate
+-- (decisions/RAILS.md); the history still breaks the gate's rule.
 
 /-! ## 7. No-Zeno kernel (analysis layer, corrected form) -/
 
