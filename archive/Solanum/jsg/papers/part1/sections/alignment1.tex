@@ -1,0 +1,52 @@
+\section{Alignment \& Normative Contracts for Joint Strategic Geometry}\label{app:alignment1}
+
+\emph{\layertag{Comp/Clos/Ctrl/Inf}} This section specifies a \emph{normative layer} for deploying the framework. The goal is to make \emph{value-sensitive behavior} explicit, monitorable, and auditable using the same mathematical objects used for guarantees (Fisher metrics, cumulants, projections, PR/ISS, DRO). Philosophically: (i) treat coupling as a conserved risk resource; (ii) treat energetic passivity as a dignity floor; (iii) treat drift as epistemic debt that must be amortized; (iv) treat (co)homological obstruction as actionable \emph{tension} rather than mere metaphor.
+
+\paragraph{Operationalized philosophical primitives.} Let $\widehat{\mathbf k}_K^{(t)}$ be the $K$-order mixed cumulants and $\FIM$ the Fisher information metric. Define: (i) \textbf{coupling mass} $M_t:=\|\widehat{\mathbf k}_K^{(t)}\|_{\FIM^{-1}}$; (ii) \textbf{tension 2-form} $\omega_t$ as the exterior (wedge) accumulation of non-commuting evaluations (Section~\ref{sec:adv-structures1}), with norm $T_t:=\|\omega_t\|_{\FIM^{-1}}$; (iii) \textbf{colimit defect} $\Delta^{\mathrm{colim}}_t$ as a normed obstruction (\v{C}ech 1-cocycle magnitude) to forming a global state from local data.
+
+\subsection*{Axioms (Alignment Layer)}
+\begin{enumerate}[leftmargin=*]
+  \item \textbf{Safety budget (statistical coupling).} Fix a budget $B_{\mathrm{saf}}>0$ on the Fisher-norm of mixed cumulants: $\|\mathbf k_K\|_{\FIM^{-1}}\le B_{\mathrm{saf}}$. Exceeding the budget triggers protective actions (below).
+  \item \textbf{Non-amplification by design.} Only functors and projections certified non-expansive in the FIM norm (Section~\ref{sec:adv-structures1}) are admissible in the deployment graph; this prevents spurious growth of coupling through composition.
+  \item \textbf{Energetic safety.} Closed-loop designs must maintain a positive-real margin $\epsilon>0$ on the operational band and satisfy the ISS inequality in Theorem~\ref{thm:ISS} with explicit frontier term scaling $C_0 t/\constref{taumin}$.
+  \item \textbf{Caution under drift.} Radius policy (Definition~\ref{def:adaptive}) with $\rho_t=c\,\widehat L_t\,\tau$ is used; $\delta$ is set from finite-sample $W_1$ rates (Remark~\ref{rem:w1-rates}). Dual $\eta^\star_t$ is logged and bounded.
+  \item \textbf{Transparency and consent.} Symmetry choices (whitening, invariance groups), truncation order $K$, PR bands, and statistical CI/FDR methods are disclosed wherever decisions impact agents.
+  \item \textbf{Subsidiarity \& reversibility.} Prefer interventions that (i) act at the smallest locus compatible with safety, and (ii) admit an explicit rollback map $\mathcal R$ with $\|I-\mathcal R\circ\mathcal A\|_{\FIM}\le \beta$ for a set $\mathcal A$ of admissible actions and small $\beta>0$.
+  \item \textbf{Exposure accounting \& hysteresis.} Maintain a cumulative exposure integral $E_t:=\int_0^t M_s\,\mathrm ds$ with budget $B_{\mathrm{exp}}$; apply hysteresis bands on triggers to avoid policy thrashing.
+  \item \textbf{Tension budget (coherence).} Fix a budget $B_{\mathrm{ten}}$ on $T_t=\|\omega_t\|_{\FIM^{-1}}$ and a defect budget $B_{\mathrm{col}}$ on $\|\Delta^{\mathrm{colim}}_t\|$. These capture strategic vorticity and consensus obstruction, respectively.
+  \item \textbf{Least privilege \& enumerated authority.} Policy knobs (below) are namespaced and scoped; each actuation is justified by a minimal-sufficient trigger and recorded with a capability token.
+  \item \textbf{Value elasticity bounds.} For declared objectives $J$, estimate Fisher--Riesz sensitivities $\|\nabla J\|_{\FIM^{-1}}$ and enforce a Lipschitz envelope so that interventions do not induce \emph{surprise} outside declared bounds.
+\end{enumerate}
+
+\subsection*{Normative control policies (trigger--response)}
+Let $M_t:=\|\widehat{\mathbf k}_K^{(t)}\|_{\FIM^{-1}}$, $\epsilon_t$ the PR margin, $\eta_t^\star$ the DRO dual, $T_t:=\|\omega_t\|_{\FIM^{-1}}$, $\Delta^{\mathrm{colim}}_t$ the colimit defect, and $E_t$ the exposure integral.
+\begin{description}[leftmargin=*,style=nextline]
+  \item[Trigger T1 (statistical over-coupling).] If $M_t>B_{\mathrm{saf}}$ (with CI excluding $B_{\mathrm{saf}}$), then: (i) apply Dirac $\Pi$ (if not active); (ii) reduce controller gains via a monotone map $g(\cdot)$ constrained to the admissible PR set; (iii) increase truncation (reduce residual) by lowering $K$'s residual penalty threshold.
+  \item[Trigger T2 (energetic risk).] If $\epsilon_t<\epsilon_{\min}$ on the band, revert gains to a safe envelope and widen Oustaloup order/band as per Lemma~\ref{lem:oust-pr-kyp}/\ref{lem:oust-pr-phase}.
+  \item[Trigger T3 (distributional drift).] If $\eta^\star_t>\eta_{\max}$ for a persistence window, enlarge $\rho_t$ (cautious inference) and/or shorten $\tau$; optionally halt adaptation within frontier tubes.
+  \item[Trigger T4 (tension flare).] If $T_t>B_{\mathrm{ten}}$ or $\|\Delta^{\mathrm{colim}}_t\|>B_{\mathrm{col}}$, then: (i) decompose $\omega_t$ along certified non-expansive projectors to locate sources; (ii) prefer \emph{enzyme} actions $\mathcal E$ (Definition below) that reduce $T_t$ with bounded control effort; (iii) freeze cross-component functors that break commutativity until tension recedes below the lower hysteresis band.
+  \item[Trigger T5 (excess exposure).] If $E_t>B_{\mathrm{exp}}$, enforce a cool-down: suspend non-essential adaptations, raise $\epsilon_{\min}$ by a margin $\kappa>0$, and restrict authority to a minimal capability set.
+  \item[Trigger T6 (consent/coherence failure).] If transparency feedback indicates dissent or if a coequalizer certificate fails (no consensus colimit), then: (i) fall back to local policies (subsidiarity); (ii) require an override (see Governance) with a justificatory taxonomy entry and an ex-post harm audit.
+\end{description}
+
+\paragraph{Definition (Catalytic policy actuators, ``enzymes'').} An actuator $\mathcal E$ is catalytic if it monotonically reduces $T_t$ while preserving (i) the PR margin and (ii) coupling mass budget: for some $\alpha,\gamma>0$, $T_{t+1}\le T_t-\alpha\|u_t\|$ and $M_{t+1}\le M_t+\gamma\|u_t\|$ with $(\alpha,\gamma)$ certified and $\epsilon_{t+1}\ge\epsilon_{\min}$. Catalog and reuse $\mathcal E$ with provenance.
+
+\subsection*{Accountability artifacts}
+Per deployment episode, publish: (i) windowed $M_t$ with HAC or bootstrap CIs and FDR settings (Section~\ref{sec:stats1}); (ii) PR margin $\epsilon_t$ range; (iii) frontier counts and the ISS frontier term $C_0 N_{\mathrm{cross}}(0,t)$ and $C_0 t/\constref{taumin}$; (iv) $\widehat L_t$, $\rho_t$, $\eta^\star_t$ trajectories (Section~\ref{sec:closure1}); (v) symmetry/whitening invariance checks (Assumption~\ref{ass:inv-whiten}); (vi) tension metrics $T_t$ and $\|\Delta^{\mathrm{colim}}_t\|$ with localization plots; (vii) exposure $E_t$ and hysteresis bands; (viii) an \emph{override ledger} (see below) with taxonomy codes and outcomes; (ix) a reproducibility capsule (non-expansiveness certificates, seeds, and audit scripts) to replay ISS frontier accounting.
+
+\subsection*{Governance hooks (interfaces)}
+The alignment layer exposes:
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Policy knobs:} $(B_{\mathrm{saf}},\,\epsilon_{\min},\,q_{\mathrm{FDR}},\,K,\,c,\,\tau,\,B_{\mathrm{ten}},\,B_{\mathrm{col}},\,B_{\mathrm{exp}})$ with scope (global vs windowed) and provenance. Each knob carries a capability token and an expected effect size range.
+  \item \textbf{Override contracts:} An operator may override T1--T6 but must attach a justification chosen from a fixed taxonomy (safety-of-safety, humanitarian, legal, fiduciary, experiment), cite the triggering metrics, and specify an ex-ante rollback map $\mathcal R$. Overrides are logged and included in accountability artifacts.
+  \item \textbf{Audit API:} An external auditor can recompute $M_t$, verify non-expansiveness certificates (Section~\ref{sec:adv-structures1}), replay ISS frontier accounting, and independently compute $T_t$ and $\Delta^{\mathrm{colim}}_t$ from provided local evaluations.
+\end{itemize}
+
+\paragraph{Remark (Ethical posture).} The alignment layer encodes a conservative stance: prefer reduced coupling (smaller $\|\mathbf k_K\|_{\FIM^{-1}}$), preserved energetic passivity (PR margin), cautious inference under drift (larger $\rho_t$), and minimized tension (smaller $T_t$ and $\|\Delta^{\mathrm{colim}}_t\|$) when uncertainties grow. Choices are explicit and tunable, with rollback maps and hysteresis to guard against over-correction. The same mathematical guarantees support domain-specific ethics without appeal to untestable narratives.
+
+\uses{Thm.~\ref{thm:ISS}, Lem.~\ref{lem:oust-pr-kyp}, Lem.~\ref{lem:oust-pr-phase}, Def.~\ref{def:adaptive}, Rem.~\ref{rem:w1-rates}, Lem.~\ref{lem:nonexpansive-12}.}
+
+
+\nocite{*}
+\printbibliography
+\end{document}

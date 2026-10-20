@@ -1,0 +1,6 @@
+r_tube: 1.0e-2
+theta_min: 0.2
+kappa_max: 10.0
+tau_min: 50          # dwell time for No-Zeno budget
+C0: 0.25             # ISS frontier constant
+

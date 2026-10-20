@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RejectionCert",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "RejectionCert"
+    },
+    "predicate_id": {
+      "type": "string"
+    },
+    "reason_code": {
+      "type": "string"
+    },
+    "counterexample_digest": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "predicate_id",
+    "reason_code"
+  ]
+}

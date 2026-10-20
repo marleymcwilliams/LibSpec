@@ -1,0 +1,239 @@
+% Shared packages and setup (common across Parts A/B)
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{xstring} % string ops for robust const refs/labels
+\usepackage{mdframed}
+% Cross-document references (must precede hyperref for xr-hyper)
+\usepackage{xr-hyper}
+\makeatletter
+% Prefer Wrapper B AUX when available; fallback to A. Relative to source dir.
+\@ifundefined{IfFileExists}{}{%
+  % Part I
+  \IfFileExists{../../build/JSG_I_B.aux}{\externaldocument[JSGI-]{../../build/JSG_I_B}}{%
+    \IfFileExists{../../build/JSG_I_A.aux}{\externaldocument[JSGI-]{../../build/JSG_I_A}}{}
+  }%
+  % Part II
+  \IfFileExists{../../build/JSG_II_B.aux}{\externaldocument[JSGII-]{../../build/JSG_II_B}}{%
+    \IfFileExists{../../build/JSG_II_A.aux}{\externaldocument[JSGII-]{../../build/JSG_II_A}}{}
+  }%
+}
+\makeatother
+\usepackage{hyperref}
+\usepackage[backend=bibtex]{biblatex}
+% --- Unicode fallbacks for occasional stray bytes in source files ---
+% Map problematic Unicode to LaTeX-safe sequences to prevent inputenc errors
+\DeclareUnicodeCharacter{009D}{}
+\DeclareUnicodeCharacter{2013}{--}
+\DeclareUnicodeCharacter{2014}{---}
+\DeclareUnicodeCharacter{2018}{`}
+\DeclareUnicodeCharacter{2019}{'}
+\DeclareUnicodeCharacter{201C}{``}
+\DeclareUnicodeCharacter{201D}{''}
+% Hyperref setup
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  citecolor=blue!60!black,
+  urlcolor=blue!60!black
+}
+% mdframed styles (rules / constants / ledger)
+\definecolor{rulebg}{RGB}{248,248,250}
+\definecolor{ruleframe}{RGB}{165,165,165}
+\newmdenv[
+  linecolor=ruleframe, linewidth=0.6pt, roundcorner=4pt,
+  backgroundcolor=rulebg, innertopmargin=6pt, innerbottommargin=6pt,
+  innerleftmargin=8pt, innerrightmargin=8pt, skipabove=8pt, skipbelow=8pt
+]{rulebox}
+\newenvironment{rulex}[1]{\begin{rulebox}\noindent\textbf{Rule (#1).}\ }{\end{rulebox}}
+\definecolor{constbg}{RGB}{246,249,255}
+\definecolor{constframe}{RGB}{140,160,190}
+\newmdenv[
+  linecolor=constframe, linewidth=0.6pt, roundcorner=4pt,
+  backgroundcolor=constbg, innertopmargin=6pt, innerbottommargin=6pt,
+  innerleftmargin=8pt, innerrightmargin=8pt, skipabove=10pt, skipbelow=10pt
+]{constbox}
+\definecolor{ledgerbg}{RGB}{255,251,235}
+\definecolor{ledgerframe}{RGB}{230,200,120}
+\newmdenv[
+  linecolor=ledgerframe, linewidth=0.6pt, roundcorner=4pt,
+  backgroundcolor=ledgerbg, innertopmargin=6pt, innerbottommargin=6pt,
+  innerleftmargin=8pt, innerrightmargin=8pt, skipabove=8pt, skipbelow=8pt
+]{ledgerbox}
+% Listings style for API/code stubs
+\definecolor{codebg}{RGB}{248,248,250}
+\definecolor{codeframe}{RGB}{180,180,180}
+\definecolor{codekw}{RGB}{0,0,160}
+\definecolor{codestr}{RGB}{120,50,0}
+\definecolor{codecm}{RGB}{90,90,90}
+\lstdefinestyle{apicode}{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{codebg},
+  frame=single, rulecolor=\color{codeframe}, frameround=tttt,
+  columns=flexible, keepspaces=true, showstringspaces=false,
+  keywordstyle=\color{codekw}\bfseries,
+  stringstyle=\color{codestr}, commentstyle=\color{codecm}\itshape,
+  tabsize=2, belowskip=0.6\baselineskip, aboveskip=0.6\baselineskip,
+  numbersep=6pt, numbers=left, numberstyle=\tiny\color{codecm},
+  language=Python
+}
+\lstset{style=apicode}
+% Theorem styles
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+% Handy macros and shorthands
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\FIM}{\mathrm{FIM}}
+\newcommand{\normFIM}[1]{\left\|#1\right\|_{\FIM^{-1}}}
+\newcommand{\uses}[1]{\par\smallskip\noindent\textit{Uses: }#1\par\smallskip}
+\newenvironment{proofsketch}{\begin{proof}[Proof sketch]}{\end{proof}}
+\newcommand{\absconst}[1]{c_{#1}}
+\newcommand{\anglesep}{\theta_{\min}}
+\newcommand{\cutq}{q}
+\newcommand{\cont}{{\mathrm{cont}}}
+\newcommand{\atom}{{\mathrm{atom}}}
+\newcommand{\layertag}[1]{\textup{[#1]}}
+% KPI & clamp shorthand
+\newcommand{\RegretM}{\mathrm{Regret}_M}
+\newcommand{\Hol}{\mathrm{Hol}}
+\newcommand{\Res}{\mathrm{Res}}
+\newcommand{\Lat}{\mathrm{Lat}}
+\newcommand{\cgreen}{\chi_{\mathrm{green}}}
+\newcommand{\calarm}{\chi_{\mathrm{alarm}}}
+\newcommand{\cclear}{\chi_{\mathrm{clear}}}
+
+% --- Paper-tenets helpers (Symbol Registry, Acceptance checks, Constants) ---
+% Clickable constant labels (pair with \constref in macros.tex)
+% Usage: place \constlabel{Smax} near the definition of S_max to anchor \constref{Smax}
+\newcommand{\constlabel}[1]{\label{const:#1}}
+
+% Symbol Registry environment and row helper
+% Usage:
+%   \begin{SymbolRegistry}
+%     \symrow{C1}{$\kappa_{\max},\,\theta_{\min},\,r_{\mathrm{tube}}$}{Frontier geometry: curvature, incidence, tube radius.}
+%     ...
+%   \end{SymbolRegistry}
+\newenvironment{SymbolRegistry}{%
+  \begin{center}
+  \renewcommand{\arraystretch}{1.2}%
+  \begin{tabularx}{\textwidth}{@{} c >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X @{} }
+  \toprule
+  \textbf{Code} & \textbf{Symbol(s)} & \textbf{Meaning / where used} \\
+  \midrule
+}{%
+  \bottomrule
+  \end{tabularx}
+  \end{center}
+}
+\newcommand{\symrow}[3]{#1 & #2 & #3 \\ \addlinespace}
+
+% Acceptance-checks box (ledger styling)
+% Usage: \begin{acceptbox}[Acceptance checks for Section X] ... \end{acceptbox}
+\newenvironment{acceptbox}[1][Acceptance checks]{%
+  \begin{ledgerbox}\noindent\textbf{#1.}\ }{\end{ledgerbox}}
+
+% Standing-constants box (alias of constbox with a title)
+% Usage: \begin{standbox}[Standing constants] ... \end{standbox}
+\newenvironment{standbox}[1][Standing constants]{%
+  \begin{constbox}\noindent\textbf{#1.}\ }{\end{constbox}}
+
+% Lightweight API code block alias (uses the global lstlisting style=apicode)
+% Usage: \begin{apicodeblock} ... \end{apicodeblock}
+\lstnewenvironment{apicodeblock}{}{}
+
+% --- Tenets compatibility: constant refs (fallbacks if macros.tex not loaded) ---
+% These provide the \constref and \constsym* macros used by the Symbol Registry.
+% If macros.tex is also \input, its definitions will take precedence.
+\providecommand{\constref}[1]{\hyperref[const:#1]{\ensuremath{\csname constsym#1\endcsname}}}
+\providecommand{\constsymSmax}{S_{\max}}
+\providecommand{\constsymGmax}{G_{\max}}
+\providecommand{\constsymkappamax}{\kappa_{\max}}
+\providecommand{\constsymthetamin}{\theta_{\min}}
+\providecommand{\constsymLF}{L_{\mathrm F}}
+\providecommand{\constsymrtube}{r_{\mathrm{tube}}}
+\providecommand{\constsymtaumin}{\tau_{\min}}
+\providecommand{\constsymLpsi}{L_\psi}
+\providecommand{\constsymF}{F}
+\providecommand{\constsymchi}{\chi}
+\providecommand{\constsymepsilon}{\epsilon}
+\providecommand{\constsymrho}{\rho}
+\providecommand{\constsymtau}{\tau}
+\providecommand{\constsymetastar}{\eta^\star}
+
+% --- QOL: Dense lists for acceptance checks / KPIs ---------------------------
+% Tight itemize/enumerate environments for audit-style lists
+\newlist{tightitem}{itemize}{1}
+\setlist[tightitem]{leftmargin=*, itemsep=2pt, topsep=2pt, parsep=0pt, partopsep=0pt}
+\newlist{tightenum}{enumerate}{1}
+\setlist[tightenum]{leftmargin=*, itemsep=2pt, topsep=2pt, parsep=0pt, partopsep=0pt, label=(\roman*)}
+
+% --- QOL: Badges, statuses, and simple field printer ------------------------
+\providecommand{\hash}[1]{\texttt{#1}}
+\providecommand{\field}[2]{\noindent\textbf{#1:}\ #2}
+\providecommand{\ok}{\textcolor{green!60!black}{\ensuremath{\checkmark}}}
+\providecommand{\fail}{\textcolor{red!70!black}{\ensuremath{\times}}}
+\providecommand{\accept}{\textcolor{green!60!black}{accept}}
+\providecommand{\reject}{\textcolor{red!70!black}{reject}}
+
+% Risk/clamp badges (deterministic replayable display)
+\providecommand{\RiskGreen}{\colorbox{green!12}{\textsf{\footnotesize RISK: GREEN}}}
+\providecommand{\RiskYellow}{\colorbox{yellow!20}{\textsf{\footnotesize RISK: YELLOW}}}
+\providecommand{\RiskRed}{\colorbox{red!15}{\textsf{\footnotesize RISK: RED}}}
+
+% IV Badge compact printer (values are free-form for operator control)
+\providecommand{\IVbadge}[1]{\colorbox{blue!8}{\textsf{\footnotesize IV-Badge}}\ #1}
+
+% --- QOL: LTL/Liveness operators and PR/CVaR operators ----------------------
+\providecommand{\G}{\mathsf{G}}
+\providecommand{\F}{\mathsf{F}}
+\providecommand{\X}{\mathsf{X}}
+\providecommand{\U}{\mathsf{U}}
+\providecommand{\PR}{\mathrm{PR}}
+\DeclareMathOperator{\CVaR}{CVaR}
+
+% --- QOL: Confidence-interval, window, and paragraph head helpers -----------
+\providecommand{\CI}[2]{\ensuremath{[\,#1,\ #2\,]}}
+\providecommand{\win}[1]{\ensuremath{[t-#1,\ t]}}
+\providecommand{\parhead}[1]{\par\noindent\textbf{#1.}\ }
+
+% --- QOL: Witness/Audit boxes (mdframed presets) ---------------------------
+\definecolor{witnessbg}{RGB}{243,248,255}
+\definecolor{witnessframe}{RGB}{120,150,200}
+\newmdenv[
+  linecolor=witnessframe, linewidth=0.6pt, roundcorner=4pt,
+  backgroundcolor=witnessbg, innertopmargin=6pt, innerbottommargin=6pt,
+  innerleftmargin=8pt, innerrightmargin=8pt, skipabove=8pt, skipbelow=8pt
+]{witnessbox}
+
+\definecolor{auditbg}{RGB}{240,255,245}
+\definecolor{auditframe}{RGB}{110,180,140}
+\newmdenv[
+  linecolor=auditframe, linewidth=0.6pt, roundcorner=4pt,
+  backgroundcolor=auditbg, innertopmargin=6pt, innerbottommargin=6pt,
+  innerleftmargin=8pt, innerrightmargin=8pt, skipabove=8pt, skipbelow=8pt
+]{auditbox}
+
+% --- QOL: Table column shortcuts (for compact registries/ledgers) -----------
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}

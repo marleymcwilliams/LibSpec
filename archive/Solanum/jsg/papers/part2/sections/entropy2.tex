@@ -1,0 +1,136 @@
+% ============================================================
+\section{Entropy Neighborhood: EF Radius, Conditioning, and Leakage}\label{sec:entropy2}
+% ============================================================
+
+\noindent\textbf{Setup (windowed EF neighborhood).}
+Work in a window $[t-\constref{tau},t]$ with reference $P_0$ (Def.~\ref{def:ref2}).
+Let $\psi(\theta)=\log\mathbb E_{P_0}[e^{\theta^\top T(X)}]$ be the log-partition of the exponential family centered at $P_0$ with sufficient statistics $T$.
+Denote the Fisher $\FIM:=\nabla^2\psi(0)$ and the windowed mixed-cumulant vector
+$\bm\kappa(\theta):=\nabla\psi(\theta)-\nabla\psi(0)$.
+Assume the Hessian is Lipschitz on a neighborhood of $0$:
+\[
+\|\nabla^2\psi(\theta_1)-\nabla^2\psi(\theta_2)\| \le \constref{Lpsi}\,\|\theta_1-\theta_2\|.
+\]
+
+% ------------------------------------------------------------
+\begin{theorem}[Local KL--cumulant equivalence \& operational radius]\label{thm:FIMbound2}
+\emph{\layertag{Inf}}
+Fix $\varepsilon\in(0,1)$ and set the EF radius $r:=\varepsilon/\constref{Lpsi}$.
+If $\|\bm\kappa(\theta)\|_{\FIM^{-1}}\le r$, then
+\[
+\frac{1-\varepsilon}{2}\,\|\bm\kappa(\theta)\|_{\FIM^{-1}}^{2}
+\ \le\
+D_{\mathrm{KL}}(P_\theta\|P_0)
+\ \le\
+\frac{1+\varepsilon}{2}\,\|\bm\kappa(\theta)\|_{\FIM^{-1}}^{2}.
+\]
+\begin{proofsketch}
+Taylor-expand $\psi$ at $0$: $\psi(\theta)=\psi(0)+\tfrac12\theta^\top\FIM\theta+R_3$, with
+$\|R_3\|\le \tfrac{\constref{Lpsi}}{6}\|\theta\|^3$ by Hessian-Lipschitzness.
+Mean parameters obey $\bm\kappa(\theta)=\FIM\theta+O(\|\theta\|^2)$, hence $\theta=\FIM^{-1}\bm\kappa+O(\|\bm\kappa\|_{\FIM^{-1}}^2)$.
+Plugging into $D_{\mathrm{KL}}=\psi(\theta)-\psi(0)-\theta^\top\nabla\psi(0)$ and requiring $\|\bm\kappa\|_{\FIM^{-1}}\le r=\varepsilon/\constref{Lpsi}$ bounds the third-order remainder by an $\varepsilon$-fraction of the quadratic term.
+\end{proofsketch}
+\uses{(C5) \constref{F}, \constref{Lpsi}.}
+\end{theorem}
+
+\begin{corollary}[Stability of $M$ and Fisher on the EF ball]\label{cor:radius-stability}
+\emph{\layertag{Inf}}
+Within $\|\bm\kappa\|_{\FIM^{-1}}\le r$, the coupling mass $M=\|\bm\kappa\|_{\FIM^{-1}}^{2}$ and Fisher vary Lipschitzly:
+\[
+\big|D_{\mathrm{KL}}(P_{\theta_1}\|P_{\theta_2})-\tfrac12\|\bm\kappa_1-\bm\kappa_2\|_{\FIM^{-1}}^2\big|
+\le \varepsilon\,\tfrac12\|\bm\kappa_1-\bm\kappa_2\|_{\FIM^{-1}}^2,\qquad
+\|\FIM(\theta)-\FIM\|\le \constref{Lpsi}\,\|\theta\|=O(\varepsilon).
+\]
+\end{corollary}
+
+% ------------------------------------------------------------
+\paragraph{Runtime guard: proof-use as a contract.}
+Any theorem/algorithm that invokes the quadratic EF proxy must \emph{log} a passing call to
+\[
+\texttt{kl\_quad\_bounds}(\bm\kappa_t,\FIM_t^{-1},\varepsilon)=\textsf{pass}
+\quad\text{where}\quad r=\varepsilon/\widehat{\constref{Lpsi}}.
+\]
+If the guard fails, we \emph{fail-closed}: disable the proxy for that window and act only on nonparametric alarms (HSIC, CVaR); downstream acceptance checks must reference this guard (see \S\ref{sec:stoch2}, \S\ref{sec:closure2}).
+
+% ------------------------------------------------------------
+\paragraph{Estimating $\constref{Lpsi}$ (small-tilt with HAC CIs).}
+We estimate $\constref{Lpsi}$ directly via finite differences of $\nabla^2\psi$ along an orthonormal basis in the $\FIM$-whitened space.
+
+\begin{definition}[Finite-difference Lipschitz estimator $\widehat{\constref{Lpsi}}$]\label{def:Lpsi-est}
+\emph{\layertag{Inf/Comp}}
+Let $\{e_j\}_{j=1}^d$ be orthonormal in the whitened space. For a grid $\delta\in\{\pm\delta_0,\pm2\delta_0\}$ (inside the EF ball), estimate
+\[
+\widehat{\FIM}(\delta e_j)=\nabla^2\psi(\delta e_j)\quad(\text{as score covariance/log-mgf curvature}),
+\qquad
+\widehat{L}_j:=\max_{\delta_1\neq\delta_2}\frac{\|\widehat{\FIM}(\delta_1 e_j)-\widehat{\FIM}(\delta_2 e_j)\|}{|\delta_1-\delta_2|}.
+\]
+Let $\widehat{\constref{Lpsi}}:=\max_j\,\mathrm{HAC\text{-}CI\ upper}(\widehat{L}_j)$.
+Set the radius $r:=\varepsilon/\widehat{\constref{Lpsi}}$ and \emph{log} $(\varepsilon,\widehat{\constref{Lpsi}},r,\text{CI})$.
+\end{definition}
+
+\begin{remark}[Policy \& defaults]\label{rem:eps-policy}
+Default $\varepsilon=0.2$; if $\mathrm{width}(\text{CI})/\widehat{\constref{Lpsi}}>0.3$, automatically tighten to $\varepsilon=0.1$ (downgrade logged).
+Define Fisher leakage $\constref{chi}(t):=\|\FIM_{t}-\FIM_{t-\constref{tau}}\|/\|\FIM_{t-\constref{tau}}\|$.
+\end{remark}
+
+% ------------------------------------------------------------
+\paragraph{Deterministic leakage clamp (three-state, replayable).}
+We operate a state machine on the smoothed leakage $\tilde\chi_t$ (3-window robust mean):
+\[
+\textsc{Green: } \tilde\chi_t\le \chi_{\mathrm{green}},\quad
+\textsc{Yellow: } \chi_{\mathrm{green}}<\tilde\chi_t\le \chi_{\mathrm{alarm}},\quad
+\textsc{Red: } \tilde\chi_t>\chi_{\mathrm{alarm}}.
+\]
+\begin{itemize}[leftmargin=*]
+\item \textbf{Thresholds (defaults).} $\chi_{\mathrm{green}}{=}0.05$, $\chi_{\mathrm{alarm}}{=}0.15$, clearance $\chi_{\mathrm{clear}}{=}0.08$ (hysteresis).
+\item \textbf{Actions.} \textsc{Yellow}: shrink $r\leftarrow \gamma_y r$ and $\cutq\leftarrow \gamma_q\cutq$ (defaults $\gamma_y{=}0.8$, $\gamma_q{=}0.8$); recompute \texttt{kl\_quad\_bounds}. \textsc{Red}: freeze promotions ($E_t\!\leftarrow\!\varnothing$), set $r\leftarrow 0.5r$, and act only on HSIC/CVaR alarms until clearance.
+\item \textbf{Unclamp.} Require $\tilde\chi_t<\chi_{\mathrm{clear}}$ for $m{=}3$ consecutive windows, then restore $(r,\cutq)$ linearly over the next $m$ windows (logged).
+\item \textbf{Determinism.} Clamp decisions are a pure function of the logged $\tilde\chi_t$ series and the $(\chi_{\mathrm{green}},\chi_{\mathrm{alarm}},\chi_{\mathrm{clear}},\gamma_y,\gamma_q,m)$ tuple; the replay tool recomputes identical states.
+\end{itemize}
+
+% ------------------------------------------------------------
+\begin{definition}[Window Quarantine]\label{def:win-quarantine-entropy}
+\emph{\layertag{Rep/Stoch}}
+A window is \emph{quarantined} if any precondition for EF-based inference fails (e.g., envelope identity $dv/d\rho=\eta^\star$ in \S\ref{sec:closure2}, or the EF guard above; see also Def.~\ref{def:win-quarantine}).
+\textbf{Effect:} For quarantined windows: (i) promotions freeze ($E_t\!=\!\varnothing$), (ii) adaptive updates (bandit/posteriors, PR retuning) are disabled, (iii) safety-only checks (CBFs, PR feasibility, CVaR) continue. The Ladder logs \texttt{quarantine\_status=true} and \texttt{reason}.
+\end{definition}
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# L_psi estimator + guard
+def estimate_Lpsi(data, F_whiten, basis=None, delta0=1e-2, steps=(1,2), hac=True): ...
+def ef_radius(epsilon, Lpsi_hat): return epsilon / Lpsi_hat
+def kl_quad_bounds(kappa, F_inv, epsilon, Lpsi_hat): ...
+
+# Leakage + clamp
+def fisher_leakage(F_now, F_prev): ...
+def smooth_leakage(chi_series, width=3): ...
+def leakage_state(chi_smooth, green=0.05, alarm=0.15, clear=0.08): ...
+def clamp_update(state, r, q, gamma_y=0.8, gamma_r=0.5): ...
+
+# Audit helpers
+def log_radius_contract(epsilon, Lpsi_hat, r, ci): ...
+def replay_clamp(chi_series, params): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window unless noted).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Radius contract:} $(\varepsilon,\widehat{\constref{Lpsi}},r)$ with HAC CI logged; \texttt{kl\_quad\_bounds}=\textsf{pass} wherever EF proxies are used (fail-closed otherwise).
+\item \emph{$\widehat{\constref{Lpsi}}$ reproducibility:} re-running Def.~\ref{def:Lpsi-est} (new seed/basis) changes $\widehat{\constref{Lpsi}}$ by $\le 10\%$; CI stored.
+\item \emph{Clamp determinism:} given the logged $\tilde\chi_t$ series and parameters, \texttt{replay\_clamp} reproduces all clamp events exactly; mismatch is a hard failure.
+\item \emph{Quarantine hook:} any failed precondition logs \texttt{quarantine\_status=true} with reason; no promotions or adaptive updates appear for that window.
+\item \emph{Downgrade logging:} any change to $\varepsilon$ or $(r,\cutq)$ lists pre/post values and the triggering evidence; linked in the Provenance Ladder.
+\item \emph{Nonparametric fallback:} in \textsc{Red} or quarantine, $E_t=\varnothing$ and only HSIC/CVaR alarms appear; any promotion then is a hard failure.
+\end{itemize}
+\end{mdframed}
+
+% ------------------------------------------------------------
+\subsection*{Integration}
+\noindent
+(i) \textbf{Sensing (\S\ref{sec:stoch2}):} BY/FDR tests and powered MTC must cite a passing \texttt{kl\_quad\_bounds} when quadratic proxies are used; clamp state and quarantine gate promotions.
+(ii) \textbf{DRO (\S\ref{sec:closure2}):} envelope-slope precondition (\(dv/d\rho=\eta^\star\)) is evaluated on the EF ball; bias/slope logs reference $(\varepsilon,\widehat{\constref{Lpsi}},r)$; failing precondition triggers quarantine (Def.~\ref{def:win-quarantine}).
+(iii) \textbf{Control (\S\ref{sec:ctrl2}):} radius compliance tags all PR/CBF witnesses that rely on EF quadratic approximations of stochastic terms; clamp/quarantine disable adaptive retuning.
+(iv) \textbf{Governance link (\S\ref{sec:stats2}):} realized-FDR audits and Fisher-drift budget panels surface $\tilde\chi_t$ and $r$; breach or audit failure \emph{must} appear as clamp/quarantine events in the Ladder.

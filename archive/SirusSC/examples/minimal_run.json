@@ -1,0 +1,55 @@
+{
+  "axes": {
+    "S": [
+      "energy"
+    ],
+    "M": [
+      "risk"
+    ]
+  },
+  "guards_inputs": [
+    {},
+    {},
+    {},
+    {},
+    {}
+  ],
+  "attestation_receipt": {
+    "predicate_id": "ATTESTATION_STUB",
+    "outcome": {
+      "verdict": "PASS"
+    }
+  },
+  "bundle_manifest": {
+    "run_id": "example-minimal",
+    "version": 1
+  },
+  "policy_files": [
+    "policy/budgets.json"
+  ],
+  "surface_inputs": {
+    "raw_data_digest": "b3:a6f90aa5542b8a78ee19e90e815d0fb126cdfeaa184dc96364e6d2b81998da3d",
+    "envlock_id": "ENVLOCK-STUB",
+    "config_cert": {
+      "kind": "ConfigCertStub",
+      "version": 1
+    },
+    "adapter_decls": [],
+    "axis_types": {
+      "energy": "continuous",
+      "risk": "continuous"
+    },
+    "access_policy": {
+      "classification": "public"
+    },
+    "audit_plan": {
+      "version": 1,
+      "checks": []
+    }
+  },
+  "baseline_inputs": {
+    "raw_data_payload": {
+      "records": []
+    }
+  }
+}

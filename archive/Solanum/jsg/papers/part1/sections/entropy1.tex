@@ -1,0 +1,233 @@
+\section{Entropy and Mixed Information Flow}\label{sec:entropy1}
+% ============================================================
+
+We fix the EF neighborhood and prove a \emph{coordinate-invariant} local equivalence between $D_{\mathrm{KL}}$ and the Fisher-metric norm of mixed cumulants. New in this draft:
+(i) an explicit radius via a Hessian-Lipschitz constant and sharp constants (Theorem~\ref{thm:FIMbound});
+(ii) a conditioning corollary (Corollary~\ref{cor:FIM-conditioning});
+(iii) a windowed/transported whitening policy with bounds (Proposition~\ref{prop:window-transport}).
+
+% Ensure "Theorem 2" label as requested
+\setcounter{theorem}{1}
+
+\subsection{Dictionary and EF model}
+
+Let $\mathcal T_K$ be a finite, centered, whitened dictionary of alternated mixed statistics up to total degree $K\in\{2,3\}$ at \emph{independence} $P_0=P_\Gamma\otimes P_G$. Denote $F:=\mathrm{FIM}(0)\succ0$ with respect to $\mathcal T_K$. We use the EF
+\[
+\frac{dP_\theta}{dP_0}(x)=\exp\big(\langle \theta,\mathcal T_K(x)\rangle-\psi(\theta)\big),\qquad
+\kappa_{\mathrm{mix}}(\theta)=\mathbb E_{P_\theta}[\mathcal T_K]=\nabla\psi(\theta).
+\]
+
+\begin{theorem}[FIM-invariant local equivalence]\label{thm:FIMbound}
+\emph{[\textup{Inf}]} Suppose $\psi$ is twice differentiable on a neighborhood of $0$ with $\nabla^2\psi(0)=F\succ0$ and Hessian-Lipschitz with constant $L_\psi$ there. For any $0<\epsilon<1$ and radius
+\[
+r\ \le\ \frac{\epsilon}{L_\psi}\,,
+\]
+we have, for all $\|\theta\|\le r$,
+\[
+\frac12(1-\epsilon)\,\|\kappa_{\mathrm{mix}}(\theta)\|_{F^{-1}}^{2}
+\ \le\ D_{\mathrm{KL}}(P_\theta\Vert P_0)\
+\le\ \frac12(1+\epsilon)\,\|\kappa_{\mathrm{mix}}(\theta)\|_{F^{-1}}^{2}.
+\]
+\uses{(C5) $F\succ0$, $L_\psi$, tolerance $\epsilon$, radius $r\le \epsilon/L_\psi$.}
+\end{theorem}
+
+\begin{lemma}[Third-moment bound for $L_\psi$]\label{lem:Lpsi-3rd}
+For a whitened dictionary $\mathcal T_K$ and $F=\nabla^2\psi(0)$, there exist absolute $C>0$ such that, for $\|u\|=1$ and small $\|\theta\|$,
+\[
+\big\|\nabla^2\psi(\theta)-F\big\|\ \le\ C\,\sup_{\|u\|=1}\ \mathbb E_{P_0}\!\left[\big|\langle u, T_K\rangle\big|^3\right]\cdot\|\theta\|\ +\ O(\|\theta\|^2).
+\]
+Hence one may take $L_\psi \,\lesssim\, \sup_{\|u\|=1}\mathbb E_{P_0}[|\langle u,T_K\rangle|^3]$.
+\end{lemma}
+
+\begin{remark}[Estimator]\label{rem:Lpsi-est}
+Estimate the proxy via Hutch++/finite-difference probes (your \texttt{estimate\_Lpsi} API) and log $(L_\psi,\ r=\epsilon/L_\psi)$ with a CI. 
+\end{remark}
+
+\begin{remark}[Tight constants and how to pick them]\label{rem:constants}
+The $1/2(1\pm\epsilon)$ constants are optimal for quadratic $\psi$ and remain sharp to first order in $\epsilon$ by Taylor's theorem with integral remainder and $\|\nabla^2\psi(\theta)-F\|\le L_\psi\|\theta\|\le\epsilon$.
+\end{remark}
+
+\begin{corollary}[Conditioning in unwhitened coordinates]\label{cor:FIM-conditioning}
+\emph{[\textup{Inf}]} Let $\tilde \theta=R\theta$ for an invertible linear map with Fisher congruence $\tilde F=R^{-\top} F R^{-1}$. If $\chi=\kappa(F)$ is the condition number of $F$, then for the same $\epsilon$ and $r$,
+\[
+\frac1{2\chi}(1-\epsilon)\,\|\kappa_{\mathrm{mix}}(\tilde\theta)\|_{\tilde F^{-1}}^{2}
+\ \le\ D_{\mathrm{KL}}(P_{\tilde\theta}\Vert P_0)\
+\le\ \frac{\chi}{2}(1+\epsilon)\,\|\kappa_{\mathrm{mix}}(\tilde\theta)\|_{\tilde F^{-1}}^{2}.
+\]
+\uses{(C5) $\chi=\kappa(F)$; Fisher congruence under coordinate changes.}
+\end{corollary}
+
+\subsection{Windowed FIM and whitening across time}\label{subsec:window-fim}
+
+Let $\mu_{[t-\tau,t]}$ be the windowed law from Section~\ref{sec:stoch1}. Denote by $F_t:=\FIM_t(0)$ the Fisher matrix of the \emph{same} dictionary $\mathcal T_K$ computed at independence within that window. Two whitening policies are admissible; pick one and use it consistently.
+
+\begin{definition}[Whitening policies]\label{def:whitening-policies}
+\emph{[\textup{Inf/Stoch}]}
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Global whitening (baseline).} Fix $F:=\FIM_{t_0}(0)$ at a reference window (or at the pooled baseline) and keep it fixed for all windows.
+\item \textbf{Transported whitening (congruence).} For each window, whiten by $F_t$ and transport coordinates to the baseline via the congruence map $R_t$ defined by $F_t=R_t^{-\top} F R_t^{-1}$ (e.g., $R_t=F^{1/2}U_t\Lambda_t^{-1/2}U_t^\top$ with $F_t=U_t\Lambda_t U_t^\top$).
+\end{enumerate}
+Define the \emph{whitening leakage} $\chi(t):=\kappa(F_t F^{-1})$ and $\chi_{\max}:=\sup_t \chi(t)$ on the time span of interest.
+\emph{Budget \& alarms:} enforce $\chi(t)\le \chi_{\max}$ (configuration) and log any exceedance; report $\chi_{\max}$ next to CI bars for time-series plots.
+
+\uses{(C4) window length $\tau$; (C5) baseline $F$, windowwise $F_t$, $\chi(t)$.}
+\end{definition}
+
+\begin{proposition}[Window-local equivalence and transported bounds]\label{prop:window-transport}
+\emph{[\textup{Inf/Stoch}]} Assume each window admits an EF neighborhood with the \emph{same} Hessian-Lipschitz constant $L_\psi$ for $\psi_t$ on a fixed ball and that $F_t\succ 0$. Then, for either whitening policy in Definition~\ref{def:whitening-policies}:
+\begin{enumerate}[leftmargin=*]
+\item (\emph{Window-local equivalence}) For all $\|\theta\|\le r\le \epsilon/L_\psi$,
+\[
+\frac12(1-\epsilon)\,\|\kappa_{\mathrm{mix}}^{(t)}(\theta)\|_{F_t^{-1}}^{2}
+\ \le\ D_{\mathrm{KL}}(P_{\theta}^{(t)}\Vert P_{0}^{(t)})\
+\le\ \frac12(1+\epsilon)\,\|\kappa_{\mathrm{mix}}^{(t)}(\theta)\|_{F_t^{-1}}^{2}.
+\]
+\item (\emph{Transport to baseline}) Expressing window-$t$ cumulants in the baseline Fisher norm incurs at most $\chi(t)$ inflation:
+\[
+\frac1{2\,\chi(t)}(1-\epsilon)\,\|\kappa_{\mathrm{mix}}^{(t)}(\theta)\|_{F^{-1}}^{2}
+\ \le\ D_{\mathrm{KL}}(P_{\theta}^{(t)}\Vert P_{0}^{(t)})\
+\le\ \frac{\chi(t)}{2}(1+\epsilon)\,\|\kappa_{\mathrm{mix}}^{(t)}(\theta)\|_{F^{-1}}^{2}.
+\]
+\end{enumerate}
+If $\chi(t)\le \chi_{\max}<\infty$ uniformly (e.g.\ under slow drift and bounded transport dimension), then the constants are uniform in $t$ with $\chi$ replaced by $\chi_{\max}$.
+\uses{(C4) drift/mixing uniformity; (C5) $F_t$, $L_\psi$, $\chi(t)$.}
+\end{proposition}
+
+\paragraph{Practical policy.}
+Prefer \emph{global whitening} when interpretability across time is crucial (fixed norm); prefer \emph{transported whitening} when per-window conditioning is poor (reduces numerical ill-conditioning at the cost of tracking $\chi(t)$).
+
+\subsection{Diagnostics and parameter selection}
+
+\begin{rulex}{Choosing \(\epsilon\) and \(r\)}
+Pick $\epsilon\in[0.05,0.2]$ to balance tightness vs.\ radius; set $r=\epsilon/L_\psi$ using a pilot bound on $L_\psi$ from finite differences of $\nabla^2\psi$ at $\theta=0$ (or Hutch++ trace bounds). Log $(\epsilon,r,L_\psi)$ alongside $\chi(t)$ for each window.
+\end{rulex}
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:entropy1}.}
+\begin{enumerate}[leftmargin=*]
+\item Every ``local KL--cumulant'' statement cites Theorem~\ref{thm:FIMbound} with explicit $(\epsilon,r)$ and $F$.
+\item Any computation outside whitened coordinates cites Corollary~\ref{cor:FIM-conditioning} (or Proposition~\ref{prop:window-transport} in windows) and reports the relevant $\chi$.
+\item Windowed analyses declare the whitening policy and either bound $\chi_{\max}$ or include it in reported uncertainty.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (EF radius, $L_\psi$, whitening leakage $\chi(t)$)}
+
+\begin{lstlisting}
+# Assumptions
+# - T(x): centered, whitened sufficient-statistic vector (same dictionary across windows)
+# - Baseline Fisher F (SPD) is fixed (global whitening) or a chosen reference
+# - window data: {x_i}_{i=1}^n with precomputed T_i := T(x_i)
+
+LinearAlgebra:
+  chol(SPD M) -> L s.t. M = L L^T
+  solve_SPD(M, b) -> x with M x = b using Cholesky
+  power_norm(A_mv, dim, iters=10) -> approx spectral norm via power iteration on mv-product
+  hutchpp_opnorm(A_mv, dim, s=4, iters=2) -> Hutch++-style operator-norm proxy (optional)
+
+# ---------- Window Fisher and whitening leakage ----------
+function fisher_window(T_list):
+    # Empirical Fisher at independence in this window (covariance of T)
+    # ridge for numerical stability (lambda_ridge small, e.g. 1e-6 * trace/dim)
+    n = len(T_list); d = dim(T_list[0])
+    mu = mean(T_list)                         # should be ~0 by centering; keep for safety
+    C  = (1/n) * sum_i (T_list[i] - mu) (T_list[i] - mu)^T
+    lam = 1e-6 * trace(C) / d
+    return C + lam * I_d
+
+function chi_leakage(F_baseline, F_t):
+    # Compute chi(t) = kappa(F_t F_baseline^{-1}) via generalized EVP
+    # Equivalent to eigenvalues of S := F_baseline^{-1/2} F_t F_baseline^{-1/2}
+    L = chol(F_baseline)                 # F = L L^T
+    # mv for S: v -> L^{-1}^T * F_t * L^{-1} * v  (apply solves with L and L^T)
+    function S_mv(v):
+        y = solve_SPD(L, v)              # L y = v
+        z = F_t @ y
+        w = solve_SPD(L.T, z)            # L^T w = z
+        return w
+    # estimate extremal eigenvalues of S by power and inverse power
+    # power_norm returns ||S||_2^{1/2} if fed S_mv? -> square it
+    lam_max = power_norm(S_mv, dim=d, iters=12)^2
+    # For lam_min, run power on inverse of S via CG solves (or Gershgorin fallback):
+    # implement inverse-power via Rayleigh quotient iteration on (S + tau I)^{-1} if needed.
+    # or use eigs on small d
+    lam_min = 1.0 / power_norm(lambda v: cg_solve(S_mv, v), dim=d, iters=12)^2 
+    return lam_max / lam_min
+
+# ---------- Small-tilt Hessian probes and L_psi estimation ----------
+# EF identity: \nabla^2 psi(\theta) = Cov_{P_theta}(T). Around theta=0, estimate Lipschitz via:
+#   || \nabla^2 psi(\delta u) - \nabla^2 psi(0) || / ||\delta u||.
+# We approximate P_{delta u} by reweighting samples from P_0 with weights w_i \prop exp(\delta <u, T_i>).
+
+function weighted_cov(T_list, u, delta):
+    s = [ dot(u, T_i) for T_i in T_list ]
+    a = max(s)                        # log-sum-exp stabilization
+    w_unn = [ exp(delta * (s_i - a)) for s_i in s ]
+    Z  = sum(w_unn); w = [ w_unn_i / Z for w_unn_i in w_unn ]
+    mu_w = sum_i w[i] * T_list[i]
+    C_w  = sum_i w[i] * (T_list[i] - mu_w) (T_list[i] - mu_w)^T
+    return C_w
+
+function mv_diff_H(T_list, H0, u, delta):
+    # returns an mv-product for A := (H(delta u) - H0)/delta without forming it
+    H_delta = weighted_cov(T_list, u, delta)
+    A = (H_delta - H0) / delta
+    return (lambda v: A @ v)
+
+function estimate_Lpsi(T_list, deltas=[1e-3, 3e-3, 1e-2], m_dirs=8, use_hutchpp=True):
+    d  = dim(T_list[0])
+    H0 = fisher_window(T_list)                   # \nabla^2 psi(0) at independence
+    Lpsi_hat = 0.0
+    for k in 1..m_dirs:
+        u0 = gaussian(d); u = u0 / norm(u0)     # random unit direction (Euclidean or F-based)
+        for delta in deltas:
+            A_mv = mv_diff_H(T_list, H0, u, delta)  # mv for (H(delta u) - H0)/delta
+            if use_hutchpp:
+                opn = hutchpp_opnorm(A_mv, dim=d, s=4, iters=2)
+            else:
+                opn = power_norm(A_mv, dim=d, iters=10)
+            Lpsi_hat = max(Lpsi_hat, opn)
+    return Lpsi_hat, H0
+
+# ---------- Radius selection and logging ----------
+function pick_radius(epsilon, Lpsi_hat, floor=1e-8):
+    Lp = max(Lpsi_hat, floor)
+    r  = epsilon / Lp
+    return r
+
+function section5_online_update(window_T, F_baseline, epsilon, log_json):
+    # 1) window Fisher and leakage
+    F_t  = fisher_window(window_T)
+    chi  = chi_leakage(F_baseline, F_t)
+    # 2) Lipschitz estimate and EF radius
+    (Lpsi_hat, H0) = estimate_Lpsi(window_T)
+    r = pick_radius(epsilon, Lpsi_hat)
+    # 3) structured logging (aligns with section 5 acceptance checks)
+    log_json({
+        "section": "5",
+        "epsilon": epsilon,
+        "Lpsi_hat": Lpsi_hat,
+        "r_radius": r,
+        "chi_t": chi,
+        "trace_F_t": trace(F_t),
+        "cond_F_t": cond(F_t),              # optional: standard cond estimate
+        "n_stats": len(window_T),
+        "d_dict": dim(window_T[0])
+    })
+    return {"F_t": F_t, "chi": chi, "Lpsi_hat": Lpsi_hat, "r": r, "H0": H0}
+
+# ---------- Guards and unit checks ----------
+# - If chi explodes (e.g., > 1e6), switch to transported whitening (section 5.2) and re-estimate.
+# - If r is too small (below step size of optimizer), cap epsilon upward or enrich dictionary to reduce Lpsi_hat.
+# - Validate: for synthetic quadratic psi, Lpsi_hat -> 0 and r -> infty (subject to floor).
+\end{lstlisting}
+
+\paragraph{Notes and good practice.}
+\begin{itemize}[leftmargin=*]
+\item \emph{Direction metric.} Draw $u$ as unit vectors in the \emph{Fisher} norm if you want \(L_\psi\) in the induced operator norm of \(F^{-1}\); otherwise Euclidean is fine---just be consistent with the norm used in Theorem~\ref{thm:FIMbound}.
+\item \emph{Small-tilt accuracy.} The reweighting step is accurate for small \(\delta\); keep \(\delta\in[10^{-3},10^{-2}]\) (rescale if \(\|T\|\) is large) and monitor ESS \(= 1/\sum w_i^2\).
+\item \emph{Stability.} Always ridge \(F_t\) lightly before Cholesky; report the ridge size in logs if it exceeds \(10^{-6}\times\operatorname{trace}(F_t)/d\).
+\item \emph{Throughput.} Cache \(T_i\) once per window; reuse them for both \(F_t\) and \(L_\psi\) estimation. Hutch++ gives a robust operator-norm proxy with a handful of matvecs.
+\end{itemize}
+
+% ============================================================

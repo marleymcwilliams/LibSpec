@@ -1,0 +1,187 @@
+% ============================================================
+\section{Strategic Series and Cross-Cumulants (Operationalized)}\label{sec:stoch2}
+% ============================================================
+
+\noindent\textbf{Windowing, whitening, dictionary.}
+Fix a window $[t-\constref{\tau},t]$. Build features on $(\Gamma,G)$ and whiten by the windowed Fisher metric $\FIM_t$ computed at the product reference $P_0$ (Def.~\ref{def:ref2}).
+Let $\mathcal T_K$ be a finite dictionary of test functionals up to total degree $K\le 3$ (declared and versioned).
+Form the mixed cumulant vector $\bm\kappa_t=\big(\kappa_{p,q}^{(m)}\big)$ with $p,q\ge 1$ and define the \emph{Coupling Mass}
+\[
+M_t:=\bm\kappa_t^\top\FIM_t^{-1}\bm\kappa_t,
+\]
+and the preliminary \emph{discovery set}
+\[
+E_t^{\mathrm{raw}}:=\{(p,q,m):\ \text{$\kappa_{p,q}^{(m)}\neq 0$ rejected at level $\cutq$ by BH/BY}\}.
+\]
+All computations that invoke EF quadratics are restricted to the radius $r=\varepsilon/\constref{Lpsi}$ (Thm.~\ref{thm:FIMbound2}); outside that radius only non-parametric alarms (HSIC, CVaR) are acted upon.
+
+% ------------------------------------------------------------
+\begin{proposition}[Finite-$K$ factorization test, radius-gated]\label{prop:factK-ops}
+\emph{\layertag{Stoch/Inf}}
+Within the EF neighborhood $\|\bm\kappa\|_{\FIM^{-1}}\le r$, the test $E_t^{\mathrm{raw}}=\varnothing$ (BH/BY at level $\cutq$) is a level-$\cutq$ certificate of finite-$K$ factorization; moreover $M_t=0$ iff $E_t^{\mathrm{raw}}=\varnothing$.
+\begin{proofsketch}
+Whitening makes cumulants orthonormal in the $\FIM^{-1}$ norm locally (Thm.~\ref{thm:FIMbound2}); BH/BY controls the FDR for the family $\{\kappa_{p,q}^{(m)}\}$; the vanishing of all mixed cumulants up to $K$ implies finite-$K$ factorization.
+\end{proofsketch}
+\uses{(C5) \constref{F}, \constref{Lpsi}; (C4) \constref{\tau}.}
+\end{proposition}
+
+% ------------------------------------------------------------
+\paragraph{Identifiability layer: instruments and interventions.}
+Correlation is not coupling. We attach \emph{instrument} and \emph{intervention} gates to each raw discovery.
+
+\begin{definition}[Instrument \& intervention toggles]\label{def:inst-int}
+\emph{\layertag{Stoch}}
+An \emph{instrument} $Z$ for a candidate cross-term between $\Gamma$ and $G$ satisfies (i) \emph{relevance}:
+$\mathrm{Cov}(Z,\text{cause})\neq 0$; (ii) \emph{exclusion}: $Z$ is conditionally independent of the \emph{effect} given the cause and declared covariates (checked by invariance tests across contexts/tasks).
+An \emph{intervention toggle} is a designed, exogenous perturbation to either the $\Gamma$ or $G$ channel that preserves rights-plane constraints and lies within the EF radius.
+\end{definition}
+
+% ---- NEW: IV Badge with direction/ablation evidence -------------------------
+\begin{definition}[Instrumental-Variable \emph{Badge} (IV-Badge)]\label{def:iv-badge}
+\emph{\layertag{Stoch/Inf}}
+An instrument $Z$ earns an \textsf{IV-Badge} for a candidate entry $i\!=\!(p,q,m)$ iff all three pass:
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{Relevance (strength)}: first-stage HAC-robust Wald test and $F$-statistic $>10$; CI excludes $0$.
+\item \textbf{Exclusion (context invariance)}: non-rejection across pre-registered contexts under BY at level $\cutq$ for correlations of $Z$ with declared confounders and direct-$\to$effect probes (Context Registry ids logged).
+\item \textbf{Direction/ablation evidence}: ablation or micro-intervention that attenuates the specific target $\kappa_{p,q}^{(m)}$ with HAC CI excluding $0$ for the drop $\Delta\kappa_{p,q}^{(m)}<0$ (effect sign logged).
+\end{enumerate}
+The badge’s transcript (tests, contexts, ablation deltas) is attached to the CIS row for $i$.
+\end{definition}
+
+\begin{lemma}[Operational instrument checks]\label{lem:inst-tests}
+\emph{\layertag{Stoch/Inf}}
+If (i) relevance holds with $F>10$ and CI excludes $0$, (ii) exclusion holds by BY across contexts, and (iii) the ablation drop on the \emph{target} $\kappa_{p,q}^{(m)}$ is significant with the predicted sign, then the sign of the promoted cross-term is stable under small tilts on the EF ball and ablations reduce the associated $\kappa_{p,q}^{(m)}$ as predicted.
+\begin{proofsketch}
+Local asymptotics under whitening; BY control over multiple invariance probes; ablation ensures directionality for the specific cumulant component.
+\end{proofsketch}
+\uses{(C5) \constref{F}, \constref{Lpsi}.}
+\end{lemma}
+
+% ------------------------------------------------------------
+\paragraph{Minimum Transfer Condition (MTC) with badges and conditioning.}
+A raw discovery must carry predictive value and be robust under drift and conditioning.
+
+\begin{definition}[Minimum Transfer Condition]\label{def:mtc}
+\emph{\layertag{Stoch/Clos}}
+A candidate index $i\in E_t^{\mathrm{raw}}$ is \emph{promotable} to $E_t$ only if it passes all gates:
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{Transfer:} adding feature $i$ to the transport map reduces held-out soft-transport loss $\hat R_{\mathrm{DRO}}$ by at least $\Delta_{\min}>0$ (CI excludes $0$; power $\ge 0.8$ for pre-registered MDE).
+\item \textbf{Sequential evidence:} an SPRT on $M_t$ with pre-registered $(\alpha,\beta)$ accepts $H_0:\,M_t\le B_{\mathrm{saf}}$ or, if $H_1$ is accepted, the candidate is \emph{rejected} (no promotion).
+\item \textbf{Conditioning \& leakage:} Fisher leakage $\constref{chi}(t)$ does not exceed the alarm threshold; else the \emph{leakage clamp} is triggered (below) and promotion is frozen.
+\item \textbf{IV-Badge (if instrumented):} any instrument-dependent claim must attach a passing \textsf{IV-Badge} (Def.~\ref{def:iv-badge}); otherwise the entry may be reported as correlational-only and is blocked from actuation.
+\end{enumerate}
+We write $E_t:=\{i\in E_t^{\mathrm{raw}}:\ \text{MTC+badges passed}\}$ with per-index badges in the CIS.
+\end{definition}
+
+\begin{proposition}[FDR safety under MTC+Badge gating]\label{prop:fdr-mtc}
+\emph{\layertag{Stoch}}
+If the gates are pre-registered and do not use the unadjusted $p$-values themselves (only downstream losses, SPRT outcomes, leakage $\constref{chi}$, and badge transcripts), then the realized FDR on $E_t$ is $\le \cutq$ (conservative) when BY is used for the raw stage.
+\begin{proofsketch}
+BY controls FDR under arbitrary dependence at the raw stage; post-hoc monotone filters that discard some rejections (MTC+badges) cannot increase FDR.
+\end{proofsketch}
+\end{proposition}
+
+% ------------------------------------------------------------
+\paragraph{SPRT from the DRO dual (with precondition).}
+Let $\phi_\eta(x;\theta)$ denote the soft-transport dual potential. Define the incremental log-likelihood ratio
+\[
+\ell_k \;:=\; \phi_{\eta^\star}(x_k;\hat\theta)\;-\;\mathbb E_{H_0}[\phi_{\eta^\star}(X;\hat\theta)],
+\qquad
+\mathrm{LLR}(n)=\sum_{k=1}^n \ell_k.
+\]
+With thresholds $A=\log\frac{1-\beta}{\alpha}$ and $B=\log\frac{\beta}{1-\alpha}$, accept $H_1$ if $\mathrm{LLR}\ge A$, $H_0$ if $\mathrm{LLR}\le B$, else continue.
+Consumption of SPRT outcomes requires the envelope identity $dv/d\rho=\eta^\star$ to pass within tolerance (Thm.~\ref{thm:rho-sense}).
+
+% ---- NEW: Window quarantine on envelope failure -----------------------------
+\begin{definition}[Window quarantine]\label{def:win-quarantine}
+\emph{\layertag{Stoch/Clos}}
+If the envelope precondition $dv/d\rho=\eta^\star$ fails in window $[t-\constref{\tau},t]$, mark the window \textsf{quarantined}:
+(i) \emph{freeze} promotions ($E_t\leftarrow\varnothing$),
+(ii) exclude the window from training/updates of adaptive policies and from FDR audits,
+(iii) allow only safety monitoring (CBF checks, ISS accounting) and KPI archiving.
+The quarantine status (boolean) and reason are recorded in the Provenance Ladder.
+\end{definition}
+
+% ------------------------------------------------------------
+\paragraph{Leakage clamp (automatic radius/claims freeze).}
+Define Fisher leakage $\constref{chi}(t):=\|\FIM_t-\FIM_{t-\constref{\tau}}\|/\|\FIM_{t-\constref{\tau}}\|$.
+On $\constref{chi}(t)>\chi_{\mathrm{alarm}}$:
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item shrink the EF radius $r\leftarrow \gamma_r r$ with $\gamma_r\in(0,1)$, 
+\item reduce the discovery level $\cutq\leftarrow \gamma_q\cutq$ (more conservative BY),
+\item freeze promotions ($E_t\leftarrow \varnothing$) until $\constref{chi}$ falls below $\chi_{\mathrm{clear}}<\chi_{\mathrm{alarm}}$ for $m$ consecutive windows.
+\end{enumerate}
+All clamps (trip time, $\gamma_r,\gamma_q$) are logged.
+
+% ---- NEW: Deterministic realized-FDR feedback clamp -------------------------
+\paragraph{Realized-FDR feedback (deterministic clamp).}\label{par:fdr-feedback}
+Weekly null-stream audits compute $\widehat{\mathrm{FDR}}_{\text{real}}$. If $\widehat{\mathrm{FDR}}_{\text{real}}>0.9\,\cutq$, then deterministically:
+\[
+\cutq \leftarrow 0.9\,\cutq,\qquad r \leftarrow \gamma_r^{\mathrm{audit}}\, r\ \ (\gamma_r^{\mathrm{audit}}\!\in(0,1)),\qquad
+\text{freeze promotions for the next $m_{\mathrm{audit}}$ windows.}
+\]
+Log a \textsf{Clamp Policy Evidence} record with pre/post $(\cutq,r)$ and audit evidence. Unfreeze only after the next passing audit.
+
+% ------------------------------------------------------------
+\subsection*{Runtime pipeline (auditable)}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{Window build \& whitening} $\to$ $(\FIM_t,W_t)$ with leakage $\constref{chi}(t)$; set EF radius $r$.
+\item \textbf{Quarantine gate} $\to$ if envelope precondition failed (Sec.~\ref{sec:closure2}), mark \textsf{quarantined} and skip discovery/actuation in this window.
+\item \textbf{Mixed cumulants} $\to$ raw vector $\bm\kappa_t$ and $M_t$ (radius-gated).
+\item \textbf{Multiple testing} (BH/BY at $\cutq$) $\to$ $E_t^{\mathrm{raw}}$ (unless quarantined).
+\item \textbf{Identifiability} (IV-Badge validity + micro-interventions) $\to$ badge transcripts per index.
+\item \textbf{MTC gates} (transfer $\Delta\hat R_{\mathrm{DRO}}$, SPRT on $M_t$, conditioning/leakage) $\to$ promoted $E_t$.
+\item \textbf{Risk posture} (leakage clamp; realized-FDR clamp) $\to$ potential freezes and $(r,\cutq)$ updates with evidence.
+\item \textbf{Artifact logging} $\to$ CIS with badges; SPRT/IV transcripts; clamp/quarantine events with reasons.
+\end{enumerate}
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# Cumulants + FDR
+def windowed_cumulants(data, K=3, window=tau, whitening="FIM", hac=True): ...
+def fdr_bh_by(pvals, level_q, method="BY"): ...
+
+# IV Badge components
+def iv_relevance_first_stage(Z, cause, covars=None, hac=True): ...
+def iv_exclusion_invariance(Z, confounders, contexts, level_q): ...
+def iv_direction_ablation(kappa_series_before, kappa_series_after, hac=True): ...
+def assemble_iv_badge(transcripts): ...
+
+# Instruments / interventions
+def test_instrument_relevance(Z, cause, hac=True): ...   # legacy wrapper
+def test_invariance_exclusion(effect, cause, Z, contexts, level_q): ...
+def apply_intervention(toggle, budget, rights_cbf): ...
+
+# Transfer (held-out DRO) and SPRT
+def transport_delta_R_DRO(features, labels, radius, holdout_seed): ...
+def sprt_mt(stream_phi_eta, alpha, beta): ...
+
+# Envelope precondition + quarantine
+def envelope_precondition_ok(eta_star, slope, tol=0.05): ...
+def quarantine_window(reason): ...
+
+# Leakage + clamps
+def fisher_leakage(F_now, F_prev): ...
+def leakage_clamp(chi, r, q, chi_alarm, chi_clear, gamma_r, gamma_q): ...
+def realized_fdr_audit(null_streams, target_q): ...
+def fdr_feedback_clamp(fdr_real, q, r, gamma_r_audit, m_freeze): ...
+
+# CIS / logging
+def cis_add_entry(idx, pval, by_thr, mtc_flags, power, badges, notes): ...
+def log_clamp_event(kind, pre_post, evidence): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window unless noted).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Radius compliance:} $\|\bm\kappa_t\|_{\FIM_t^{-1}}\le r$ for any EF-proxy claim; violations trigger a logged downgrade to non-parametric alarms.
+\item \emph{FDR evidence:} BY transcript (p-values, thresholds) stored; realized FDR on synthetic null streams reported (weekly) and fed to the feedback clamp (Sec.~\ref{par:fdr-feedback}).
+\item \emph{IV-Badge:} any instrumented promotion must include a passing badge transcript: (i) relevance $F>10$ with CI excluding $0$; (ii) exclusion non-rejection under BY across contexts; (iii) ablation $\Delta\kappa_{p,q}^{(m)}<0$ with CI excluding $0$.
+\item \emph{MTC:} (i) $\Delta\hat R_{\mathrm{DRO}}$ CI excludes $0$ with power $\ge 0.8$ for pre-registered MDE; (ii) SPRT stops with declared $(\alpha,\beta)$ after envelope precondition passes; (iii) no promotion if leakage clamp is \textsc{Red}.
+\item \emph{Window quarantine:} if the envelope precondition fails (Sec.~\ref{sec:closure2}), the window is flagged \textsf{quarantined} in the Ladder; $E_t=\varnothing$ and no adaptive updates use this window.
+\item \emph{Clamps:} all leakage and realized-FDR clamp events (radius shrink, $\cutq$ reduction, freeze interval) appear in the Provenance Ladder with timestamps; replay reproduces them deterministically from the logged inputs.
+\item \emph{Reproducibility:} recomputation of $M_t$ and $E_t$ from the Transport Pack matches within numerical tolerances ($\le 1\%$ RMS).
+\end{itemize}
+\end{mdframed}

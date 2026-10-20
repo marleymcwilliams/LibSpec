@@ -1,0 +1,8 @@
+# Code ownership
+
+papers/part2/JSG_II_A.tex  @ownerA
+papers/part2/JSG_II_B.tex  @ownerB
+registries/**              @registry-team
+artifacts/**               @evidence
+docs/**                    @docs-team
+tools/**                   @infra

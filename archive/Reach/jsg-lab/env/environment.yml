@@ -1,0 +1,32 @@
+name: jsg
+channels: [conda-forge, defaults]
+dependencies:
+  - python=3.11
+  - pip
+  - numpy
+  - scipy
+  - pandas
+  - matplotlib
+  - cvxpy
+  - mlflow
+  - hydra-core
+  - omegaconf
+  - pydantic
+  - pytest
+  - hypothesis
+  - ruff
+  - black
+  - isort
+  - mypy
+  - pre-commit
+  - dvc
+  - snakemake
+  - pip:
+      # JAX CPU default (will be replaced for GPUs)
+      - jax>=0.4
+      - jaxlib>=0.4
+      # If using NVIDIA GPUs on CUDA 12, comment the two lines above and use:
+      # - "jax[cuda12_pip]"
+      # - jaxlib==<matching-cuda-build>  # pin the CUDA-specific jaxlib
+      - -e .[dev]
+

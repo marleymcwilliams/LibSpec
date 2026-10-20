@@ -1,0 +1,57 @@
+\section{Introduction and Motivation}\label{sec:intro1}
+
+\paragraph{Purpose.}
+We develop a rigorously testable framework for coupled decision--objective dynamics. Agents evolve on a decision space $\Gamma$ while a co-evolving structural environment $G$ reshapes feasible actions and payoffs. Our objective is an \emph{engineering-grade} interlingua that: (i) separates modeling layers by explicit contracts; (ii) states hypotheses at proof/implementation granularity; (iii) provides local theorems that are falsifiable on benchmarks; and (iv) degrades gracefully outside their stated radii.
+
+\paragraph{Tensions we resolve.}
+We make precise choices where earlier drafts blended: (a) smooth vs.\ stratified geometry on $G$; (b) algebraic identities vs.\ their discrete/stratified counterparts; (c) stationary vs.\ drifting laws; (d) geometric control vs.\ numerics. We control the resulting defects by No-Zeno dwell times, geometry-scaled frontier budgets, band-limited approximations, and dependence-aware estimation.
+
+\subsection*{Problem statement}
+For a coupled process $X_t=(\gamma_t,G_t)$ on $X=\Gamma\times G$, we seek:
+
+\begin{enumerate}[label=(P\arabic*),leftmargin=*]
+\item \textbf{Hybrid calculus.} A stratified exterior calculus on $T\Gamma\oplus TG$ that reduces to the smooth theory on each stratum and yields integrable, geometry-controlled defect terms at frontiers with No-Zeno crossings.
+\item \textbf{Statistical semantics.} Laws (invariant or windowed) under which evaluation functionals are Borel/$L^2$, and a local Fisher-invariant equivalence between mixed cumulants and relative entropy with an explicit radius.
+\item \textbf{Closure mechanisms.} A Wasserstein--KL DRO (with stratified reference $\lambda$) and a Hopf-algebraic projection that preserve symmetries and bound higher orders.
+\item \textbf{Geometry-aware control.} A Dirac (power-preserving) projection $\Pi$ and band-limited fractional controllers verifiably positive-real on their band, implying ISS under frontier defects.
+\item \textbf{Compositional semantics.} Lipschitz functors in the FIM-normed cumulant metric with monoidal submultiplicativity, and non-expansive projections for Dirac/Hopf closures.
+\end{enumerate}
+
+\subsection*{Modeling layers and contracts}
+We isolate arguments by layer. Each result carries a tag \texttt{[Rep/Alg/Stoch/Inf/Clos/Ctrl/Comp]} and ends with \emph{Uses:} (C-codes).
+
+\begin{description}[leftmargin=*,style=nextline]
+\item[Representation (Rep).] $\Gamma$ smooth; $G$ Whitney-stratified with Filippov prolongation at frontiers and strict transversality. Contract: dwell $\tau_{\min}>0$ and frontier tubes of radius $r_{\mathrm{tube}}$ (Lemma~1).
+\item[Algebra (Alg).] Bigraded exterior calculus on $T\Gamma\oplus TG$; classical identities hold stratumwise; Jacobi fails by a distributional frontier term with per-crossing budget $C_{\mathrm{fr}}$ (Lemmas~2--3).
+\item[Stochastic (Stoch).] Occupation/invariant or windowed laws; evaluation functionals are Borel and $L^2$. Absolute continuity is taken \emph{stratumwise} w.r.t.\ a refinement-invariant reference $\lambda$ (Def.~4).
+\item[Inference (Inf).] EF neighborhood at independence with finite, whitened dictionary; Fisher $F\!\succ\!0$. Local KL--cumulant equivalence on a ball of radius $r\le \epsilon/L_\psi$ with conditioning factor $\chi$.
+\item[Closure (Clos).] Wasserstein--KL DRO with soft-transport dual $\varphi_\eta$; inner optimizer $\eta^\star$ satisfies KKT under a dominated-convergence envelope. Adaptive radius $\rho_t=c\,\widehat L_t\tau$ with guarantees.
+\item[Control (Ctrl).] Dirac projection $\Pi$ from rank-regular constraints; ````````````````````````````````````freeze on crossing, reproject after'' rule. Band-limited fractional controller with KYP/phase PR certificates; passivity $\Rightarrow$ ISS with an explicit frontier term proportional to $t/\tau_{\min}$.
+\item[Composition (Comp).] Algebra-first quasi-shuffle $\odot$ (associative/commutative), \emph{then} whitening; invariant-whitening assumption ensures symmetry equivariance. Pushforward--cumulant Lipschitz lemma justifies non-expansiveness of Dirac/Hopf projections in the FIM metric; monoidal Lipschitz constants multiply.
+\end{description}
+
+\begin{mdframed}
+\textbf{Standing Hypotheses (H1--H6).}
+\begin{enumerate}[label=(H\arabic*),leftmargin=*]
+\item $\Gamma$ is a connected smooth manifold; when symmetry matters we take a Lie group (e.g.\ $SE(3)$).
+\item $G$ is a Whitney-stratified pseudomanifold $\bigsqcup_i M_i$; dynamics are specified stratumwise and prolonged by Filippov regularization. Crossings are non-explosive and strictly transversal.
+\item On each stratum, mixed wedge, interior contraction, and Schouten--Nijenhuis bracket obey the smooth identities; frontier crossings induce a defect $\Delta_{\mathrm{fr}}$ with $\int_0^T\|\Delta_{\mathrm{fr}}(x_t)\|dt\le C_{\mathrm{fr}} N_{\mathrm{cross}}(0,T)$.
+\item Test functionals $T_{u,v}=\iota_{u\otimes v}\hat S$ are Borel/$L^2$ under the laws considered (invariant or windowed). Laws satisfy $P_\theta\ll\lambda$ stratumwise, with $\lambda$ the stratified reference measure (Def.~4).
+\item In an EF neighborhood of independence $P_0=P_\Gamma\otimes P_G$, a finite statistic dictionary has $F=\FIM(0)\succ0$ and $\nabla^2\psi$ is $L_\psi$-Lipschitz on a ball around $0$.
+\item Controllers use Dirac projections and band-limited positive-real fractional operators; entropy-aware gain adaptation stays within a PR-admissible set or evolves on a slower time scale than the plant.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Non-goals and scope}
+We do not claim global equivalences far from independence; we do not develop an unconstrained discrete multivector calculus on arbitrary meshes; we restrict to band-limited fractional realizations; and we avoid unbenchmarked claims.
+
+\subsection*{Repository style and isolation}
+Every theorem/lemma is tagged by layer and ends with a \emph{Uses:} line that lists the C-codes it touches from the symbol registry. Cross-references name the exact contracts invoked.
+
+\subsection*{Notation}
+Bidegrees use $(p,q)$; total grade is $p+q$. Pairings $\langle\cdot,\cdot\rangle$ are induced by the relevant metric; FIM norms are $\|z\|_{\FIM^{-1}}=\normFIM{z}$.
+
+\subsection*{Roadmap}
+Section~\ref{sec:calc1} fixes the hybrid calculus, proving No-Zeno (Lemma~1) and a geometry-scaled defect (Lemma~3). Section~\ref{sec:stoch1} sets stochastic semantics (existence, windowing, measurability). Section~\ref{sec:closure1} introduces the stratified reference $\lambda$ and the soft-transport dual with KKT and an adaptive $\rho_t$. Section~\ref{sec:entropy1} states the Fisher-invariant KL--cumulant theorem with explicit radius and conditioning corollary. Section~\ref{sec:control1} builds Dirac projections and PR-certified fractional control, then proves passivity $\Rightarrow$ ISS with a frontier term scaling as $t/\tau_{\min}$. Section~\ref{sec:kernels1} develops SVD plane selection with $J$-structure and DEC-compatible shape derivatives with a frontier freeze. Section~\ref{sec:adv-structures1} adopts the \emph{algebra-first} quasi-shuffle, an \emph{invariant} whitening assumption, and a pushforward--cumulant Lipschitz lemma yielding non-expansiveness in the FIM metric with monoidal submultiplicativity. Section~\ref{sec:stats1} standardizes dependence-aware CIs, model-order selection, and FDR control. Section~\ref{sec:bench1} closes with executable benchmarks, negative controls, and degeneracy stress tests.
+
+% ============================================================

@@ -1,0 +1,223 @@
+﻿\section{Computational Statistics and Practicalities}\label{sec:stats1}
+% ============================================================
+
+We fix a uniform, dependence-aware inference policy for all reported quantities:
+the mixed-cumulant vector
+$\mathbf k_K=(\kappa^{(m)}_{p,q})_{1\le p+q\le K}$,
+the gradient vectors used for shape derivatives,
+and the spectral gap $\Delta\sigma:=\sigma_1-\sigma_2$ driving plane selection.
+All norms are Fisher-induced (Theorem~\ref{thm:FIMbound}) unless noted.
+
+% Continue numbering: Lemma 13+, Proposition 3+
+\setcounter{lemma}{12}
+\setcounter{proposition}{2}
+
+\subsection{Data model, estimands, and dependence}\label{subsec:stats-model}
+
+Let $\{Z_t\}_{t=1}^n$ be the windowed time series of centered, whitened test functionals (Section~\ref{sec:stoch1}) from which we compute moments/cumulants up to order $K\in\{2,3\}$. Gradient estimators and SVD gaps are functions of the same stream.
+
+\begin{assumption}[Mixing and moments]\label{ass:mixing}
+\emph{[\textup{Stoch}]}
+Within a window, $\{Z_t\}$ is strictly stationary and \emph{strongly mixing} with coefficients $\alpha(k)$ satisfying $\sum_{k\ge1}\alpha(k)^{\delta/(2+\delta)}<\infty$ for some $\delta>0$, and $\mathbb E\|Z_t\|^{4+\delta}<\infty$. (Windowwise analysis uses the same assumptions per window.)
+\uses{Window size $\tau$; effective $n$ per window.}
+\end{assumption}
+
+\subsection{HAC covariance and Wald CIs (default for smooth functionals)}\label{subsec:hac}
+
+Let $\widehat{\mathbf k}_K$ be the estimator of $\mathbf k_K$ (streaming U-stats for order $\le3$, with sketching optional for order 3).
+Let $\{\widehat\psi_t\}$ be the associated influence-function process (componentwise).
+
+\begin{lemma}[HAC CLT and consistency]\label{lem:hac}
+\emph{[\textup{Stoch/Comp}]}
+Under Assumption~\ref{ass:mixing},
+\(
+\sqrt{n}\big(\widehat{\mathbf k}_K-\mathbf k_K\big)\xrightarrow{d}\mathcal N(0,\Sigma_K)
+\),
+where $\Sigma_K$ is the long-run covariance.
+Let $\widehat\Sigma_K$ be a HAC estimator with a positive, compact-support taper (e.g., Bartlett) and bandwidth
+$b_{\mathrm{HAC}}=\lfloor c\,n^{1/3}\rfloor$ for fixed $c>0$.
+Then $\widehat\Sigma_K\xrightarrow{p}\Sigma_K$ and Wald CIs using $\widehat\Sigma_K$ are asymptotically valid.
+\uses{$b_{\mathrm{HAC}}\sim n^{1/3}$; taper choice; moment/mixing envelope.}
+\end{lemma}
+
+\begin{remark}[Reporting policy for HAC]\label{rem:hac-report}
+Every table/figure that includes $\widehat{\mathbf k}_K$ must print: the taper, $b_{\mathrm{HAC}}$, and the FIM norm used to scale Wald ellipsoids.
+\uses{Fisher $F$; user-chosen $c$.}
+\end{remark}
+
+\subsection{Block bootstrap CIs (default for non-smooth or finite-difference estimators)}\label{subsec:bb}
+
+For gradients (score/FD) and the spectral gap $\Delta\sigma$, we use block bootstrap CIs.
+
+\begin{proposition}[MBB/CBB validity and block-length rule]\label{prop:bb}
+\emph{[\textup{Stoch/Comp}]}
+Let $\widehat\theta$ be any smooth functional of $\{Z_t\}$ or a finite-difference estimator with $h\to0$ and $mh^2\to\infty$.
+The moving (MBB) or circular (CBB) block bootstrap with block length
+$b=\lfloor c\,n^{1/3}\rfloor$ yields consistent percentile or studentized CIs for $\widehat\theta$ under Assumption~\ref{ass:mixing}.
+A data-driven choice of $c$ by pilot MSE minimization (variance + squared-bias proxy) is admissible and recommended.
+\uses{$b\sim n^{1/3}$; pilot MSE; FD step $h$ (\S\ref{subsec:shape}).}
+\end{proposition}
+
+\begin{remark}[Which CI where]\label{rem:which-ci}
+Use HAC/Wald for $\widehat{\mathbf k}_K$ and other smooth functionals; use block bootstrap for: (i) finite-difference gradients, (ii) SVD gaps and $k$-plane engagement rates, (iii) any estimator involving hard thresholds or projections. Always print the CI type and $(b,B)$ in logs and captions.
+\uses{Estimator smoothness; bootstrap design $(b,B)$.}
+\end{remark}
+
+\subsection{Simultaneous inference and FDR control}\label{subsec:fdr}
+
+Let $\{\widehat T_j\}_{j=1}^m$ be the family of tested entries (e.g., coordinates of $\mathbf k_K$). Let $\widehat p_j$ be marginal $p$-values (HAC-based z-tests or bootstrap studentized).
+
+\begin{lemma}[BH/BY control]\label{lem:fdr}
+\emph{[\textup{Stoch/Comp/Inf}]}
+At target level $q\in(0,1)$:
+(i) If the $p$-values are PRDS (positively dependent), the Benjamini--Hochberg procedure controls FDR at $q$.
+(ii) Without dependence assumptions, Benjamini--Yekutieli controls FDR at $q$ after scaling $q\leftarrow q/\!\sum_{i=1}^m 1/i$.
+A hierarchical variant---BH/BY within groups (by bidegree $(p,q)$ and stratum), then BH on group-level $p$---is admissible and recommended.
+\uses{Group partition by bidegree/stratum; chosen $q$.}
+\end{lemma}
+
+\begin{remark}[Symmetry projection]\label{rem:symm-proj}
+Enforce bidegree symmetries and invariances by projecting $\widehat{\mathbf k}_K$ onto the symmetry-fixed subspace (orthogonal in the whitened inner product) before testing; this reduces multiplicity and increases power without inflating type-I error.
+\uses{Invariant whitening (Assumption~\ref{ass:inv-whiten}); orthogonal projector.}
+\end{remark}
+
+\subsection{Gradients and finite differences: CIs and step choice}\label{subsec:grad-ci}
+
+For gradients, apply Proposition~\ref{prop:score-fd-7} (score identity and FD MSE) and use the bootstrap for CIs.
+
+\begin{lemma}[CI policy for gradients]\label{lem:grad-ci}
+\emph{[\textup{Stoch/Inf}]}
+Compute $h^\star\asymp(\sigma^2/(mC_b^2))^{1/6}$ and form CIs by CBB/MBB with $b\sim n^{1/3}$ on the gradient time series (score or FD at $h^\star$).
+Report $(h^\star, b, B)$ and whether \emph{frontier freeze} was active.
+\uses{Proposition~\ref{prop:score-fd-7}; block bootstrap; frontier freeze flag.}
+\end{lemma}
+
+\subsection{SVD gaps and $k$-plane engagement: CIs and certification}\label{subsec:gap-ci}
+
+\begin{lemma}[Gap certification]\label{lem:gap-ci}
+\emph{[\textup{Comp/Ctrl}]}
+Estimate $\Delta\sigma_t$ per window and report a bootstrap CI; additionally, report principal-angle bands from Davis--Kahan/Wedin bounds using the observed perturbation proxy. Trigger $k$-plane escalation when $\widehat\Delta\sigma_t<\varepsilon_{\mathrm{gap}}$ or its CI contains $0$.
+\uses{Degeneracy threshold $\varepsilon_{\mathrm{gap}}$; bootstrap CI; perturbation proxy.}
+\end{lemma}
+
+\subsection{Sketching and variance propagation for order-3}\label{subsec:sketch}
+
+When tensor sketching (CountSketch/Hutch++) is used for third-order moments:
+
+\begin{lemma}[Sketch error propagation]\label{lem:sketch}
+\emph{[\textup{Comp}]}
+With sketch size $s=O(\epsilon^{-2}\log d)$, the sketched third-order moment yields a cumulant error $\|\widehat\kappa_{2,1}-\kappa_{2,1}\|=O_{\mathbb P}(\epsilon)$ for fixed $n$; the HAC/BB procedures apply with an added $O(\epsilon)$ bias term that vanishes as $s\to\infty$.
+\uses{Sketch size $s$; target $\epsilon$.}
+\end{lemma}
+
+\subsection{Reporting template (uniform across outputs)}\label{subsec:report}
+
+\begin{mdframed}
+\textbf{Every reported estimate \emph{must} include:}
+(i) CI type (HAC vs.\ MBB/CBB), taper and $b_{\mathrm{HAC}}$ or $(b,B)$;
+(ii) FIM norm used to scale ellipsoids;
+(iii) for gradients: $h^\star$ and freeze flag;
+(iv) for SVD gaps: $k$-plane mode, $\widehat\Delta\sigma$, its CI, and principal-angle bands; 
+(v) for multiple tests: the FDR procedure (BH/BY), group partition, and target $q$.
+\end{mdframed}
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:stats1}.}
+\begin{enumerate}[leftmargin=*]
+\item HAC objects print taper and $b_{\mathrm{HAC}}$; bootstrap objects print $(b,B)$ and method (MBB/CBB).
+\item Gradient outputs print $h^\star$ and the frontier freeze status.
+\item SVD reports include gap CIs and principal-angle bands; $k$-plane engagement is logged.
+\item Any multiple-testing claim includes BH/BY choice, group structure, and target $q$.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (HAC, block bootstrap, FDR reporting)}
+
+\begin{lstlisting}
+# Inputs
+stream:      time series or windowed array of estimates/influence values
+est_name:    string tag (e.g., "kappa_21", "grad_theta", "gap_svd")
+n_eff:       effective sample size (# points in window)
+alpha:       0.05 (default)
+q_fdr:       target FDR for families of tests (e.g., entries of k_K)
+F:           Fisher matrix for FIM norm (if needed)
+
+# HAC covariance for smooth vector estimators --------------------------------
+function hac_cov(stream_vec, c=1.0, taper="bartlett"):
+    n = len(stream_vec)
+    b = max(2, floor(c * n**(1/3)))
+    S0 = empirical_cov(stream_vec)                         # lag 0
+    S = S0
+    for h in 1..b:
+        w = 1 - h/(b+1) if taper=="bartlett" else kernel_weight(h,b,taper)
+        Gh = lagged_cov(stream_vec, h)                     # sample lag-h cov
+        S += w * (Gh + Gh.T)
+    log_json({"evt":"hac", "name": est_name, "b_HAC": b, "taper": taper})
+    return S
+
+function wald_ci(point, cov, alpha=0.05):
+    se = sqrt(diag(cov))
+    z = normal_quantile(1 - alpha/2)
+    lo = point - z * se; hi = point + z * se
+    return {"ci_lo": lo, "ci_hi": hi, "se": se, "z": z}
+
+# Block bootstrap CI (MBB/CBB) -----------------------------------------------
+function block_length(n_eff, c=1.0): return max(2, floor(c * n_eff**(1/3)))
+
+function bootstrap_ci(series, alpha=0.05, method="cbb", B=1000, c=1.0):
+    n = length(series); b = block_length(n, c)
+    draws = []
+    for bidx in 1..B:
+        idx = sample_blocks(n, b, method)                  # moving or circular
+        draws.append( mean(series[idx]) )
+    q_lo = quantile(draws, alpha/2); q_hi = quantile(draws, 1 - alpha/2)
+    log_json({"evt":"bootstrap", "name": est_name, "method": method, "b": b, "B": B})
+    return {"ci":[q_lo, q_hi], "b": b, "B": B}
+
+# Gradient CI wrapper ---------------------------------------------------------
+function grad_ci(grad_series, h_star, alpha=0.05, method="cbb"):
+    ci = bootstrap_ci(grad_series, alpha=alpha, method=method)
+    log_json({"evt":"grad_ci", "name": est_name, "h_star": h_star,
+              "ci": ci["ci"], "b": ci["b"], "B": ci["B"]})
+    return ci
+
+# SVD gap CI and principal-angle band ----------------------------------------
+function gap_ci(gap_series, angles_series=None, alpha=0.05):
+    ci = bootstrap_ci(gap_series, alpha=alpha, method="cbb")
+    out = {"gap_ci": ci, "angles": None}
+    if angles_series is not None:
+        out["angles"] = {"max_angle_ci": bootstrap_ci(angles_series, alpha=alpha)}
+    log_json({"evt":"gap_ci", "name": est_name, "ci": ci["ci"]})
+    return out
+
+# Multiple testing: BH/BY -----------------------------------------------------
+function fdr_bh(pvals, q=0.1):
+    m = len(pvals); order = argsort(pvals)
+    thresh = [ (k/m) * q for k in 1..m ]
+    k_star = max({k: pvals[order[k]] <= thresh[k]} \\\\cup {0})
+    reject = zeros(m, dtype=bool); reject[order[:k_star]] = True
+    log_json({"evt":"fdr_bh", "m": m, "q": q, "k_star": int(k_star)})
+    return reject
+
+function fdr_by(pvals, q=0.1):
+    m = len(pvals); Hm = sum_{i=1}^m (1/i)
+    return fdr_bh(pvals, q=q/Hm)
+
+function hierarchical_fdr(groups):
+    # groups: dict[group_id] -> list of p-values
+    rejects = dict()
+    for g, pv in groups.items():
+        rejects[g] = fdr_bh(pv, q=q_fdr)                    # or BY per policy
+    # combine group-level with a BH on min-p per group if needed
+    return rejects
+
+# Uniform reporting helper ----------------------------------------------------
+function report_estimate(name, point, ci_info, meta):
+    log_json({"evt":"report", "name": name,
+              "point": point, "ci": ci_info,
+              "meta": meta})    # include: HAC/BB settings, FIM norm, h_star, freeze flag, k-plane, etc.
+
+\end{lstlisting}
+
+
+% ============================================================

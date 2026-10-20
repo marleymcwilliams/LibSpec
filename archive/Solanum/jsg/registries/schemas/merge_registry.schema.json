@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["letters", "pairs", "time", "hash"],
+  "properties": {
+    "letters": {"type": "array", "items": {"type": "string"}},
+    "pairs":   {"type": "array", "items": {"type": "array", "items": {"type": "string"}, "minItems": 2, "maxItems": 2}},
+    "time":    {"type": "string"},
+    "hash":    {"type": "string"}
+  }
+}

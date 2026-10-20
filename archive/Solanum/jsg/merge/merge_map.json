@@ -1,0 +1,141 @@
+{
+  "topics": [
+    {
+      "key": "intro",
+      "p1": ["papers/part1/sections/intro1.tex"],
+      "p2": ["papers/part2/sections/intro2.tex"],
+      "p3": ["papers/part3/sections/intro3.tex"],
+      "status": "in_progress",
+      "notes": "Symbol registry & abstract included in intro3; reconcile narrative."
+    },
+    {
+      "key": "calc",
+      "p1": ["papers/part1/sections/calc1.tex"],
+      "p2": ["papers/part2/sections/calc2.tex"],
+      "p3": ["papers/part3/sections/closures3.tex"],
+      "status": "todo",
+      "notes": "Map frontier calculus and ISS spend into closures3; cross-link constants."
+    },
+    {
+      "key": "stoch",
+      "p1": ["papers/part1/sections/stoch1.tex"],
+      "p2": ["papers/part2/sections/stoch2.tex"],
+      "p3": ["papers/part3/sections/sense3.tex"],
+      "status": "in_progress",
+      "notes": "EF radius, cumulants, coverage, clamp FSM in sense3."
+    },
+    {
+      "key": "closure",
+      "p1": ["papers/part1/sections/closure1.tex"],
+      "p2": ["papers/part2/sections/closure2.tex"],
+      "p3": ["papers/part3/sections/closures3.tex"],
+      "status": "in_progress",
+      "notes": "DK/Wedin, No-Zeno, PR⇒ISS present; acceptance checks wired."
+    },
+    {
+      "key": "entropy",
+      "p1": ["papers/part1/sections/entropy1.tex"],
+      "p2": ["papers/part2/sections/entropy2.tex"],
+      "p3": ["papers/part3/sections/sense3.tex"],
+      "status": "todo",
+      "notes": "Ensure EF/KL usage and leakage clamp tie into entropy controls."
+    },
+    {
+      "key": "control",
+      "p1": ["papers/part1/sections/control1.tex"],
+      "p2": ["papers/part2/sections/ctrl2.tex"],
+      "p3": ["papers/part3/sections/ctrl3.tex"],
+      "status": "in_progress",
+      "notes": "CLF/CBF-QP, PR/GKYP, decision range consolidated in ctrl3."
+    },
+    {
+      "key": "kernels",
+      "p1": ["papers/part1/sections/kernels1.tex"],
+      "p2": ["papers/part2/sections/kernels2.tex"],
+      "p3": [],
+      "status": "todo",
+      "notes": "Incorporate kernelized diagnostics under sense3 if relevant."
+    },
+    {
+      "key": "adv_structures",
+      "p1": ["papers/part1/sections/adv-structures1.tex"],
+      "p2": ["papers/part2/sections/adv-structures2.tex"],
+      "p3": [],
+      "status": "todo",
+      "notes": "Plan where advanced structures appear in Part III narrative."
+    },
+    {
+      "key": "stats",
+      "p1": ["papers/part1/sections/stats1.tex"],
+      "p2": ["papers/part2/sections/stats2.tex"],
+      "p3": ["papers/part3/sections/sense3.tex"],
+      "status": "todo",
+      "notes": "Align statistical conventions; BY/FDR panels."
+    },
+    {
+      "key": "benchmarks",
+      "p1": ["papers/part1/sections/bench1.tex"],
+      "p2": ["papers/part2/sections/tables2.tex"],
+      "p3": ["papers/part3/sections/pcc-bench3.tex"],
+      "status": "in_progress",
+      "notes": "Tiered artifacts, KPI schema, automata, suite listed."
+    },
+    {
+      "key": "runbook",
+      "p1": [],
+      "p2": [],
+      "p3": ["papers/part3/sections/runbook3.tex"],
+      "status": "in_progress",
+      "notes": "Failure cookbook tables present; acceptance checks wired."
+    },
+    {
+      "key": "deploy",
+      "p1": [],
+      "p2": [],
+      "p3": ["papers/part3/sections/deploy3.tex"],
+      "status": "in_progress",
+      "notes": "Bring-up, self-scaling, budgets, proof prints."
+    },
+    {
+      "key": "governance",
+      "p1": [],
+      "p2": [],
+      "p3": ["papers/part3/sections/gov3.tex"],
+      "status": "in_progress",
+      "notes": "Lever ABI, dictionary, CPC."
+    },
+    {
+      "key": "related",
+      "p1": [],
+      "p2": [],
+      "p3": ["papers/part3/sections/related3.tex"],
+      "status": "in_progress",
+      "notes": "Axes & positioning."
+    },
+    {
+      "key": "conclusion",
+      "p1": ["papers/part1/sections/conclusion1.tex"],
+      "p2": ["papers/part2/sections/conclusion2.tex"],
+      "p3": ["papers/part3/sections/conclusion3.tex"],
+      "status": "in_progress",
+      "notes": "Guarantees, limits, audit surface consolidated in conclusion3."
+    },
+    {
+      "key": "appendix",
+      "p1": [],
+      "p2": [],
+      "p3": ["papers/part3/sections/appendix3.tex"],
+      "status": "in_progress",
+      "notes": "Rule-index, resolution tables, dependencies."
+    },
+    {
+      "key": "alignment",
+      "p1": ["papers/part1/sections/alignment1.tex"],
+      "p2": [],
+      "p3": [],
+      "status": "todo",
+      "notes": "Plan migration into Part III governance/related sections."
+    }
+  ]
+}
+

@@ -1,0 +1,71 @@
+% ==== Part III — Related Work and Positioning (v2) ==========================
+\section{Related Work and Positioning (v2)}\label{sec:related-v2}
+
+\paragraph{Aim.}
+Situate JSGIII’s \emph{proof-carrying governor} within adjacent literatures and make explicit where our guarantees strengthen, combine, or constrain prior art. The emphasis is on \emph{operational closures} and \emph{runtime auditability}, not on re-proving classical results. We use the EF tolerance $\varepsilon$ (for $r=\varepsilon/L_\psi$; Thm.~\ref{thm:FIMbound}) and the PR margin floor \constsymPRmargin\ (GKYP; Prop.~\ref{prop:gkyp-witness}) throughout to distinguish locality vs.\ stability margins.
+
+\subsection{Comparison axes}\label{subsec:rel-axes}
+\emph{\layertag{Rep}}
+We contrast methods along six axes that matter operationally:
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Certificate type.} Static (offline) vs.\ dynamic (windowed) and \emph{consumed} by run-time logic.
+\item \textbf{Identifiability discipline.} Discovery gates synchronized with EF neighborhoods (Thm.~\ref{thm:FIMbound}) and DRO duality (Prop.~\ref{prop:kkt}) vs.\ correlation-only triggers.
+\item \textbf{Non-smooth geometry.} Frontiers, saltation, and No-Zeno resource accounting (Lemmas~\ref{lem:nozeno-impl}, \ref{lem:cbf-salt}).
+\item \textbf{Control robustness.} Band-limited PR via GKYP under explicit uncertainty sets and switching stability (Prop.~\ref{prop:gkyp-witness}; Lemma~\ref{lem:switching}).
+\item \textbf{Formal monitors.} LTL $\to$ $\omega$-automata that ingest KPI \emph{row-hashes} (bit-match replay; \secref{subsec:automata}).
+\item \textbf{Provenance.} Deterministic replays: container SHA, seeds, solver tolerances, and Tier-1…4 chain (Def.~\ref{def:tierpacks}; \secref{subsec:schemas}).
+\end{enumerate}
+
+\subsection{Position relative to canonical tools}\label{subsec:rel-canon}
+\emph{\layertag{Rep/Inf/Ctrl}}
+
+\paragraph{(i) Passivity/ISS and GKYP/PR.}
+Classical passivity $\Rightarrow$ ISS is well known. JSGIII adopts it as the global scaffold (Prop.~\ref{prop:iss-spend}) and strengthens \emph{operationality} by: (a) certifying PR \emph{on a band} with explicit uncertainty sets (Prop.~\ref{prop:gkyp-witness}); (b) auto-shrinking $\Omega$ when margins crowd \constsymPRmargin\ (Prop.~\ref{prop:pr-consume}); and (c) printing the frontier spend term alongside the ISS budget each window (Prop.~\ref{prop:iss-spend}).
+
+\paragraph{(ii) CBF/CLF-QP on hybrid/non-smooth systems.}
+Barrier methods typically assume smooth flows. JSGIII elevates tube-level non-smoothness to \emph{first-class} status via a numeric saltation bound and a one-step residual audit (Lemma~\ref{lem:cbf-salt}) integrated with Frontier Freeze and Dwell Escalation (Rules~\ref{rule:frontier-freeze}, \ref{rule:grazing}). Rights-plane safety is then \emph{audited} by residual LB$\ge0$ and CVaR tails (Rule~\ref{rule:rights-cvar}).
+
+\paragraph{(iii) EF neighborhoods and KL–Fisher quadratic.}
+Local quadratic surrogates are routine in information geometry; JSGIII operationalizes them with a guard that is checked/logged every window: $r=\varepsilon/L_\psi$ and \texttt{kl\_quad\_bounds} (Thm.~\ref{thm:FIMbound}, Rule~\ref{rule:ef-clamp}). A three-state clamp (Green/Yellow/Red) then \emph{drives} $(r,\cutq)$ and promotion policy.
+
+\paragraph{(iv) DRO duality and envelope/sensitivity.}
+Danskin/envelope identities are standard dual tools; JSGIII \emph{consumes} them as a run-time precondition before SPRT/MTC logic (Prop.~\ref{prop:kkt}, Rule~\ref{rule:dvdrho}). Failure deterministically sets \texttt{quarantine\_bit} and freezes promotions (Def.~\ref{def:window-quarantine-impl}).
+
+\paragraph{(v) Sequential testing and FDR control.}
+SPRTs and BY-FDR are classical. JSGIII couples them to geometry and model health: the SPRT runs only if the DRO envelope passes and clamp=Green (Rule~\ref{rule:promotion}); realized-FDR feeds the clamp loop that shrinks $(r,\cutq)$ (Rule~\ref{rule:clamp-adapt}).
+
+\paragraph{(vi) Instruments/IV diagnostics.}
+Econometric IV practice motivates the IV-badge in our promotion gates: relevance ($F>10$), preregistered exclusion across contexts, and micro-ablation sign; badges are logged per CIS row (Rule~\ref{rule:promotion}, Prop.~\ref{prop:cis}).
+
+\paragraph{(vii) Subspace tracking, DK/Wedin drift, and holonomy.}
+Davis–Kahan/Wedin perturbation bounds are classical; JSGIII records \emph{angle/gap} tuples per crossing and budgets \emph{Harmonic Rotational Mass}, triggering $k$-escalation when degeneracy rises (Def.~\ref{def:hol-harm}, Lemma~\ref{lem:usc-planes}).
+
+\paragraph{(viii) Formal methods (LTL/$\omega$-automata).}
+Runtime assurance via temporal logic is well-studied. Our twist is to make automata consume KPI \emph{row-hashes} from Tier-2, producing bit-match accept/reject transcripts (\secref{subsec:automata}).
+
+\paragraph{(ix) Provenance, reproducibility, and evidence packs.}
+Determinism via container pins and seeds is common; JSGIII requires solver transcripts and enforces \emph{schema-complete} Tier-1 packs with CI failure on any missing field (Tab.~\ref{tab:tier1-schema}, \secref{subsec:schemas}).
+
+\subsection{What JSGIII contributes (conservatively)}\label{subsec:rel-contrib}
+\emph{\layertag{Rep}}
+\begin{itemize}[leftmargin=*]
+\item \textbf{Two foundational closures} that make frontier non-smoothness and plane drift operational at run time: priced Jacobi-defect with No-Zeno (Lemmas~\ref{lem:nozeno-impl}, \ref{lem:jacobi-upgraded}) and DK/Wedin-backed HarmMass (Lemma~\ref{lem:usc-planes}, Prop.~\ref{prop:hol-harm}).
+\item \textbf{Guard topology} tying EF/KL radius, DRO envelope, PR witnesses, and CBF saltation into a fixed order of consumption (Prop.~\ref{prop:guard-top}); Tier-1 prints a compact “proof print” id per window.
+\item \textbf{Promotion gates} that prioritize identifiability over correlation (Rule~\ref{rule:promotion}) and are \emph{audited} through CIS rows (Prop.~\ref{prop:cis}).
+\item \textbf{Proof-carrying artifacts} (Tier-1…4) with mandatory fields and automata that read hash-stamped KPI rows (\secref{subsec:schemas}, \secref{subsec:automata}).
+\end{itemize}
+
+\subsection{Scope limits and non-claims}\label{subsec:rel-nonclaims}
+\emph{\layertag{Rep}}
+JSGIII does \emph{not} claim global optimality of control policies, nor asymptotic discovery completeness. We restrict to: (i) \emph{windowed} EF neighborhoods with learned $\hat L_\psi$; (ii) \emph{band-limited} PR certificates on a registered uncertainty set; (iii) hybrid transitions that respect tube geometry and No-Zeno; and (iv) instruments vetted via a finite Context Registry. Out-of-scope: adversarial worst-case sensors, multi-agent game equilibria, or non-Filippov discontinuities without tubes.
+
+\subsection{Interoperability and migration}\label{subsec:rel-migrate}
+\emph{\layertag{Rep/Comp}}
+The governor can consume external modules if they produce (i) Tier-1 fields with \texttt{replay\_pack\_sha}, seeds, solver transcripts; (ii) PR witnesses as $(\Omega,\epsilon,P,Q)$; (iii) clamp/quarantine states; and (iv) KPI rows with stable hashing. Shadow $\rightarrow$ canary $\rightarrow$ blue/green promotion (Def.~\ref{def:rollout-modes}) is supported so long as Prop.~\ref{prop:guard-top} holds.
+
+\subsection{Traceability checklist (acceptance)}\label{subsec:rel-accept}
+\begin{acceptchecks}
+\item \textbf{Axis coverage:} for a given deployment, list the six axes in \secref{subsec:rel-axes} and point to the exact rule/lemma/prop that provides the corresponding certificate.
+\item \textbf{Guard order:} demonstrate a single window where EF guard ($r=\varepsilon/L_\psi$) $\rightarrow$ DRO envelope ($d\,\mathbb E[\varphi_\eta]/d\rho\approx\constref{etastar}$) $\rightarrow$ PR witness (GKYP) $\rightarrow$ CBF audit are consumed in order (Prop.~\ref{prop:guard-top}); include the window’s \emph{proof-print id}.
+\item \textbf{Artifact parity:} show that automata acceptance/rejection can be reproduced from KPI row-hashes without raw data access (\secref{subsec:automata}); Tier-2 parity MAPE $\le5\%$ and CVaR preserved.
+\end{acceptchecks}

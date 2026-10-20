@@ -1,0 +1,242 @@
+% ============================================================
+\section{State Spaces \& Hybrid Calculus: Implementation Notes}\label{sec:calc2}
+% ============================================================
+
+\noindent\textbf{State and dynamics.}
+The joint state is $x_t=(\gamma_t,g_t)\in X=\Gamma\times G$, where $\Gamma$ is a smooth manifold (decisions) and $G$ a Whitney-stratified pseudomanifold (structure).
+Dynamics are Filippov, $\dot x\in \mathcal F(x)$, defined stratum-wise and prolonged across frontiers.
+Frontier neighborhoods are equipped with tubes of radius $\constref{rtube}$; on entry, the Dirac projector $\Pi$ is frozen and a dwell $\ge \constref{taumin}$ is enforced.
+
+\begin{constbox}
+\textbf{System invariants (I$_1$--I$_5$).}
+\begin{itemize}[leftmargin=*]
+\item I$_1$ \emph{No-Zeno}: $N_{\mathrm{cross}}(t_1,t_2)\le (t_2-t_1)/\constref{taumin}$.
+\item I$_2$ \emph{Continuity/provenance}: hash-chained \emph{Provenance Ladder}.
+\item I$_3$ \emph{Capped hidden coupling}: $\mathrm{HSIC}_t(\Gamma,G)\le B_{\mathrm{HSIC}}$ (post-FDR).
+\item I$_4$ \emph{Bounded frontier defects}: $\displaystyle\sum_{\text{cross}\le T}\!\int_{\mathrm{cross}}\|\Delta_{\mathrm{fr}}\|\,dt \le C_{\mathrm{fr}}\,N_{\mathrm{cross}}(0,T)$.
+\item I$_5$ \emph{Rights-plane safety}: $x(t)\in \mathcal C=\{x:h_i(x)\ge 0~\forall i\}$, enforced via CBFs.
+\end{itemize}
+\end{constbox}
+
+% ------------------------------------------------------------
+\paragraph{Frontier calculus primitives.}
+Let $\Sigma$ be a smooth codimension-1 frontier between strata with unit normal $n(x)$ and curvature bounded by $\constref{kappamax}$.
+On a transverse crossing at $x^\times\in\Sigma$, with limiting vector fields $F^\pm(x^\times)$ and $\nu(x^\times):=n(x^\times)^\top F^-(x^\times)>0$, the saltation matrix is
+\[
+K(x^\times) \;=\; I \;+\; \frac{\big(F^+(x^\times)-F^-(x^\times)\big)\,n(x^\times)^\top}{n(x^\times)^\top F^-(x^\times)}.
+\]
+
+% ------------------------------------------------------------
+\begin{lemma}[No-Zeno (implementation guard)]\label{lem:nozeno-impl}
+\emph{\layertag{Rep/Alg/Stoch}}
+If (i) frontiers are crossed with principal-angle separation $\ge \constref{thetamin}$, (ii) $\mathcal F$ is one-sided Lipschitz with $\constref{LF}$ on strata, and (iii) a freeze-and-dwell policy enforces $\constref{taumin}$ inside frontier tubes of radius $\constref{rtube}$, then Zeno executions are excluded and
+$N_{\mathrm{cross}}(t_1,t_2)\le (t_2-t_1)/\constref{taumin}$.
+\begin{proofsketch}
+Transversality prevents grazing; one-sided Lipschitz bounds re-entry speed; freeze-and-dwell lower-bounds inter-event time by $\constref{taumin}$.
+\end{proofsketch}
+\uses{(C1) \constref{rtube}, \constref{thetamin}; (C3) \constref{LF}, \constref{taumin}.}
+\end{lemma}
+
+% ------------------------------------------------------------
+\begin{lemma}[Numeric saltation bound, CIs \& calibration witness]\label{lem:saltation-bound}
+\emph{\layertag{Alg/Ctrl}}
+For each tube $\mathcal T$ we fit a local chart (logged) with curvature $\kappa_{\max}^\mathcal T\!\le\!\constref{kappamax}$ and record the \emph{minimum normal velocity}
+\[
+\hat\nu_{\min}^\mathcal T:=\min_{\text{labeled crossings}}\, n^\top F^-\quad\text{with an MBB 95\% CI }[\underline\nu^\mathcal T,\overline\nu^\mathcal T],
+\]
+and an \emph{estimated normal-variation factor} $c_\Sigma^\mathcal T$ with CI $[\underline c_\Sigma^\mathcal T,\overline c_\Sigma^\mathcal T]$ from the fitted chart.\footnote{Moving-block bootstrap (MBB) uses block length $b$ and $B$ resamples; both are logged (Sec.~\ref{sec:stats2}).}
+Then the saltation gain obeys
+\[
+\|K-I\|\ \le\ \frac{\|F^+-F^-\|}{\nu}\,\bigl(1+c_\Sigma^\mathcal T\,\kappa_{\max}^\mathcal T\,\constref{rtube}\bigr)
+\quad\Rightarrow\quad
+\|K-I\|\ \le\ C_{\mathrm{salt}}^\mathcal T
+:= \frac{2(\constref{Smax}+\constref{Gmax})}{\hat\nu_{\min}^\mathcal T}
+\bigl(1+c_\Sigma^\mathcal T\,\kappa_{\max}^\mathcal T\,\constref{rtube}\bigr).
+\]
+\emph{Calibration replay:} using the stored $(F^\pm,n)$, recompute $K$ and assert
+\(
+\|K-I\|_{\text{obs}}\le \overline C_{\mathrm{salt}}^\mathcal T(1+0.1),
+\)
+where $\overline C_{\mathrm{salt}}^\mathcal T$ evaluates $C_{\mathrm{salt}}^\mathcal T$ at the conservative bounds $(\underline\nu^\mathcal T,\overline c_\Sigma^\mathcal T)$ and $\kappa_{\max}^\mathcal T$.
+Failures raise a Frontier Health alarm, insert a \emph{Frontier Spend Ledger} reject (below), and block conservative claims depending on Lem.~\ref{lem:saltation-bound}.
+\begin{proofsketch}
+As in the prior draft, with denominator control from transversality and numerator bounded by field contrast; chart-induced normal variation yields the $(1+c_\Sigma^\mathcal T\kappa_{\max}^\mathcal T \constref{rtube})$ factor. CIs are propagated by monotonicity.
+\end{proofsketch}
+\uses{(C1) \constref{kappamax}, \constref{thetamin}, \constref{rtube}; (C2) \constref{Smax}, \constref{Gmax}.}
+\end{lemma}
+
+% ------------------------------------------------------------
+\begin{lemma}[Grazing-risk detection \& dwell modulation]\label{lem:grazing}
+\emph{\layertag{Alg/Ctrl}}
+Let $\theta$ be the estimated approach angle w.r.t.\ $n$ on tube entry; define the angular margin statistic $m:=\sin\theta$ and the \emph{grazing probability}
+\[
+p_{\mathrm{graze}}:=\Pr\{\,m<\sin\anglesep\,\mid\,\text{window data}\,\} \;\;\; (\text{HAC CI}).
+\]
+If $p_{\mathrm{graze}}\!>\!p_{\mathrm{thresh}}$ (pre-registered), \emph{increase} $\constref{taumin}\leftarrow(1+\gamma_{\mathrm{dwell}})\constref{taumin}$ for the next $\ell$ crossings in $\mathcal T$ and log the event.
+\begin{proofsketch}
+Near-tangency ($m\!\downarrow\!0$) increases replay variance of $K$; added dwell enforces separation and improves the denominator margin $n^\top F^-$.
+\end{proofsketch}
+\uses{(C1) \constref{thetamin}, \constref{rtube}.}
+\end{lemma}
+
+% ------------------------------------------------------------
+\begin{theorem}[ISS with frontier spending (operational form)]\label{thm:ISS2}
+\emph{\layertag{Ctrl}}
+Under I$_1$--I$_5$ and Lem.~\ref{lem:saltation-bound}, the closed loop is ISS with respect to frontier defects:
+\[
+V(t)\le \beta\!\left(V(0),t\right)\;+\;\gamma\!\left(\sum_{k\le t/\constref{taumin}}\int_{\mathrm{cross}_k}\!\!\|\Delta_{\mathrm{fr}}\|\,dt\right),
+\]
+and the Decision-Range Conservativity bound holds with an \emph{explicit} function $f$ (Def.~\ref{def:range-f}) and a \emph{logged residual} $\mathsf{Res}_t:=\big(R_t-R_t'\big)-f(\cdot)\le 0$ (CI).
+\begin{proofsketch}
+Between crossings use standard CLF/CBF decay; at crossings charge the $V$-jump by Lem.~\ref{lem:saltation-bound}; aggregate using I$_1$.
+\end{proofsketch}
+\uses{(C3) \constref{taumin}; I$_4$; Lem.~\ref{lem:saltation-bound}.}
+\end{theorem}
+
+% ------------------------------------------------------------
+\begin{definition}[Explicit conservativity function]\label{def:range-f}
+\emph{\layertag{Ctrl}}
+Let $U_t$ be the admissible set (PR margin $\ge\constref{epsilon}$, CBFs, actuator/venue limits).
+We report $R_t=\mathrm{vol}_r(U_t)$ or an ellipsoidal proxy from the top $r$ singular radii of $J_{\mathrm{eff}}=\Pi J$.
+Define
+\[
+f\!\left(C_{\mathrm{fr}},\constref{taumin},d(x,\partial\mathcal C)\right)
+:=\underbrace{C_{R,\mathrm{fr}}\,C_{\mathrm{fr}}}_{\text{frontier spend}} \;+
+\underbrace{C_{R,\mathrm{cbf}}\;\frac{h(x)}{\|L_g h(x)\|+\delta}}_{\text{safety tightening}},
+\]
+with $h$ the active CBF (or min over $i$), $\delta>0$ a small guard, and \emph{logged} constants $C_{R,\mathrm{fr}}$, $C_{R,\mathrm{cbf}}$ derived from the CLF/CBF Lipschitz data and the nominal $U_t$ geometry.
+\end{definition}
+
+% ------------------------------------------------------------
+\begin{lemma}[Frontier-aware CBF forward invariance with one-sided CI audit]\label{lem:cbf-frontier}
+\emph{\layertag{Ctrl}}
+Suppose each $h_i$ is $C^1$ on strata with relative degree one and Lipschitz gradient on tubes.
+If (i) $\Pi$ is frozen inside frontier tubes, (ii) the CBF constraint
+$L_f h_i(x)+L_g h_i(x)u \ge -\alpha\,h_i(x)$ is enforced off-tube, and
+(iii) on tubes we enforce the relaxed guard
+$h_i^+\ge h_i^- - \sigma_i$ with $\sigma_i:=L_{h_i}\,C_{\mathrm{salt}}^\mathcal T\,\|\delta x\|$
+(from Lem.~\ref{lem:saltation-bound}),
+then $\mathcal C=\{x:h_i(x)\ge 0,\ \forall i\}$ is forward invariant.
+\emph{Audit (per crossing):} compute the residual
+\(
+R_i:=h_i^+ - h_i^- + \sigma_i
+\)
+and its one-sided (lower) 95\% CI via MBB; if $\underline R_i<0$ for any active $i$, raise a \emph{hard} tube failure and emit a rejecting \textsf{CBF-Residual} automaton run with evidence (resamples, block length, seeds).
+\begin{proofsketch}
+Standard CBF invariance off-frontier; across frontiers, saltation caps the drop in $h_i$, which the relaxation absorbs. One-sided CI provides statistical margin against measurement noise.
+\end{proofsketch}
+\uses{(C1) \constref{rtube}; Lem.~\ref{lem:saltation-bound}.}
+\end{lemma}
+
+% ------------------------------------------------------------
+\begin{proposition}[Holonomy budget for control planes]\label{prop:holonomy}
+\emph{\layertag{Alg/Ctrl}}
+Let $J_{\mathrm{eff}}$ be the effective Jacobian after projection by $\Pi$ and $\mathcal U_k$ the selected $k$-plane.
+If $\Delta J$ is the change across a tube and $\delta_{\mathrm{gap}}$ the spectral gap, then
+\[
+\angle(\mathcal U_k^+,\mathcal U_k^-)
+\;\le\; c_{\mathrm{DK}}\frac{\|\Delta J\|}{\delta_{\mathrm{gap}}}
+\;\le\; c_{\mathrm{DK}}\frac{C_J\,C_{\mathrm{salt}}^\mathcal T}{\delta_{\mathrm{gap}}},
+\]
+and the accumulated holonomy satisfies
+\(
+\mathrm{Hol}(0,T)\le \bar c\, C_{\mathrm{salt}}^\mathcal T\,N_{\mathrm{cross}}(0,T).
+\)
+We report both $\mathrm{Hol}$ and $\mathrm{Hol}/N_{\mathrm{cross}}$ with bootstrap CIs as KPIs.
+\uses{(C1) \constref{kappamax}, \constref{rtube}; Lem.~\ref{lem:saltation-bound}.}
+\end{proposition}
+
+% ------------------------------------------------------------
+\begin{theorem}[Switching stability for mixed-plane control]\label{thm:switching}
+\emph{\layertag{Ctrl}}
+When degeneracy triggers mixed-plane control (convex mixture of QPs), stability is certified by either:
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item a \emph{common quadratic Lyapunov function (CQLF)} $V=x^\top P x$ with $P\succ0$ satisfying $A_i^\top P+P A_i\prec 0$ for all linearized modes $i$ (witness: LMI feasibility and $P$ hash), or
+\item a \emph{minimum dwell} policy: enforce inter-switch dwell $\tau_{\mathrm{sw}}\ge \tau_{\min}^{\mathrm{sw}}$ (logged) that guarantees decay under the measured switch schedule.\footnote{Infeasible CQLF $\Rightarrow$ engage dwell; both are logged as “switching stability witnesses.”}
+\end{enumerate}
+Any non-frontier switch must respect the recorded $\tau_{\min}^{\mathrm{sw}}$ to comply with I$_1$.
+\end{theorem}
+
+% ------------------------------------------------------------
+\subsection*{Frontier Spend Ledger (per-crossing accounting)}\label{subsec:frontier-ledger}
+\noindent
+Each labeled crossing inserts a row into a \emph{Frontier Spend Ledger} used for I$_4$ accounting and ISS charging:
+\begin{center}
+\renewcommand{\arraystretch}{1.06}
+\begin{tabularx}{\textwidth}{@{} l l X @{}}
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Note} \\
+\midrule
+crossing\_id & hash & unique crossing identifier \\
+tube\_id & string & frontier tube label \\
+timestamp & ISO-8601 & wall-clock time \\
+$K$-obs-norm & float & $\|K{-}I\|_{\text{obs}}$ \\
+$C_{\mathrm{salt}}$-pt / UCI & floats & point / upper-CI eval $(\underline\nu,\overline c_\Sigma)$ \\
+$\hat\nu_{\min}$-CI & pair & $[\underline\nu,\overline\nu]$ (MBB) \\
+$c_\Sigma$-CI & pair & $[\underline c_\Sigma,\overline c_\Sigma]$ (MBB) \\
+$\kappa_{\max},\constref{rtube}$ & floats & chart curvature bound, tube radius \\
+spend\_charged & float & contribution to $C_{\mathrm{fr}}$ (ISS charge) \\
+pass\_fail & bool & $\|K{-}I\|\le \overline C_{\mathrm{salt}}(1{+}0.1)$ \\
+mbb\_params & struct & $\{b,B,\text{seed}\}$ for reproducibility \\
+\bottomrule
+\end{tabularx}
+\end{center}
+The ledger feeds the Frontier Health KPI and the ISS budget in Thm.~\ref{thm:ISS2}.
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# Frontier geometry + saltation (with CIs)
+def fit_frontier_chart(traj, tube_id): ...
+def estimate_nu_min_ci(crossings, block_len, B, seed): ...
+def estimate_csigma_ci(points, block_len, B, seed): ...
+def saltation_matrix(F_plus, F_minus, n): ...
+def saltation_constant_ci(Smax, Gmax, nu_ci, kappa_max, r_tube, c_sigma_ci): ...
+def replay_saltation(F_plus, F_minus, n, Csalt_upper, slack=0.10): ...
+
+# Grazing risk + dwell
+def grazing_probability(angles, theta_sep, hac=True): ...
+def modulate_dwell(tau_min, p_graze, p_thresh, gamma, horizon): ...
+
+# Conservativity f(.) + residual
+def conservativity_constants(clf_cbf_lipschitz, U_geom): ...
+def range_conservativity_loss(C_fr, tau_min, h, Lg_h, C_R_fr, C_R_cbf, delta=1e-6): ...
+def conservativity_residual(R, R_prime, loss): ...
+
+# Rights-plane residual CI (one-sided)
+def cbf_crossing_residual_CI(h_minus, h_plus, sigma, block_len, B, side="lower"): ...
+
+# Plane drift / holonomy
+def plane_principal_angle(Uk_prev, Uk_next): ...
+def holonomy_budget(angles): ...
+
+# Switching stability
+def cqlf_lmi(modes_linearized): ...        # returns (feasible, P)
+def enforce_switch_dwell(schedule, tau_min_sw): ...
+
+# Ledger helpers
+def ledger_append(row): ...
+def ledger_charge_spend(C_salt_u, K_norm_obs): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Transversality witness:} estimated $\hat\nu_{\min}^\mathcal T>0$ with 95\% CI and $\ge \|F^-\|\sin\constref{thetamin}$ on labeled crossings (CI logged).
+\item \emph{Numeric saltation:} \underline{published} $C_{\mathrm{salt}}^\mathcal T$ with CI constituents $(\hat\nu_{\min}\text{-CI},c_\Sigma\text{-CI})$ and chart constants $(\kappa_{\max}^\mathcal T,\constref{rtube})$; replay asserts $\|K-I\|_{\text{obs}}\le \overline C_{\mathrm{salt}}^\mathcal T(1+0.1)$; a ledger row is recorded per crossing.
+\item \emph{Grazing/dwell:} $p_{\mathrm{graze}}$ with HAC CI; if $>p_{\mathrm{thresh}}$ then $\constref{taumin}$ increased and logged for the horizon; Frontier Health KPI updated.
+\item \emph{ISS spending:} computed $C_{\mathrm{fr}}$ inserted into Thm.~\ref{thm:ISS2}; ledger \texttt{spend\_charged} nonnegative and sums to the reported spend; residual $\le 0$ on replay traces.
+\item \emph{Conservativity audit:} $f(\cdot)$ constants $(C_{R,\mathrm{fr}},C_{R,\mathrm{cbf}})$ exported; residual $\mathsf{Res}_t\le 0$ (CI). Any violation emits a rejecting \textsf{Conservativity} run with row-hash links.
+\item \emph{CBF invariance \& residual CI:} no violations of $h_i\ge 0$; across tubes, lower one-sided CI $\underline R_i\ge 0$ for all active $i$; if $\underline R_i<0$, log \textsf{CBF-Residual} reject (artifacted) and mark tube failure.
+\item \emph{Holonomy KPI:} $\mathrm{Hol}(0,T)$ and $\mathrm{Hol}/N_{\mathrm{cross}}$ trend non-increasing under stationary tasks or escalated $k$ when the gap CI contains $0$ (link to Sec.~\ref{sec:kernels2}).
+\item \emph{Switching stability:} either CQLF feasible ($P$ hash logged) or non-frontier switches respect $\tau_{\min}^{\mathrm{sw}}$; any chatter (violated dwell) is a hard failure.
+\end{itemize}
+\end{mdframed}
+
+\subsection*{KL--Fisher neighborhood guard (pointer)}
+Any theorem in this section that invokes quadratic EF proxies \emph{must} log a passing call to \texttt{kl\_quad\_bounds} (Sec.~\ref{sec:entropy2}); failures trigger a downgrade to non-parametric alarms for that window.
+
+\subsection*{Telemetry hooks}
+We log per tube: $(\hat\nu_{\min}^\mathcal T,\text{CI}),(\,c_\Sigma^\mathcal T,\text{CI}),\kappa_{\max}^\mathcal T,\constref{rtube},\overline C_{\mathrm{salt}}^\mathcal T)$ with provenance; each crossing stores $(F^\pm,n,K)$ for replay; a \emph{Frontier Spend Ledger} row (Sec.~\ref{subsec:frontier-ledger}); grazing metrics $(p_{\mathrm{graze}},\anglesep)$; conservativity constants $(C_{R,\mathrm{fr}},C_{R,\mathrm{cbf}})$; residual-CI evidence per active CBF; and switching certificates (CQLF $P$ hash or $\tau_{\min}^{\mathrm{sw}}$).
+

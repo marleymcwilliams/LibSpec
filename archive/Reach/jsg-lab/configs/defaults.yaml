@@ -1,0 +1,10 @@
+# hydra defaults stack
+defaults:
+  - data: data
+  - control: control
+  - dro: dro
+  - calculus: calculus
+  - logging: logging
+  - cluster_slurm: cluster_slurm
+  - _self_
+

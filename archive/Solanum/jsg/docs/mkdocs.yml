@@ -1,0 +1,16 @@
+site_name: JSG Docs
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Geometry: geometry.md
+  - Sensing: sensing.md
+  - DRO: dro.md
+  - Control: control.md
+  - Reporting: reporting.md
+  - Audit Guide: audit-guide.md
+  - Evidence Cookbook: evidence-cookbook.md
+  - Merging Plan: merging.md
+  - Merge Status: merge-status.md
+docs_dir: .
+site_dir: ../site

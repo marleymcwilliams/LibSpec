@@ -1,0 +1,130 @@
+% ============================================================
+\section{Algebraic/Categorical Layer: Quasi-Shuffle \& Lipschitz}\label{sec:adv-structures2}
+% ============================================================
+
+\noindent\textbf{Alphabet, words, whitening (radius-gated).}
+Let $\mathfrak A=\mathfrak A_\Gamma \sqcup \mathfrak A_G$ be whitened letters (windowed dictionary $\mathcal T_K$, versioned).
+A word $w=a_1\cdots a_m$ has degree $|w|=m$ and type $(p,q)$ if it contains $p$ letters from $\mathfrak A_\Gamma$ and $q$ from $\mathfrak A_G$.
+Within the EF ball (Sec.~\ref{sec:entropy2}) we work in coordinates whitened by $W_t$ so that the Fisher inner product is
+$\langle u,v\rangle_{\FIM^{-1}}=u^\top v$ for letters; we drop the subscript when unambiguous.
+Every use of EF quadratics in this section requires a passing guard \texttt{kl\_quad\_bounds} (Sec.~\ref{sec:entropy2}).
+
+% ------------------------------------------------------------
+\subsection*{Merge Registry (declared, hashed, replayable)}
+We restrict quasi-shuffle \emph{merges} to admissible pairs recorded in a versioned \textsf{MergeRegistry.json}:
+\[
+(a u)\uplus(b v)=a(u\uplus b v) + b(a u\uplus v) + (a\ast b)(u\uplus v),\qquad 1\uplus w=w\uplus 1=w,
+\]
+where $(a\ast b)\in\mathfrak A$ is allowed iff $(a,b)\in\mathcal M_{\mathrm{adm}}$ (from the registry).
+The registry file’s schema (fields: \texttt{letters}, \texttt{pairs}, \texttt{time}, \texttt{hash}) and its content hash are pinned in the Provenance Ladder; promotions depending on a merge not in $\mathcal M_{\mathrm{adm}}$ are \emph{blocked}.
+
+\paragraph{Stratified/clamp-aware gating.}
+Cross-frontier merges are disabled inside frontier tubes (respecting $\Pi$-freeze, Sec.~\ref{sec:calc2}) and \emph{all} cross-channel merges are disabled in \textsc{Red} clamp (Sec.~\ref{sec:entropy2}); events are logged with window id and registry hash.
+
+% ------------------------------------------------------------
+\subsection*{Radius-gated orthonormality and associator budget}
+\begin{lemma}[Local orthonormality of letters]\label{lem:ortho}
+\emph{\layertag{Alg/Inf}}
+On the EF ball $r=\varepsilon/\constref{Lpsi}$, whitened letters obey
+\(
+|\langle a,b\rangle - \delta_{ab}|\le c_0\,\varepsilon,
+\)
+with $c_0=O(1)$ determined by dictionary smoothness. Hence multilinear operators built from letters have norms $1+O(\varepsilon)$.
+\uses{Sec.~\ref{sec:entropy2}.}
+\end{lemma}
+
+\begin{theorem}[Associativity up to $O(\varepsilon)$]\label{thm:qshuffle-assoc}
+\emph{\layertag{Alg}}
+With merges restricted to $\mathcal M_{\mathrm{adm}}$ (degree $K\le 3$),
+\[
+\big\|(u\uplus v)\uplus w - u\uplus (v\uplus w)\big\|
+\ \le\ c_{\mathrm{assoc}}\,\varepsilon\,\|u\|\,\|v\|\,\|w\|
+\]
+for all words $u,v,w$ of total degree $\le K$, with $c_{\mathrm{assoc}}=O(1)$ depending only on the registry.
+\begin{proofsketch}
+Exact orthonormal letters give zero associator; Lem.~\ref{lem:ortho} yields $O(\varepsilon)$ deviation; truncation $K\le 3$ bounds remainders.
+\end{proofsketch}
+\end{theorem}
+
+\paragraph{Associator budget KPI.}
+Define $\mathrm{Assoc}_t:=\max_{\deg\le3}\|(u\uplus v)\uplus w-u\uplus(v\uplus w)\|$ on a seeded random test basis.
+We report $\mathrm{Assoc}_t \le c_{\mathrm{assoc}}\widehat\varepsilon_t$ with $\widehat\varepsilon_t:=\|\bm\kappa_t\|_{\FIM_t^{-1}}/\widehat{\constref{Lpsi}}$; violations raise an alarm and block cross-channel promotions for that window.
+
+% ------------------------------------------------------------
+\subsection*{Non-expansiveness and factorization stability}
+\begin{proposition}[Non-expansiveness of the cumulant map]\label{prop:nonexp}
+\emph{\layertag{Alg/Inf}}
+Let $\mathcal C$ map moment series (truncated at $K\!\le\!3$) to cumulants arranged by words.
+For window laws within the EF ball,
+\[
+\|\mathcal C(M_1)-\mathcal C(M_2)\| \ \le\ (1+c_{\mathrm{ne}}\varepsilon)\ \|M_1-M_2\|.
+\]
+\end{proposition}
+
+\begin{corollary}[Finite-$K$ factorization stability]\label{cor:fact-stab}
+\emph{\layertag{Alg/Stoch}}
+If $M_0$ factorizes to order $K$ and $\|M-M_0\|\le\delta$ on the EF ball, then
+\(
+\|\bm\kappa_{\mathrm{mixed}}(M)\|\le (1+c_{\mathrm{ne}}\varepsilon)\,\delta.
+\)
+Hence the radius-gated factorization test (Prop.~\ref{prop:factK-ops}) is $\varepsilon$-stable.
+\end{corollary}
+
+% ------------------------------------------------------------
+\subsection*{Operational gates (tubes, clamp, registry)}
+\begin{definition}[Deterministic gate policy]\label{def:gates}
+\emph{\layertag{Rep/Alg}}
+Let $\mathrm{in\_tube}$ be the frontier-tube flag and $\mathrm{clamp}\in\{\textsc{Green},\textsc{Yellow},\textsc{Red}\}$.
+\begin{enumerate}[leftmargin=*]
+\item If $\mathrm{in\_tube}=\textsf{true}$: disable merges spanning $\Gamma$–$G$; freeze $\Pi$ (Sec.~\ref{sec:calc2}).
+\item If $\mathrm{clamp}=\textsc{Red}$: disable \emph{all} cross-channel merges; only nonparametric alarms (HSIC, CVaR) may influence control.
+\item Always: reject any $(a,b)$ not in $\mathcal M_{\mathrm{adm}}$; log the violation attempt with registry hash.
+\end{enumerate}
+\end{definition}
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# Registry + structures
+def load_merge_registry(path): ...
+def validate_registry_schema(reg): ...
+def build_quasi_shuffle(alphabet, registry):
+    """Return structure constants and the merge map a*b with hash."""
+
+# Residuals and non-expansiveness
+def associator_residual(u, v, w, structures):
+    """||(u ⊎ v) ⊎ w - u ⊎ (v ⊎ w)|| in FIM^{-1} norm."""
+def assoc_budget_check(structures, rand_seed, eps_hat, c_assoc): ...
+def moments_to_cumulants(moments, degree=3, whitening=True): ...
+def nonexpansiveness_check(M1, M2, eps_hat): ...
+
+# Stratified/clamp gates
+def enable_merges(is_in_tube, clamp_state, pair, registry): ...
+def gate_event_log(event, context): ...
+
+# Audits
+def hash_structures(structures): ...
+def replay_associator(test_basis, structures, seed): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Radius guard:} any EF-quadratic claim cites \texttt{kl\_quad\_bounds}=\textsf{pass}; else downgrade to nonparametric alarms.
+\item \emph{Registry present \& valid:} \textsf{MergeRegistry.json} schema validated; content hash recorded; any merge $(a,b)\notin\mathcal M_{\mathrm{adm}}$ blocks promotion and is logged.
+\item \emph{Associator budget:} replayed residual on degree-$\le3$ test basis satisfies
+$\mathrm{Assoc}_t \le c_{\mathrm{assoc}}\,\widehat\varepsilon_t$ (seed and structures hash logged).
+\item \emph{Non-expansiveness:} on adjacent windows $(M_{t-\constref{\tau}},M_t)$,
+$\|\mathcal C(M_t)-\mathcal C(M_{t-\constref{\tau}})\|\le (1+c_{\mathrm{ne}}\widehat\varepsilon_t)\|M_t-M_{t-\constref{\tau}}\|$ within CI.
+\item \emph{Stratified/clamp gating:} inside tubes, cross $\Gamma$–$G$ merges disabled; in \textsc{Red}, all cross-channel merges disabled; gate events appear in the Ladder.
+\item \emph{Reproducibility:} structure-constants hash and the seeded associator test replay bit-for-bit; mismatch is a hard failure.
+\end{itemize}
+\end{mdframed}
+
+% ------------------------------------------------------------
+\subsection*{Integration}
+\noindent
+(i) \textbf{Sensing (\S\ref{sec:stoch2}):} finite-$K$ factorization tests inherit the associator budget and radius guard; \emph{K-escalation} (Sec.~\ref{sec:stoch2}) updates $\mathcal T_K$ and the registry hash.\\
+(ii) \textbf{Frontiers (\S\ref{sec:calc2}):} tube gating aligns algebra with saltation spending and $\Pi$-freeze; no spurious mixed cumulants are introduced during crossings.\\
+(iii) \textbf{Control (\S\ref{sec:ctrl2}):} disabling cross-merges in \textsc{Red} ensures controllers are tuned by HSIC/CVaR evidence only; all algebraic witnesses remain replayable from artifacts.

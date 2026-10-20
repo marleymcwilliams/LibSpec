@@ -1,0 +1,11 @@
+{
+  "contexts": [
+    {
+      "id": "calc2",
+      "claim": "C-1",
+      "section": "sec:calc2",
+      "artifacts": ["frontier-ledger", "pr-witness"],
+      "hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    }
+  ]
+}

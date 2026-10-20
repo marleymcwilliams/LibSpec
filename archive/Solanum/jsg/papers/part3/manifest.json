@@ -1,0 +1,35 @@
+{
+  "roman": "III",
+  "title": "Joint Strategic Geometry III",
+  "author": "JSG Authors",
+  "wrappers": {
+    "A": {"title_suffix": "(A)", "include": [
+      "intro3",
+      "ops3",
+      "closures3",
+      "sense3",
+      "ctrl3",
+      "pcc-bench3",
+      "runbook3",
+      "deploy3",
+      "gov3",
+      "related3",
+      "conclusion3",
+      "appendix3"
+    ]},
+    "B": {"title_suffix": "(B)", "include": [
+      "intro3",
+      "ops3",
+      "closures3",
+      "sense3",
+      "ctrl3",
+      "pcc-bench3",
+      "runbook3",
+      "deploy3",
+      "gov3",
+      "related3",
+      "conclusion3",
+      "appendix3"
+    ]}
+  }
+}

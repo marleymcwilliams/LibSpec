@@ -1,0 +1,38 @@
+\documentclass[10pt]{article}
+\usepackage[margin=1in]{geometry}
+\input{../common/jsg_common.tex}
+\input{../common/macros.tex}
+\input{../common/xref.tex}
+\addbibresource{../common/refs.bib}
+
+\title{Joint Strategic Geometry on Decision and Objective Spaces}
+\author{JSG Authors}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+% Shared tenets and registries (un-numbered)
+\input{../common/tenets.tex}
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+\bigskip
+
+% Modular sections (split from the monolith)
+\input{sections/intro1.tex}
+\input{sections/calc1.tex}
+\input{sections/stoch1.tex}
+\input{sections/closure1.tex}
+\input{sections/entropy1.tex}
+\input{sections/control1.tex}
+\input{sections/kernels1.tex}
+\input{sections/adv-structures1.tex}
+\input{sections/stats1.tex}
+\input{sections/bench1.tex}
+\input{sections/conclusion1.tex}
+\input{sections/alignment1.tex}
+
+\nocite{*}
+\printbibliography
+\end{document}

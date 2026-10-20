@@ -1,0 +1,36 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\input{../common/jsg_common.tex}
+\input{../common/macros.tex}
+\input{../common/xref.tex}
+\addbibresource{../common/refs.bib}
+
+\title{JSG Part II (A)}
+\author{JSG Authors}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+% Wrapper identifier for conditional text in modules
+\newcommand{\JSGWrap}{A}
+
+% Shared tenets and registries (un-numbered)
+\input{../common/tenets.tex}
+
+% Sections (generated from manifest)
+\input{sections/intro2.tex}
+\input{sections/calc2.tex}
+\input{sections/stoch2.tex}
+\input{sections/closure2.tex}
+\input{sections/entropy2.tex}
+\input{sections/ctrl2.tex}
+\input{sections/kernels2.tex}
+\input{sections/adv-structures2.tex}
+\input{sections/stats2.tex}
+\input{sections/conclusion2.tex}
+\input{sections/tables2.tex}
+
+\nocite{*}
+\printbibliography
+\end{document}

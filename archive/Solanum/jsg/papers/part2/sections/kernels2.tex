@@ -1,0 +1,168 @@
+% ============================================================
+\section{Computable Kernels: Plane Selection \& Structural Derivatives}\label{sec:kernels2}
+% ============================================================
+
+\noindent\textbf{Effective map and whitening (radius-gated).}
+Let $J_{\mathrm{eff}}:=\Pi J_t$ denote the projected (Dirac) Jacobian; whiten by the window Fisher factor $W_t$ so that
+\[
+\widetilde J_t := W_t\,J_{\mathrm{eff}}, \qquad \FIM_t=W_t^\top W_t,
+\]
+and require a passing guard \texttt{kl\_quad\_bounds} (Sec.~\ref{sec:entropy2}) whenever EF quadratics are invoked.
+
+% ------------------------------------------------------------
+\subsection*{Range proxy and confidence}
+Compute $\widetilde J_t=U\Sigma V^\top$ with singular values $\sigma_1\ge\cdots\ge\sigma_m$.
+For rank $r$, define the decision-range proxy (ellipsoidal volume up to a constant)
+\[
+\widehat R_t \ :=\ \prod_{i=1}^r \sigma_i,
+\qquad
+\log \widehat R_t \ =\ \sum_{i=1}^r \log \sigma_i,
+\]
+and report bootstrap CIs via a moving-block bootstrap (MBB) matched to the window (Sec.~\ref{sec:stats2}).
+
+% ------------------------------------------------------------
+\subsection*{Constrained SVD (masks, groups, reproducible)}
+Venue/structure constraints are encoded by a binary mask $M\in\{0,1\}^{m\times m}$ (1=allowed) and optional group weights $\{\omega_g\}$.
+
+\begin{definition}[Constrained SVD]\label{def:csvd}
+\emph{\layertag{Alg/Ctrl}}
+Given $k\!\le\!r$, solve
+\[
+\max_{V\in\mathbb R^{m\times k}}~ \|\widetilde J_t V\|_F^2
+\quad
+\text{s.t. } V^\top V=I_k,\ \ V\odot(1{-}M)=0,\ \ \sum_g \omega_g\|V_g\|_F \le B,
+\]
+and set the selected control plane $\mathcal U_k:=\mathrm{span}(U_{[:,1:k]})$.
+We pin a PRNG seed and power iterations $\le 3$; all randomization and tolerances are logged (replayable).
+\end{definition}
+
+% ------------------------------------------------------------
+\subsection*{Degeneracy detection, gap-gated updates, and escalation}
+Let the spectral gap at rank $k$ be $\Delta\sigma:=\sigma_k-\sigma_{k+1}$.
+We compute a BY-controlled (level $\cutq$) MBB CI for $\Delta\sigma$.
+
+\begin{lemma}[Gap-calibrated update gate \& degeneracy policy]\label{lem:deg}
+\emph{\layertag{Alg/Ctrl}}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item \textbf{Gap CI gate.} If the MBB CI for $\Delta\sigma$ contains $0$, \emph{block} basis updates to $\mathcal U_k$ for this window and log the CI (hash). A blocked update must be accompanied by one of:
+\begin{itemize}[leftmargin=10pt]
+\item \emph{$k$-escalation:} set $k\leftarrow k{+}1$ and recompute $\mathcal U_k$, or
+\item \emph{mixed-plane control:} activate the mixture with a switching-stability witness (Thm.~\ref{thm:switch-stab}).
+\end{itemize}
+\item \textbf{Holonomy throttle.} While updates are blocked, throttle non-frontier switching to respect the holonomy budget (Prop.~\ref{prop:holonomy}).
+\item \textbf{Audit trail.} The Provenance Ladder records: CI endpoints, action taken (escalate/mix), and the resulting $k$ or switching certificate id.
+\end{enumerate}
+\end{lemma}
+
+% ------------------------------------------------------------
+\subsection*{Drift, holonomy, and calibration}
+Across a frontier tube, let the whitened Jacobian jump be $\Delta \widetilde J:=\widetilde J^{+}-\widetilde J^{-}$ and the local gap $\delta_{\mathrm{gap}}$ at rank $k$.
+Davis–Kahan/Wedin yields
+\[
+\angle\!\big(\mathcal U_k^+,\mathcal U_k^-\big)
+\ \le\
+c_{\mathrm{DK}}\frac{\|\Delta \widetilde J\|_2}{\delta_{\mathrm{gap}}},
+\qquad c_{\mathrm{DK}}=O(1).
+\]
+Summing principal-angle increments over crossings defines the \emph{holonomy} $\mathrm{Hol}(0,T)$ and the KPI $\mathrm{Hol}/N_{\mathrm{cross}}$ (Sec.~\ref{sec:stats2}).
+
+\begin{proposition}[Tube-level calibration (replayable)]\label{prop:dk-cal}
+\emph{\layertag{Alg}}
+For each labeled crossing we log $\big(\widetilde J^{-},\widetilde J^{+},\delta_{\mathrm{gap}},\angle(\mathcal U_k^+,\mathcal U_k^-)\big)$.
+Acceptance requires
+\[
+\angle(\mathcal U_k^+,\mathcal U_k^-)\ \le\ (1+\eta_{\mathrm{cal}})\ c_{\mathrm{DK}}\frac{\|\Delta \widetilde J\|_2}{\delta_{\mathrm{gap}}},\quad \eta_{\mathrm{cal}}=0.1,
+\]
+else raise a \emph{DK-bound violation} alarm (artifacted). Holonomy accumulation and the normalized KPI are exported with bootstrap CIs.
+\end{proposition}
+
+% ------------------------------------------------------------
+\subsection*{Harmonic/rotational mass KPI (small-gap sensitive)}
+To surface small-gap fragility we define a harmonic penalty that upweights rotations occurring where the gap is tight.
+Let $\vartheta_j$ be the $j$th principal-angle increment and $\delta_{\mathrm{gap},j}$ the contemporaneous gap; with a floor $\underline\delta>0$,
+\[
+\mathrm{RotMass}(0,T):=\sum_{j}\vartheta_j,
+\qquad
+\mathrm{HarmMass}(0,T):=\sum_{j}\frac{\vartheta_j}{\max(\delta_{\mathrm{gap},j},\underline\delta)}.
+\]
+We report both as KPIs with CIs; rising \emph{HarmMass} with flat $N_{\mathrm{cross}}$ triggers $k$-escalation or mixed-plane control (logged).
+
+% ------------------------------------------------------------
+\subsection*{Finite-difference structural derivatives (auto $h^\ast$)}
+We estimate structural derivatives of $J_{\mathrm{eff}}$ and singular data using central differences with an adaptive step.
+
+\begin{definition}[Automatic step policy]\label{def:hstar}
+\emph{\layertag{Comp}}
+With a Lipschitz estimate $L_f$ (flow map) and HAC noise variance $\hat\sigma^2$, pick
+\[
+h^\ast \ =\ \arg\min_{h\in[h_{\min},h_{\max}]}\ \underbrace{c_1 L_f h}_{\text{truncation}} + \underbrace{c_2\, \hat\sigma\, h^{-1}/\sqrt{N}}_{\text{noise}}
+\ \approx\
+\sqrt{\frac{c_2\hat\sigma}{c_1 L_f \sqrt{N}}}.
+\]
+We log $(h^\ast,L_f,\hat\sigma,N)$ and the AD/FD cross-check RMS for diagnostics.
+\end{definition}
+
+\begin{proposition}[Stable singular and plane derivatives]\label{prop:svdgrads}
+\emph{\layertag{Comp}}
+With $h^\ast$ and radius gating, FD estimates of $\partial \sigma_i/\partial \theta$ and of small-tilt principal angles have RMS error $O(h^\ast)$ and pass AD/FD within $1\%$ RMS on calibration traces.
+\end{proposition}
+
+% ------------------------------------------------------------
+\subsection*{Holonomy–range coupling (operational bound)}
+Let $\vartheta_j$ be per-crossing principal-angle increments. Then
+\[
+\log \widehat R_T \ \ge\ \log \widehat R_0 \ -\ c_R \sum_j \vartheta_j,
+\qquad
+c_R:=\kappa_R\,\frac{\max_{i\le r}\sigma_i}{\min_{i\le r}\sigma_i},
+\]
+and rising $\mathrm{Hol}/N_{\mathrm{cross}}$ or \emph{HarmMass} with flat $N_{\mathrm{cross}}$ triggers $k$-escalation or lever change (Sec.~\ref{sec:ctrl2}).
+
+% ------------------------------------------------------------
+\subsection*{Numerical API (stubs)}
+\begin{lstlisting}
+# Whitening + SVD
+def whiten_effective_jacobian(J_eff, W): ...
+def constrained_svd(Jw, mask=None, group_w=None, k=2, budget=None, seed=0, iters=2): ...
+def range_proxy(singulars, r): ...
+def log_range_ci(logsig_series, block_len, B): ...
+
+# Degeneracy + bootstrap + gating
+def bootstrap_gap_CI(singulars, k, level_q=0.1, block_len=None, B=500): ...
+def gap_update_gate(gap_CI): ...      # returns action: {"block":T/F, "reason":..., "ci":...}
+
+# DK/Wedin calibration + holonomy
+def dk_bound_angle(Jw_minus, Jw_plus, gap, c_dk=1.0): ...
+def principal_angle(Uk_prev, Uk_next): ...
+def accumulate_holonomy(angles): ...
+def hol_over_ncross(angles, ncross): ...
+
+# Harmonic mass
+def harmonic_mass(angles, gaps, delta_floor): ...
+def harmonic_panel_trend(harm_series, ncross_series): ...
+
+# Finite differences
+def estimate_flow_Lipschitz(traj): ...
+def pick_h_star(L_f, noise_var, N, h_min, h_max): ...
+def fd_svd_gradients(Jw_fn, theta0, h): ...
+\end{lstlisting}
+
+% ------------------------------------------------------------
+\begin{mdframed}
+\textbf{Acceptance checks (per window).}
+\begin{itemize}[leftmargin=*]
+\item \emph{Radius guard:} EF proxy use cites \texttt{kl\_quad\_bounds}=\textsf{pass} (Sec.~\ref{sec:entropy2}); else downgrade to nonparametric alarms.
+\item \emph{Constrained SVD reproducibility:} reseeding changes $\sigma_{1:r}$ by $\le 0.5\%$ RMS; mask/group budget logged; power iterations $\le 3$.
+\item \emph{Gap-gated updates:} if CI$(\Delta\sigma)$ contains $0$, basis update is \emph{blocked} and either $k$ is escalated or mixed-plane control engaged (Lemma~\ref{lem:deg}); linkage to the switching-stability witness (Sec.~\ref{sec:ctrl2}) present.
+\item \emph{DK calibration:} measured $\angle(\mathcal U_k^+,\mathcal U_k^-)$ $\le (1{+}0.1)$ times the DK bound; violations emit a DK alarm with crossing id.
+\item \emph{FD stability:} AD/FD RMS $\le 1\%$ for singular-value/plane derivatives on calibration traces; $(h^\ast,L_f,\hat\sigma,N)$ logged.
+\item \emph{Holonomy KPIs:} $\mathrm{Hol}(0,T)$, $\mathrm{Hol}/N_{\mathrm{cross}}$, and \emph{HarmMass} reported with CIs; rising \emph{HarmMass} with flat $N_{\mathrm{cross}}$ triggers corrective action (logged).
+\item \emph{Range reporting:} $\widehat R_t$ and CI exported; monotone trend subject to I$_5$ on stationary tasks (Sec.~\ref{sec:stats2}).
+\end{itemize}
+\end{mdframed}
+
+% ------------------------------------------------------------
+\subsection*{Integration}
+\noindent
+(i) \textbf{Sensing (\S\ref{sec:stoch2}):} range/plane statistics inherit the radius guard; degeneracy-triggered $k$-escalation updates the CIS and registry hashes.
+(ii) \textbf{Frontiers (\S\ref{sec:calc2}):} DK calibration aligns with saltation spending and $\Pi$-freeze; holonomy/HarmMass are reported alongside Frontier Health.
+(iii) \textbf{Control (\S\ref{sec:ctrl2}):} gap-gated updates prevent unstable plane flips; rising HarmMass or Hol/N$_{\mathrm{cross}}$ triggers safe-bandit lever changes or mixed-plane activation with a formal stability witness.

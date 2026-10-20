@@ -1,0 +1,12 @@
+alpha: 0.85
+N: 5
+band: [0.5, 8.0]
+pr_margin_min: 0.05
+degeneracy_gap: 1.0e-4
+
+# Entropy-aware gain policy
+gain:
+  g_nom: 1.0
+  phi_scale: 1.0
+  g_min: 0.1
+  g_max: 5.0

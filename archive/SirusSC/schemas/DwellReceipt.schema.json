@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DwellReceipt",
+  "type": "object",
+  "properties": {
+    "predicate_id": {
+      "const": "NO_ZENO_WINDOW"
+    },
+    "window_size": {
+      "type": "integer"
+    },
+    "post_dwell": {
+      "type": "integer"
+    },
+    "strict_decrease": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "predicate_id",
+    "window_size",
+    "post_dwell",
+    "strict_decrease"
+  ]
+}

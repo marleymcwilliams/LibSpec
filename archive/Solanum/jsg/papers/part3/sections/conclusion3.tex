@@ -1,0 +1,89 @@
+% ==== Part III — Conclusion, Limits, and Audit Surface (v2) =================
+\section{Conclusion, Limits, and Audit Surface (v2)}\label{sec:conclusion-v2}
+
+\paragraph{Summary.}
+JSGIII instantiates a \emph{proof-carrying governor}: sensing $\to$ guards $\to$ control $\to$ evidence, each step falsifiable by replay. Two closures operationalize non-smooth geometry (priced frontier defects with No-Zeno; DK/Wedin-backed plane drift) while EF/KL and DRO-envelope checks gate statistics; GKYP witnesses gate control; $\omega$-automata consume KPI row-hashes. Measured effects are (i) reduction in coupling mass $M_t$, (ii) expansion of decision range $\hat R_t$ subject to I\textsubscript{5}, and (iii) rights-plane safety with deterministic fail-closed behavior. Throughout this section, $\varepsilon$ denotes the \emph{EF tolerance} used in $r=\varepsilon/L_\psi$ (Thm.~\ref{thm:FIMbound}); the PR margin floor is denoted by \constsymPRmargin\ (Prop.~\ref{prop:gkyp-witness}).
+
+\subsection{What is guaranteed, and where it is enforced}\label{subsec:claims}
+\emph{\layertag{Rep}}
+
+We organize the governance guarantees I\(_1\)–I\(_5\) as verifiable invariants with concrete enforcers and artifacts:
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{I\(_1\) Hybrid safety (frontiers).}
+Tube-aware invariance at crossings is enforced by Frontier Freeze and Dwell Escalation (Rules~\ref{rule:frontier-freeze}, \ref{rule:grazing}) and audited via the one-step saltation residual LB test (Lemma~\ref{lem:cbf-salt}). No-Zeno dwell (Lemma~\ref{lem:nozeno-impl}) bounds crossing rate and prevents chatter. Evidence: $\mathrm{LB}_i$ series, CVaR tails, freeze/dwell timestamps in Tier-1.
+\uses{Lem.~\ref{lem:nozeno-impl}, \ref{lem:cbf-salt}; Rule~\ref{rule:frontier-freeze}; Rule~\ref{rule:grazing}.}
+
+\item \textbf{I\(_2\) Statistical locality (EF).}
+All Fisher-quadratic uses are guarded by \texttt{kl\_quad\_bounds} inside $r=\varepsilon/L_\psi$ with clamp-driven adaptation (Rule~\ref{rule:ef-clamp}); failures go \emph{fail-closed} to HSIC/CVaR-only sensing. Evidence: guard verdict $(\varepsilon,\hat L_\psi,r)$ and clamp transcript in Tier-1/Tier-2.
+\uses{Thm.~\ref{thm:FIMbound}; Rule~\ref{rule:ef-clamp}.}
+
+\item \textbf{I\(_3\) Identifiability-first discovery.}
+Promotion gates (MTC $>$ correlation) fire only if the DRO envelope passes and clamp=Green (Rule~\ref{rule:promotion}; Prop.~\ref{prop:kkt}); otherwise windows are quarantined. Evidence: CIS rows with BY-$p$, power, SPRT transcript $(\alpha,\beta,H_0,H_1)$, IV-badge (if used), and \texttt{quarantine\_bit}=0.
+\uses{Rule~\ref{rule:promotion}; Prop.~\ref{prop:kkt}; Def.~\ref{def:mtc-iv}; Prop.~\ref{prop:cis}.}
+
+\item \textbf{I\(_4\) Actuation-basis stability.}
+Holonomy/Harmonic Rotational Mass budget plane drift; rising HarmMass blocks basis updates or forces $k$-escalation/switch-dwell (Lemma~\ref{lem:usc-planes}, Prop.~\ref{prop:hol-harm}, Lemma~\ref{lem:deg-stab}). Evidence: SVD tuples/gap ledger and escalation transcript.
+\uses{Lem.~\ref{lem:usc-planes}; Prop.~\ref{prop:hol-harm}; Lem.~\ref{lem:deg-stab}.}
+
+\item \textbf{I\(_5\) Rights-plane and PR stability.}
+Band-limited PR witnesses (GKYP) are required \emph{before} any control update; when margins crowd \constsymPRmargin, $\Omega$ auto-shrinks and re-certifies (Prop.~\ref{prop:gkyp-witness}, \ref{prop:pr-consume}). Rights-plane tail risk is audited by $\mathrm{CVaR}_{0.95}$. Evidence: $(\Omega,\epsilon,P,Q)$ and hitmap ids, CVaR slacks.
+\uses{Prop.~\ref{prop:gkyp-witness}, \ref{prop:pr-consume}; Rem.~\ref{rem:cvar}.}
+\end{enumerate}
+
+\subsection{Threats to validity and scope limits}\label{subsec:limits}
+\emph{\layertag{Rep}}
+
+\paragraph{Locality of EF neighborhoods.}
+KL–Fisher quadratic equivalence is local; outside $r=\varepsilon/L_\psi$ proxies can mislead. Mitigation: clamp shrink/relax, fail-closed to HSIC/CVaR, and Tier-1 evidence that a \emph{passing} guard precedes any Fisher-quadratic use.
+\uses{Thm.~\ref{thm:FIMbound}; Rule~\ref{rule:ef-clamp}; Tab.~\ref{tab:tier1-schema}.}
+
+\paragraph{Quasi-stationarity and windowing.}
+Variance panels (HAC/MBB/CBB) assume mixing; fast shifts degrade coverage. Mitigation: realized-FDR audits tighten $q$, envelope failures quarantine windows, and $\omega$-monitors continue enforcing safety specs.
+\uses{\secref{subsec:coverage}; Rule~\ref{rule:clamp-adapt}; Def.~\ref{def:env-pre}; \secref{subsec:automata}.}
+
+\paragraph{Hybrid geometry assumptions.}
+Frontier calculus presumes tubes, transversal crossings, and Filippov well-posedness. Unmodeled non-Filippov discontinuities are out-of-scope; saltation replay will fail and the run is rejected.
+\uses{Lem.~\ref{lem:nozeno-impl}, \ref{lem:cbf-salt}; \secref{subsec:freeze-hygiene}.}
+
+\paragraph{Spectral degeneracy.}
+When gaps collapse, DK/Wedin bounds loosen. We block updates and enforce dwell/CQLF; any actuation without a stability witness is disallowed.
+\uses{Lem.~\ref{lem:deg-stab}.}
+
+\paragraph{Instrument validity (IV).}
+IV-badges rely on a finite Context Registry; latent, unregistered context drift can erode exclusion. We require invariance tests across preregistered contexts and deny badges absent power.
+\uses{Def.~\ref{def:mtc-iv}; Prop.~\ref{prop:cis}.}
+
+\paragraph{Compute/SLO limits.}
+On solver timeouts we flip to conservative mode (no promotions; last verified PR witness; skip noncritical solvers) until debt clears.
+\uses{Def.~\ref{def:budget}; Prop.~\ref{prop:slo}.}
+
+\paragraph{Adversarial telemetry.}
+Mirrored sources and parity checks catch many—but not all—tampering modes; synchronized forgeries are out-of-scope. Non-matching parity induces quarantine and freeze; automata reject quarantined consumption.
+\uses{\secref{subsec:schemas}, \ref{subsec:ladder-prop}.}
+
+\subsection{Reproducibility and legal legibility}\label{subsec:repro}
+\emph{\layertag{Rep/Comp}}
+
+A deployment is \emph{audit-ready} iff: (i) every consumed window has a Tier-1 pack that passes Tab.~\ref{tab:tier1-schema}; (ii) GKYP/CBF/DRO solver transcripts re-verify; (iii) automata accept/reject on KPI row-hashes without raw data; (iv) cold boot matches FIM/whitening hashes, $M_t$, clamp state, and (if present) PR witness to tolerance; and (v) each window prints a compact \emph{proof-print id} encoding the EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF guard order consumed (Prop.~\ref{prop:guard-top}).
+\uses{\secref{subsec:schemas}, \secref{subsec:det-replay}, \secref{subsec:automata}; Prop.~\ref{prop:cold-boot}, \ref{prop:guard-top}.}
+
+\subsection{Where this goes next}\label{subsec:future}
+\emph{\layertag{Rep}}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Richer guards.} Beyond EF: score-matching/Stein discrepancies for locality; beyond DRO envelope: smoothed dual sensitivity witnesses.
+\item \textbf{Controller synthesis.} Verified codegen for GKYP/CBF to shrink solver footprint; mixed-integer guards for discrete policy levers.
+\item \textbf{Multi-agent extensions.} PR/ISS witnesses on game-structured polytopes; $\omega$-automata over joint KPIs with consensus evidence.
+\item \textbf{Trusted execution.} TEEs/attestation that bind solver transcripts to hardware counters in Tier-1; per-window attestation hashes.
+\end{itemize}
+
+\subsection{Acceptance checklist (end-to-end)}\label{subsec:concl-accept}
+\begin{acceptchecks}
+\item \textbf{I\(_1\) frontier safety:} logs show $N_{\mathrm{cross}}\le t/\constref{taumin}$ (Lem.~\ref{lem:nozeno-impl}); every tube crossing has $\min_i \mathrm{LB}_i\ge0$ or the $\omega$-run is rejected (Lemma~\ref{lem:cbf-salt}); any CVaR breach carries a Rule~\ref{rule:rights-cvar} transcript.
+\item \textbf{I\(_2\) EF locality:} every window using Fisher-quadratic proxies shows a \emph{passing} \texttt{kl\_quad\_bounds} with $(\varepsilon,\hat L_\psi,r)$ \emph{before} use; clamp transitions induce matching $(r,\cutq)$ changes (Thm.~\ref{thm:FIMbound}, Rule~\ref{rule:ef-clamp}).
+\item \textbf{I\(_3\) identifiability:} each CIS promotion row contains BY-$p$, MTC power, SPRT $(\alpha,\beta,H_0,H_1)$ transcript, clamp=Green, and IV-badge (if applicable) (Prop.~\ref{prop:cis}); quarantined windows have zero promotions and \texttt{quarantine\_bit}=1 (Prop.~\ref{prop:kkt}).
+\item \textbf{I\(_4\) basis stability:} the HarmMass ledger is non-increasing or shows $k$-escalation/blocked updates when rising; plane-drift audit replays SVD tuples to tolerance (Lem.~\ref{lem:usc-planes}, Prop.~\ref{prop:hol-harm}).
+\item \textbf{I\(_5\) PR \& rights:} a valid $(\Omega,\epsilon,P,Q)$ witness exists for all control updates and re-verifies; if margins crowd \constsymPRmargin, logs show $\Omega$-shrink and re-certification (Prop.~\ref{prop:gkyp-witness}, \ref{prop:pr-consume}). Rights-plane tails satisfy $\mathrm{CVaR}_{0.95}\ge0$ across accepted runs (Rem.~\ref{rem:cvar}).
+\item \textbf{Reproducibility \& proof-print:} replays reproduce solver fingerprints and KPI row-hash acceptances; cold boot matches hashes and $M_t$ (Tab.~\ref{tab:tier1-schema}, Prop.~\ref{prop:cold-boot}); each window includes a \texttt{proof\_print\_id} that linearly orders EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF consumption (Prop.~\ref{prop:guard-top}).
+\end{acceptchecks}

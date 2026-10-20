@@ -1,0 +1,23 @@
+stages:
+  prepare:
+    cmd: python -m scripts.prepare_data
+    deps:
+      - scripts/prepare_data.py
+    outs:
+      - data/processed/
+  train:
+    cmd: python -m scripts.train
+    deps:
+      - scripts/train.py
+      - src/jsg
+      - data/processed/
+    outs:
+      - runs/
+  eval:
+    cmd: python -m scripts.eval
+    deps:
+      - scripts/eval.py
+      - runs/
+    outs:
+      - reports/
+

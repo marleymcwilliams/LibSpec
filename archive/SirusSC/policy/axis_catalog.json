@@ -1,0 +1,11 @@
+{
+  "axes": {
+    "S": [
+      "energy"
+    ],
+    "M": [
+      "risk"
+    ]
+  },
+  "digest": "b3:axis-catalog-demo"
+}

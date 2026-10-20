@@ -1,0 +1,153 @@
+% ==== Part III — Master Resolution Tables (v2) ===============================
+\section{Master Resolution Tables (v2)}\label{app:resolution}
+
+\paragraph{Purpose.}
+Make all JSGIII $\rightarrow$ JSGI/JSGII bindings explicit and auditable, and index every runtime \emph{Rule} anchor used by the guard topology (EF $\rightarrow$ DRO $\rightarrow$ PR $\rightarrow$ CBF). CI fails if any “\textbf{??}” appears anywhere in the compiled PDF; these tables are the normative source for resolving such placeholders and verifying traceability.
+
+\subsection{Rule Index (guard topology and operations)}\label{app:resolution-rules}
+\emph{\layertag{Rep/Alg/Ctrl/Inf}}
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.75cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}p{2.1cm} >{\raggedright\arraybackslash}p{1.6cm}@{}}
+\toprule
+\textbf{Rule label} & \textbf{Summary} & \textbf{Primary deps} & \textbf{Invariants} \\
+\midrule
+Rule~\ref{rule:frontier-freeze} (Frontier projection freeze) &
+Freeze basis/promotions in tubes; project to $\mathcal U_{\mathrm{safe}}$ using last off-tube basis. &
+(C1), (C3); Lem.~\ref{lem:cbf-salt} &
+I\(_1\), I\(_5\) \\
+\addlinespace
+Rule~\ref{rule:grazing} (Grazing-aware dwell escalation) &
+Escalate dwell $\constref{taumin}$ and shrink tube radius on grazing/zero-speed CI. &
+(C8), (C1), (C3) &
+I\(_1\), I\(_4\) \\
+\addlinespace
+Rule~\ref{rule:ef-clamp} (EF guard \& leakage clamp) &
+Enforce $r=\varepsilon/L_\psi$; Green/Yellow/Red clamp drives $(r,\cutq)$ and fail-closed behavior. &
+Thm.~\ref{thm:FIMbound}; (C10) &
+I\(_2\), I\(_3\) \\
+\addlinespace
+Rule~\ref{rule:promotion} (Promotion gates; MTC $>$ corr.) &
+Held-out transport improvement, SPRT on $M_t$, clamp=Green; IV-badge when applicable. &
+\jsgiiDef{\lblMTC}, \jsgiiDef{\lblIVbadge} &
+I\(_3\) \\
+\addlinespace
+Rule~\ref{rule:dvdrho} (DRO dual consistency) &
+Require envelope $d\,\mathbb E[\varphi_\eta]/d\rho\approx \constref{etastar}$ before consuming SPRT/DRO outputs. &
+\jsgiiThm{\lblDROenv} &
+I\(_3\) \\
+\addlinespace
+Rule~\ref{rule:rights-cvar} (Rights-plane tails \& safety trigger) &
+Monitor $\mathrm{CVaR}_{0.95}$ of barrier slacks; on breach, Freeze\,+\,Dwell escalation. &
+(C11), (C8) &
+I\(_5\), I\(_1\) \\
+\addlinespace
+Rule~\ref{rule:levers} (Safe lever selection; dictionary) &
+Safe-UCB with zero-violation feasibility; reward is curvature-per-collateral. &
+\jsgiThm{\lblISS}; (C11) &
+I\(_5\) \\
+\addlinespace
+Rule~\ref{rule:clamp-adapt} (Clamp-driven EF/FDR adaptation) &
+Deterministic shrink/relax of $(r,\cutq)$ with hysteresis; promotions frozen outside Green. &
+Rule~\ref{rule:ef-clamp} &
+I\(_2\), I\(_3\) \\
+\addlinespace
+Rule~\ref{rule:pr-retune} (Hitmap-driven PR retune) &
+Auto-shrink $\Omega$ on margin crowding; re-certify GKYP before actuation. &
+Prop.~\ref{prop:gkyp-witness} &
+I\(_5\) \\
+\addlinespace
+Rule~\ref{rule:dwell-retune} (Grazing-driven dwell/tube retune) &
+Deterministic updates to $\constref{taumin}$ and $\constref{rtube}$; revert on two positive CI windows. &
+Rule~\ref{rule:grazing} &
+I\(_1\), I\(_4\) \\
+\bottomrule
+\end{tabularx}
+\caption{Canonical Rule Index. Guard order for consumption is EF $\rightarrow$ DRO $\rightarrow$ PR $\rightarrow$ CBF (\secref{subsec:automata}, Prop.~\ref{prop:guard-top}).}
+\label{tab:rule-index}
+\end{table}
+
+\subsection{Cross-reference resolution (JSGIII $\rightarrow$ JSGI/JSGII)}\label{app:resolution-xref}
+\emph{\layertag{Rep}}
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{JSGIII item} & \textbf{Former critique placeholder} & \textbf{Resolved reference (safe macro)} \\
+\midrule
+Frontier spend ledger (per-crossing defect) &
+“Lem. ?? / Prop. ??” &
+\jsgiLem{\lblNoZeno}, \jsgiLem{\lblJacobiDefect}, \jsgiThm{\lblISS} \\
+EF guard (local KL–Fisher radius) &
+“Thm. ?? / Prop. ??” &
+\jsgiiThm{\lblEFradius} \\
+SPRT precondition (DRO envelope) &
+“Prop. ?? ; Cor. ??” &
+\jsgiiThm{\lblDROenv}, \jsgiiDef{\lblQuarantine} \\
+MTC $>$ correlation (promotion gates) &
+“§??” &
+\jsgiiDef{\lblMTC}, \jsgiiDef{\lblIVbadge}, \jsgiiSec{\lblCoverage} \\
+CBF residual/saltation (tube audit) &
+“Rule ??” &
+\jsgiiLem{\lblSaltation}, \jsgiiLem{\lblCBFfrontier} \\
+Switching stability (degeneracy control) &
+“§??” &
+\jsgiiLem{\lblGapGate}, \jsgiiThm{\lblSwitchStab} \\
+Tiered artifacts (schemas, replay) &
+“Prop. ?? ; §??, §??” &
+\jsgiiSec{\lblSchemas} \\
+\bottomrule
+\end{tabularx}
+\caption{Master resolution of all former “??” placeholders via safe cross-doc macros.}
+\label{tab:master-resolution}
+\end{table}
+
+\subsection{Contract dependency graph (tabular)}\label{app:resolution-deps}
+\emph{\layertag{Rep}}
+\begin{table}[h]
+\centering
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{3.7cm} >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Runtime rule / artifact} & \textbf{Foundational deps (safe refs)} & \textbf{Downstream consumers / invariants} \\
+\midrule
+Frontier Spend Ledger &
+\jsgiLem{\lblNoZeno}, \jsgiLem{\lblJacobiDefect}, \jsgiThm{\lblISS} &
+ISS budget row; Frontier Health KPI; Decision-range conservativity \\
+Holonomy \& Harmonic Rotational Mass &
+\jsgiiSec{\lblSchemas} (DK/Wedin calibration note) &
+$k$-escalation; switching-stability gate; I\(_4\) \\
+EF Guard + Clamp FSM &
+\jsgiiThm{\lblEFradius} &
+All Fisher-quadratic uses; MTC gates; I\(_2\), I\(_3\) \\
+SPRT precondition + Quarantine &
+\jsgiiThm{\lblDROenv}, \jsgiiDef{\lblQuarantine} &
+MTC gates; policy-update freeze; CIS completeness \\
+Frontier-aware CBF audit &
+\jsgiiLem{\lblSaltation}, \jsgiiLem{\lblCBFfrontier} &
+Rights-plane CVaR; $\omega$-run rejection; I\(_1\), I\(_5\) \\
+Switching stability policy &
+\jsgiiLem{\lblGapGate}, \jsgiiThm{\lblSwitchStab} &
+Basis updates; dwell enforcement; I\(_4\) \\
+PR/GKYP witness (band-limited PR) &
+Prop.~\ref{prop:gkyp-witness} &
+Control updates gated; PR auto-shrink; I\(_5\) \\
+Tier-1…4 Evidence packs &
+\jsgiiSec{\lblSchemas} &
+Automata bit-match; determinism; provenance coverage KPI \\
+\bottomrule
+\end{tabularx}
+\caption{Contract dependency graph in tabular form (TikZ-free, audit-friendly).}
+\label{tab:contract-deps}
+\end{table}
+
+\subsection{Acceptance checks (Appendix A)}\label{app:resolution-accept}
+\begin{acceptchecks}
+\item \textbf{No unresolved refs:} the compiled PDF contains no bold “\textbf{??}”. CI fails otherwise.
+\item \textbf{Safe-macro integrity:} every cross-doc reference in Tab.~\ref{tab:master-resolution} appears via \texttt{\textbackslash jsgi*}/\texttt{\textbackslash jsgii*} macros (never raw labels), so broken imports render visibly.
+\item \textbf{Rule-index coverage:} Table~\ref{tab:rule-index} includes each Rule referenced in the text; every Rule appears in at least one acceptance check or KPI guard, and each is cited by at least one downstream consumer in Tab.~\ref{tab:contract-deps}.
+\item \textbf{Guard order proof-print:} for any audited window, the Tier-1 pack carries a \texttt{proof\_print\_id} that linearly encodes EF $\rightarrow$ DRO $\rightarrow$ PR $\rightarrow$ CBF consumption with the exact guard verdict/witness ids (Prop.~\ref{prop:guard-top}); replays must bit-match.
+\item \textbf{Traceability:} auditors can traverse Tab.~\ref{tab:contract-deps} from any runtime Rule to (i) its foundational deps (safe refs) and (ii) the downstream invariant where it is consumed; missing links fail CI.
+\end{acceptchecks}

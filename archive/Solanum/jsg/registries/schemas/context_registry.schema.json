@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["contexts"],
+  "properties": {
+    "contexts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "claim", "section", "artifacts", "hash"],
+        "properties": {
+          "id": {"type": "string"},
+          "claim": {"type": "string"},
+          "section": {"type": "string"},
+          "artifacts": {"type": "array", "items": {"type": "string"}},
+          "hash": {"type": "string"}
+        }
+      }
+    }
+  }
+}

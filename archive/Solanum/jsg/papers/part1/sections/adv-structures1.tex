@@ -1,0 +1,338 @@
+\section{Advanced Algebraic and Categorical Structures}\label{sec:adv-structures1}
+% ============================================================
+
+We pin down the algebraic/categorical layer with an associative, commutative quasi-shuffle built \emph{algebra-first}, and lift Fisher-metric control to categorical Lipschitz bounds. New here:
+(i) the letter-merge $\odot$ is defined by an ambient associative product (Wick/Ito/chaos) and whitening is treated as a change of basis; 
+(ii) an \emph{Invariant whitening} assumption ensures symmetry equivariance; 
+(iii) a \emph{Pushforward Lipschitz} result justifies FIM-norm non-expansiveness for Dirac/Hopf projections; 
+(iv) monoidal submultiplicativity for functor Lipschitz constants.
+
+% Keep lemma/theorem numbering continuity: next lemma is 12, next theorem is 4.
+\setcounter{lemma}{11}
+\setcounter{theorem}{3}
+
+\subsection{Quasi-shuffle Hopf algebra by algebra-first merge}\label{sec:hopf}
+
+\paragraph{Alphabet and degrees.}
+Let $\mathcal A=\{a^{(m)}_{p,q}\}$ be the centered, whitened dictionary of sufficient statistics (Section~\ref{sec:entropy1}); $\deg(a^{(m)}_{p,q})=(p,q)$, total degree $|a|=p+q$. Let $H=\mathbb K\langle \mathcal A\rangle$ be the tensor algebra of words with empty word $1$ and ground field $\mathbb K$ of characteristic $0$.
+
+\begin{assumption}[Invariant whitening]\label{ass:inv-whiten}
+\emph{[\textup{Inf/Alg}]}
+The inner product used to whiten $\mathcal A$ is invariant under the symmetry group acting on $\Gamma$ and $G$ (e.g., orthogonal frames on $\Gamma$, graph isomorphisms on $G$). Concretely, whitening is defined by a symmetry-invariant covariance (orbit-average or group-invariant frame), so the change-of-basis maps commute with group actions.
+\uses{(C5) Fisher inner product at $P_0$; symmetry group; whitening map.}
+\end{assumption}
+
+\paragraph{Algebra-first letter merge.}
+Choose an ambient \emph{associative, commutative} product $\diamond$ on centered variables (e.g., Wick/Ito/chaos on the EF statistics). Define the letter-merge on $\mathcal A$ by structure constants
+\[
+a^{(m)}_{p,q}\odot a^{(m')}_{r,s}\ :=\ \sum_{m''} c^{m''}_{(m,p,q),(m',r,s)}\, a^{(m'')}_{p+r,q+s},
+\]
+where $c^{m''}$ are the expansion coefficients of $a^{(m)}_{p,q}\diamond a^{(m')}_{r,s}$ in the \emph{ambient} basis, and \emph{then} whiten by an invertible linear map $W$ (change of basis).
+
+\begin{proposition}[Associativity preserved under change of basis]\label{prop:assoc-change}
+\emph{[\textup{Alg}]}
+If $\odot$ is induced by an associative, commutative bilinear map $\diamond$ on the ambient letters and $W$ is invertible, then the structure constants in the whitened basis still define a commutative, associative $\odot$.
+\begin{proofsketch}
+Let $B$ be the ambient basis and $\tilde B=W(B)$ the whitened one. Structure tensors transform by $C\mapsto (W^{-1})^{\otimes 1} C\, W^{\otimes 2}$. Associativity $C(C(\cdot,\cdot),\cdot)=C(\cdot,C(\cdot,\cdot))$ is a tensor identity preserved by invertible congruences.
+\end{proofsketch}
+\uses{Ambient associative $\diamond$; invertible $W$.}
+\end{proposition}
+
+\paragraph{Quasi-shuffle (\emph{stuffle}) product.}
+Define $u\uplus v$ recursively for words $u,v$ and letters $a,b$:
+\[
+1\uplus w=w\uplus 1=w,\qquad
+(ua)\uplus (vb)=(u\uplus vb)\,a+(ua\uplus v)\,b+(u\uplus v)\,(a\odot b).
+\]
+By Proposition~\ref{prop:assoc-change}, $(H,\uplus)$ is a commutative, associative, graded algebra.
+
+\paragraph{Coalgebra and antipode.}
+With deconcatenation $\Delta(w)=\sum_{uv=w}u\otimes v$ and counit $\epsilon(1)=1$, $(H,\uplus,\Delta,\epsilon)$ is graded connected and admits the standard antipode (Takeuchi), hence a commutative, noncocommutative Hopf algebra.
+
+\begin{proposition}[Symmetry equivariance]\label{prop:equivariance}
+\emph{[\textup{Alg/Rep}]}
+Under Assumption~\ref{ass:inv-whiten}, group actions on $\mathcal A$ act by Hopf automorphisms: the action commutes with $\odot$, $\uplus$, and $\Delta$.
+\begin{proofsketch}
+Invariance makes $W$ and the structure constants $c^{m''}$ equivariant; the recursion and deconcatenation are natural.
+\end{proofsketch}
+\uses{Assumption~\ref{ass:inv-whiten}; ambient product equivariance.}
+\end{proposition}
+
+\subsection{Characters, cumulants, and the degree-3 bridge}
+
+\paragraph{Characters and cumulants.}
+Any law $P$ induces a character $\chi_P:H\to\mathbb K$ by $\chi_P(1)=1$, $\chi_P(uv)=\chi_P(u)\chi_P(v)$, and $\chi_P(a)=\mathbb E_P[T_a]$. The cumulant character is $\kappa_P:=\log_*\chi_P=\sum_{n\ge1}\frac{(-1)^{n-1}}{n}(\chi_P-\epsilon)^{*n}$, which is \emph{primitive}: $\Delta(\kappa_P)=\kappa_P\otimes 1+1\otimes \kappa_P$.
+
+\paragraph{Worked order-3 example and the $\kappa_{2,1}$ split.}
+Let $x:=a^{(i)}_{1,0}$, $y:=a^{(j)}_{1,0}$, $z:=a^{(\ell)}_{0,1}$. The degree-$(2,1)$ Eulerian idempotent $E_{2,1}$ evaluates to the mixed cumulant $\kappa_{2,1}$ under any character:
+\[
+(\chi_P\otimes\chi_P)\,\Delta\!\big(E_{2,1}\big)
+=\kappa_{2,1}\otimes 1+1\otimes \kappa_{2,1}+\kappa_{1,1}\otimes \kappa_{1,0}+\kappa_{2,0}\otimes \kappa_{0,1}+\kappa_{1,0}\otimes \kappa_{1,1}.
+\]
+This justifies keeping $\kappa_{2,1}$ and its degree-$\le2$ factors at order $K=3$.
+
+\subsection{Hopf-canonical truncation and residual}
+Let $H^{(\le K)}$ be the span of words with $|w|\le K$ and define the orthogonal projector
+\[
+\Pi_{\le K}:H\to H^{(\le K)},\qquad \Pi_{\le K}(w)=\begin{cases}w,&|w|\le K,\\0,&|w|>K.\end{cases}
+\]
+The closure residual in Section~\ref{sec:closure1} is exactly $\|(I-\Pi_{\le K})\hat S\|$ in the whitened inner product.
+
+\subsection{Functor Lipschitz constants and non-expansiveness in FIM}\label{sec:cat}
+
+\paragraph{Objects and metric.}
+For an instance $X$, let $\mathbf k_K(X)$ be the stacked whitened cumulant vector up to degree $K$ and
+\[
+d_K(X,X'):=\|\mathbf k_K(X)-\mathbf k_K(X')\|_{\FIM^{-1}}.
+\]
+
+\begin{proposition}[Pushforward Lipschitz]\label{prop:push-Lip}
+\emph{[\textup{Comp/Inf}]}
+Let $T:X\to X$ be $L$-Lipschitz in $d_X$ and each statistic in the dictionary be $C$-Lipschitz on $X$. In an EF neighborhood of $P_0$,
+\[
+\|\mathbf k_K(T_\# P_\theta)-\mathbf k_K(P_\theta)\|_{\FIM^{-1}}
+\ \le\ L\,C\,\|\theta\|\ +\ O(\|\theta\|^2).
+\]
+\begin{proofsketch}
+Write $\kappa(\theta)=\nabla\psi(\theta)$. For any letter $a$, $\big|\mathbb E_{P_\theta}[T_a\!\circ T]-\mathbb E_{P_\theta}[T_a]\big|\le L C\,W_1(P_\theta,P_0)=O(\|\theta\|)$; multilinearity and the EF expansion then give the bound in the Fisher norm.
+\end{proofsketch}
+\uses{(C4) window/EFradius; (C5) $F$, dictionary Lipschitz $C$, map Lipschitz $L$.}
+\end{proposition}
+
+\begin{lemma}[Non-expansive projections]\label{lem:nonexpansive-12}
+\emph{[\textup{Comp/Inf/Ctrl}]}
+Dirac $\Pi$ (Section~\ref{sec:control1}) and Hopf $\Pi_{\le K}$ satisfy
+\[
+\|\mathbf k_K(\Pi X)-\mathbf k_K(\Pi X')\|_{\FIM^{-1}}\ \le\ \|\mathbf k_K(X)-\mathbf k_K(X')\|_{\FIM^{-1}},
+\]
+and $\|\mathbf k_K(\Pi X)\|_{\FIM^{-1}}\le \|\mathbf k_K(X)\|_{\FIM^{-1}}$.
+\begin{proofsketch}
+Both $\Pi$ and $\Pi_{\le K}$ are orthogonal projections (energetic and Hopf/whitened, respectively), hence $L=1$. Each dictionary element is $C\le 1$-Lipschitz w.r.t. the induced Hilbert norm. Apply Proposition~\ref{prop:push-Lip} and take $X'=0$ for the one-argument bound.
+\end{proofsketch}
+\uses{Proposition~\ref{prop:push-Lip}; energetic orthogonality; whitened orthogonality; (C5) Fisher norm.}
+\end{lemma}
+
+\begin{theorem}[Monoidal submultiplicativity]\label{thm:monoidal-4}
+\emph{[\textup{Comp}]}
+If $F,G$ are $C_F$- and $C_G$-Lipschitz strong monoidal functors between the $K$-cumulant categories, then $(F\otimes G)$ is $C_FC_G$-Lipschitz:
+\[
+d_K\big((F\otimes G)(X),(F\otimes G)(X')\big)\ \le\ C_FC_G\, d_K(X,X').
+\]
+\begin{proof}
+Block-diagonal Fisher metrics under independence and the direct sum of cumulants yield the product bound.
+\end{proof}
+\uses{Block-diagonal Fisher metric; functorial monoidality.}
+\end{theorem}
+
+%% NEW: local/Orlicz Lipschitz variant
+\begin{proposition}[Local/Orlicz Lipschitz]\label{prop:local-orlicz}
+On any sublevel set $\{x:\Phi(x)\le R\}$ where each letter in $\mathcal T_K$ is $C(R)$-Lipschitz, 
+the pushforward bound of Prop.~\ref{prop:push-Lip} holds with $C\!=\!C(R)$. 
+If letters have sub-Gaussian tails, then replacing Lipschitz norms by Orlicz $\psi_2$ norms yields the same first-order bound in expectation.
+\end{proposition}
+
+%% NEW: symmetry-equivariant whitening error
+\begin{remark}[Equivariance error from orbit-averaging]\label{rem:whiten-error}
+Let $\widehat\Sigma$ be the Monte Carlo orbit-averaged covariance and $\Sigma_G$ the exact group integral. If $\|\widehat\Sigma-\Sigma_G\|\le \epsilon$, then the quasi-shuffle structure constants (hence Lipschitz constants) perturb by $O(\epsilon)$. 
+\emph{Report:} log the observed $\epsilon$ per window.
+\end{remark}
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:adv-structures1}.}
+\begin{enumerate}[leftmargin=*]
+\item The letter-merge $\odot$ is \emph{algebra-first} with associativity guaranteed (Prop.~\ref{prop:assoc-change}); projection is a basis change, not a definition.
+\item Symmetry claims cite Assumption~\ref{ass:inv-whiten} and Prop.~\ref{prop:equivariance}.
+\item Non-expansiveness in the FIM metric points to the \emph{Pushforward Lipschitz} Proposition~\ref{prop:push-Lip} and then Lemma~\ref{lem:nonexpansive-12}.
+\item Theorem~\ref{thm:monoidal-4} is stated and used wherever monoidal products appear.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (Hopf algebra, invariant whitening, FIM Lipschitz tests)}
+
+\begin{lstlisting}
+# === Inputs (conceptual) =====================================================
+Dictionary:
+  A_letters = { a_{p,q}^{(m)} : total degree |a|<=K }     # centered sufficient-statistic letters
+  index(a) <-> integer id                                  # bijection letter <-> id
+
+Ambient product:
+  ambient_prod(i,j) -> list[(k, coeff)]                    # coefficients in ambient (pre-whitened) basis
+                                                           # e.g., Wick/Ito/chaos product on centered vars
+
+Whitening (Assumption 8.1):
+  # symmetry-invariant inner product at P0:
+  #   W: ambient -> whitened basis, with  <Wx,Wy> = x^T Sigma^{-1} y   (Sigma from FIM/covariance at P0)
+  Sigma = fisher_covariance_at_P0(A_letters)               # SPD; symmetry-invariant construction
+  W = inv(chol(Sigma))                                     # whiten: a_tilde = W * a_ambient
+
+Samples / cumulants:
+  T_stream  # time/windowed samples of letter evaluations T_a(x)
+  F = FIM_at_P0_whitened()                                 # equals I_d if fully whitened
+
+Logging:
+  log_json(dict)
+  window_id
+
+# === Build letter-merge structure constants (algebra-first) ==================
+# 1) Ambient structure tensor C_ambient from ambient_prod
+function build_C_ambient():
+    d = len(A_letters)
+    # store as sparse: dict[(i,j)] -> list[(k, c)]
+    C = dict()
+    for i in 1..d:
+        for j in 1..d:
+            C[(i,j)] = ambient_prod(i,j)                   # list of (k, c_ambient)
+    return C
+
+# 2) Change of basis to whitened constants via associativity-preserving congruence
+#    If A_tilde = W A_amb, then structure tensor transforms by   C_tilde = W * C_ambient * (W^{-1} otimes-- W^{-1}).
+#    Implement as: coefficients in whitened basis via least-squares with orthonormal W (Cholesky choice makes W^T W = Sigma^{-1}).
+function whiten_constants(C_ambient, W):
+    # For each pair (i,j), transform the coefficient vector in ambient coords to whitened coords.
+    # Practical: apply W to the RHS basis and W^{-1} to inputs; since W is invertible, we can precompute Winv = inv(W).
+    Winv = inv(W)
+    C_tilde = dict()
+    for (i,j), terms in C_ambient.items():
+        # Build coefficient vector c_amb in ambient coordinates
+        c_amb = zeros(d)
+        for (k, c) in terms: c_amb[k] += c
+        # Transform: c_tilde = W * c_amb, inputs indices mapped by Winv (absorbed into basis reindexing)
+        c_tilde = W @ c_amb
+        # Sparsify
+        out = []
+        for k in 1..d:
+            if abs(c_tilde[k]) > 1e-12: out.append((k, c_tilde[k]))
+        C_tilde[(i,j)] = out
+    return C_tilde
+
+# 3) Associativity spot-check (sanity):  (a \odot b) \odot c  ==  a \odot (b \odot c)
+function check_associativity(C_tilde, trials=256, tol=1e-8):
+    d = len(A_letters)
+    for t in 1..trials:
+        i,j,k = randint(1,d), randint(1,d), randint(1,d)
+        # left: L = C(C(e_i,e_j), e_k)
+        L = zeros(d)
+        for (h, cij) in C_tilde[(i,j)]:
+            for (r, chr) in C_tilde[(h,k)]:
+                L[r] += cij * chr
+        # right: R = C(e_i, C(e_j, e_k))
+        R = zeros(d)
+        for (h, cjk) in C_tilde[(j,k)]:
+            for (r, cir) in C_tilde[(i,h)]:
+                R[r] += cjk * cir
+        if norm(L-R, inf) > tol:
+            return {"assoc_ok": False, "i":i,"j":j,"k":k,"diff": norm(L-R,inf)}
+    return {"assoc_ok": True}
+
+# === Quasi-shuffle (stuffle) product on words with letter-merge C_tilde ======
+# Words represented as lists of letter ids; use memoization for speed.
+memo = dict()
+function uplus(u, v, C_tilde):
+    key=(tuple(u),tuple(v))
+    if key in memo: return memo[key]
+    if len(u)==0: return {v:1.0}
+    if len(v)==0: return {u:1.0}
+    u1, a = u[:-1], u[-1]
+    v1, b = v[:-1], v[-1]
+    # (u\uplusvb) * a
+    T1 = { w+[a]: c for (w,c) in uplus(u, v1, C_tilde).items() }
+    # (ua\uplusv) * b
+    T2 = { w+[b]: c for (w,c) in uplus(u1, v, C_tilde).items() }
+    # (u\uplusv) * (a\odotb)
+    T3 = dict()
+    for (k, cab) in C_tilde[(a,b)]:
+        for (w,c) in uplus(u1, v1, C_tilde).items():
+            w2 = w+[k]; T3[w2] = T3.get(w2,0.0) + c*cab
+    # sum
+    out = T1
+    for (w,c) in T2.items(): out[w] = out.get(w,0.0)+c
+    for (w,c) in T3.items(): out[w] = out.get(w,0.0)+c
+    memo[key]=out; return out
+
+# === Symmetry equivariance audit (Assumption 8.1) ============================
+# Given group actions G on letters (permutation/orthogonal), verify invariance of C_tilde.
+function check_equivariance(C_tilde, actions):
+    # actions: list of group elements acting as permutation/orhogonal maps P_g on indices
+    for g in actions:
+        P = action_matrix(g)            # dxd, orthogonal/permutation
+        for (i,j), terms in C_tilde.items():
+            # pushforward both inputs by g and compare pushed outputs
+            i2, j2 = P@e_i, P@e_j       # conceptual; implement as index mapping
+            lhs = push_constants(C_tilde, i2, j2)
+            rhs = push_forward_output(terms, P)   # apply P to output index
+            if not approx_equal(lhs, rhs, tol=1e-10):
+                return {"equiv_ok": False, "g": g, "ij": (i,j)}
+    return {"equiv_ok": True}
+
+# === Empirical FIM-norm contraction tests for projections ====================
+# Build cumulant vector k_K from T_stream (order <= K); then compare norms before/after projections.
+function cumulant_vector_K(T_stream, K):
+    # compute centered moments ->' cumulants (order <=3 typically); return flattened vector in whitened basis
+    return k_vec
+
+function FIM_norm(vec, F):
+    # vec is already whitened; with perfect whitening F\approxI, but allow general F:
+    return sqrt( vec^T * inv(F) * vec )
+
+function test_projection_contraction(Pi_op, PiK_op, T_stream, F, K):
+    k_full = cumulant_vector_K(T_stream, K)
+    # Dirac projection \Pi (acts on trajectories/mechanics ->' induces pushforward of T_stream)
+    T_proj = Pi_op.apply_to_stream(T_stream)
+    k_dirac = cumulant_vector_K(T_proj, K)
+    # Hopf truncation \Pi_{<=K} (acts directly in algebra; numerically: zero out >K words)
+    k_hopf = PiK_op.apply_to_cumulants(k_full)      # or recompute on truncated dictionary
+
+    n_full  = FIM_norm(k_full,  F)
+    n_dirac = FIM_norm(k_dirac, F)
+    n_hopf  = FIM_norm(k_hopf,  F)
+
+    log_json({"evt":"fim_contraction_test", "window": window_id,
+              "||k||": n_full, "||Pi k||": n_dirac, "||Pi<=K k||": n_hopf,
+              "dirac_ok": (n_dirac <= n_full + 1e-10),
+              "hopf_ok":  (n_hopf  <= n_full + 1e-10)})
+    return {"dirac_ok": n_dirac<=n_full+1e-10, "hopf_ok": n_hopf<=n_full+1e-10,
+            "n_full": n_full, "n_dirac": n_dirac, "n_hopf": n_hopf}
+
+# === Pushforward Lipschitz spot-check (Prop. 8.5) ============================
+# Given a Lipschitz map T (geometry layer) and small EF tilt theta, check:
+#   ||k_K(T_# P_theta) - k_K(P_theta)||_{F^{-1}} <= L*C*||theta|| + O(||theta||^2)
+function pushforward_Lip_check(T_map, theta, L_est, C_est, T_stream_base, F, K):
+    # importance-reweight T_stream_base to P_theta if needed (small tilt); or draw fresh samples
+    k_theta   = cumulant_vector_K( reweight(T_stream_base, theta), K )
+    k_theta_T = cumulant_vector_K( reweight(T_map.apply_to_stream(T_stream_base), theta), K )
+    diff = FIM_norm(k_theta_T - k_theta, F)
+    rhs  = L_est * C_est * norm(theta)
+    log_json({"evt":"push_Lip_check", "window": window_id, "lhs": diff, "rhs": rhs,
+              "ok": diff <= 1.2*rhs})     # allow small slack for finite-sample noise
+    return {"ok": diff <= 1.2*rhs, "lhs": diff, "rhs": rhs}
+
+# === End-to-end builder (one call) ===========================================
+function build_quasi_shuffle_runtime(K, actions=None):
+    C_amb = build_C_ambient()
+    C = whiten_constants(C_amb, W)
+    assoc = check_associativity(C)
+    if not assoc["assoc_ok"]:
+        log_json({"evt":"assoc_fail", "detail": assoc}); raise "Associativity spot-check failed"
+    if actions is not None:
+        eq = check_equivariance(C, actions)
+        log_json({"evt":"equiv_check", "ok": eq["equiv_ok"]})
+    return {"C_tilde": C, "uplus": (u,v) -> uplus(u,v,C)}
+
+\end{lstlisting}
+
+\paragraph{Guards and good practice.}
+- **Associativity audit.** Keep the spot-check enabled in CI; any failure means your ambient product or whitening map isn't consistent.  
+- **Invariant whitening.** If the symmetry group is large, approximate the orbit-average covariance by Monte Carlo over group elements; log the number of samples and the max deviation from exact invariance.  
+- **Sparsity.** Store \(C_{\text{tilde}}\) as sparse maps; quasi-shuffle growth is combinatorial --- cut off strictly at degree \(K\) and cache results per word length.  
+- **Projection tests.** Run the FIM-contraction test for both \(\Pi\) and \(\Pi_{\le K}\) per window; keep failures visible in the auto-report.  
+- **Pushforward Lipschitz.** Use the same small-tilt reweighting machinery as Section~5's \(L_\psi\) estimator; ensure effective sample size is healthy (e.g., ESS \(>\) \(0.2n\)).
+
+\paragraph{Mini unit tests.}
+1) **Ambient ->¦ whitened consistency:** choose a quadratic-Gaussian ambient where Wick coefficients are analytic; verify associativity passes for random triples.  
+2) **Equivariance:** apply a random orthogonal frame change on \(\Gamma\); check that transformed constants match via the action test.  
+3) **Non-expansiveness (empirical):** simulate data, compute \(\|\mathbf k_K\|_{\FIM^{-1}}\) before/after \(\Pi\) and \(\Pi_{\le K}\); both should not increase beyond numerical tolerance.
+
+\emph{Uses: } Invariant whitening (Assumption~\ref{ass:inv-whiten}); Prop.~\ref{prop:assoc-change}, Prop.~\ref{prop:push-Lip}, Lem.~\ref{lem:nonexpansive-12}; FIM \(F\) and degree cap \(K\).
+
+
+% ============================================================

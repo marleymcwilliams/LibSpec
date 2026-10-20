@@ -1,0 +1,8 @@
+radius_policy:
+  c: 1.5
+  tau: 2048
+solver:
+  tol: 1.0e-6
+  max_iter: 200
+metric: "wasserstein1"  # dX
+

@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+.venv
+.envrc
+
+# Builds
+dist/
+build/
+*.egg-info/
+
+# Hydra
+multirun/
+outputs/
+logs/
+
+# DVC/MLflow
+.dvc/
+.dvc/tmp/
+.dvc/cache/
+.mlflow/
+mlruns/
+
+# Data/Artifacts
+data/
+runs/
+reports/
+
+# Lock files
+conda-lock.yml
+

@@ -1,0 +1,8 @@
+stream_path: "data/processed/stream.parquet"
+windows:
+  size: 2048
+  stride: 512
+whitening_policy: "transported"  # enum: ["global","transported"]
+order_K: 3
+seed: 0
+

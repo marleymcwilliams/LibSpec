@@ -1,0 +1,253 @@
+% ============================================================
+% ============================================================
+\section{Tables \& Schemas (Certificate-First Appendix)}
+% ============================================================
+
+\subsection{KPI Registry: symbols, units, estimators, contracts}\label{app:kpi-registry}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l l l l l @{}}
+\toprule
+\textbf{KPI} & \textbf{Symbol} & \textbf{Unit} & \textbf{Estimator / CI} & \textbf{Target (default)} & \textbf{Alarm (default)} \\
+\midrule
+Coupling Mass & $M_t=\bm\kappa_t^\top\FIM_t^{-1}\bm\kappa_t$ & dimensionless & HAC / Wald CI & median $\downarrow\ge20\%$ over $2\tau^\ast$ & CI upper $> B_{\mathrm{saf}}$ or $\constref{chi}\!\uparrow$ with $|E_t|\!\uparrow$ \\
+Coupling Regret & $\mathrm{Regret}_M(t)=M_t-M_t^{\circ}$ & dimensionless & HAC CI vs.\ synthetic null & negative trend over $2\tau^\ast$ & CI upper $\ge 0$ for $\ge\tau^\ast$ windows \\
+Effective Breadth & $|E_t|$ & count & BY@\,$\cutq$ + MTC \& IV badges & non-increasing (stationary) & any promotion missing MTC or IV badge \\
+Decision Range & $\widehat R_t=\prod_{i\le r}\sigma_i$ & proxy (ellipsoid vol.) & MBB CI & monotone $\uparrow$ (I$_5$ held) & $\mathrm{CVaR}_{0.95}$ drop or conservativity residual $>0$ \\
+Conservativity Residual & $\mathrm{Res}_t=(R_t-R_t')-f(C_{\mathrm{fr}},\constref{\taumin},d)$ & proxy & plug-in + \emph{one-sided} CI & $\le 0$ (CI lower $\le 0$) & CI lower $>0$ $\Rightarrow$ rejecting run \\
+Fisher Drift & $d_{\mathrm F}(P_{t-\constref{\tau}},P_t)$ & $nats^{1/2}$ & geodesic / quad proxy + CI & below budget & two consecutive budget hits $\Rightarrow$ clamp \\
+Holonomy & $\mathrm{Hol}(0,T)$ & radians & DK/Wedin bound + CI & decreasing & rising with flat $N_{\mathrm{cross}}$ triggers lever/$k$ escalation \\
+Holonomy per Crossing & $\mathrm{Hol}/N_{\mathrm{cross}}$ & rad / crossing & ratio + CI & flat or $\downarrow$ & rising while $N_{\mathrm{cross}}$ flat \\
+\textbf{Harmonic Rotational Mass} & $\mathcal H_k$ & radians & small-gap harmonic term (gap-weighted sum), CI & non-increasing & CI lower $>$ tolerance or gap-CI at rank $k$ contains $0$ \\
+Frontier Health & $(\constref{\taumin},C_{\mathrm{salt}},C_{\mathrm{fr}},\text{duty},p_{\mathrm{graze}})$ & s,–,–,\%,– & plug-in + CI & duty $\le10\%$ & $\hat\nu_{\min}\!\le0$ or duty $>10\%$ \\
+Rights-Plane Residual & $\min_i \mathrm{LB}_{0.95}\{h_i^+-h_i^-+\sigma_i\}$ & units of $h_i$ & \emph{one-sided} bootstrap CI & $\ge 0$ & lower bound $<0$ $\Rightarrow$ rejecting run \\
+\textbf{Chatter Index} & $\Xi_{\mathrm{chat}}$ & count / window & dwell-violation counter & $0$ & $>0$ or trend $\uparrow$ \\
+Provenance Coverage & coverage \% & percent & binomial CI & $\ge99\%$ & coverage $<99\%$ for $m$ windows $\Rightarrow$ tighten posture \\
+Provenance Latency & $\mathrm{Lat}_t=t_{\text{hash}}{-}t_{\text{ingest}}$ & time & plug-in + CI & $\le$ one window & latency $>$ window \\
+Dual-Gap Trend & $(G_t,\mathrm{bw}_t)$ & – & panel trend & $G_t\le 10^{-4}$,\ $\mathrm{bw}_t\downarrow$ & $G_t>10^{-4}$ for $m$ windows \\
+\textbf{Realized FDR} & $\widehat{\mathrm{FDR}}_{\text{null}}$ & proportion & weekly null-stream audit & $\le 0.9\,\cutq$ & $>0.9\,\cutq$ $\Rightarrow$ posture tighten (freeze+$r,\cutq\downarrow$) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Default thresholds \& tuning knobs}\label{app:defaults}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l l l l @{}}
+\toprule
+\textbf{Name} & \textbf{Symbol} & \textbf{Default} & \textbf{Where used} & \textbf{Notes} \\
+\midrule
+PR margin & $\constref{epsilon}$ & context-specific & Sec.~\ref{sec:ctrl2} & GKYP witness exports margin \\
+FDR level & $\cutq$ & $0.10$ (BY) & Sec.~\ref{sec:stoch2} & posture may tighten: $\cutq\!\leftarrow\!0.9\cutq$ \\
+EF tolerance & $\varepsilon$ & $0.2$ (fallback $0.1$) & Sec.~\ref{sec:entropy2} & radius $r=\varepsilon/\constref{Lpsi}$ \\
+Leakage thresholds & $\chi_{\mathrm{green}},\chi_{\mathrm{alarm}},\chi_{\mathrm{clear}}$ & $0.05,\,0.15,\,0.08$ & Sec.~\ref{sec:entropy2} & hysteresis; 3-window smoothing \\
+\textbf{Risk-posture tightening} & $(\gamma_q,\gamma_r,m)$ & $(0.9,\,0.8,\,3)$ & Sec.~\ref{sec:stats2} & on realized-FDR breach: reduce $q$, shrink $r$, freeze $m$ windows \\
+SPRT errors & $(\alpha,\beta)$ & $(0.05,0.10)$ & Sec.~\ref{sec:stoch2} & precondition: $dv/d\rho=\eta^\star$ within $5\%$; else quarantine \\
+\textbf{IV relevance} & $F_{\text{first-stage}}$ & $>10$ & Sec.~\ref{sec:stoch2} & HAC CI excludes 0; BY-vetted exclusion across contexts \\
+Grazing dwell boost & $p_{\mathrm{graze}},\,\gamma_{\mathrm{dwell}}$ & $0.2,\,0.5$ & Sec.~\ref{sec:calc2} & stricter dwell if $p_{\mathrm{graze}}$ high \\
+DK calibration slack & $\eta_{\mathrm{cal}}$ & $0.1$ & Sec.~\ref{sec:kernels2} & angle $\le (1+\eta_{\mathrm{cal}})$ bound \\
+Safe-bandit explore weight & $c$ & $2.0$ & Sec.~\ref{sec:ctrl2} & UCB exploration bonus \\
+Min dwell (switching) & $\tau_{\mathrm{dwell}}$ & task-bound & Sec.~\ref{sec:ctrl2} & used if no common-$V$ \\
+\textbf{Gap bootstrap} & $(b,B)$ & plugin, $B{=}1000$ & Sec.~\ref{sec:kernels2} & MBB for $\Delta\sigma$ CI \\
+Band retuning step & $\Delta\Omega$ & policy file & Sec.~\ref{sec:ctrl2} & shrink $[\omega_\ell,\omega_u]$ when margins crowd $\constref{epsilon}$ \\
+Conservativity CI one-sided & $\alpha_{\mathrm{one}}$ & $0.95$ & Sec.~\ref{sec:ctrl2} & for residual lower bound \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Artifact field schemas (per window)}\label{app:artifact-schemas}
+
+\paragraph{Tier 1: Transport Pack.}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l l X X @{}}
+\toprule
+\textbf{Field} & \textbf{Type/Shape} & \textbf{Units} & \textbf{Required} & \textbf{Notes} \\
+\midrule
+$\FIM_t$ & matrix $(d\times d)$ & – & yes & window Fisher; hash and checksum \\
+$W_t$ & matrix $(d\times d)$ & – & yes & whitening s.t.\ $\FIM_t=W_t^\top W_t$ \\
+$\{\eta_k\}$ trace & vector & – & yes & $\eta$ iterates; last is $\constref{etastar}$ \\
+Dual gap, bracket width & scalars & – & yes & $\le 10^{-4}$; bracket width stored \\
+Envelope slope check & scalar & – & yes & $dv/d\rho$ vs.\ $\eta^\star$ (rel.\ err.\ $\le 5\%$) \\
+CVaR slack (CBF) & struct & units of $h_i$ & yes & $\mathrm{CVaR}_{0.95}(s_i),\,\mathrm{CVaR}_{0.95}(\sigma_i)$ \\
+Saltation constants & tuple & – & yes & $(\hat\nu_{\min},C_{\mathrm{salt}},C_{\mathrm{fr}})$ with CIs \\
+\textbf{Frontier Spend Ledger id} & hash & – & yes & per-crossing entries (table below) \\
+Holonomy angles & list & rad & yes & principal-angle increments \\
+\textbf{Harmonic Rotational Mass} & scalar & rad & yes & gap-weighted rotation metric (+ CI) \\
+Range proxy & scalar & – & yes & $\widehat R_t$ and bootstrap CI \\
+PR witness id & GKYP certificate id & – & yes & band, margin, $(P,Q)$, multipliers \\
+\textbf{PR hitmap id} & hash & – & yes & vertex/extremal contributions + min sampled margin \\
+Uncertainty descriptor & hash & – & yes & polytope vertex ids or LFT structure hash \\
+Reference digest & struct & – & yes & $\{w_s\},\{a_p\}$, mesh-hash (Def.~\ref{def:ref2}) \\
+Replay Pack SHA & hash & – & yes & deterministic container image SHA \\
+Solver transcript id & hash & – & yes & cone/QP transcript identifier \\
+Risk posture & enum & – & yes & \texttt{NOMINAL/TIGHTENED} \\
+\textbf{Quarantined?} & bool + reason & – & yes & true $\Rightarrow$ discovery/promotion excluded \\
+Coverage \& latency & scalars & \%, time & yes & coverage $\ge99\%$; latency $\le$ one window \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Frontier Spend Ledger (per crossing).}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l X X @{}}
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Notes} & \textbf{Blocks if violated} \\
+\midrule
+crossing\_id, tube\_id, ts & ids & unique ids and timestamp & – \\
+$K$-obs-norm & scalar & $\|K{-}I\|_{\text{obs}}$ & if $>C_{\mathrm{salt}}(1{+}0.1)$ \\
+$C_{\mathrm{salt}}$ point/CI & scalars & evaluated bound + CI & – \\
+$\hat\nu_{\min}$ CI & scalar CI & transversality with CI & if CI contains $0$ \\
+$c_\Sigma$ CI, $\kappa_{\max}$, $r_{\mathrm{tube}}$ & scalars & chart constant, curvature, tube radius & – \\
+slack\_used & scalar & $0.1\times C_{\mathrm{salt}}$ & – \\
+rights-residual LB & scalar & one-sided LB of $h^+-h^-+\sigma$ & if $<0$ \\
+ledger\_hash & hash & row-hash for automata evidence & – \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Tier 2: Provenance Ladder.}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l X X X @{}}
+\toprule
+\textbf{Step} & \textbf{Timestamp} & \textbf{Input hash(es)} & \textbf{Output hash} & \textbf{Signature/Note} \\
+\midrule
+Telemetry $\to$ Features & ISO-8601 & raw source hashes & features hash & extractor version \\
+Features $\to$ Cumulants & ISO-8601 & features hash & $\bm\kappa$ hash & HAC settings \\
+Cumulants $\to$ FDR & ISO-8601 & $\bm\kappa$ hash & $E_t^{\mathrm{raw}}$ hash & BY $\cutq$ \\
+Identifiability/MTC & ISO-8601 & raw set hash & $E_t$ hash & IV badge; power; $K$ used \\
+DRO/KKT & ISO-8601 & data/loss hash & $\eta$ trace hash & dual gap; envelope slope \\
+Saltation calibration & ISO-8601 & $(F^\pm,n)$ & replay id hash & $\|K{-}I\|$ vs.\ $C_{\mathrm{salt}}$ \\
+DK calibration & ISO-8601 & $(\widetilde J^\pm)$ & replay id hash & angle vs.\ DK bound \\
+QP/PR & ISO-8601 & model hash & transcript id hash & PR witness id; uncertainty hash; hitmap id \\
+Switching stability & ISO-8601 & QP set ids & cert hash & common-$V$ or $\tau_{\mathrm{dwell}}$ \\
+Clamp policy evidence & ISO-8601 & audit seed/hash & policy hash & posture transition; $(\cutq,r)$ pre/post \\
+Registries & ISO-8601 & – & registry hashes & Merge/Context; Instrument Map \\
+Risk posture \& quarantine & ISO-8601 & evidence hashes & state record & realized FDR; coverage; reason \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Tier 3: Coupling Identification Sheet (CIS) with IV badges.}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l l l l l X @{}}
+\toprule
+\textbf{Index} & \textbf{$p,q,m$} & \textbf{$p$-val} & \textbf{BY thr.} & \textbf{MTC} & \textbf{Power} & \textbf{IV badge (relevance, exclusion, ablation $\Delta\kappa$)} \\
+\midrule
+Entry & $(\cdot,\cdot,\cdot)$ & scalar & scalar & \{T/F\}$^3$ & $[0,1]$ & $F{>}10$, BY non-reject across contexts, observed $\downarrow$ in $\kappa$ \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Tier 4: Automata Evidence (row-hash links).}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l l l X X X @{}}
+\toprule
+\textbf{Automaton id} & \textbf{Type} & \textbf{Spec} & \textbf{Run} & \textbf{Indices} & \textbf{Consumed\_evidence (row-hashes)} & \textbf{Linked artifacts} \\
+\midrule
+hash & Büchi/Streett & e.g.\ $\textsf{G}(M_t\le B_{\mathrm{saf}})$ & accept/reject & $[t_0,t_1]$ & list of (ts, KPI-hash, ledger\_hash) & GKYP id, QP id, DRO id, Replay SHA \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Auxiliary descriptors}
+
+\paragraph{Uncertainty Model Descriptor (PR witness).}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l X X @{}}
+\toprule
+\textbf{Kind} & \textbf{ID / Hash} & \textbf{Payload} & \textbf{Note} \\
+\midrule
+Polytope & vertex-list hash & $\{(A_j,B_j,C_j,D_j)\}_{j=1}^J$ ids & operating-region grid hash \\
+LFT & structure hash & $M$ and structured set $\mathbb D$ & small-gain/scale meta \\
+\textbf{PR hitmap} & hitmap hash & per-vertex/extremal margin contributions & used for band retuning \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Registries, IV badges, posture \& policy evidence.}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l X X @{}}
+\toprule
+\textbf{Artifact} & \textbf{Hash / Version} & \textbf{Core fields} & \textbf{Blocks if missing} \\
+\midrule
+Merge Registry & hash & admissible merges $(a,b)$ & cross-merge promotions \\
+Context Registry & hash & contexts, covariates, exclusion assertions & IV-based promotions \\
+Instrument Map & windowed hash & invariance p-values, BY thresholds & IV promotion \\
+\textbf{IV Badge} & badge id & F-stat, HAC CI, BY transcript, ablation $\Delta\kappa$ & Et promotion \\
+Clamp Policy Evidence & audit hash & pre/post $\cutq$,\ $r$; posture state & – (tightening only) \\
+\textbf{Risk-posture manifest} & state hash & \texttt{NOMINAL/TIGHTENED}, reason, freeze horizon & – \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Deterministic Replay Pack.}
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{} l l X X @{}}
+\toprule
+\textbf{Field} & \textbf{Type} & \textbf{Example} & \textbf{Note} \\
+\midrule
+Dockerfile hash & sha256 & \texttt{sha256:...} & pinned base image + deps \\
+Image SHA & sha256 & \texttt{sha256:...} & recorded in Transport Pack \\
+Seeds \& solver tol & struct & \texttt{\{rng:1234,tol:1e-8\}} & deterministic runs \\
+Replay script ids & list & \texttt{[saltation, DK, envelope, automata]} & ordered tasks \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Minimal manifest (machine-readable)}
+\noindent A compact, machine-consumable manifest tying tiers, registries, posture/quarantine, hitmaps, and replay image.
+\begin{lstlisting}
+{
+  "window_id": "...",
+  "transport_pack": {
+    "FIM_hash": "...", "W_hash": "...",
+    "eta_trace_hash": "...", "dual_gap": 9.8e-5,
+    "bracket_width": 1.3e-3, "envelope_check_relerr": 0.03,
+    "cvar_slack": {"s": 0.012, "sigma": 0.006},
+    "saltation": {"nu_min_CI": [0.19,0.27], "C_salt": 0.93, "C_fr": 0.11},
+    "frontier_spend_ledger_id": "...",
+    "holonomy_angles_hash": "...",
+    "harmonic_rotational_mass": {"H_k": 0.21, "ci": [0.17,0.26]},
+    "range_proxy": {"Rhat": 1.42, "ci": [1.31,1.51]},
+    "pr_witness_id": "...", "uncertainty_desc_hash": "...",
+    "pr_hitmap_id": "...",
+    "ref_digest": "...", "replay_sha": "...",
+    "solver_transcript": "...",
+    "risk_posture": "NOMINAL",
+    "quarantine": {"flag": false, "reason": null},
+    "coverage": 0.993, "latency_ms": 820
+  },
+  "registries": {
+    "merge_registry_hash": "...",
+    "context_registry_hash": "...",
+    "instrument_map_hash": "..."
+  },
+  "cis": [{
+    "idx":[p,q,m], "pval":0.003, "by_thr":0.007,
+    "mtc":{"transfer":true,"sprt":true,"cond":true},
+    "iv_badge":{"F": 18.4, "HAC_CI":[0.12,0.33],
+                "BY_nonreject":true, "delta_kappa_drop":0.21},
+    "power":0.86, "context_id":"C-01", "instrument_id":"IV-003", "K_used":3
+  }],
+  "automata": [{
+    "id":"...","type":"buchi","spec":"G(Res<=0)","run":"accept",
+    "t":[t0,t1],
+    "consumed_evidence":[["t0","kpi_hash0","ledger_row_hash0"],
+                         ["t1","kpi_hash1","ledger_row_hash1"]],
+    "links":{"gkyp":"...","qp":"...","dro":"...","replay_sha":"..."}
+  }],
+  "clamp_policy_evidence": {
+    "null_audit_seed":"...", "fdr_realized":0.072, "q_before":0.10, "q_after":0.10,
+    "r_before":0.41, "r_after":0.41, "posture":"NOMINAL"
+  }
+}
+\end{lstlisting}
+

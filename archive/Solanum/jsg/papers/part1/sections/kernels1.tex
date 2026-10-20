@@ -1,0 +1,305 @@
+\section{Computable Kernels: Plane Selection and Structural Derivatives}\label{sec:kernels1}
+% ============================================================
+
+We turn abstract circulation bivectors into numerically stable kernels for control/estimation. New here:
+(i) admissible constrained subbundles for plane selection with upper semicontinuity of maximizers and a $k$-plane degeneracy policy; 
+(ii) SVD selection aligned with the \emph{almost-complex} structure of real skew matrices; 
+(iii) explicit regularity and finite-difference (FD) policies for shape derivatives with a \emph{frontier freeze} and dependence-aware CIs.
+
+% ---- Continue numbering: Lemma 11, Remark 2, Proposition 2
+\setcounter{lemma}{10}
+\setcounter{proposition}{1}
+
+\subsection{Plane selection under constraints: skew geometry and robustness}\label{subsec:plane}
+
+Let $A(\gamma,G)$ be the real skew matrix representing the $\Gamma$-circulation $\Phi=S^{(2,0)}_\Gamma$. 
+Let $\mathcal U(\gamma,G)\subset \mathbb R^d$ and $\mathcal V(\gamma,G)\subset \mathbb R^d$ be \emph{admissible subspaces} encoding feasibility (e.g., contact modes, actuator limits). 
+We assume:
+
+\begin{assumption}[Admissible subbundles and frontier rule]\label{ass:admissible}
+\emph{[\textup{Rep/Ctrl}]}
+(i) On each stratum $M_i$, $\mathcal U$ and $\mathcal V$ are $C^1$ subbundles with orthogonal projectors $P_U(\gamma,G)$ and $P_V(\gamma,G)$ depending continuously on $(\gamma,G)$; 
+(ii) across a frontier crossing, apply the \emph{freeze} rule of Section~\ref{sec:control1}: hold $P_U,P_V$ fixed during the crossing and re-evaluate immediately after.
+\uses{(C1) stratified smoothness; frontier freeze (Rule in Section~6).}
+\end{assumption}
+
+For a given $(\gamma,G)$, define the constrained operator $A_{UV}:=P_U A P_V$.
+
+\begin{lemma}[Constrained SVD]\label{lem:constrained-svd-7}
+\emph{[\textup{Alg/Ctrl}]}
+The maximizers of 
+\[
+\max_{\substack{X\in\mathcal U,\ \|X\|=1\\ Y\in\mathcal V,\ \|Y\|=1}} |X^\top A Y|
+\]
+are the top left/right singular vectors of $A_{UV}$; the optimum equals $\sigma_1(A_{UV})$.
+\uses{Orthogonal projectors $P_U,P_V$; induced operator norm.}
+\end{lemma}
+
+\begin{lemma}[Upper semicontinuity of maximizing subspaces]\label{lem:usc-planes}
+\emph{[\textup{Rep/Alg}]}
+If $(\gamma_k,G_k)\to(\gamma,G)$ within a stratum and Assumption~\ref{ass:admissible} holds, then the set of maximizers of Lemma~\ref{lem:constrained-svd-7} is \emph{upper semicontinuous}: any limit of maximizers at $(\gamma_k,G_k)$ is a maximizer at $(\gamma,G)$. 
+Consequently, with the frontier freeze, the selected subspaces are piecewise continuous and free of chattering.
+\begin{proofsketch}
+Continuity of $P_U,P_V$ gives continuity of $A_{UV}$; the singular-value map is continuous and the argmax correspondence is upper semicontinuous on compact Grassmannians. The freeze eliminates instantaneous toggling at frontiers.
+\end{proofsketch}
+\uses{(C1) continuity of $P_U,P_V$; compactness of Grassmannians; frontier freeze.}
+\end{lemma}
+
+\begin{proposition}[Freeze-bias for structural derivatives]\label{prop:freeze-bias}
+Let the total freeze time inside tubes on a window be $T_{\mathrm{frz}}$ and the window length be $\tau$. 
+Then for the windowed gradient,
+\[
+\operatorname{Bias}\big(\widehat{\partial_\theta \mathcal L}\big)\ \le\ C\,\frac{T_{\mathrm{frz}}}{\tau}\ +\ O(h^2),
+\]
+with $C$ depending on local drift/Lipschitz moduli. \emph{Report:} log $T_{\mathrm{frz}}/\tau$ with the CI from the dependence-aware bootstrap.
+\end{proposition}
+
+\begin{remark}[Skew-SVD $\Leftrightarrow$ complex eigenplanes]\label{rem:skew-J-7}
+\emph{[\textup{Alg/Ctrl}]}
+For real skew $A$, singular values come in pairs and $A$ induces an almost-complex structure $J$ on each principal \(2\)-plane: if $Av=i\lambda v$ with $\lambda>0$, then the maximizing plane is spanned by $\Re v,\Im v$ and $J$ acts as a $\tfrac\pi2$ rotation on it. Under constraints, apply the same construction to $A_{UV}$ on the selected subspace. This $J$-aligned basis feeds $\mathbb A_i$ in Definition~\ref{def:dirac-proj}.
+\uses{Skew symmetry; spectral pairing; $J$-structure.}
+\end{remark}
+
+\paragraph{Degeneracy policy (measurable, robust).}
+Let $\sigma_1\ge\sigma_2\ge\cdots$ be the singular values of $A_{UV}$. 
+If $\sigma_1-\sigma_2<\varepsilon_{\mathrm{gap}}$, \emph{escalate} to a $k$-plane (typically $k=4$) spanned by the top $k$ singular vectors, and actuate in any $J$-compatible basis on that plane. 
+With a perturbation $\Delta$ and gap $g:=\sigma_k-\sigma_{k+1}>0$, Davis--Kahan/Wedin yields
+\[
+\sin\Theta\big(\widehat{\mathcal U}_k,\mathcal U_k\big)\ \le\ \frac{\|P_U\,\Delta\,P_V\|}{g}\,,
+\]
+hence the escalation threshold $g\le\varepsilon_{\mathrm{gap}}$ gives a measurable trigger and bounded principal-angle drift under small $\|\Delta\|$.
+\uses{Spectral gap $g$; operator perturbation $\|\Delta\|$; $J$-compatibility.}
+
+\subsection{Shape derivatives on $G$: regularity, FD policy, and freeze}\label{subsec:shape}
+
+Let $\theta\in\mathbb R^p$ parametrize $G_\theta$ and $T(\gamma,G_\theta)$ denote a stratumwise functional (e.g., contractions entering $A$).
+
+\begin{proposition}[Score regularity and FD MSE]\label{prop:score-fd-7}
+\emph{[\textup{Stoch/Inf}]}
+(i) (\emph{Regularity}) If the law admits a stratumwise density $w(\gamma;Y\!\mid G_\theta)$ differentiable in $\theta$ and there exists $g\in L^1$ with $|\nabla_\theta w|\le g$ uniformly on $\|\theta\|\le r$, then
+\[
+\nabla_\theta\,\mathbb E[T(\gamma,G_\theta)]
+\ =\ \mathbb E\big[T\,\nabla_\theta\log w\big]\ +\ \mathbb E[\nabla_\theta T],
+\]
+with expectations taken on each stratum and aggregated by $\lambda$ (Def.~\ref{def:ref-measure}).\\
+(ii) (\emph{FD MSE}) Two-sided central differences with step $h$ and $m$ samples per side satisfy
+\[
+\mathrm{MSE}\ \le\ \frac{2\sigma^2}{m h^2}\ +\ C_b^2\,h^4,\qquad 
+h^\star\ \asymp\ \Big(\frac{\sigma^2}{m\,C_b^2}\Big)^{\!1/6}.
+\]
+\begin{proofsketch}
+(i) Dominated convergence with the $L^1$ envelope; decompose via the log-derivative trick. (ii) Standard variance $O(m^{-1}h^{-2})$ and truncation bias $O(h^2)$ for central differences give the stated balance.
+\end{proofsketch}
+\uses{Envelope on $|\nabla_\theta w|$; window laws; variance $\sigma^2$; curvature bound $C_b$.}
+\end{proposition}
+
+\begin{rulex}{Frontier freezing for $\theta$-updates}
+Hold $\theta$ fixed inside frontier tubes and reuse the last valid gradient; re-enable updates after dwell time $\ge \tau_{\min}$ (Lemma~\ref{lem:no-zeno}). The induced bias is $O(\text{dwell})$ and is dominated by window averaging at the same scale.
+\uses{(C3) $\tau_{\min}$; (C1) frontier tubes; windowing (Section~\ref{sec:stoch1}).}
+\end{rulex}
+
+\paragraph{Dependence-aware CIs.}
+Report gradient CIs using moving or circular block bootstrap (MBB/CBB) with $b\sim n^{1/3}$ (Section~\ref{sec:stats1}). For multivariate gradients, give FIM-weighted ellipsoids; state the chosen $b$ and effective sample size.
+
+\paragraph{Update--reselect kernel with guards (summary).}
+Assemble $A$, compute $A_{UV}$, select a $J$-aligned plane (escalate to $k$ if $\sigma_k-\sigma_{k+1}<\varepsilon_{\mathrm{gap}}$), compute $\theta$-gradients via score or FD with $h^\star$, perform a rank-$2$ (or $2k$) refresh, and apply the frontier freeze during instantaneous crossings. Export the $J$-aligned basis to Definition~\ref{def:dirac-proj} for building $\mathcal X_i=\ker\mathbb A_i$.
+
+\begin{mdframed}
+\textbf{Acceptance checks for Section \ref{sec:kernels1}.}
+\begin{enumerate}[leftmargin=*]
+\item Plane selection cites Lemma~\ref{lem:constrained-svd-7} and uses Assumption~\ref{ass:admissible}; maximizers are upper semicontinuous (Lemma~\ref{lem:usc-planes}); degeneracy escalation uses the gap trigger and logs principal angles.
+\item Skew geometry is explicit (Remark~\ref{rem:skew-J-7}); the $J$-basis exported to Section~\ref{sec:control1} is stated.
+\item Gradient estimators cite Proposition~\ref{prop:score-fd-7}; outputs print $h^\star$, bootstrap CI (with block length $b$), and the freeze status if active.
+\end{enumerate}
+\end{mdframed}
+
+\subsection*{Numerical API (plane selection, $k$-plane guard, $J$-basis, FD $h^\star$, CIs)}
+
+\begin{lstlisting}
+# === Inputs (conceptual) =====================================================
+Geometry:
+  assemble_A(gamma, G, hatS) -> A        # skew matrix for S^{(2,0)}_\Gamma (Sec. 7)
+  admissible_subspaces(gamma, G) -> (P_U, P_V)   # orthogonal projectors (Assumption 7.1)
+
+Frontier:
+  in_frontier_tube() -> bool             # frontier detector (freezes updates)
+  tau_min                                # dwell-time lower bound from Lemma 1
+
+Stats:
+  T_stream                               # stream or window of sufficient stats / test functionals
+  window_id, n_eff                       # identifiers for logging
+
+Logging:
+  log_json(dict)
+
+# === Helpers: algebra on subspaces ==========================================
+function constrained_svd(A, P_U, P_V, k=2):
+    A_uv = P_U @ A @ P_V
+    # Economy SVD; for skew A_uv, use symmetric structure for speed if available
+    (U, s, Vt) = svd(A_uv, full=False)      # s[0] >= s[1] >= ...
+    return {"U": U[:, :k], "V": Vt.T[:, :k], "s": s[:max(4,k)]}
+
+function J_aligned_basis(A, U2, V2):
+    # Build a J-compatible 2-plane basis from top singular vectors (skew structure)
+    # For skew A, left/right vectors approximate +/- 90 deg phase shift; orthonormalize
+    QL = qr(U2)[0]; QR = qr(V2)[0]            # 2-col each
+    # Return orthonormal bases for the actuation plane(s)
+    return {"Q_left": QL, "Q_right": QR}
+
+function principal_angles(Q_prev, Q_new):
+    # Return principal angles between two k-planes (columns orthonormal)
+    # via SVD of Q_prev^T Q_new
+    M = Q_prev.T @ Q_new
+    s = svd(M, compute_uv=False)
+    angles = arccos( clip(s, 0, 1) )
+    return sort_desc(angles)                   # largest first
+
+# === Degeneracy guard and escalation ========================================
+state plane_state = { "Q_L": None, "Q_R": None, "sigma": None,
+                      "gap": None, "k": 2, "degenerate": False }
+
+function plane_select_kernel(gamma, G, hatS, eps_gap=1e-1, k_alt=4):
+    (P_U, P_V) = admissible_subspaces(gamma, G)
+    A = assemble_A(gamma, G, hatS)
+    S2 = constrained_svd(A, P_U, P_V, k=2)
+    s = S2["s"]; gap = s[0] - s[1] if len(s) > 1 else +inf
+    if gap < eps_gap:
+        S4 = constrained_svd(A, P_U, P_V, k=k_alt)
+        B = J_aligned_basis(A, S4["U"], S4["V"])
+        plane_state.k = k_alt; plane_state.degenerate = True
+        plane_state.sigma = S4["s"]; plane_state.gap = S4["s"][k_alt-1] - S4["s"][k_alt] if len(S4["s"])>k_alt else +inf
+        QL, QR = B["Q_left"], B["Q_right"]
+    else:
+        B = J_aligned_basis(A, S2["U"], S2["V"])
+        plane_state.k = 2; plane_state.degenerate = False
+        plane_state.sigma = S2["s"]; plane_state.gap = gap
+        QL, QR = B["Q_left"], B["Q_right"]
+    # principal angles vs previous (for chatter audit)
+    if plane_state["Q_L"] is not None:
+        angL = principal_angles(plane_state["Q_L"], QL)
+        angR = principal_angles(plane_state["Q_R"], QR)
+    else:
+        angL = angR = None
+    plane_state["Q_L"] = QL; plane_state["Q_R"] = QR
+    # log
+    log_json({"evt":"plane_select",
+              "window": window_id,
+              "sigma_top": float(plane_state.sigma[0]),
+              "gap_trigger": float(gap),
+              "k_mode": plane_state.k,
+              "degenerate": plane_state.degenerate,
+              "angles_L": angL, "angles_R": angR})
+    return {"QL": QL, "QR": QR, "k": plane_state.k, "gap": plane_state.gap,
+            "sigma": plane_state.sigma, "angles_L": angL, "angles_R": angR}
+
+# === Frontier freeze hook ====================================================
+state freeze = { "active": False, "entered_at": None }
+
+function maybe_freeze_updates():
+    if in_frontier_tube() and not freeze.active:
+        freeze.active = True; freeze.entered_at = now()
+        log_json({"evt":"freeze_on", "window": window_id})
+    if (not in_frontier_tube()) and freeze.active:
+        freeze.active = False
+        dwell = now() - freeze.entered_at
+        log_json({"evt":"freeze_off", "window": window_id, "dwell": dwell})
+
+# === FD step-size policy (Prop. 2) ===========================================
+# MSE <= 2*sigma^2/(m h^2) + C_b^2 h^4  ->  h* ~ (sigma^2/(m C_b^2))^(1/6)
+
+function estimate_sigma2(samples_plus, samples_minus):
+    # empirical variance of central-diff numerator over m pairs
+    diffs = [ s_plus[i] - s_minus[i] for i in 1..m ]
+    return var(diffs) / 2.0
+
+function estimate_Cb(pilot_vals, steps):
+    # crude curvature proxy: max absolute third finite-difference over a small grid of h
+    # pilot_vals[h] = central difference at step h
+    Cb = 0.0
+    for j in 2..len(steps)-1:
+        # second diff wrt h approximates leading bias coefficient
+        Cb = max(Cb, abs(pilot_vals[j-1] - 2*pilot_vals[j] + pilot_vals[j+1]) / (steps[j]-steps[j-1])^2)
+    return max(Cb, 1e-12)
+
+function fd_step_size_policy(m, sigma2_hat, Cb_hat):
+    h_star = (sigma2_hat / (m * Cb_hat^2))^(1/6)
+    return max(h_star, 1e-8)            # floor for numerical stability
+
+# === Dependence-aware bootstrap CIs ==========================================
+function block_length(n_eff, method="n_pow_third", c=1.0):
+    if method == "n_pow_third":
+        return max(2, floor(c * n_eff^(1/3)))
+    else:
+        return max(2, floor(c * n_eff^(1/3)))
+
+function bootstrap_CI_grad(grad_series, alpha=0.05, method="cbb"):
+    n = length(grad_series)
+    b = block_length(n_eff)
+    B = 1000
+    draws = []
+    for bidx in 1..B:
+        if method == "cbb":
+            start = randint(0, n-1)
+            # wrap-around circular blocks
+            idx = concatenate_blocks(start, b, n)[:n]
+        else:
+            idx = moving_blocks_indices(n, b)
+        draws.append( mean( grad_series[idx] ) )
+    q_lo = quantile(draws, alpha/2); q_hi = quantile(draws, 1 - alpha/2)
+    return {"ci":[q_lo, q_hi], "b": b, "B": B}
+
+# === End-to-end update-reselect (per estimation tick) ========================
+function update_reselect(gamma, G, hatS, grad_oracle, theta, m_pairs=16, fd_steps=[1e-3,2e-3,4e-3]):
+    maybe_freeze_updates()
+    if freeze.active:
+        log_json({"evt":"grad_skip_freeze", "window": window_id})
+        return {"frozen": True}
+    # 1) plane select (with degeneracy guard)
+    sel = plane_select_kernel(gamma, G, hatS)
+    # 2) gradient estimate: score if available; else FD with h*
+    if grad_oracle.has_score:
+        g_hat = grad_oracle.score(theta)             # unbiased; dependence handled in CI
+        series = grad_oracle.series()                # time series for CI
+        ci = bootstrap_CI_grad(series)
+        method = "score"
+    else:
+        # pilot curvature and sigma
+        pilot = {}
+        for h in fd_steps:
+            pilot[h] = grad_oracle.central_diff(theta, h, m=m_pairs)
+        Cb_hat = estimate_Cb([pilot[h] for h in fd_steps], fd_steps)
+        # variance proxy from smallest h
+        sigma2_hat = estimate_sigma2( grad_oracle.samples_plus(h=fd_steps[0]),
+                                      grad_oracle.samples_minus(h=fd_steps[0]) )
+        h_star = fd_step_size_policy(m_pairs, sigma2_hat, Cb_hat)
+        g_hat  = grad_oracle.central_diff(theta, h_star, m=m_pairs)
+        series = grad_oracle.series_h(h_star)        # time series of FD grads for CI
+        ci = bootstrap_CI_grad(series)
+        method = "fd"
+    # 3) log everything
+    log_json({"evt":"grad_update",
+              "window": window_id,
+              "method": method,
+              "g_hat": g_hat,
+              "ci": ci["ci"], "b_block": ci["b"], "B_boot": ci["B"],
+              "k_mode": sel["k"], "gap": float(sel["gap"]),
+              "angles_L": sel["angles_L"], "angles_R": sel["angles_R"]})
+    return {"plane": sel, "grad": g_hat, "ci": ci, "frozen": False}
+\end{lstlisting}
+
+\paragraph{Guards and good practice.}
+- **Chatter audit.** Always log principal angles between successive planes; if the max angle exceeds a small threshold repeatedly while not in a frontier tube, raise a degeneracy warning and keep \(k\!\!=\!4\) for a hold interval.  
+- **Spectral gap hygiene.** If the top two singular values are within machine epsilon of each other, skip plane flips even if the argmax toggles sign; the \(J\)-basis is orientation-free.  
+- **FD sanity.** Refuse \(h^\star\) if the effective sample size of the FD numerator (\(\mathrm{ESS}=1/\sum w^2\) for importance reweighting, if used) drops below a floor; increase \(m\) or take a larger \(h\).  
+- **CIs.** Report block length \(b\) and the bootstrap flavor (CBB/MBB) alongside the interval; this satisfies the acceptance checks in Section~9 as well.
+
+\paragraph{Mini unit tests.}
+1) **Skew toy:** \(A=\begin{bmatrix}0&\lambda\\-\lambda&0\end{bmatrix}\oplus 0\) with random \(P_U,P_V\). Expect \(k\!=\!2\), \(\sigma_1=\lambda\), angles \(=\{0,0\}\) across ticks.  
+2) **Degenerate case:** \(A\) with \(\sigma_1\approx\sigma_2\). Ensure \(k\)-escalation triggers and principal-angle drift stays bounded when you add a small perturbation.  
+3) **FD MSE curve:** For a known cubic \(T(\theta)\), verify empirical MSE vs.\ \(h\) follows \(a h^{-2} + b h^4\) and the measured minimum is near \(h^\star\).  
+
+\emph{Uses: } (C1) stratified smoothness \& frontier tubes; (C3) \(\tau_{\min}\); plane degeneracy threshold \(\varepsilon_{\mathrm{gap}}\); dependence-aware CI policy \(b\sim n^{1/3}\); \(J\)-basis export to \(\mathbb A_i\) (Def.\ 6).
+
+
+% ============================================================
+% ============================================================

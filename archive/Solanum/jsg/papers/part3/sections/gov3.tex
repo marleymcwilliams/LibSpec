@@ -1,0 +1,170 @@
+% ==== Part III — Governance Anchors and Lever Dictionary (v2) ===============
+\section{Governance Anchors and Lever Dictionary (v2)}\label{sec:gov-v2}
+
+\paragraph{Aim.}
+Expose policy as \emph{provable} controller contracts. Each lever has (i) a \emph{policy clause}, (ii) a \emph{control translation} (constraints, margins, guards), (iii) \emph{evidence hooks} (Tier-1/2 fields), and (iv) \emph{unwind criteria}. Selection uses the safe-UCB rule in \secref{subsec:levers}; feasibility is enforced by CLF/CBF-QP (Lemma~\ref{lem:cbf-salt}) and PR/GKYP witnesses (Prop.~\ref{prop:gkyp-witness}). Every enforced lever must be traceable to a concrete ABI instance and to $\omega$-specs that the monitors accept.
+
+\subsection{Lever ABI (application binary interface)}\label{subsec:lever-abi}
+\emph{\layertag{Rep/Ctrl}}
+
+\begin{definition}[Lever ABI]\label{def:lever-abi}
+A lever $L$ is a tuple
+$(
+L=\langle\texttt{name},\ \texttt{scope},\ \texttt{guardset},\ \texttt{qp\_mods},\ \texttt{pr\_mods},\ \texttt{kpi\_targets},\ \texttt{evidence},\ \texttt{unwind}\rangle
+)$
+compiled to:
+\begin{enumerate}[leftmargin=*]
+\item \textbf{QP modifications} \texttt{qp\_mods}: edits to $\mathcal U$, barrier gains $(\gamma_i)$, residual budgets, or additional linearized constraints.
+\item \textbf{PR/GKYP modifications} \texttt{pr\_mods}: band tightening $[\constsymomegal,\constsymomegau]$, polytope shrink $\Omega\mapsto\Omega'$, margin floor $\epsilon\ge \constsymPRmargin$.
+\item \textbf{Guardset} \texttt{guardset}: preconditions that must remain true (EF guard Green, quarantine off, CVaR nonnegative).
+\item \textbf{KPI targets} \texttt{kpi\_targets}: explicit bounds to be consumed by $\omega$-automata (Sec.~\ref{subsec:automata}).
+\item \textbf{Evidence} \texttt{evidence}: Tier-1/2 fields and solver transcripts to log (hash IDs, verdicts).
+\item \textbf{Unwind}: deterministic criteria to revert the lever.
+\end{enumerate}
+\uses{Lemma~\ref{lem:cbf-salt}; Prop.~\ref{prop:gkyp-witness}; Rule~\ref{rule:ef-clamp}; Rule~\ref{rule:dvdrho}; \secref{subsec:automata}.}
+\end{definition}
+
+\subsection{Worked ABI example (TRO/PI: Projector Freeze)}\label{subsec:lever-example}
+\emph{\layertag{Rep/Ctrl}}
+
+\noindent\textbf{Name/Scope.} \texttt{name}=\textsf{TRO\_Freeze}; \texttt{scope}=\textsf{rights-plane breach mitigation (all strata)}.
+
+\smallskip
+\noindent\textbf{Guardset.}
+\[
+\texttt{guardset}=\{\text{clamp=Green},\ \texttt{quarantine\_bit}=0,\ \mathrm{CVaR}_{0.95}\ge0\}
+\]
+(Policy will \emph{enforce} these; breach triggers fail-closed per Rule~\ref{rule:rights-cvar}.)
+
+\smallskip
+\noindent\textbf{QP modifications (\texttt{qp\_mods}).}
+\begin{itemize}[leftmargin=*]
+\item Enforce Frontier Freeze (Rule~\ref{rule:frontier-freeze}); projection onto $\mathcal U_{\mathrm{safe}}$ off-tube, tube audit inside (Lemma~\ref{lem:cbf-salt}).
+\item Tighten barrier gains: $\gamma_i\!\leftarrow\!1.2\,\gamma_i$; tighten residual budget: $\xi_i^{\max}\!\leftarrow\!0.8\,\xi_i^{\max}$.
+\item Add energy cap: $\|u\|_2\le U_{\max}$ and slew cap $\|\Delta u\|_2\le S_{\max}$ (rate-limit actuation during TRO).
+\end{itemize}
+
+\noindent\textbf{PR/GKYP modifications (\texttt{pr\_mods}).}
+\begin{itemize}[leftmargin=*]
+\item Maintain existing band but require $\epsilon\ge\constsymPRmargin+\delta_{\mathrm{TRO}}$; if crowded, auto-shrink $\Omega\!\to\!\Omega'$ and re-certify (Prop.~\ref{prop:gkyp-witness}).
+\end{itemize}
+
+\noindent\textbf{KPI targets (\texttt{kpi\_targets}).}
+\[
+\varphi_{\text{TRO}}:=G\big(\mathrm{CVaR}_{0.95}\!\ge0\ \wedge\ \min_i \mathrm{LB}_i\!\ge0\big),\quad
+\varphi_{\text{Range}}:=G(\Delta\log\hat R_t\le 0)\ \text{during TRO}.
+\]
+
+\noindent\textbf{Evidence (\texttt{evidence}) — Tier-1/2 fields to log.}
+\begin{itemize}[leftmargin=*]
+\item Tier-1: \texttt{CVaR\_slacks}, per-barrier $\mathrm{LB}_i$ summary, \texttt{clamp\_state}, \texttt{quarantine\_bit}, \texttt{freeze\_timestamps}, \texttt{pr\_witness\_id}, \texttt{budget\_guard\_verdict}, \texttt{rollout\_mode}, \texttt{proof\_print\_id}.
+\item Solver transcripts: QP status/tolerances; GKYP witness tuple $(\Omega,\epsilon,P,Q)$; any $\Omega$-shrink diff.
+\item Tier-2: Ladder parity report (moments MAPE $\le5\%$, CVaR preserved), row-hashes for automata acceptance.
+\end{itemize}
+
+\noindent\textbf{Unwind criteria (\texttt{unwind}).}
+Two consecutive windows with $\mathrm{CVaR}_{0.95}\ge0$ and $\min_i \mathrm{LB}_i\ge0$, queue length $\le 1$, and PR margin $\ge\constsymPRmargin$ on fresh witness; automata accept $\varphi_{\text{TRO}}\wedge\varphi_{\text{Range}}$.
+
+\subsection{Normative lever dictionary}\label{subsec:lever-dict}
+\emph{\layertag{Rep/Ctrl}}
+
+\begin{table}[t]
+\centering
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.8cm} >{\raggedright\arraybackslash}p{4.6cm} >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Lever (anchor)} & \textbf{Policy clause (human-readable)} & \textbf{Controller contract (compiled)} \\
+\midrule
+\textbf{TRO/PI (rights freeze)} &
+Pause any action that risks rights-plane breach; operate in safe, minimally invasive mode. &
+Set \texttt{guardset}=\{clamp=Green, CVaR$\ge0$\}; enforce Frontier Freeze (Rule~\ref{rule:frontier-freeze}); tighten $\gamma_i\!\uparrow$ and residual budgets $\downarrow$; add rate/energy caps; require $\mathrm{CVaR}_{0.95}\!\ge0$ and $\mathrm{LB}_i\!\ge0$ (Lemma~\ref{lem:cbf-salt}); promotions frozen. Evidence: slack dist., $\mathrm{LB}_i$, freeze timestamps, \texttt{pr\_witness\_id}. Unwind: two windows CVaR$\ge0$ and LB$\ge0$. \\
+\addlinespace
+\textbf{SLA (service SLO)} &
+Meet latency/throughput while preserving safety and audit. &
+Budget caps (Def.~\ref{def:budget}); on TIMEOUT, conservative mode (Prop.~\ref{prop:slo}); forbid promotions under backlog; require $\ge99\%$ on-time. Evidence: solver timings; \texttt{budget\_guard\_verdict}. Unwind: backlog cleared for two windows. \\
+\addlinespace
+\textbf{Anti-commandeering} &
+No external actor may force unsafe actuation/state collection. &
+Add policy mask $\mathcal U\leftarrow \mathcal U\cap \mathcal U_{\mathrm{policy}}$; forbid untrusted \texttt{qp\_mods}; $\omega$-spec $G(h_i\!\ge0)$ enforced. Evidence: policy mask hash; rejected actuation log. Unwind: signed policy change in Ladder. \\
+\addlinespace
+\textbf{Audit scope / parity} &
+All claims must be parity-checked and reproducible. &
+Tier-2 parity MAPE$\le5\%$ (for $k\!\le\!4$ moments); CVaR preserved; clamp/quarantine carried. Evidence: Ladder parity report; container SHA. Unwind: parity stable over 3 windows. \\
+\addlinespace
+\textbf{Data minimization} &
+Collect/process only what EF guard permits. &
+Require passing \texttt{kl\_quad\_bounds} before Fisher proxies; on Red clamp, disable such proxies and redact derived fields (Rule~\ref{rule:ef-clamp}). Evidence: guard verdicts; field redactions. Unwind: clamp=Green for 2 windows. \\
+\addlinespace
+\textbf{Rate-limit actuation} &
+Bound actuation energy to curb collateral. &
+QP adds $\|u\|_2\!\le U_{\max}$ and slew-rate cap; KPI target on $\log\hat R_t$ non-increase during caps (Prop.~\ref{prop:cons}). Evidence: actuator norms, $\log\hat R_t$ series. Unwind: hazard cleared by CIS/automata acceptance. \\
+\addlinespace
+\textbf{PR hardening} &
+Operate with extra stability margin. &
+Shrink $\Omega\!\mapsto\!\Omega'$ and tighten band endpoints until margin $\ge\constsymPRmargin+\delta$; re-certify (Rule~\ref{rule:pr-retune}). Evidence: GKYP diffs; hitmap; new $(\Omega,\epsilon,P,Q)$. Unwind: $k$ Green windows with headroom. \\
+\addlinespace
+\textbf{Discovery moratorium} &
+Temporarily halt new coupling claims. &
+Freeze promotions; continue sensing with null audits; CIS unchanged. Evidence: BY table; \texttt{clamp\_state}; CIS diff=0. Unwind: realized FDR $\le0.9\cutq$ and envelope check passes. \\
+\bottomrule
+\end{tabularx}
+\caption{Normative levers compiled to controller/evidence contracts; each must be instantiated via a concrete ABI (Def.~\ref{def:lever-abi}).}
+\label{tab:normative-levers}
+\end{table}
+
+\subsection{Curvature-per-collateral metric}\label{subsec:cpc}
+\emph{\layertag{Ctrl/Inf}}
+
+\begin{definition}[Curvature-per-collateral (CPC)]\label{def:cpc}
+For lever $L$, define the expected ISS improvement $\Delta_{\mathrm{ISS}}(L)$ (reduction in the storage supply rate or increase in PR margin) and collateral cost $C_{\mathrm{coll}}(L)$ (rights-plane CVaR increase $+$ Hol/HarmMass increase $+$ fiscal norm). The reward used by safe-UCB (Rule~\ref{rule:lever-policy}) is
+\[
+\mathrm{CPC}(L)\ :=\ \frac{\Delta_{\mathrm{ISS}}(L)}{1 + C_{\mathrm{coll}}(L)}\,,
+\]
+with $C_{\mathrm{coll}}$ normalized by pre-registered scales. Print both numerator and denominator in Tier-1 for audit.
+\uses{Prop.~\ref{prop:pr-consume}; (C11) CVaR; (C9) Hol/Harm; \secref{subsec:levers}.}
+\end{definition}
+
+\subsection{Contracts as $\omega$-specs}\label{subsec:gov-omega}
+\emph{\layertag{Rep/Comp}}
+
+Each active lever appends LTL clauses consumed by automata:
+\[
+\varphi_{\text{TRO}}:=G(\mathrm{CVaR}_{0.95}\!\ge0\ \wedge\ \mathrm{LB}_i\!\ge0),\quad
+\varphi_{\text{SLA}}:=G(\text{on\_time}\!\ge\!0.99),\quad
+\varphi_{\text{PR}}:=G(\epsilon\!\ge\!\constsymPRmargin)\,.
+\]
+Acceptance is required before the lever can be marked “enforced”; rejections must carry the first counterexample hash. \uses{Sec.~\ref{subsec:automata}.}
+
+\subsection{Governance API}\label{subsec:gov-api}
+\emph{\layertag{Comp}}
+\begin{lstlisting}
+def compile_lever(policy, state):
+    """
+    Translate a human policy clause to Lever ABI:
+    returns qp_mods, pr_mods, guardset, kpi_targets, evidence, unwind.
+    """
+
+def enforce_lever(lever, ctrl_state, kpi):
+    """
+    Apply qp_mods/pr_mods subject to guardset; emit omega specs for monitors.
+    """
+
+def unwind_lever(lever, evidence):
+    """
+    Check deterministic unwind criteria; revert qp_mods/pr_mods if satisfied.
+    """
+
+def cpc_score(lever, telemetry):
+    """
+    Estimate Delta_ISS and collateral cost; return CPC for safe-UCB ranking.
+    """
+\end{lstlisting}
+
+\subsection{Acceptance checks (governance)}\label{subsec:gov-accept}
+\begin{acceptchecks}
+\item \textbf{ABI instance present:} each active lever has a concrete ABI instance (Def.~\ref{def:lever-abi}); \texttt{qp\_mods}/\texttt{pr\_mods} appear in solver transcripts; guardset holds throughout enforcement.
+\item \textbf{Evidence hooks complete:} Tier-1/2 include the lever’s required fields (e.g., \texttt{CVaR\_slacks}, \texttt{freeze\_timestamps}, GKYP diffs, \texttt{budget\_guard\_verdict}, \texttt{rollout\_mode}); missing fields fail CI.
+\item \textbf{Automata alignment:} the lever’s $\omega$-specs appear in the monitor set and accept; on reject, the first counterexample hash is logged and enforcement halts.
+\item \textbf{Unwind determinism:} logs show the exact stabilization criteria met (e.g., two windows CVaR$\ge0$, LB$\ge0$, margin headroom); \texttt{qp\_mods}/\texttt{pr\_mods} revert and CIS remains consistent.
+\item \textbf{CPC audit:} CPC numerator/denominator are printed with units and normalization scales; safe-UCB choices match CPC ranking subject to feasibility (Rule~\ref{rule:lever-policy}).
+\end{acceptchecks}

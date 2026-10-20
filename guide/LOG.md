@@ -4,6 +4,11 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-20
 
+### Three old repos archived; Solanum's `.gitattributes` left out (#16)
+- **Decision:** `archive/Reach`, `archive/SirusSC` and `archive/Solanum` hold the files the brief listed, byte for byte, except `Solanum/jsg/.gitattributes`. Inside this repo its rules would apply to the copy: `*.pdf`, `*.png`, `*.svg`, `artifacts/**` and `papers/**/figures/**` go to Git LFS, and `* text=auto eol=lf` rewrites CRLF files to LF. Committed raw instead, those files show as modified in every clone.
+- **Also left out, on your review of #16:** SirusSC's `.pytest_cache/` (6 files) and Solanum's three biblatex control files (`*-blx.bib`). Both are generated, like the LaTeX intermediates the brief excluded.
+- **Undo:** add the file back with `git add -f`; git then applies its rules to the copy.
+
 ### `mfGate_monotone` dropped; the general form replaces it (#14)
 - **Decision:** Q3 left this call to Claude Code. `mfGate_monotone` is dropped rather than kept as a corollary.
 - **Why:** `mfGate_signed` implies it. Keeping both would freeze two statements that carry the same claim, and the corollary would need its own mutant, witness and proof.

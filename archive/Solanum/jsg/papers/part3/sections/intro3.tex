@@ -1,0 +1,142 @@
+% ==== Part III — Intro and Symbol Registry ==================================
+% Include local Part III macros exactly once (wrappers load common preamble)
+\input{../macros3.tex}
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+\bigskip
+
+% ==== Symbol Registry (one page) ============================================
+\section*{Symbol Registry (standing constants and moduli)}
+\noindent\emph{All constants are understood as \textbf{uniform on compact sublevel sets} of the Lyapunov/energy functions in use. Codes C1--C12 are stable across drafts. \textbf{Disambiguation:} we use $\constref{EFeps}$ for EF locality (KL--Fisher) and $\constref{PRmargin}$ for PR/GKYP certificates.}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\textwidth}{@{} c >{}c<{} >{\raggedright\arraybackslash}X @{}}
+\toprule
+\textbf{Code} & \textbf{Symbol(s)} & \textbf{Meaning / where used (this paper)} \\
+\midrule
+C1 & \constref{kappamax}, \constref{thetamin}, \constref{rtube} & Frontier geometry: uniform curvature/defect bounds for frontier tubes; minimum principal-angle separation $\constref{thetamin}$ for transverse crossings; tube radius for freeze \& detection. Used in \secref{sec:calc2}, \secref{sec:ctrl2}. \\
+C2 & \constref{Smax}, \constref{Gmax} & Uniform bounds for decision/environment vector fields on strata: $\|S\|\le \constref{Smax}$ on $\Gamma$, $\|G\|\le \constref{Gmax}$ on $G$. Used in \secref{sec:calc2}, \secref{sec:ctrl2}. \\
+C3 & \constref{LF}, \constref{taumin} & One-sided Lipschitz for Filippov extension; minimum dwell time between crossings ensuring No-Zeno. Used in \jsgiLem{\lblNoZeno}, \jsgiThm{\lblISS}. \\
+C4 & \constref{tau}, \constref{rho} & Sliding window length and DRO radius (Wasserstein or KL ball). Adaptive policy in \secref{sec:closure2}, \secref{sec:entropy2}. \\
+C5 & \constref{F}, \constref{chi}, \constref{Lpsi} & Fisher objects: $\constref{F}$ the (windowed) Fisher information; $\constref{Lpsi}$ Hessian-Lipschitz for log-partition; $\constref{chi}$ Fisher leakage metric. Used in \secref{sec:stoch2}, \secref{sec:entropy2}. \\
+C6 & \constref{EFeps} & \textbf{EF locality tolerance} for KL--Fisher quadratic equivalence; also used as the small-equivalence parameter in KL--Fisher bounds and to size $r=\constref{EFeps}/L_\psi$. \\
+C7 & \constref{etastar} & Inner dual optimizer for soft-transport DRO; logged for KKT diagnostics and sensitivity. \\
+C8 & \constref{nuhat}, \constref{pgraze}, \constref{pthr}, \constref{gammadwell}
+& Grazing detector and dwell escalation: estimated min normal speed, graze probability and threshold, dwell multiplier.
+\textit{Uses: frontier tubes/dwell; clamps in sensing.} \\ \addlinespace
+C9 & \constref{Hol}, \constref{Harm}, $\eta_{\mathrm{cal}}$
+& Holonomy budget and harmonic rotational mass (degeneracy load); DK calibration slack.
+\textit{Uses: plane selection \& stability audits.} \\ \addlinespace
+C10 & \constref{chiG}, \constref{chiY}, \constref{chiR}, $\constref{EFeps}$ & Fisher leakage clamp thresholds (Green/Yellow/Red) and EF tolerance (radius $r=\constref{EFeps}/L_\psi$).
+\textit{Uses: EF guard \& fail-closed policy.} \\ \addlinespace
+C11 & \constsymsalt, $\text{CVaR}_{0.95}$, \textit{LB}
+& Saltation bound constant for CBF relaxation; rights-plane CVaR level; residual lower bound in tube.
+\textit{Uses: frontier-aware CBF audit.} \\ \addlinespace
+C12 & \constsymomegal,\ \constsymomegau,\ \constref{PRmargin}
+& Controller band and certified positive-real margin for GKYP/phase witnesses.
+\textit{Uses: band-limited PR and self-retune.} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{abstract}
+Part~III converts the Joint Strategic Geometry program into a \emph{proof-carrying governor}. Every runtime claim about coupling, range, and safety is falsifiable via logged witnesses: (i) KKT traces and dual gaps for soft-transport DRO; (ii) GKYP/LMI feasibility certificates (band endpoints, margin $\constref{PRmargin}$, uncertainty set, dual multipliers) for PR; (iii) $\omega$-automata accepting/rejecting runs for LTL specs; and (iv) a hash-chained Provenance Ladder. Two technical closures make the geometry operational: a \emph{saltation--defect} bound parameterized by $(\constref{kappamax},\constref{thetamin},\constref{rtube})$ that `spends' the frontier-defect budget inside the ISS supply rate and sharpens the Decision-Range Conservativity bound; and a \emph{holonomy budget} that limits rotational mass via Davis--Kahan/Wedin plane-drift across crossings.
+
+Sensing is windowed and \emph{identifiable}: Effective Coupling Space $E_t$ is certified by mixed cumulants with FDR control, then stress-tested by \emph{instruments/interventions} on $\Gamma$ or $G$. A \emph{Minimum Transfer Condition (MTC)} promotes a discovery only if it (a) reduces held-out transport error, (b) passes a calibrated SPRT on $M_t$, and (c) preserves Fisher conditioning. The KL--Fisher neighborhood is made \emph{operational} by $r=\constref{EFeps}/\constref{Lpsi}$ with an automatic \emph{leakage clamp} driven by $\constref{chi}(t)$ that shrinks $r$ and freezes new discoveries when conditioning degrades.
+
+Control is a CLF/CBF-QP projected by $\Pi$ with frontier-aware CBF invariance and PR certification on a band; Decision Range $R_t$ is the reported admissible-control volume. A normative dictionary maps legal/fiscal levers (TRO/PI, SLA, anti-commandeering, etc.) to concrete controller contracts. We ship a four-tier artifact (Transport Pack, Provenance Ladder, Coupling ID Sheet with MTC badges, Automata Evidence) and a benchmark suite (negative control, degeneracy stress, formal-spec acceptance). The result is a governor that measurably reduces coupling mass $M_t$, increases decision range $R_t$ subject to I$_5$, and remains auditable end-to-end.
+\end{abstract}
+
+\noindent\textbf{Keywords:} information geometry; Fisher metric; mixed cumulants; DRO; PR control; CBF/CLF-QP; formal methods; $\omega$-automata; provenance; benchmarks.
+
+\section{Introduction}\label{sec:intro}
+
+\paragraph{Aim.}
+Part~III (\emph{JSGIII}) turns the Joint Strategic Geometry program into a \emph{proof-carrying governor}: every runtime decision is fenced by guards consumed in a fixed order and backed by replayable evidence. The governor is designed to be falsifiable at window granularity and portable across deployments via container pins, solver transcripts, and tiered artifacts.
+
+\paragraph{What is governed (I\textsubscript{1}–I\textsubscript{5}).}
+We re-state the five invariants that all runtime logic must maintain; each is enforced by specific guards and acceptance tests:
+\begin{enumerate}[leftmargin=*]
+\item \textbf{I\(_1\) Hybrid safety (frontiers).} Tube-aware invariance at crossings, No-Zeno dwell, and a numeric saltation audit; failures deterministically reject the run. \uses{Rule~\ref{rule:frontier-freeze}; Rule~\ref{rule:grazing}; Lem.~\ref{lem:cbf-salt}; \jsgiLem{\lblNoZeno}.}
+\item \textbf{I\(_2\) Statistical locality (EF).} All Fisher–quadratic uses lie inside a certified EF neighborhood of radius $(r=\constref{EFeps}/\constref{Lpsi})$, guarded and logged each window. \uses{Thm.~\ref{thm:FIMbound}; Rule~\ref{rule:ef-clamp}.}
+\item \textbf{I\(_3\) Identifiability-first discovery.} Promotions pass MTC gates with DRO envelope precondition and clamp=Green; CIS rows are complete. \uses{Rule~\ref{rule:promotion}; Rule~\ref{rule:dvdrho}; Prop.~\ref{prop:kkt}; \jsgiiDef{\lblMTC}.}
+\item \textbf{I\(_4\) Actuation-basis stability.} Plane drift is budgeted by holonomy/Harmonic Rotational Mass; rising degeneracy blocks basis updates or triggers $k$-escalation/switch-dwell. \uses{Def.~\ref{def:hol-harm}; Lem.~\ref{lem:usc-planes}; Lem.~\ref{lem:switching}.}
+\item \textbf{I\(_5\) Rights-plane \& PR stability.} Band-limited PR witnesses gate control updates; rights-plane tails pass CVaR checks; decision range is conservative under degraded guards. \uses{Prop.~\ref{prop:gkyp-witness}; Rem.~\ref{rem:cvar}; Prop.~\ref{prop:cons}.}
+\end{enumerate}
+
+\paragraph{Three pillars and two closures.}
+JSGIII fuses: (i) \emph{geometric/control} contracts (CLF/CBF-QP with tube-level saltation and band-limited PR via GKYP); (ii) \emph{information-theoretic} guards (EF/KL radius and a DRO envelope witness that preconditions sequential decisions); and (iii) \emph{formal/operational} evidence ($\omega$-automata over KPI row-hashes and a hash-chained Provenance Ladder). Two closures make the geometry operational at run time: a \emph{priced frontier defect} that prints into the ISS budget, and a \emph{holonomy budget} that limits rotational mass across crossings. \uses{\secref{sec:closures-v2}; \jsgiThm{\lblISS}.}
+
+\subsection{Guard topology and Rule Index}\label{subsec:intro-guard-index}
+\emph{\layertag{Rep/Alg/Inf/Ctrl}}
+
+All consumption of evidence follows the \textbf{same order} each window; artifacts carry the IDs in this order, and acceptance checks require a bit-match replay:
+
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.8cm} >{\raggedright\arraybackslash}p{4.8cm} >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Stage} & \textbf{Purpose \& Evidence} & \textbf{Anchor (stable ref)} \\
+\midrule
+\textbf{EF guard} & Certify local KL–Fisher quadratic; log $(\constref{EFeps},\hat L_\psi,r)$ and \texttt{ef\_guard\_id}. & Rule~\ref{rule:ef-clamp}; Thm.~\ref{thm:FIMbound} \\
+\textbf{DRO envelope} & Sensitivity check $d\,\mathbb E[\varphi_\eta]/d\rho \approx \constref{etastar}$; set \texttt{quarantine\_bit} on fail. & Prop.~\ref{prop:kkt}; Rule~\ref{rule:dvdrho} \\
+\textbf{PR witness} & Band-limited PR over uncertainty set; export $(\Omega,\epsilon,P,Q,\text{descriptor})$ and hitmap. & Prop.~\ref{prop:gkyp-witness} \\
+\textbf{CBF tube audit} & Frontier-aware one-step residual $ \mathrm{LB}_i:=h_i^+-h_i^-+\sigma_i \ge 0$. & Lem.~\ref{lem:cbf-salt} \\
+\textbf{Automata} & $\omega$-acceptance over KPI row-hashes with the above IDs in-order. & \secref{subsec:automata} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+We call the concatenation of these IDs the \emph{proof print} for a window. It is emitted in Tier-1 and consumed by monitors.
+
+\begin{lstlisting}
+# proof_print (window_id): stable order of guard IDs
+{
+  "ef_guard_id": "...",
+  "dvdrho_id":   "...",
+  "pr_witness_id": "...",
+  "cbf_audit_id":  "...",
+  "omega_row_hash": "..."
+}
+\end{lstlisting}
+
+\subsection{What is new in Part III (vs. JSGI/JSGII)}\label{subsec:intro-contrib}
+\emph{\layertag{Rep}}
+
+\begin{itemize}[leftmargin=*]
+\item \textbf{Frontier spend in ISS.} A geometry-priced, per-crossing defect ledger enters the ISS budget row each window and is checked against No-Zeno counts. \uses{\secref{subsec:frontier-closure}; \jsgiLem{\lblJacobiDefect}, \jsgiLem{\lblNoZeno}.}
+\item \textbf{Operational DK/Wedin.} Plane-drift SVD tuples and gap ledgers define $\Hol$ and $\Harm$, with deterministic $k$-escalation triggers. \uses{\secref{subsec:dk-wedin}.}
+\item \textbf{Clamp FSM drives discovery.} EF guard transitions (Green/Yellow/Red) \emph{shrink or relax} $(r,\cutq)$ and freeze promotions deterministically. \uses{\secref{subsec:clamp}; Rule~\ref{rule:ef-clamp}.}
+\item \textbf{Envelope precondition for SPRT/MTC.} The DRO envelope must pass before any sequential gate is consumed; failing windows are quarantined. \uses{\secref{subsec:sprt-dvdrho}; Prop.~\ref{prop:kkt}.}
+\item \textbf{PR witness gating.} Control updates are allowed only with a fresh GKYP witness for the \emph{current} uncertainty set; margins crowding $\constref{PRmargin}$ auto-shrink $\Omega$. \uses{\secref{subsec:pr-cert}.}
+\item \textbf{Tiered, schema-complete artifacts.} Tier-1 … Tier-4 are promoted to strict schemas with CI fail-close on any missing field and deterministic replays (container SHA + seeds + solver tolerances). \uses{\secref{subsec:schemas}, \secref{subsec:det-replay}.}
+\end{itemize}
+
+\subsection{Design choices and notation}\label{subsec:intro-notation}
+\emph{\layertag{Rep}}
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{EF vs PR epsilon (disambiguation).} We use $(\constref{EFeps})$ exclusively for EF locality (KL–Fisher) and $\constref{PRmargin}$ for PR/GKYP margins. All EF radii are $(r=\constref{EFeps}/\constref{Lpsi})$; PR statements name $\epsPR$ explicitly. (This resolves prior collisions.)
+\item \textbf{Decision range (stable numerics).} We log both $\hat R_t$ and the numerically stable $\logR$; KPIs use $\logR$ for trend tests. \uses{\secref{subsec:range}.}
+\item \textbf{Proof print and IDs.} Tier-1 includes \texttt{ef\_guard\_id}, \texttt{dvdrho\_id}, \texttt{pr\_witness\_id}, \texttt{cbf\_audit\_id}, and the KPI \texttt{row\_hash} consumed by automata, in the fixed order of \secref{subsec:intro-guard-index}.
+\end{enumerate}
+
+\subsection{Reading guide}\label{subsec:intro-roadmap}
+\emph{\layertag{Rep}}
+
+\begin{itemize}[leftmargin=*]
+\item \secref{sec:ops-v2} instantiates the runtime rules (freeze, dwell, clamp, promotion, PR witness, switching) with acceptance checks and numerical APIs.
+\item \secref{sec:closures-v2} binds those rules to JSGI/JSGII theorems and prints replayable tests (frontier spend in ISS; DK/Wedin drift; EF/KL radius; DRO envelope; PR$\Rightarrow$ISS).
+\item \secref{sec:sense-v2} and \secref{sec:ctrl-v2} implement sensing and control (whitening, cumulants, clamps, MTC/IV; CLF/CBF-QP, GKYP, decision range).
+\item \secref{sec:pcc-bench-v2}–\secref{sec:deploy-v2} define artifacts, benchmarks, failure cookbook, and deployment/self-scaling loops.
+\item \secref{sec:gov-v2} compiles governance levers into controller contracts with $\omega$-specs and CPC scoring.
+\end{itemize}
+
+\begin{acceptchecks}
+\item \textbf{Guard order visible:} Tier-1 for any sample window prints the proof print with IDs in the EF$\rightarrow$DRO$\rightarrow$PR$\rightarrow$CBF$\rightarrow\omega$ order (Table in \secref{subsec:intro-guard-index}); monitors accept the same row-hash sequence.
+\item \textbf{No notation collisions:} compiled PDF contains $\constref{EFeps}$ only for EF locality and $\constref{PRmargin}$ only for PR; KPI panels show both $\hat R_t$ and $\logR$.
+\item \textbf{Cross-part integrity:} any cross-doc reference is rendered via the safe \texttt{\textbackslash jsgi*}/\texttt{\textbackslash jsgii*} macros (no silent “??”). \uses{\secref{app:resolution-xref}.}
+\end{acceptchecks}
+

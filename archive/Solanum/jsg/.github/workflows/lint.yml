@@ -1,0 +1,20 @@
+name: lint
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install linters
+        run: pip install black codespell jsonschema
+      - name: Black (Python)
+        run: black --check tools
+      - name: Codespell
+        run: codespell --ignore-words-list="teh,hte" --skip="build,artifacts" .
+      - name: ChkTeX
+        uses: latex-lsp/chktex-action@v1
+      - name: Validate registries
+        run: python tools/validate_registries.py registries registries/schemas

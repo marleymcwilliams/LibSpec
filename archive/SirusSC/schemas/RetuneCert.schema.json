@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RetuneCert",
+  "type": "object",
+  "properties": {
+    "kind": {
+      "const": "RetuneCert"
+    },
+    "from_rank": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "to_rank": {
+      "type": "array",
+      "items": {
+        "type": "integer"
+      },
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "delta": {
+      "type": "object"
+    },
+    "witness_hash": {
+      "type": "string"
+    },
+    "time": {
+      "type": "integer"
+    },
+    "stage": {
+      "const": "CBF"
+    }
+  },
+  "required": [
+    "kind",
+    "from_rank",
+    "to_rank",
+    "delta",
+    "witness_hash",
+    "time",
+    "stage"
+  ]
+}

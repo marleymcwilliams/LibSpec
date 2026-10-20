@@ -1,0 +1,40 @@
+% Tenets and Contracts stub shared across parts
+
+% Requires: jsg_common.tex and macros.tex already \input in the parent document
+
+\section*{Tenets and Contracts}
+
+\begin{standbox}[Standing Hypotheses (H1--H6)]
+\begin{enumerate}[leftmargin=*,label=(H\arabic*)]
+  \item Decision space $\Gamma$ is smooth/connected; symmetry by Lie group when needed.
+  \item $G$ is Whitney-stratified; dynamics specified per stratum and prolonged (Filippov) at frontiers.
+  \item Classical identities hold stratumwise; frontier crossings induce a defect budget per crossing.
+  \item Evaluation functionals are Borel and $L^2$ under invariant/windowed laws.
+  \item EF neighborhood at independence with Fisher $\constref{F}\!\succ\!0$ and Hessian-Lipschitz $\constref{Lpsi}$.
+  \item Controllers are Dirac-projected and band-limited PR on $[\omega_L,\omega_H]$ with margin $\constref{epsilon}$.
+\end{enumerate}
+\end{standbox}
+
+\subsection*{Symbol Registry (standing constants and moduli)}\label{sec:symbol-registry}
+\noindent\emph{All constants are understood as \textbf{uniform on compact sublevel sets} of the Lyapunov functions in use.}
+For quick cross-references elsewhere, use \verb+\constref{...}+.
+% Symbol Registry table temporarily disabled for build debug
+%\begin{SymbolRegistry}
+%  \symrow{C1}{$\kappa_{\max}$\constlabel{kappamax},\ $\theta_{\min}$\constlabel{thetamin},\ $r_{\mathrm{tube}}$\constlabel{rtube}}{Frontier geometry: curvature, minimal incidence, tube radius.}
+%  \symrow{C2}{$S_{\max}$\constlabel{Smax},\ $G_{\max}$\constlabel{Gmax}}{Uniform bounds on strategic fields / first derivatives near frontiers.}
+%  \symrow{C3}{$L_{\mathrm F}$\constlabel{LF},\ $\tau_{\min}$\constlabel{taumin}}{One-sided Lipschitz per stratum; No-Zeno dwell time.}
+%  \symrow{C4}{$\tau$\constlabel{tau},\ $\rho$\constlabel{rho}}{Window length and DRO radius.}
+%  \symrow{C5}{$F$\constlabel{F},\ $\chi$\constlabel{chi},\ $L_\psi$\constlabel{Lpsi}}{Fisher objects and Lipschitz constant for EF Hessian.}
+%  \symrow{C6}{$\epsilon$\constlabel{epsilon}}{Positive-real margin on controller band.}
+%  \symrow{C7}{$\eta^\star$\constlabel{etastar}}{Inner dual optimizer for soft-transport DRO.}
+%\end{SymbolRegistry}
+\noindent\emph{[Symbol Registry table omitted in this build due to a tabularx parsing error; will be restored after CI fix.]}
+
+\begin{acceptbox}[Acceptance checks for this part]
+\begin{itemize}[leftmargin=*]
+  \item Frontier events: logs include $N_\mathrm{cross}$ and $t/\constref{taumin}$ bound.
+  \item Defect budgets: per-crossing contribution tracked using $\constref{kappamax},\constref{thetamin},\constref{rtube}$.
+  \item PR certificates: band-limited positive-real margin reported ($\ge\constref{epsilon}$).
+  \item DRO dual: windowed $\rho=c\,\hat L\,\constref{tau}$ with $\eta^\star$ recorded.
+\end{itemize}
+\end{acceptbox}
