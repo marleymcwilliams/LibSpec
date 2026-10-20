@@ -45,4 +45,4 @@
   .github/, guide/decisions/, the checks that live in lean/ (lean/ComparatorTargets.lean,
   lean/AxiomAudit.lean, lean/JSG/Tests/Comparator/), and any existing file in
   lean/JSG/Tests/. Adding a new test file stays self-mergeable. I merge everything else.
-- Don't prove combine_comm or expiry_tightens. I'm writing those myself (Phase 1).
+- Don't prove expiry_tightens. I'm writing it myself (Phase 1).

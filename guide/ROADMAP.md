@@ -104,7 +104,7 @@ The goal is to read a theorem statement and a short proof and explain each line.
 
 **Gate**
 
-- [ ] You proved `combine_comm` without Claude writing it
+- [x] You proved `combine_comm` without Claude writing it
 - [ ] You can explain every line of the Milestone 1 block of `Statements.lean` in plain English
 
 ## Phase 2: Freeze the statements
