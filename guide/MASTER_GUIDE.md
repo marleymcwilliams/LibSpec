@@ -45,9 +45,9 @@ Twenty-two terms, each with one home. The SIRUS name waits: not yet, since no v1
 | Graded values **G** | Per-axis intervals \[lo, hi\] in \[0, ∞\]; the verdict reads hi; ordered by badness (endpoints) and by information (narrower is better) | "Q" in JSG V, the PDE paper and SCp2 | Core v2 |
 | Floor axes **M** | Per-window rates; combined by max | max-channels, Q\_max | Core v2 |
 | Budget axes **S** | Cumulative spends; combined by +; each carries a subadditivity side condition | sum-channels, Q\_sum, ledger and CVaR axes | Core v2 |
-| Unknown | The interval \[0, ∞\]; a lease β allows width up to β, and anything wider is a breach | ⊤unk (JSG V, PDE); ⊥ in SCp2 (the information order); "third value" (SIRUS spec) | Core v2; PDE I4b |
-| Combine **⊕** | Endpointwise max on M, + on S; a commutative monoid, not a join (on S, g ⊕ g = 2g) | "Parallel join"; horizontal ⊙ (JSG V); ∧ (PDE); ⊎ and ⊙ (SCp2) | Core v2 |
-| Sequential composition | Resolved: the same ⊕; sequence and parallel differ only in data flow | vertical ∧ (JSG V); ⋆, and ∧ as its alias (SCp2) | Core v2 |
+| Unknown | The interval \[0, ∞\]; a lease β allows width up to β, and anything wider is a breach | ⊤unk (JSG V, PDE); ⊥ in SCp1 and SCp2, placed below every value (a known defect); "third value" (SIRUS spec) | Core v2; PDE I4b |
+| Combine **⊕** | Endpointwise max on M, + on S; a commutative monoid, not a join (on S, g ⊕ g = 2g) | "Parallel join"; horizontal ⊙ (JSG V); ∧ (PDE; SCp1, Def 2.2); ⊎ and ⊙ (SCp2) | Core v2 |
+| Sequential composition | Resolved: the same ⊕; sequence and parallel differ only in data flow | vertical ∧ (JSG V); ∧ (SCp1, Prop 7.4, where it is ⊕); ⋆ (SCp2, whose "∧ ≡ ⋆" misreads SCp1) | Core v2 |
 | Residual **θ ⊸ g** | Budget left for later stages: θ ⊖ g on S; θ on M when g ≤ θ | None | Core v2 |
 | Decision **D** | {REJECT < ACCEPT}; no third value | "Q" in the SIRUS spec | SIRUS spec §1.2 |
 | Verdict map **δ\_θ** | Indicator of the down-set of θ, read on upper endpoints | Implicit threshold checks | Core v2 |
@@ -198,7 +198,9 @@ noncomputable def verdict (θ : ι → ENNReal) (g : Grade ι) : Decision := by
 /-- Fail-closed: an unknown axis rejects whenever its threshold is finite. -/
 theorem verdict_unknown (θ : ι → ENNReal) (g : Grade ι) (i : ι)
     (hθ : θ i < ⊤) (hu : g i = Bound.unknown) : verdict θ g = .reject := by sorry
--- Mutant: a verdict that reads `lo` instead of `hi` accepts unknowns.
+-- Mutant: a verdict that reads `lo` instead of `hi` accepts unknowns. A bare threshold
+-- check under SCp1's order does the same, since that order puts ⊥ below every value
+-- (a known defect in the master guide).
 
 /-- Completeness: complete evidence within θ is accepted. -/
 theorem verdict_complete (θ : ι → ENNReal) (g : Grade ι)
@@ -346,7 +348,7 @@ Four pieces are deferred to Milestone 2 or later: typed obligations with witness
 
 ## Known defects and proposed fixes
 
-Eighteen defects so far. The last seven came from an outside review of v1 and are fixed in core v2.
+Nineteen defects so far. The last seven came from an outside review of v1 and are fixed in core v2.
 
 | Defect | Where | Why it matters | Proposed fix |
 | --- | --- | --- | --- |
@@ -361,6 +363,7 @@ Eighteen defects so far. The last seven came from an outside review of v1 and ar
 | Navier–Stokes L4 is conditional | PDE paper Lemma 3.5 | It assumes a finite ledger sum, which is where the difficulty lies | Keep the spine in the open-math layer; let nothing else depend on it |
 | "If the CI passes, the work is correct" | Human\_Guide, step 4 | CI shows conformance, not correctness; cross-checking two agents misses errors they share | Reword: "If CI passes, the work conforms to the spec" |
 | JSG V's Lax Exchange theorem runs against its own interchange law | JSG V §4, Lax Exchange Law; restated in the proofs appendix | The interchange law (§2) makes piping each subsystem first the worse order; the theorem, with ∘ read as function composition, and its proof's last sentence make wiring first the worse one. On a sum axis with x = 1, x′ = 0, y = 0, y′ = 1, piping first grades 2 and wiring first 1 | Moot in core v2: sequence and parallel both use ⊕, so interchange is an equation and JSG V's rule becomes the `interchange` mutant |
+| Unknown sits below every value | SCp1 Def 2.1 and Appendix A; SCp2 Assumption 3.2; SirusSC `Q.leq` | ⊥ ≤ x for every x, so a bare threshold check q ≤ θ accepts an unknown axis, as the `verdict_unknown` mutant that reads lo does. Only a separate guard that rejects ⊥ first (SCp1's I9, guard-first pricing) keeps it fail-closed | Core v2: unknown is \[0, ∞\] and the verdict reads hi, so the check itself rejects (`verdict_unknown`) |
 | Subadditive frontier debit lets regrouping net out chattering | PDE Lemma 10.1; v1 core object 4 | Jumps v and −v cost 2A‖v‖ charged separately and 0 merged | Charge total variation at the finest resolution |
 | `safety_or_halt` proves only termination | v1 Lean stubs; SCp3 | Well-foundedness is a variant, not an invariant, and a step counter satisfies any lexicographic rank | Prove invariant preservation separately; take progress from pending obligations |
 | ⊤ means both "unknown" and "infinitely bad" | JSG V; PDE I4b; SCp2 | The unknowns lease has no representation, since one unknown makes a whole budget axis ⊤ | Interval-valued axes |
