@@ -4,6 +4,11 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-20
 
+### The axiom audit covers the controls (#18)
+- **Decision:** `AxiomAudit.lean` now imports `JSG.Tests.Mutants` and `JSG.Tests.Calibration` and audits every theorem they declare: 42 today, plus 20 equation and `sizeOf` lemmas that Lean generates for their definitions. Before this it audited only `smoke` and the proofs. The forbidden-token scan catches a literal `sorry` in the tests, but not an axiom that a tactic brings in, such as `bv_decide`'s `Lean.ofReduceBool`. The change makes a check stronger, so it's Claude Code's call (CLAUDE.md).
+- **How:** a small `#audit_module` command prints `#print axioms` for each theorem in a module, so a control added later is audited without anyone listing it. It fails if the module isn't imported or declares no theorem, so a renamed module can't pass with nothing checked.
+- **Undo:** delete the two `#audit_module` lines, the command and the two imports.
+
 ### Three old repos archived; Solanum's `.gitattributes` left out (#16)
 - **Decision:** `archive/Reach`, `archive/SirusSC` and `archive/Solanum` hold the files the brief listed, byte for byte, except `Solanum/jsg/.gitattributes`. Inside this repo its rules would apply to the copy: `*.pdf`, `*.png`, `*.svg`, `artifacts/**` and `papers/**/figures/**` go to Git LFS, and `* text=auto eol=lf` rewrites CRLF files to LF. Committed raw instead, those files show as modified in every clone.
 - **Also left out, on your review of #16:** SirusSC's `.pytest_cache/` (6 files) and Solanum's three biblatex control files (`*-blx.bib`). Both are generated, like the LaTeX intermediates the brief excluded.
