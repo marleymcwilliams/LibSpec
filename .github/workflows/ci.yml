@@ -17,6 +17,36 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
+      # lean-action fetches the Lean toolchain once, with no retry, so a single TLS
+      # error at releases.lean-lang.org turned #14 and #17 red. Restore the toolchain
+      # from the cache; on a miss, install it here and retry network errors. Either
+      # way lean-action finds it installed and doesn't download it again.
+      - name: Restore the Lean toolchain
+        id: elan-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ runner.os }}-${{ hashFiles('lean/lean-toolchain') }}
+
+      - name: Install the Lean toolchain, retrying network errors
+        if: steps.elan-cache.outputs.cache-hit != 'true'
+        working-directory: lean
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if curl -sSf --retry 3 -o "$RUNNER_TEMP/elan-init.sh" \
+                https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh &&
+              sh "$RUNNER_TEMP/elan-init.sh" -y --default-toolchain none &&
+              "$HOME/.elan/bin/lean" --version; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              echo "Attempt $attempt failed; retrying in $((attempt * 30)) s"
+              sleep $((attempt * 30))
+            fi
+          done
+          echo "Couldn't install the Lean toolchain in 5 attempts"
+          exit 1
+
       # Installs Lean, fetches the Mathlib cache, runs `lake build`, then
       # replays every JSG module through the kernel with leanchecker.
       - uses: leanprover/lean-action@v1

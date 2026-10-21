@@ -14,6 +14,20 @@ Decisions Claude Code made without asking, because they are reversible and don't
 - **Also left out, on your review of #16:** SirusSC's `.pytest_cache/` (6 files) and Solanum's three biblatex control files (`*-blx.bib`). Both are generated, like the LaTeX intermediates the brief excluded.
 - **Undo:** add the file back with `git add -f`; git then applies its rules to the copy.
 
+### Six docstrings say no more than their theorems (#19)
+- **Decision:** Marley's wording for `Loader.safe` as given, and two small rewrites:
+  - `residual_spec` also needs θ finite (`hθ`). With θ = x = ⊤, stage one fits, the residual is 0, and y = 1 fails the residual check but passes the total check. So the docstring opens "When θ is finite and stage one fits within it".
+  - `charge_chatter`: "which is 0 only when A = 0 or v = 0" spells out what "never 0 unless A or v is" left implied, and `[v, -v]` is in code font, as Lean writes it.
+- **The three that were missing:** `combine_comm`, `combine_assoc` and `fold_check_vacuous` use Marley's wording from review. The fold's is reordered so that "nonnegative" qualifies only the cap: the theorem holds for any weight and any readings, which is what makes the check vacuous.
+- **Also:** the guide's sketch matches, and every theorem in `Statements.lean` now has a docstring. No statement changed, and no tag exists, so no CHANGELOG line.
+- **Undo:** restore the three old docstrings and delete the three new ones.
+
+### The Lean toolchain is cached, and its download retried (#19)
+- **Decision:** CI restores `~/.elan` from the GitHub cache, keyed on `lean/lean-toolchain`. On a miss it installs elan and the toolchain itself, in up to five attempts 30, 60, 90 and 120 s apart. lean-action then finds the toolchain installed and doesn't fetch it.
+- **Why:** lean-action fetches the toolchain from releases.lean-lang.org once, with no retry. A single TLS error turned #14 and #17 red (the first attempts of runs 39391980839 and 39491370612), so red didn't mean the code was wrong.
+- **Still unretried:** lean-action reinstalls elan itself from GitHub on every run, which hasn't failed so far.
+- **Undo:** delete the two steps before lean-action.
+
 ### `mfGate_monotone` dropped; the general form replaces it (#14)
 - **Decision:** Q3 left this call to Claude Code. `mfGate_monotone` is dropped rather than kept as a corollary.
 - **Why:** `mfGate_signed` implies it. Keeping both would freeze two statements that carry the same claim, and the corollary would need its own mutant, witness and proof.

@@ -12,9 +12,13 @@ namespace JSG
 
 variable {ι : Type} (kind : ι → Kind)
 
+/-- Combining two grades gives the same grade in either order, whatever kind each
+    axis has. -/
 theorem combine_comm (g h : Grade ι) : combine kind g h = combine kind h g := by sorry
 -- Mutant: overwrite, where the later stage's grade replaces the earlier one.
 
+/-- How three grades are grouped doesn't change their combination, whatever kind
+    each axis has. -/
 theorem combine_assoc (g h k : Grade ι) :
     combine kind (combine kind g h) k = combine kind g (combine kind h k) := by sorry
 -- Mutant: averaging budgets, (a + b) / 2, is commutative but not associative.
@@ -38,7 +42,8 @@ theorem verdict_complete (θ : ι → ENNReal) (g : Grade ι)
     verdict θ g = .accept := by sorry
 -- Mutant: the always-REJECT gate, which satisfies every safety theorem here.
 
-/-- Checking stage two against stage one's residual is checking the total. -/
+/-- When θ is finite and stage one fits within it, checking stage two against the
+    residual it leaves is the same as checking the total. -/
 theorem residual_spec (θ x y : ENNReal) (hθ : θ ≠ ⊤) (hx : x ≤ θ) :
     y ≤ residual θ x ↔ x + y ≤ θ := by sorry
 -- Mutant: checking each stage against the full θ accepts x = y = θ.
@@ -52,7 +57,8 @@ theorem no_flip {E : Type} (θ : ι → ENNReal) (gradeOf : Evidence E → Grade
 
 /-! ## 3. Loader: safety and progress, kept separate -/
 
-/-- Safety: every reachable state satisfies the invariant. -/
+/-- Every state reachable from one that satisfies the invariant satisfies it too.
+    This holds for any Loader; it says nothing about a concrete one until one is built. -/
 theorem Loader.safe {S O : Type} [Preorder O] (L : Loader S O) {s t : S}
     (hs : L.Inv s) (hr : Relation.ReflTransGen L.step s t) : L.Inv t := by sorry
 -- Mutant: a step that skips one L-check still terminates but breaks this.
@@ -72,7 +78,8 @@ theorem charge_append (A : ENNReal) (j₁ j₂ : List E) :
 -- Mutant: v1's merged-jump charge A · ‖Σ jumps‖, under which [v] ++ [-v] costs 0
 -- but [v] and [-v] cost 2A‖v‖.
 
-/-- Chattering is never free. -/
+/-- Chattering costs twice a single jump: `[v, -v]` is charged 2·A·‖v‖, which is 0
+    only when A = 0 or v = 0. -/
 theorem charge_chatter (A : ENNReal) (v : E) :
     charge A [v, -v] = 2 * A * (‖v‖₊ : ENNReal) := by sorry
 -- Mutant: v1's merged-jump charge, under which (v, -v) costs 0.
@@ -95,6 +102,9 @@ theorem bridge {Inp : Type} (gradeOf : Inp → Grade ι) {dial₁ dial₂ : ι �
 -- Mutant: a threshold dial stored un-inverted (`id` in place of `threshold`), so
 -- "stricter" raises θ.
 
+/-- For any weight and readings, and any nonnegative cap, JSG IV's capped fold never
+    exceeds the cap, so its nightly check can never fail. This documents a defect, not
+    a guarantee. -/
 theorem fold_check_vacuous (Rmax lam : ℝ) (h : 0 ≤ Rmax) (rs : List ℝ) :
     fold Rmax lam rs ≤ Rmax := by sorry
 -- Mutant: the uncapped fold, a plain weighted sum, whose nightly check can fail;
