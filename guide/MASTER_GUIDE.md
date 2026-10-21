@@ -162,9 +162,13 @@ abbrev Grade (ι : Type) := ι → Bound
 
 def combine (g h : Grade ι) : Grade ι := fun i => combineAxis (kind i) (g i) (h i)
 
+/-- Combining two grades gives the same grade in either order, whatever kind each
+    axis has. -/
 theorem combine_comm (g h : Grade ι) : combine kind g h = combine kind h g := by sorry
 -- Mutant: overwrite, where the later stage's grade replaces the earlier one.
 
+/-- How three grades are grouped doesn't change their combination, whatever kind
+    each axis has. -/
 theorem combine_assoc (g h k : Grade ι) :
     combine kind (combine kind g h) k = combine kind g (combine kind h k) := by sorry
 -- Mutant: averaging budgets, (a + b) / 2, is commutative but not associative.
@@ -303,6 +307,9 @@ theorem bridge {Inp : Type} (gradeOf : Inp → Grade ι) {dial₁ dial₂ : ι �
 def fold (Rmax lam : ℝ) (rs : List ℝ) : ℝ :=
   rs.foldl (fun x y => min Rmax (x + lam * y)) 0
 
+/-- For any weight and readings, and any nonnegative cap, JSG IV's capped fold never
+    exceeds the cap, so its nightly check can never fail. This documents a defect, not
+    a guarantee. -/
 theorem fold_check_vacuous (Rmax lam : ℝ) (h : 0 ≤ Rmax) (rs : List ℝ) :
     fold Rmax lam rs ≤ Rmax := by sorry
 -- Mutant: the uncapped fold, a plain weighted sum, whose nightly check can fail;
