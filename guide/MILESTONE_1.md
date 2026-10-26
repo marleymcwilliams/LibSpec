@@ -29,7 +29,13 @@ Proved in #26.
 
 ## `verdict_complete`
 
-*Not yet proved.*
+Proved in #27.
+
+1. As before, `verdict θ g` accepts exactly when `∀ i, (g i).hi ≤ θ i`, and `split_ifs` splits on that condition.
+2. In the accepting branch the goal holds at once (`rfl`).
+3. In the other branch the condition is assumed false, but it's true: for each axis, `hk i` says lo = hi, so `hin i : (g i).lo ≤ θ i` becomes `(g i).hi ≤ θ i`.
+4. That contradiction rules the branch out, so the verdict accepts.
+5. It doesn't show that the intervals enclose the true values; complete evidence is accepted, but whether it's right is the CI layer's job.
 
 ## `residual_spec`
 
