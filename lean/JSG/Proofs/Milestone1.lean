@@ -49,6 +49,11 @@ theorem verdict_complete (θ : ι → ENNReal) (g : Grade ι)
   · rfl
   · exact absurd (fun i => by rw [← hk i]; exact hin i) h
 
+theorem residual_spec (θ x y : ENNReal) (hθ : θ ≠ ⊤) (hx : x ≤ θ) :
+    y ≤ residual θ x ↔ x + y ≤ θ := by
+  unfold residual
+  exact ENNReal.le_sub_iff_add_le_left (ne_top_of_le_ne_top hθ hx) hx
+
 theorem no_flip {E : Type} (θ : ι → ENNReal) (gradeOf : Evidence E → Grade ι)
     (hni : Noninterfering gradeOf) (r : E) (m m' : List (String × Float)) :
     verdict θ (gradeOf ⟨r, m⟩) = verdict θ (gradeOf ⟨r, m'⟩) := by
