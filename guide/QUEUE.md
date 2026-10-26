@@ -8,6 +8,24 @@ None.
 
 ## Answered
 
+### Q4. `verdict_unknown` covers only grades that are exactly unknown
+
+**Answered 2026-10-26: yes.** Replace it with `verdict_sound`, which is strictly stronger.
+
+- **Question:** `verdict_unknown` covered only `g i = Bound.unknown`. So [5, ∞], which is what an unknown becomes after combining, and every finite value over its threshold were outside the frozen statements. A gate that rejects only unknowns satisfied all four verdict theorems. Should it be replaced by a statement that any axis over its threshold rejects the whole grade?
+- **Recommended answer:** Yes. State it as:
+
+  ```lean
+  theorem verdict_sound (θ : ι → ENNReal) (g : Grade ι) (i : ι)
+      (hover : θ i < (g i).hi) : verdict θ g = .reject
+  ```
+
+  - It implies `verdict_unknown`: an unknown's upper bound is ⊤, so any finite threshold is below it.
+  - It also covers [5, ∞] and every finite value over its threshold, so the unknown-only gate fails it: that gate accepts [2, 2] under θ = 1.
+  - Checked in a scratch file, not committed: the statement type-checks against the real `Defs` and is provable from them, and both mutants are proved to fail it.
+- **What breaks if wrong:** Little. Everything `verdict_unknown` guaranteed still holds, since `verdict_sound` implies it. If a later design must accept a grade whose upper bound is over its threshold, `verdict_sound` has to be weakened, and after the tag that takes a new statements version, a CHANGELOG line and a signed decision. Keeping `verdict_unknown` instead leaves [5, ∞] and every finite overrun outside the frozen statements.
+- **Can it be undone:** Yes, freely until `statements-v1` is tagged. After that, only with a new statements version and a CHANGELOG line.
+
 ### Q2. `bridge` can't fail on its named mutant
 
 **Answered 2026-10-20: yes.** Restate `bridge` over the fixed dial-to-threshold map that stores the inverse.

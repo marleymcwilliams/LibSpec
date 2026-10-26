@@ -105,7 +105,7 @@ The goal is to read a theorem statement and a short proof and explain each line.
 **Gate**
 
 - [x] You proved `combine_comm` without Claude writing it
-- [ ] You can explain every line of the Milestone 1 block of `Statements.lean` in plain English
+- [x] You can explain every line of the Milestone 1 block of `Statements.lean` in plain English
 
 ## Phase 2: Freeze the statements
 
@@ -121,9 +121,9 @@ The goal is `Statements.lean` v1: the fixed target every later proof is judged a
 
 **Gate**
 
-- [ ] `Defs.lean` and `Statements.lean` compile, with `sorry` as the only gap; every definition the statements use is in `Defs.lean`, so the proofs import the same definitions
-- [ ] Every theorem has a docstring you wrote or approved
-- [ ] Every theorem's mutant counterexample and witness instance are proved, before any milestone proof starts; a counterexample that comes too easily is a warning that the statement may be false for everything
+- [x] `Defs.lean` and `Statements.lean` compile, with `sorry` as the only gap; every definition the statements use is in `Defs.lean`, so the proofs import the same definitions
+- [x] Every theorem has a docstring you wrote or approved
+- [x] Every theorem's mutant counterexample and witness instance are proved, before any milestone proof starts; a counterexample that comes too easily is a warning that the statement may be false for everything
 - [ ] The file is tagged `statements-v1`, and any later change needs a `CHANGELOG.md` line saying whether it tightens or weakens
 
 ## Phases 3–5: The three proof milestones
@@ -132,7 +132,7 @@ Each milestone proves one block of `Statements.lean` and closes at the same gate
 
 | Milestone | Theorems | Read first | Expected difficulty |
 | --- | --- | --- | --- |
-| 1: Algebraic core | `combine_comm`, `combine_assoc`, `interchange`, `verdict_unknown`, `verdict_complete`, `residual_spec`, `fold_check_vacuous` | Mathematics in Lean ch. 2–4, 7; the `ENNReal` API | Low: case splits on axis kind, plus finding the right `ENNReal` lemmas |
+| 1: Algebraic core | `combine_comm`, `combine_assoc`, `interchange`, `verdict_sound`, `verdict_complete`, `residual_spec`, `fold_check_vacuous` | Mathematics in Lean ch. 2–4, 7; the `ENNReal` API | Low: case splits on axis kind, plus finding the right `ENNReal` lemmas |
 | 2: Obligations, Loader, charge, policy | Typed obligations, `Loader.safe`, `Loader.terminates`, `charge_append`, `charge_chatter`, `expiry_tightens`, `bridge`, `mfGate_signed` | Mathematics in Lean ch. 5–6 | Low to medium: Dershowitz–Manna and lattice lemmas take some finding |
 | 3: Analysis layer | CVaR tail-to-level, `dwell_lower_bound`, local KL–Fisher bound, DRO envelope identity | Mathematics in Lean ch. 11–13 | Medium to high: the statements need as much care as the proofs |
 

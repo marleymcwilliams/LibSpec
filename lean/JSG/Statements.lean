@@ -29,12 +29,15 @@ theorem interchange : Interchange (seqComp kind) (parComp kind) := by sorry
 
 /-! ## 2. Verdicts and residuals -/
 
-/-- Fail-closed: an unknown axis rejects whenever its threshold is finite. -/
-theorem verdict_unknown (θ : ι → ENNReal) (g : Grade ι) (i : ι)
-    (hθ : θ i < ⊤) (hu : g i = Bound.unknown) : verdict θ g = .reject := by sorry
+/-- Soundness: an axis whose upper bound exceeds its threshold rejects the whole
+    grade. An unknown, [0, ∞], rejects whenever its threshold is finite, and so does
+    anything it combines into, such as [5, ∞]. -/
+theorem verdict_sound (θ : ι → ENNReal) (g : Grade ι) (i : ι)
+    (hover : θ i < (g i).hi) : verdict θ g = .reject := by sorry
 -- Mutant: a verdict that reads `lo` instead of `hi` accepts unknowns. A bare threshold
 -- check under SCp1's order does the same, since that order puts ⊥ below every value
--- (a known defect in the master guide).
+-- (a known defect in the master guide). A gate that rejects only unknowns fails it
+-- too: it accepts [2, 2] under θ = 1.
 
 /-- Completeness: complete evidence within θ is accepted. -/
 theorem verdict_complete (θ : ι → ENNReal) (g : Grade ι)
