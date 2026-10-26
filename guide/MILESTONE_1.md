@@ -19,7 +19,13 @@ Proved by Marley in Phase 1 (#15).
 
 ## `verdict_sound`
 
-*Not yet proved.*
+Proved in #26.
+
+1. `verdict θ g` accepts exactly when every axis's upper bound is within its threshold: `∀ i, (g i).hi ≤ θ i`.
+2. Unfolding it leaves an if-then-else, and `split_ifs` splits on that condition.
+3. If the condition held, it would give `(g i).hi ≤ θ i` for our axis `i`, contradicting `hover : θ i < (g i).hi`; so that branch can't happen.
+4. In the other branch the verdict is `.reject`, which is the goal.
+5. So one axis over its threshold rejects the whole grade, whatever the other axes hold; an unknown on a finite threshold is just one such axis.
 
 ## `verdict_complete`
 

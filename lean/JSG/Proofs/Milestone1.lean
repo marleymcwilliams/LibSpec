@@ -18,6 +18,13 @@ theorem combine_comm (g h : Grade ι) : combine kind g h = combine kind h g := b
     · apply max_comm
     · apply add_comm
 
+theorem verdict_sound (θ : ι → ENNReal) (g : Grade ι) (i : ι)
+    (hover : θ i < (g i).hi) : verdict θ g = .reject := by
+  unfold verdict
+  split_ifs with h
+  · exact absurd (h i) (not_le.mpr hover)
+  · rfl
+
 theorem no_flip {E : Type} (θ : ι → ENNReal) (gradeOf : Evidence E → Grade ι)
     (hni : Noninterfering gradeOf) (r : E) (m m' : List (String × Float)) :
     verdict θ (gradeOf ⟨r, m⟩) = verdict θ (gradeOf ⟨r, m'⟩) := by
