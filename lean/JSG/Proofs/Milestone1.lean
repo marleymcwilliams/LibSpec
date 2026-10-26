@@ -18,6 +18,14 @@ theorem combine_comm (g h : Grade ι) : combine kind g h = combine kind h g := b
     · apply max_comm
     · apply add_comm
 
+theorem combine_assoc (g h k : Grade ι) :
+    combine kind (combine kind g h) k = combine kind g (combine kind h k) := by
+  funext i
+  simp only [combine]
+  cases kind i
+  · exact Bound.ext (max_assoc _ _ _) (max_assoc _ _ _)
+  · exact Bound.ext (add_assoc _ _ _) (add_assoc _ _ _)
+
 theorem verdict_sound (θ : ι → ENNReal) (g : Grade ι) (i : ι)
     (hover : θ i < (g i).hi) : verdict θ g = .reject := by
   unfold verdict
