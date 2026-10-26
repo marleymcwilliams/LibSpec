@@ -71,7 +71,13 @@ Proved in #25.
 
 ## `fold_check_vacuous`
 
-*Not yet proved.*
+Proved in #31.
+
+1. `fold Rmax lam rs` starts at 0 and, for each reading y, replaces the running value x with min(Rmax, x + lam·y).
+2. `List.reverseRecOn` splits the readings into two cases: none at all, or some list `l` followed by a last reading `y`.
+3. With no readings the fold is its starting value 0, and 0 ≤ Rmax is the hypothesis `h`.
+4. Otherwise the last step is `min Rmax (…)`, which is at most Rmax whatever came before (`min_le_left`).
+5. So no weight and no readings can make the nightly check fail: the theorem proves the defect, not a safeguard.
 
 ## Closing note
 

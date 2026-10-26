@@ -59,4 +59,13 @@ theorem no_flip {E : Type} (θ : ι → ENNReal) (gradeOf : Evidence E → Grade
     verdict θ (gradeOf ⟨r, m⟩) = verdict θ (gradeOf ⟨r, m'⟩) := by
   rw [hni r m m']
 
+theorem fold_check_vacuous (Rmax lam : ℝ) (h : 0 ≤ Rmax) (rs : List ℝ) :
+    fold Rmax lam rs ≤ Rmax := by
+  unfold fold
+  induction rs using List.reverseRecOn with
+  | nil => simpa using h
+  | append_singleton l y _ =>
+    rw [List.foldl_append, List.foldl_cons, List.foldl_nil]
+    exact min_le_left _ _
+
 end JSG
