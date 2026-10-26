@@ -421,7 +421,7 @@ The rails are decided and persistent weakenings are deferred ([decisions/RAILS.m
 - [x] Decide whether the normative rails are must-fails inside the gates or a declared layer outside them: declared Norm-layer values that no v1 gate enforces ([decisions/RAILS.md](decisions/RAILS.md))
 - [x] Decide how persistent weakenings are handled: not yet. The choice between refill rate ρ, a cap on each weakening's cumulative duration and renewal cost escalating by a factor γ moves to the milestone that states the token bucket ([decisions/RAILS.md](decisions/RAILS.md))
 - [ ] Freeze the glossary and run one rename pass: 𝒰 for Ω, proof\_surface, Amber, invariant prefixes, combine for join
-- [ ] Lean milestone 1: graded values, verdict and completeness, residuals, calibration, fold vacuity
+- [ ] Lean milestone 1: graded values, verdict and completeness, residuals, noninterference, calibration, fold vacuity
 - [ ] Lean milestone 2: typed obligations, Loader safety and progress, frontier charge, policy lattice, the must-fail gate
 - [ ] Lean milestone 3 (analysis): CVaR tail-to-level, the corrected dwell bound, then the local KL–Fisher bound
 - [ ] CI: fail the build on any `b3:…` placeholder, on any must-fail removed without a signed weakening, and on any theorem without a mutant
