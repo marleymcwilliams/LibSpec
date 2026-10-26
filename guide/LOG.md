@@ -7,6 +7,12 @@ Decisions Claude Code made without asking, because they are reversible and don't
 ### `verdict_unknown` replaced by `verdict_sound` (#20)
 - **Decision:** Marley's, recorded as Q4 in QUEUE.md. This PR applies it with its controls and renames, and puts the statements-v1 entry in the existing `guide/CHANGELOG.md` rather than a second changelog.
 
+### The axiom audit sweeps proofs, lemmas and tests (#23)
+- **Decision:** `#audit_sweep` audits every theorem in every module on disk under `JSG/Proofs/`, `JSG/Lemmas/` and `JSG/Tests/`, except the Comparator fixtures, which contain `sorry` by design. A new root, `lean/JSG/Tests.lean`, imports every test file, and `JSG.Solution` already imports every proof file. So no one edits `AxiomAudit.lean` for a new proof, lemma or test.
+- **Loud by design:** it fails if a module on disk isn't imported through those roots (naming the root to import it from), if a module declares no theorem, if it finds no proof or test module, or if a name in the by-name list wasn't swept. A proof file missing from `Solution.lean` would also escape Comparator, so this guards that too.
+- **Coverage:** the by-name list (`smoke`, `combine_comm`) stays, and the sweep must cover it. This makes a check stronger, so it's Claude Code's call (CLAUDE.md).
+- **Undo:** restore #18's `AxiomAudit.lean` and delete `lean/JSG/Tests.lean`.
+
 ## 2026-10-20
 
 ### The axiom audit covers the controls (#18)
