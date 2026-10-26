@@ -21,7 +21,13 @@ Proved in #28.
 
 ## `interchange`
 
-*Not yet proved.*
+Proved in #29.
+
+1. Both operators are `combine`, so interchange says combine (a·b) (c·d) equals combine (a·c) (b·d), where each · is `combine` too.
+2. As for associativity, `funext i` compares both sides at an arbitrary axis, and `cases kind i` splits on its kind.
+3. On a floor axis each endpoint is a max of four values grouped two ways, and `max_max_max_comm` swaps the middle two.
+4. On a budget axis each endpoint is a sum of four values grouped two ways, and `add_add_add_comm` does the same for +.
+5. It holds because core v2 uses one operator for sequence and parallel. JSG V's rule and SCp2's pair use two different operators, and both fail it.
 
 ## `verdict_sound`
 
