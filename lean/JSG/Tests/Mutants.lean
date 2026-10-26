@@ -83,30 +83,48 @@ theorem interchange_witness :
   funext i
   ext <;> simp [seqComp, parComp, combine, combineAxis, budget, k, Bound.known] <;> ring
 
-/-! ## verdict_unknown -/
+/-! ## verdict_sound -/
 
 /-- Mutant: a verdict that reads `lo` instead of `hi`. -/
 noncomputable def verdictLo {ι : Type} (θ : ι → ENNReal) (g : Grade ι) : Decision := by
   classical
   exact if ∀ i, (g i).lo ≤ θ i then .accept else .reject
 
-theorem verdict_unknown_mutant :
+theorem verdict_sound_mutant :
     ¬ ∀ (θ : Unit → ENNReal) (g : Grade Unit) (i : Unit),
-      θ i < ⊤ → g i = Bound.unknown → verdictLo θ g = .reject := by
+      θ i < (g i).hi → verdictLo θ g = .reject := by
   intro hc
-  have := hc (fun _ => 0) (fun _ => Bound.unknown) () ENNReal.zero_lt_top rfl
+  have := hc (fun _ => 0) (fun _ => Bound.unknown) () ENNReal.zero_lt_top
   simp [verdictLo, Bound.unknown] at this
 
 /-- The threshold 1 on the single axis. -/
 def θone : Unit → ENNReal := fun _ => 1
 
-/-- Witness for `verdict_unknown` (θ = 1, an unknown grade, axis `()`): both hypotheses
-    and the conclusion. -/
-theorem verdict_unknown_witness :
-    θone () < ⊤ ∧ (fun _ : Unit => Bound.unknown) () = Bound.unknown
-      ∧ verdict θone (fun _ => Bound.unknown) = .reject := by
-  refine ⟨by simp [θone], rfl, ?_⟩
-  simp [verdict, θone, Bound.unknown]
+/-- Mutant: a gate that rejects only unknowns, that is, exactly when some axis has
+    `hi = ⊤` on a finite threshold. -/
+noncomputable def unknownOnly {ι : Type} (θ : ι → ENNReal) (g : Grade ι) : Decision := by
+  classical
+  exact if ∃ i, (g i).hi = ⊤ ∧ θ i < ⊤ then .reject else .accept
+
+theorem verdict_sound_unknownOnly_mutant :
+    ¬ ∀ (θ : Unit → ENNReal) (g : Grade Unit) (i : Unit),
+      θ i < (g i).hi → unknownOnly θ g = .reject := by
+  intro hc
+  have := hc θone (k 2) () (by simp [θone, k, Bound.known])
+  simp [unknownOnly, θone, k, Bound.known] at this
+
+/-- The threshold 10 on the single axis. -/
+def θten : Unit → ENNReal := fun _ => 10
+
+/-- [5, ∞], which is what an unknown becomes when combined with the known 5. -/
+def fiveUp : Grade Unit := fun _ => ⟨5, ⊤, le_top⟩
+
+/-- Witness for `verdict_sound` ([5, ∞] under θ = 10, axis `()`): the hypothesis and the
+    conclusion. Before Q4 the statement didn't cover this grade. -/
+theorem verdict_sound_witness :
+    θten () < (fiveUp ()).hi ∧ verdict θten fiveUp = .reject := by
+  refine ⟨by simp [θten, fiveUp], ?_⟩
+  simp [verdict, θten, fiveUp]
 
 /-! ## verdict_complete -/
 

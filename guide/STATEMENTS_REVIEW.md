@@ -1,6 +1,6 @@
 # Statements review: mutants and witnesses
 
-Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2 and Q3 restatements of `bridge` and the must-fail gate. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement.
+Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement.
 
 **How to read it.**
 - **Same Prop:** the mutant refutes the statement's own named definition with the mutant plugged in.
@@ -15,7 +15,7 @@ Review support before `statements-v1` is tagged. Nothing here changes a statemen
 | `combine_comm` | Restated copy | `combine kind` → `overwrite` |
 | `combine_assoc` | Restated copy | `combine kind` → `avgCombine budget` |
 | `interchange` | **Same Prop** (`Interchange`) | `seqComp kind` → `jsgVSeq`; `kind` → `budget` |
-| `verdict_unknown` | Restated copy | `verdict` → `verdictLo` |
+| `verdict_sound` | Restated copy, two mutants | `verdict` → `verdictLo`, or → `unknownOnly`, a gate that rejects only unknowns (replaces `verdict_unknown` after [Q4](QUEUE.md)) |
 | `verdict_complete` | Restated copy | `verdict` → `alwaysReject` |
 | `residual_spec` | Restated copy | `residual` → `residualFull` |
 | `no_flip` | **Not refuted**: the conclusion fails only for a grader that breaks the hypothesis | `inflatingGrader` isn't `Noninterfering` (`noninterfering_mutant`, the same Prop) |
@@ -83,16 +83,22 @@ theorem interchange : Interchange (seqComp kind) (parComp kind)
 theorem interchange_mutant : ¬ Interchange jsgVSeq (parComp budget)
 ```
 
-### 4. `verdict_unknown`: restated copy
+### 4. `verdict_sound`: restated copy, two mutants
 ```lean
 -- Statement
-theorem verdict_unknown (θ : ι → ENNReal) (g : Grade ι) (i : ι)
-    (hθ : θ i < ⊤) (hu : g i = Bound.unknown) : verdict θ g = .reject
--- Mutant
-theorem verdict_unknown_mutant :
+theorem verdict_sound (θ : ι → ENNReal) (g : Grade ι) (i : ι)
+    (hover : θ i < (g i).hi) : verdict θ g = .reject
+-- Mutant: a verdict that reads lo
+theorem verdict_sound_mutant :
     ¬ ∀ (θ : Unit → ENNReal) (g : Grade Unit) (i : Unit),
-      θ i < ⊤ → g i = Bound.unknown → verdictLo θ g = .reject
+      θ i < (g i).hi → verdictLo θ g = .reject
+-- Mutant: a gate that rejects only unknowns
+theorem verdict_sound_unknownOnly_mutant :
+    ¬ ∀ (θ : Unit → ENNReal) (g : Grade Unit) (i : Unit),
+      θ i < (g i).hi → unknownOnly θ g = .reject
 ```
+
+Before [Q4](QUEUE.md) this was `verdict_unknown`, which assumed `g i = Bound.unknown`. The unknown-only gate satisfied it, and it said nothing about [5, ∞] or about finite values over their threshold.
 
 ### 5. `verdict_complete`: restated copy
 ```lean
@@ -246,7 +252,7 @@ Nine witnesses proved only their conclusion, or skipped some hypotheses. [#11](h
 
 | Theorem | Hypotheses | Before | After #11 |
 | --- | --- | --- | --- |
-| `verdict_unknown` | `hθ`, `hu` | conclusion only | all proved |
+| `verdict_sound` | `hover` | new after Q4 | all proved: [5, ∞] under θ = 10, a grade `verdict_unknown` didn't cover |
 | `verdict_complete` | `hk`, `hin` | conclusion only | all proved |
 | `residual_spec` | `hθ`, `hx` | conclusion only | all proved |
 | `no_flip` | `hni` | proved in a separate theorem | proved together |
