@@ -2,6 +2,11 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-10-26
+
+### `verdict_unknown` replaced by `verdict_sound` (#20)
+- **Decision:** Marley's, recorded as Q4 in QUEUE.md. This PR applies it with its controls and renames, and puts the statements-v1 entry in the existing `guide/CHANGELOG.md` rather than a second changelog.
+
 ## 2026-10-20
 
 ### The axiom audit covers the controls (#18)
