@@ -22,6 +22,9 @@ open JSG
 /-- Every axis is a budget axis. -/
 def budget : Unit → Kind := fun _ => .budget
 
+/-- Every axis is a floor axis. -/
+def floor : Unit → Kind := fun _ => .floor
+
 /-- A known value on the single axis. -/
 def k (x : ENNReal) : Grade Unit := fun _ => Bound.known x
 
@@ -76,6 +79,18 @@ theorem interchange_mutant : ¬ Interchange jsgVSeq (parComp budget) := by
   intro hc
   have := congrArg (fun g => (g ()).hi) (hc (k 1) (k 0) (k 0) (k 1))
   simp [jsgVSeq, parComp, combine, combineAxis, budget, k, Bound.known] at this
+
+/-- Mutant: SCp2's operator pair, a real defect (ROADMAP, Milestone 1 notes). Sequence is
+    its ⋆, + on every axis (SirusSC's `Q.sequential`); parallel composition is its ⊎, max
+    on floors (`Q.hetero_join`). On a floor axis with a = 1, b = 0, c = 0, d = 1,
+    parallel-of-sequences grades max(1 + 0, 0 + 1) = 1 and sequence-of-parallels 2. -/
+def scp2Seq {ι : Type} (g h : Grade ι) : Grade ι := fun i => combineAxis .budget (g i) (h i)
+
+theorem interchange_scp2_mutant : ¬ Interchange scp2Seq (parComp floor) := by
+  intro hc
+  have := congrArg (fun g => (g ()).hi) (hc (k 1) (k 0) (k 0) (k 1))
+  simp [scp2Seq, parComp, combine, combineAxis, floor, k, Bound.known] at this
+  norm_num at this
 
 theorem interchange_witness :
     parComp budget (seqComp budget (k 1) (k 2)) (seqComp budget (k 3) (k 4))
@@ -282,6 +297,19 @@ theorem charge_chatter_mutant :
   intro hc
   have := hc 1 1
   simp [chargeMerged] at this
+
+/-- Mutant: SCp2's frontier debit (§5), a real defect (ROADMAP, Milestone 1 notes). It
+    folds jump prices with max, so repeats aren't double-charged: [v, -v] costs A‖v‖,
+    not 2A‖v‖. -/
+noncomputable def chargeMaxFold {E : Type} [NormedAddCommGroup E] (A : ENNReal)
+    (jumps : List E) : ENNReal :=
+  A * (jumps.map (fun v => (‖v‖₊ : ENNReal))).foldl max 0
+
+theorem charge_chatter_scp2_mutant :
+    ¬ ∀ (A : ENNReal) (v : ℝ), chargeMaxFold A [v, -v] = 2 * A * (‖v‖₊ : ENNReal) := by
+  intro hc
+  have := hc 1 1
+  simp [chargeMaxFold] at this
 
 theorem charge_chatter_witness :
     charge (1 : ENNReal) [(1 : ℝ), -1] = 2 * 1 * (‖(1 : ℝ)‖₊ : ENNReal) := by
