@@ -138,3 +138,4 @@ theorem dwell_lower_bound {d : ℝ → ℝ} {Smax r t₁ t₂ : ℝ} (hS : 0 < S
 -- bound; a trajectory with |ḋ| = 100α crosses far faster than the claimed τ_min.
 
 end JSG
+-- Throwaway freeze test: CI's statements check must fail on this line. Never merge.
