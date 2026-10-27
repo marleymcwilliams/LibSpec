@@ -42,6 +42,19 @@ theorem expiry_tightens (B : P) {a a' : Set P} (h : a' ⊆ a) :
   unfold effective
   gcongr
 
+theorem bridge {Inp : Type} (gradeOf : Inp → Grade ι) {dial₁ dial₂ : ι → ENNReal}
+    (h : dial₁ ≤ dial₂) :
+    {x | verdict (threshold dial₂) (gradeOf x) = .accept}
+      ⊆ {x | verdict (threshold dial₁) (gradeOf x) = .accept} := by
+  intro x hx
+  change verdict (threshold dial₂) (gradeOf x) = .accept at hx
+  change verdict (threshold dial₁) (gradeOf x) = .accept
+  unfold verdict at hx ⊢
+  split_ifs at hx with h₂
+  split_ifs with h₁
+  · rfl
+  · exact absurd (fun i => (h₂ i).trans (ENNReal.inv_le_inv.mpr (h i))) h₁
+
 theorem lease_sound (θ β : ι → ENNReal) (g : Grade ι) (i : ι)
     (hout : θ i < (g i).hi ∨ β i < (g i).width) : leaseVerdict θ β g = .reject := by
   unfold leaseVerdict
