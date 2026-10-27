@@ -19,7 +19,13 @@ Proved in #39.
 
 ## `Loader.terminates`
 
-*Not yet proved.*
+Proved in #41.
+
+1. "No infinite run" means the step relation, read backwards, is well-founded: there's no endless chain of steps.
+2. Mathlib proves the Dershowitz–Manna order on finite multisets is well-founded whenever the order on their elements is (`Multiset.wellFounded_isDershowitzMannaLT`).
+3. `InvImage.wf` pulls that back along `L.pending`, so comparing states by what each has pending is well-founded too.
+4. The Loader's field `progress` says every step lowers what is pending in that order, so each step is one of those comparisons (`Subrelation.wf`).
+5. So no Loader runs forever when its obligations' order is well-founded. For the concrete Loader, `progress` is `LoaderStep.progress`.
 
 ## `charge_append`
 

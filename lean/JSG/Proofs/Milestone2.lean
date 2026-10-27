@@ -21,6 +21,11 @@ theorem Loader.safe {S O : Type} [Preorder O] (L : Loader S O) {s t : S}
   | refl => exact hs
   | tail _ hst ih => exact L.inv_step _ _ ih hst
 
+theorem Loader.terminates {S O : Type} [Preorder O] [WellFoundedLT O]
+    (L : Loader S O) : WellFounded (fun t s => L.step s t) :=
+  Subrelation.wf (fun {t s} h => L.progress s t h)
+    (InvImage.wf L.pending Multiset.wellFounded_isDershowitzMannaLT)
+
 theorem charge_append (A : ENNReal) (j₁ j₂ : List E) :
     charge A (j₁ ++ j₂) = charge A j₁ + charge A j₂ := by
   unfold charge
