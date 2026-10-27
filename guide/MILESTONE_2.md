@@ -9,7 +9,13 @@ the end once the gate is met: what is now proved, and what it does not show.
 
 ## `Loader.safe`
 
-*Not yet proved.*
+Proved in #39.
+
+1. `Relation.ReflTransGen L.step s t` says t is reached from s in zero or more steps.
+2. Induction on that path gives two cases: no steps at all, or a shorter path followed by one more step.
+3. With no steps, t is s, and `hs` is the goal.
+4. Otherwise the induction hypothesis says the state before the last step satisfies `Inv`, and the Loader's own field `inv_step` carries it across that step.
+5. So the invariant holds along any run. For a concrete Loader the work is in its `inv_step`, which is what `LoaderStep.inv_step` proves.
 
 ## `Loader.terminates`
 
