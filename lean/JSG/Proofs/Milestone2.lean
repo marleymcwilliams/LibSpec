@@ -20,6 +20,12 @@ theorem charge_append (A : ENNReal) (j₁ j₂ : List E) :
   unfold charge
   rw [List.map_append, List.sum_append, mul_add]
 
+theorem charge_chatter (A : ENNReal) (v : E) :
+    charge A [v, -v] = 2 * A * (‖v‖₊ : ENNReal) := by
+  simp only [charge, List.map_cons, List.map_nil, List.sum_cons, List.sum_nil, nnnorm_neg,
+    add_zero]
+  ring
+
 theorem expiry_tightens (B : P) {a a' : Set P} (h : a' ⊆ a) :
     effective B a ≤ effective B a' := by
   unfold effective

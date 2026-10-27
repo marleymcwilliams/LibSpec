@@ -27,7 +27,13 @@ Proved in #35.
 
 ## `charge_chatter`
 
-*Not yet proved.*
+Proved in #36.
+
+1. `charge A [v, -v]` is A times the sum of the two jumps' sizes, ‖v‖ and ‖−v‖.
+2. `simp only` unfolds `charge` and works out the map and the sum over the two-element list.
+3. `nnnorm_neg` says a jump and its reverse have the same size: ‖−v‖ = ‖v‖.
+4. That leaves A · (‖v‖ + ‖v‖), and `ring` rearranges it to 2 · A · ‖v‖.
+5. So crossing a frontier and coming straight back costs twice one crossing, never nothing. SCp2's max-fold, which charges it once, fails this.
 
 ## `expiry_tightens`
 
