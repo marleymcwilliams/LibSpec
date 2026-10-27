@@ -1,45 +1,98 @@
 import JSG.Solution
-import JSG.Tests.Smoke
-import JSG.Tests.Mutants
-import JSG.Tests.Calibration
+import JSG.Tests
 
 /-!
 Axiom audit, run by `scripts/check.sh`.
 The script fails if anything audited here depends on an axiom other than `propext`,
 `Classical.choice` or `Quot.sound` (including `sorryAx`).
-- Proofs: list every closed theorem by name. Statements still proved by `sorry` stay
-  off this list until their milestone.
-- Controls: `#audit_module` audits every theorem a test module declares, so a mutant,
-  witness or calibration added later is covered without being listed. It fails if the
-  module isn't imported or declares no theorem, so a renamed module can't pass empty.
+
+`#audit_sweep` audits every theorem in every module it finds on disk under
+`JSG/Proofs/`, `JSG/Lemmas/` and `JSG/Tests/`, so a new proof, lemma or test is audited
+without anyone editing this file. It leaves out the Comparator fixtures in
+`JSG/Tests/Comparator/`, which contain `sorry` by design. It reaches the modules through
+two roots: `JSG.Solution`, which imports every proof file (and so the lemmas they use),
+and `JSG.Tests`, which imports every test file. It fails, and this file doesn't compile,
+if
+- a module on disk isn't imported through those roots;
+- a module declares no theorem;
+- it finds no proof module or no test module;
+- a theorem named after it wasn't among those it audited.
+
+The by-name list from before the sweep stays, and the sweep must cover it; it can go
+once you're satisfied that it does.
 
 It imports the proofs (`JSG.Solution`) rather than `JSG`: each proof restates its
 theorem under the frozen name, so the proofs and `JSG.Statements` can't be imported
 together. The test modules import only `JSG.Defs`, so they can sit beside the proofs.
 -/
 
-open Lean in
-/-- Prints `#print axioms`, in the same format, for every theorem module `m` declares. -/
-elab "#audit_module " m:ident : command => do
+open Lean Elab Command
+
+/-- The module a file under `base` holds: `JSG/Tests/Mutants.lean` holds
+    `JSG.Tests.Mutants`. -/
+def auditModuleName (base file : System.FilePath) : Name :=
+  ((file.withExtension "").components.drop base.components.length).foldl Name.mkStr .anonymous
+
+/-- The modules on disk under `base/JSG/dir`, sorted, skipping directories named `skip`. -/
+def auditModulesOnDisk (base : System.FilePath) (dir : String) (skip : Option String := none) :
+    IO (Array Name) := do
+  let root := base / "JSG" / dir
+  unless ← root.isDir do return #[]
+  let files ← root.walkDir (enter := fun d => pure (d.fileName != skip))
+  return files.filter (·.extension == some "lean") |>.map (auditModuleName base)
+    |>.qsort Name.lt
+
+/-- Prints `#print axioms`, in the same format, for every theorem module `m` declares, and
+    returns their names. Fails if `m` isn't imported or declares no theorem. -/
+def auditModule (m : Name) : CommandElabM (Array Name) := do
   let env ← getEnv
-  let some idx := env.getModuleIdx? m.getId
-    | throwError "#audit_module: {m.getId} is not imported"
+  let some idx := env.getModuleIdx? m
+    | throwError "axiom audit: {m} is not imported"
   let some data := env.header.moduleData[idx]?
-    | throwError "#audit_module: no module data for {m.getId}"
+    | throwError "axiom audit: no module data for {m}"
   let thms := data.constants.filterMap fun
     | .thmInfo t => if t.name.isInternal then none else some t.name
     | _ => none
   if thms.isEmpty then
-    throwError "#audit_module: {m.getId} declares no theorems"
+    throwError "axiom audit: {m} declares no theorems"
   for n in thms do
     let axioms ← collectAxioms n
     if axioms.isEmpty then
       logInfo m!"'{n}' does not depend on any axioms"
     else
       logInfo m!"'{n}' depends on axioms: {axioms.qsort Name.lt |>.map MessageData.ofConstName |>.toList}"
+  return thms
+
+/-- Audits every theorem in every proof, lemma and test module on disk (see the module
+    docstring). Each name after it must be among the audited theorems. -/
+elab "#audit_sweep" required:ident* : command => do
+  let base := (System.FilePath.mk (← getFileName)).parent.getD "."
+  let proofs ← auditModulesOnDisk base "Proofs"
+  let lemmas ← auditModulesOnDisk base "Lemmas"
+  let tests ← auditModulesOnDisk base "Tests" (skip := some "Comparator")
+  if proofs.isEmpty then
+    throwError "axiom audit: no proof module under {base / "JSG" / "Proofs"}"
+  if tests.isEmpty then
+    throwError "axiom audit: no test module under {base / "JSG" / "Tests"}"
+  let env ← getEnv
+  let root (m : Name) : String :=
+    if (`JSG.Tests).isPrefixOf m then "lean/JSG/Tests.lean" else "lean/JSG/Solution.lean"
+  let unreached := (proofs ++ lemmas ++ tests).filter fun m => (env.getModuleIdx? m).isNone
+  unless unreached.isEmpty do
+    throwError m!"axiom audit: these modules are on disk but not imported, so they would \
+      go unaudited: {unreached.toList.map fun m => s!"{m} (import it from {root m})"}"
+  let mut audited : NameSet := {}
+  let mut count : Nat := 0
+  for m in proofs ++ lemmas ++ tests do
+    for n in ← auditModule m do
+      audited := audited.insert n
+      count := count + 1
+  for r in required do
+    unless audited.contains r.getId do
+      throwError "axiom audit: {r.getId} wasn't among the audited theorems"
+  logInfo m!"axiom audit: {count} theorems in {(proofs ++ lemmas ++ tests).size} modules"
 
 #print axioms JSG.Tests.smoke
 #print axioms JSG.combine_comm
 
-#audit_module JSG.Tests.Mutants
-#audit_module JSG.Tests.Calibration
+#audit_sweep JSG.Tests.smoke JSG.combine_comm

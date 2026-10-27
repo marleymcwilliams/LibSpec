@@ -6,7 +6,8 @@
 - Proofs go in `lean/JSG/Proofs/`. Each proof file imports `JSG.Defs` and restates frozen theorems
   under their exact names; `lean/JSG/Solution.lean` imports every proof file, and Comparator
   checks each one against its frozen statement. Helper lemmas go in `lean/JSG/Lemmas/`, never
-  in a proof file.
+  in a proof file. `lean/JSG/Tests.lean` imports every test file. The axiom audit sweeps
+  Proofs/, Lemmas/ and Tests/ and fails on any file that these two roots don't reach.
 - `archive/` is read-only.
 
 ## Definition of done
