@@ -31,4 +31,11 @@ theorem expiry_tightens (B : P) {a a' : Set P} (h : a' ⊆ a) :
   unfold effective
   gcongr
 
+theorem lease_complete (θ β : ι → ENNReal) (g : Grade ι) (hlease : WithinLease β g)
+    (hin : ∀ i, (g i).hi ≤ θ i) : leaseVerdict θ β g = .accept := by
+  unfold leaseVerdict
+  split_ifs with h
+  · rfl
+  · exact absurd (fun i => ⟨hin i, hlease i⟩) h
+
 end JSG

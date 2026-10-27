@@ -53,7 +53,13 @@ Proved by Marley (#34).
 
 ## `lease_complete`
 
-*Not yet proved.*
+Proved in #37.
+
+1. `leaseVerdict θ β g` accepts exactly when every axis is within both its threshold and its lease: `(g i).hi ≤ θ i ∧ (g i).width ≤ β i` for every `i`.
+2. Unfolding it leaves an if-then-else, and `split_ifs` splits on that condition.
+3. In the accepting branch the goal holds at once (`rfl`).
+4. In the other branch the condition is assumed false, but `hin i` and `hlease i` give both halves at every axis, so that branch can't happen.
+5. So a reading within its threshold and its lease is accepted, even an interval wider than a point. That closes, for the lease gate, the gap Milestone 1's note named.
 
 ## `pass_sound`
 
