@@ -121,7 +121,13 @@ Proved in #43.
 
 ## `threads_spec`
 
-*Not yet proved.*
+Proved in #45.
+
+1. Induction on the stages, generalizing the budget, since each stage hands the next what it left.
+2. With no stages, threading holds trivially and the total is 0, which fits any θ.
+3. For a first stage x and the rest, threading says x ≤ θ and that the rest thread through θ − x. By induction that's "the rest's total ≤ θ − x", since θ − x is finite, being at most θ.
+4. Then x ≤ θ and "total ≤ θ − x" together say x + total ≤ θ (`add_tsub_cancel_of_le`). The converse follows from `ENNReal.le_sub_iff_add_le_left`, as in `residual_spec`.
+5. So for a finite θ, threading is exactly "the total fits", for any number of stages. An overspent stage fails its own check instead of leaving a 0 that the rest pass.
 
 ## The concrete Loader
 
