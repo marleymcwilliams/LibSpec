@@ -79,7 +79,13 @@ Proved in #37.
 
 ## `pass_complete`
 
-*Not yet proved.*
+Proved in #40.
+
+1. `Passes` asks two things: the window's grade is within its thresholds and leases, and nothing is pending after the run.
+2. The first is `hgrade`, as given.
+3. For the second, the run is `pre` followed by `r`, so what is pending at the end is one more `afterStage`, applied to what `pre` left plus what `r` emits.
+4. `afterStage` keeps only the items `r` doesn't clear, and `hlast` says `r` clears every one of them, so nothing is kept (`Multiset.filter_eq_nil`).
+5. So a window passes when its last stage clears what's left. With `pass_sound`, that is exactly what passing means, and a transition that never clears anything fails this.
 
 ## `LoaderStep.inv_step`
 

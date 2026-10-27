@@ -53,4 +53,17 @@ theorem lease_complete (θ β : ι → ENNReal) (g : Grade ι) (hlease : WithinL
   · rfl
   · exact absurd (fun i => ⟨hin i, hlease i⟩) h
 
+theorem pass_complete (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (stages : Multiset St)
+    (carried : Multiset O) (pre : List (StageRun ι St O W)) (r : StageRun ι St O W)
+    (hgrade : leaseVerdict θ β (windowGrade kind (pre ++ [r])) = .accept)
+    (hlast : ∀ p ∈ pendingAfter M (windowStart stages carried) pre + r.emits.map Pending.obl,
+      M.Clears r p) :
+    Passes kind θ β M stages carried (pre ++ [r]) := by
+  classical
+  refine ⟨hgrade, ?_⟩
+  unfold pendingAfter at hlast ⊢
+  rw [List.foldl_append, List.foldl_cons, List.foldl_nil]
+  unfold afterStage
+  exact Multiset.filter_eq_nil.mpr fun p hp => not_not.mpr (hlast p hp)
+
 end JSG
