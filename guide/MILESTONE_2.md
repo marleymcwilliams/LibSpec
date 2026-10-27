@@ -101,7 +101,13 @@ Proved in #40.
 
 ## `LoaderStep.inv_step`
 
-*Not yet proved.*
+Proved in #43.
+
+1. A Loader step has one rule, `stage`, so `cases` exposes its premises: the adapter's pricing, the declared axes, the round-off, the budget and the ticket.
+2. The step never changes the boot record, so L1–L5 and L7, which read only that record, carry over unchanged.
+3. L8 and L9 are re-established by the premises `hround` and `hbudget`. L10 holds because the step records the new bundle's root itself (`rfl`).
+4. L6 needs one more look: an axis written before was already declared, and an axis this stage writes is one its adapter declared (`hiso`).
+5. So every step keeps all ten checks. SCp3's T-Row, which skips I6 and I8, fails this, and so does SirusSC's axis-leak check.
 
 ## `LoaderStep.progress`
 
