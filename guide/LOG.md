@@ -4,6 +4,11 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-26
 
+### `statements-v1` tagged, and the freeze confirmed (#22)
+- **The tag:** Marley tagged `statements-v1` (annotated) at bc76c3c, the merge of #20. Ruleset 25916221, "freeze statements tags", protects `refs/tags/statements-v*`: active, updates and deletions restricted, creation allowed, no bypass actors.
+- **The freeze test (#21):** a one-line comment added to `Statements.lean` on a throwaway branch failed CI at the statements check (run 40413606695). The diff named `lean/JSG/Statements.lean`, then "FAIL: files the statements depend on differ from statements-v1"; the build itself passed. The PR was closed unmerged and its branch deleted.
+- **A race on `main`:** CI at bc76c3c (run 40411254587) checked out the merge before the tag was pushed, then found the tag on origin but not in its clone, so the statements check failed as designed. A rerun passed with "ok (statements-v1)". Tagging after `main`'s CI finishes avoids it.
+
 ### `verdict_unknown` replaced by `verdict_sound` (#20)
 - **Decision:** Marley's, recorded as Q4 in QUEUE.md. This PR applies it with its controls and renames, and puts the statements-v1 entry in the existing `guide/CHANGELOG.md` rather than a second changelog.
 

@@ -124,7 +124,7 @@ The goal is `Statements.lean` v1: the fixed target every later proof is judged a
 - [x] `Defs.lean` and `Statements.lean` compile, with `sorry` as the only gap; every definition the statements use is in `Defs.lean`, so the proofs import the same definitions
 - [x] Every theorem has a docstring you wrote or approved
 - [x] Every theorem's mutant counterexample and witness instance are proved, before any milestone proof starts; a counterexample that comes too easily is a warning that the statement may be false for everything
-- [ ] The file is tagged `statements-v1`, and any later change needs a `CHANGELOG.md` line saying whether it tightens or weakens
+- [x] The file is tagged `statements-v1`, and any later change needs a `CHANGELOG.md` line saying whether it tightens or weakens
 
 ## Phases 3–5: The three proof milestones
 
@@ -132,12 +132,13 @@ Each milestone proves one block of `Statements.lean` and closes at the same gate
 
 | Milestone | Theorems | Read first | Expected difficulty |
 | --- | --- | --- | --- |
-| 1: Algebraic core | `combine_comm`, `combine_assoc`, `interchange`, `verdict_sound`, `verdict_complete`, `residual_spec`, `fold_check_vacuous` | Mathematics in Lean ch. 2–4, 7; the `ENNReal` API | Low: case splits on axis kind, plus finding the right `ENNReal` lemmas |
+| 1: Algebraic core | `combine_comm`, `combine_assoc`, `interchange`, `verdict_sound`, `verdict_complete`, `residual_spec`, `no_flip`, `fold_check_vacuous` | Mathematics in Lean ch. 2–4, 7; the `ENNReal` API | Low: case splits on axis kind, plus finding the right `ENNReal` lemmas |
 | 2: Obligations, Loader, charge, policy | Typed obligations, `Loader.safe`, `Loader.terminates`, `charge_append`, `charge_chatter`, `expiry_tightens`, `bridge`, `mfGate_signed` | Mathematics in Lean ch. 5–6 | Low to medium: Dershowitz–Manna and lattice lemmas take some finding |
 | 3: Analysis layer | CVaR tail-to-level, `dwell_lower_bound`, local KL–Fisher bound, DRO envelope identity | Mathematics in Lean ch. 11–13 | Medium to high: the statements need as much care as the proofs |
 
 **Milestone 1 notes**, for right after the `statements-v1` tag:
 
+- **`no_flip` is in Milestone 1.** It's proved in place in `Statements.lean`, but Comparator counts it only once a proof file restates it.
 - Add two mutants taken from real defects to `JSG/Tests/Mutants.lean`, beside the current ones. Both are new controls, not statement changes.
   - **`interchange`: SCp2's operator pair.** It uses ⋆ (+) in sequence and ⊎ (max) in parallel, which SirusSC implements as `Q.sequential` and `Q.hetero_join`. On a floor axis with a = 1, b = 0, c = 0, d = 1, parallel-of-sequences grades max(1 + 0, 0 + 1) = 1, but sequence-of-parallels grades max(1, 0) + max(0, 1) = 2.
   - **`charge_chatter`: SCp2's max-fold debit (§5).** It doesn't double-charge repeats, so [v, −v] costs A‖v‖, not 2A‖v‖. `charge_chatter` is a Milestone 2 theorem, but its mutant goes in now with the other.

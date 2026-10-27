@@ -20,6 +20,7 @@
 
 ## How to work
 - Never push to `main`. Work on a branch and open a PR.
+- Never create, move or delete a statements-v* tag; I do the tagging.
 - One target per session unless told otherwise.
 - Search Mathlib (Loogle, exact?, apply?) before writing a helper lemma.
 - Treat any Mathlib name recalled from memory, yours or another model's, as a guess until Loogle confirms it.
