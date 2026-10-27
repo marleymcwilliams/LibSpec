@@ -49,7 +49,13 @@ Proved by Marley (#34).
 
 ## `lease_sound`
 
-*Not yet proved.*
+Proved in #38.
+
+1. As in `lease_complete`, `leaseVerdict` accepts exactly when every axis is within its threshold and its lease, and `split_ifs` splits on that condition.
+2. If the condition held, it would hold at our axis `i`: `(g i).hi ≤ θ i` and `(g i).width ≤ β i`.
+3. `hout` says one of those fails at `i`: either θ i < hi, or β i < width.
+4. Either way that contradicts the condition (`not_le`), so only the rejecting branch is left, and its value is `.reject`.
+5. So one axis over its threshold, or wider than its lease, rejects the whole grade. A gate that checks only one of the two, like `qPrimeGate` or `widthsOnly`, fails this.
 
 ## `lease_complete`
 

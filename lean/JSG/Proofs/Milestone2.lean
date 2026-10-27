@@ -31,6 +31,15 @@ theorem expiry_tightens (B : P) {a a' : Set P} (h : a' ⊆ a) :
   unfold effective
   gcongr
 
+theorem lease_sound (θ β : ι → ENNReal) (g : Grade ι) (i : ι)
+    (hout : θ i < (g i).hi ∨ β i < (g i).width) : leaseVerdict θ β g = .reject := by
+  unfold leaseVerdict
+  split_ifs with h
+  · rcases hout with hθ | hβ
+    · exact absurd (h i).1 (not_le.mpr hθ)
+    · exact absurd (h i).2 (not_le.mpr hβ)
+  · rfl
+
 theorem lease_complete (θ β : ι → ENNReal) (g : Grade ι) (hlease : WithinLease β g)
     (hin : ∀ i, (g i).hi ≤ θ i) : leaseVerdict θ β g = .accept := by
   unfold leaseVerdict
