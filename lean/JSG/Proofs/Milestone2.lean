@@ -15,6 +15,12 @@ variable {P : Type} [CompleteLattice P]   -- larger = stricter
 variable {St O W : Type}
 variable {Bytes D : Type}
 
+theorem Loader.safe {S O : Type} [Preorder O] (L : Loader S O) {s t : S}
+    (hs : L.Inv s) (hr : Relation.ReflTransGen L.step s t) : L.Inv t := by
+  induction hr with
+  | refl => exact hs
+  | tail _ hst ih => exact L.inv_step _ _ ih hst
+
 theorem charge_append (A : ENNReal) (j₁ j₂ : List E) :
     charge A (j₁ ++ j₂) = charge A j₁ + charge A j₂ := by
   unfold charge
