@@ -51,7 +51,13 @@ Proved in #27.
 
 ## `residual_spec`
 
-*Not yet proved.*
+Proved in #30.
+
+1. `residual θ x` is `θ - x` in ENNReal, where subtraction stops at 0.
+2. Mathlib's `ENNReal.le_sub_iff_add_le_left` says `y ≤ θ - x ↔ x + y ≤ θ` when x is finite and x ≤ θ.
+3. `hx` gives x ≤ θ directly.
+4. x is finite because it's at most θ, which `hθ` says is finite (`ne_top_of_le_ne_top`).
+5. These are the two cases your self-check found: without `hx` the cut-off at 0 hides an overspend, and without `hθ`, x = θ = ⊤ gives a residual of ⊤ − ⊤ = 0.
 
 ## `no_flip`
 
