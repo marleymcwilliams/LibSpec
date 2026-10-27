@@ -159,27 +159,56 @@ def DischargeMatrix.Discharges (M : DischargeMatrix St O W) (r : StageRun ι St 
     (o : O) : Prop :=
   M.authority o = r.stage ∧ M.witness o r.wit
 
-/-- JSG V's stage transition on obligations: add what the stage emits, then remove every
-    obligation it discharges. -/
-noncomputable def afterStage (M : DischargeMatrix St O W) (pend : Multiset O)
-    (r : StageRun ι St O W) : Multiset O := by
-  classical
-  exact (pend + r.emits).filter (fun o => ¬ M.Discharges r o)
+/-- An item a window has pending: a stage's ticket, issued at boot and cleared when that
+    stage runs, or an obligation. -/
+inductive Pending (St O : Type)
+  | ticket (s : St)
+  | obl (o : O)
 
-/-- The obligations still pending after a run of stages, from those pending at its start. -/
-noncomputable def pendingAfter (M : DischargeMatrix St O W) (pend₀ : Multiset O)
-    (run : List (StageRun ι St O W)) : Multiset O :=
+/-- A pending item's rank: every ticket ranks above every obligation, and obligations
+    rank as they do in JSG V's type order. -/
+def Pending.rank : Pending St O → WithTop O
+  | .ticket _ => ⊤
+  | .obl o => (o : WithTop O)
+
+/-- Pending items are ordered by rank. -/
+instance [Preorder O] : Preorder (Pending St O) := Preorder.lift Pending.rank
+
+/-- What a stage clears when it runs: its own ticket, and every obligation it
+    discharges. -/
+def DischargeMatrix.Clears (M : DischargeMatrix St O W) (r : StageRun ι St O W) :
+    Pending St O → Prop
+  | .ticket s => s = r.stage
+  | .obl o => M.Discharges r o
+
+/-- JSG V's stage transition: add the obligations the stage emits, then remove everything
+    it clears. -/
+noncomputable def afterStage (M : DischargeMatrix St O W) (pend : Multiset (Pending St O))
+    (r : StageRun ι St O W) : Multiset (Pending St O) := by
+  classical
+  exact (pend + r.emits.map Pending.obl).filter (fun p => ¬ M.Clears r p)
+
+/-- What is still pending after a run of stages, from what was pending at its start. -/
+noncomputable def pendingAfter (M : DischargeMatrix St O W) (pend₀ : Multiset (Pending St O))
+    (run : List (StageRun ι St O W)) : Multiset (Pending St O) :=
   run.foldl (afterStage M) pend₀
+
+/-- What a window has pending at its start: a ticket for each of its stages, and the
+    obligations carried in. -/
+def windowStart (stages : Multiset St) (carried : Multiset O) : Multiset (Pending St O) :=
+  stages.map Pending.ticket + carried.map Pending.obl
 
 /-- A window's grade: its stages' grades combined in sequence, from the known 0. -/
 def windowGrade (run : List (StageRun ι St O W)) : Grade ι :=
   run.foldl (fun g r => seqComp kind g r.grade) (fun _ => Bound.known 0)
 
 /-- JSG V's verdict on a window (§3), with PDE I4b's leases: it passes iff its grade is
-    within its thresholds and leases, and no obligation is left. -/
-def Passes (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (pend₀ : Multiset O)
-    (run : List (StageRun ι St O W)) : Prop :=
-  leaseVerdict θ β (windowGrade kind run) = .accept ∧ pendingAfter M pend₀ run = 0
+    within its thresholds and leases, every one of its stages has run, and no obligation
+    is left. -/
+def Passes (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (stages : Multiset St)
+    (carried : Multiset O) (run : List (StageRun ι St O W)) : Prop :=
+  leaseVerdict θ β (windowGrade kind run) = .accept ∧
+    pendingAfter M (windowStart stages carried) run = 0
 
 /-! ## 10. A concrete Loader (SCp3 §3 and §6; JSG V §3) -/
 
@@ -210,10 +239,11 @@ structure Boot (ι St Bytes D : Type) where
   adapter    : St → List Bytes → Grade ι  -- L7: each stage's adapter, from rows to a grade
   epsMax     : ENNReal                    -- L8: the cap on accumulated round-off
   budget     : ι → ENNReal                -- L9: the budgets B, per axis
+  stages     : Multiset St                -- the stages the run has, each issued a ticket
 
 /-- A Loader state (SCp3 Definition 6.1, cut down): the boot record, the acceptance grade
     q, the round-off so far, the (stage, axis) pairs written so far, the receipt bundle
-    with the root recorded for it, and the pending obligations. -/
+    with the root recorded for it, and what is pending. -/
 structure LoaderState (ι St O Bytes D : Type) where
   boot    : Boot ι St Bytes D
   q       : Grade ι
@@ -221,9 +251,15 @@ structure LoaderState (ι St O Bytes D : Type) where
   written : Set (St × ι)
   bundle  : List Bytes
   root    : D
-  pending : Multiset O
+  pending : Multiset (Pending St O)
 
 variable (prims : Prims Bytes D)
+
+/-- The state T-Boot leaves: nothing graded, no round-off, nothing written, an empty
+    bundle with its root, and pending a ticket for each stage it pinned and the
+    obligations carried in. -/
+def bootState (b : Boot ι St Bytes D) (carried : Multiset O) : LoaderState ι St O Bytes D :=
+  ⟨b, fun _ => Bound.known 0, 0, ∅, [], prims.root [], windowStart b.stages carried⟩
 
 /-- L1, SCp3's I1 RAW_DIGEST_MATCH: the raw data hashes to its pinned digest. -/
 def L1 (s : LoaderState ι St O Bytes D) : Prop := prims.digest s.boot.raw = s.boot.rawDigest
@@ -267,10 +303,10 @@ def LoaderInv (s : LoaderState ι St O Bytes D) : Prop :=
     L10 prims s
 
 /-- One step of the concrete Loader: a stage runs (JSG V §3), guarded fail-closed as in
-    SCp3 §6.3, so a step whose premises fail isn't enabled and the run stops there. T-Boot
-    isn't a step: a run starts from a state that passes L1–L10. The step appends the
-    stage's receipt and records the bundle's new root. -/
-inductive LoaderStep [Preorder O] (M : DischargeMatrix St O W) :
+    SCp3 §6.3, so a step whose premises fail isn't enabled and the run stops there. A run
+    starts from `bootState`, and a stage runs on its ticket, so at most once. The step
+    appends the stage's receipt and records the bundle's new root. -/
+inductive LoaderStep (M : DischargeMatrix St O W) :
     LoaderState ι St O Bytes D → LoaderState ι St O Bytes D → Prop
   | stage (s : LoaderState ι St O Bytes D) (r : StageRun ι St O W) (rows : List Bytes)
       (ε : ENNReal) (receipt : Bytes)
@@ -282,10 +318,8 @@ inductive LoaderStep [Preorder O] (M : DischargeMatrix St O W) :
       (hround : s.eps + ε ≤ s.boot.epsMax)
       -- the new grade stays within the budgets (T-Row, I9)
       (hbudget : ∀ i, (combine kind s.q r.grade i).hi ≤ s.boot.budget i)
-      -- it discharges at least one pending obligation
-      (hdis : ∃ o ∈ s.pending, M.Discharges r o)
-      -- each obligation it emits and doesn't discharge ranks below one it discharges
-      (hsmall : ∀ e ∈ r.emits, ¬ M.Discharges r e → ∃ o ∈ s.pending, M.Discharges r o ∧ e < o) :
+      -- its ticket is still pending: it hasn't run yet
+      (hticket : Pending.ticket r.stage ∈ s.pending) :
       LoaderStep M s
         { s with
           q := combine kind s.q r.grade

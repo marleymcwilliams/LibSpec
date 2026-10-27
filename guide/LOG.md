@@ -2,6 +2,21 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-10-27
+
+### `statements-v2` revised after Marley's review (#33, draft)
+- **Queue:** Marley answered Q5, Q6 and Q7 yes, as recommended.
+- **Leases:** `lease_breach` is widened into `lease_sound`: an axis over its threshold, or wider than its lease, rejects the grade. A gate that checks only widths satisfied both lease theorems, yet accepted [5, 5] under θ = 1; it is now `lease_sound`'s second mutant. `lease_complete` assumes `(g i).hi ≤ θ i` in place of `lo + β ≤ θ`. That's a stronger theorem, and `pointsOnly` still fails it.
+- **Tickets:**
+  - **The problem:** the first draft's `LoaderStep` needed every stage to discharge a pending obligation. A JSG V window starts with Σ empty, so no window could take its first step.
+  - **The fix:** each stage that T-Boot pins (`Boot.stages`) has a ticket, pending from the start (`windowStart`, `bootState`). A stage clears its own ticket when it runs (`DischargeMatrix.Clears`), and tickets rank above every obligation (`Pending.rank`).
+  - **What changes:** `LoaderStep`'s `hticket` replaces `hdis` and `hsmall`. `Passes` takes the window's stages, and `pass_sound` and `pass_complete` cover everything pending, tickets included.
+  - **Mutants:** JSG V's "or" now stands in for the ticket. I_Σ is read on the obligations alone, since JSG V's Σ has no tickets.
+- **New controls:** `loader_runs_window` runs EF and then PR through `LoaderStep` from `bootState`, and the window passes. `empty_run_fails` shows that, from the same state, a run with no stages doesn't pass.
+- **Provability check:** all seven theorems were proved in an uncommitted scratch file. Each proof is against its frozen statement, through `type_of%`, and uses only propext, Classical.choice and Quot.sound. With the two Loader theorems, the concrete Loader builds as a `Loader`, and what it has pending is well-founded whenever the obligations are.
+- **Left open:** stage order (IDEAS.md). It needs no decision now, because an ordered Loader can come later as a step relation contained in `LoaderStep`, and both theorems carry over.
+- **Docs:** CHANGELOG, ROADMAP, MASTER_GUIDE's sketch (regenerated and checked line by line), STATEMENTS_REVIEW (checked against the sources) and IDEAS are updated to match.
+
 ## 2026-10-26
 
 ### `statements-v2` proposed (#33, draft)

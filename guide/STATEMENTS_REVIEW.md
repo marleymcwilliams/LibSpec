@@ -270,98 +270,118 @@ The remaining witnesses already covered everything:
 
 ## statements-v2
 
-Review support for the `statements-v2` proposal, read the same way as above. The seven theorems are in sections 8–11 of `lean/JSG/Statements.lean`, their definitions in the same sections of `lean/JSG/Defs.lean`, and their controls in the "statements-v2" part of `lean/JSG/Tests/Mutants.lean`. Every mutant comes from a defect in `archive/`, except `threads_spec`'s, which comes from v1's own `residual`.
+Review support for the `statements-v2` proposal, read the same way as above. The seven theorems are in sections 8–11 of `lean/JSG/Statements.lean`, their definitions in the same sections of `lean/JSG/Defs.lean`, and their controls in the "statements-v2" part of `lean/JSG/Tests/Mutants.lean`. Every mutant comes from a defect in `archive/` with two exceptions: `lease_sound`'s second mutant, a widths-only gate, and `threads_spec`'s, which comes from v1's own `residual`.
 
 **Context.** Besides `variable {ι : Type} (kind : ι → Kind)`, section 9 adds `{St O W : Type}`: stages, obligations and witnesses. Section 10 adds `{Bytes D : Type}`: bytes and digests.
 
-**Fixtures.** The v2 controls use one axis (`Unit`). Where stages matter they use `Stg`, two of JSG V's stages (EF and PR), and otherwise `Unit`. Obligations are `Unit`, or ℕ where their order matters: ℕ's order stands in for JSG V's type order, with RequiresHitmap as 1 and OmegaPrecond, which ranks above it, as 2. The Loader controls use toy primitives: the digest is the identity, every signature verifies, replay returns the probe, and a bundle's root is its length.
+**Tickets.** What a window has pending is a `Pending St O`: a stage's ticket or an obligation.
+- **Where tickets come from:** a window starts with one ticket per stage (`windowStart`), issued at boot (`bootState`).
+- **Clearing:** a stage clears its own ticket when it runs, along with the obligations it discharges (`DischargeMatrix.Clears`).
+- **Order:** tickets rank above every obligation (`Pending.rank`).
+- **Consequences:** a window passes only once every stage has run. `LoaderStep` runs a stage only while its ticket is pending, so each stage runs once and every step lowers what is pending. Without tickets, a stage with nothing pending to discharge couldn't step at all. That included every window's first stage, because a JSG V window starts with Σ empty.
+
+**Fixtures.** The v2 controls use one axis (`Unit`), and stages, obligations and witnesses as follows:
+- **Stages:** `Stg`, two of JSG V's stages (EF and PR), where stages matter, and otherwise `Unit`. The window `efPr` has EF and PR as its stages.
+- **Obligations:** `Unit`, or ℕ where their order matters. ℕ's order stands in for JSG V's type order, with RequiresHitmap as 1 and OmegaPrecond, which ranks above it, as 2.
+- **Loader primitives:** the digest is the identity, every signature verifies, replay returns the probe, and a bundle's root is its length.
 
 | Theorem | The mutant refutes | What differs from the statement | The defect it comes from |
 | --- | --- | --- | --- |
-| `lease_breach` | Restated copy | `leaseVerdict` → `qPrimeGate`, the plain verdict, which reads `hi` only | SirusSC `specchain/algebra/q_prime.py`: `QPrime`'s only guard is `guard_no_bottom` |
+| `lease_sound` | Restated copy, two mutants | `leaseVerdict` → `qPrimeGate`, the plain verdict, which reads `hi` only; or → `widthsOnly`, which reads widths only | SirusSC `specchain/algebra/q_prime.py`: `QPrime`'s only guard is `guard_no_bottom`. The second is PDE I4b's unknowns cap, run on its own |
 | `lease_complete` | Restated copy | `leaseVerdict` → `pointsOnly`, which accepts points only | SirusSC `specchain/algebra/q.py`, where ⊥ absorbs, and `loader.py`'s guards, which reject it (`C_UNK_PRICED`) |
-| `pass_sound` | Restated copy (`PassSoundHolds`) | `afterStage` → `afterListed`, which checks only the witness | JSG V §3: the displayed stage transition, and the matrix row that lists PR or EF for RetuneDisabledInRed |
-| `pass_complete` | Restated copy (`PassCompleteHolds`) | `Passes` → `Passes ∧ ISigma` | JSG V §3: Invariant I_Σ-Progress, which its CI check runs on passing runs |
+| `pass_sound` | Restated copy (`PassSoundHolds`) | `afterStage` → `afterListed`, which clears tickets the same way but obligations by their witness alone | JSG V §3: the displayed stage transition, and the matrix row that lists PR or EF for RetuneDisabledInRed |
+| `pass_complete` | Restated copy (`PassCompleteHolds`) | `Passes` → `Passes ∧ ISigma`, with I_Σ read on the obligations alone | JSG V §3: Invariant I_Σ-Progress, which its CI check runs on passing runs |
 | `LoaderStep.inv_step` | Restated copy, two mutants | `LoaderStep` → `TRowStep`, without `hiso` and `hround`; or → `SirusIsoStep`, with `hiso` waived for a stage missing from the table | SCp3 §6.3, rule T-Row; SirusSC `loader.py`, `_resolve_allowed_axes` and `_detect_axis_leaks` |
-| `LoaderStep.progress` | Restated copy, two mutants | `LoaderStep` → `OrStep`, with `hdis ∨ hsmall` for both; or → `LoaderStep` plus a step from every state to itself | JSG V §3, Lemma (Progress via multiset ordering); SCp3 §6.3, rules T-AdapterAttest, T-AxisIsolation, T-AdapterMono and T-Attest |
+| `LoaderStep.progress` | Restated copy, two mutants | `LoaderStep` → `OrStep`, with JSG V's progress condition in place of `hticket`; or → `LoaderStep` plus a step from every state to itself | JSG V §3, Lemma (Progress via multiset ordering); SCp3 §6.3, rules T-AdapterAttest, T-AxisIsolation, T-AdapterMono and T-Attest |
 | `threads_spec` | Restated copy | `Threads` → `ResidualOnly`, which checks only the last stage's fit | `statements-v1`'s `residual`, used without `residual_spec`'s `hx` (QUEUE.md, Q5) |
 
 **What this means.**
 - **No v1 statement or definition changes.** Each v2 theorem is new, and so is every definition it uses.
-- **`LoaderStep.inv_step` and `LoaderStep.progress` are the two fields a `Loader` needs.** Once both are proved, `LoaderStep kind prims M`, with `LoaderInv kind prims` as its invariant and each state's `pending` as its obligations, is a `Loader`, and `Loader.safe` and `Loader.terminates` apply to it. Unlike those two, these theorems can fail: each mutant is a step relation that breaks one.
-- **`pass_sound` and `pass_complete` are a pair, like `verdict_sound` and `verdict_complete`.** A transition that never discharges anything satisfies `pass_sound`; `pass_complete` rules it out.
+- **`lease_sound` and `lease_complete` test both halves of `leaseVerdict`.** A gate that checks only widths satisfies `lease_complete` but fails `lease_sound` on [5, 5] under θ = 1. A gate that checks only thresholds fails `lease_sound` on [0, 5] leased 1.
+- **`LoaderStep.inv_step` and `LoaderStep.progress` are the two fields a `Loader` needs.** Once both are proved, `LoaderStep kind prims M`, with `LoaderInv kind prims` as its invariant and each state's `pending` as what it has pending, is a `Loader`, and `Loader.safe` and `Loader.terminates` apply to it. Unlike those two, these theorems can fail: each mutant is a step relation that breaks one.
+- **The Loader runs a window.** `loader_runs_window` runs EF and then PR from T-Boot's state, and the window passes. `empty_run_fails` is its must-fail control: from the same state, a run with no stages leaves both tickets pending.
+- **`pass_sound` and `pass_complete` are a pair, like `verdict_sound` and `verdict_complete`.** A transition that never clears anything satisfies `pass_sound`; `pass_complete` rules it out.
 
-### 17. `lease_breach`: restated copy
+### 17. `lease_sound`: restated copy, two mutants
 ```lean
 -- Statement
-theorem lease_breach (θ β : ι → ENNReal) (g : Grade ι) (i : ι) (hwide : β i < (g i).width) :
-    leaseVerdict θ β g = .reject
+theorem lease_sound (θ β : ι → ENNReal) (g : Grade ι) (i : ι)
+    (hout : θ i < (g i).hi ∨ β i < (g i).width) : leaseVerdict θ β g = .reject
 -- Mutant: SirusSC's QPrime, which never reads a width
-theorem lease_breach_mutant :
+theorem lease_sound_mutant :
     ¬ ∀ (θ β : Unit → ENNReal) (g : Grade Unit) (i : Unit),
-      β i < (g i).width → qPrimeGate θ β g = .reject
+      θ i < (g i).hi ∨ β i < (g i).width → qPrimeGate θ β g = .reject
+-- Mutant: a gate that reads widths only
+theorem lease_sound_widthsOnly_mutant :
+    ¬ ∀ (θ β : Unit → ENNReal) (g : Grade Unit) (i : Unit),
+      θ i < (g i).hi ∨ β i < (g i).width → widthsOnly θ β g = .reject
 ```
 
 ### 18. `lease_complete`: restated copy
 ```lean
 -- Statement
 theorem lease_complete (θ β : ι → ENNReal) (g : Grade ι) (hlease : WithinLease β g)
-    (hin : ∀ i, (g i).lo + β i ≤ θ i) : leaseVerdict θ β g = .accept
+    (hin : ∀ i, (g i).hi ≤ θ i) : leaseVerdict θ β g = .accept
 -- Mutant: SirusSC's Q, where a reading wider than a point can only be ⊥
 theorem lease_complete_mutant :
     ¬ ∀ (θ β : Unit → ENNReal) (g : Grade Unit), WithinLease β g →
-      (∀ i, (g i).lo + β i ≤ θ i) → pointsOnly θ β g = .accept
+      (∀ i, (g i).hi ≤ θ i) → pointsOnly θ β g = .accept
 ```
 
 ### 19. `pass_sound`: restated copy
 ```lean
 -- Statement
-theorem pass_sound (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (pend₀ : Multiset O)
-    (pre post : List (StageRun ι St O W)) (r : StageRun ι St O W)
-    (hpass : Passes kind θ β M pend₀ (pre ++ r :: post)) {o : O}
-    (ho : o ∈ pendingAfter M pend₀ pre + r.emits) :
-    ∃ s ∈ r :: post, M.Discharges s o
+theorem pass_sound (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (stages : Multiset St)
+    (carried : Multiset O) (pre post : List (StageRun ι St O W)) (r : StageRun ι St O W)
+    (hpass : Passes kind θ β M stages carried (pre ++ r :: post)) {p : Pending St O}
+    (hp : p ∈ pendingAfter M (windowStart stages carried) pre + r.emits.map Pending.obl) :
+    ∃ s ∈ r :: post, M.Clears s p
 -- The claim at the fixtures, with the stage transition as a parameter
 def PassSoundHolds (M : DischargeMatrix Stg Unit Bool)
-    (after : Multiset Unit → StageRun Unit Stg Unit Bool → Multiset Unit) : Prop :=
-  ∀ (θ β : Unit → ENNReal) (pend₀ : Multiset Unit) (pre post : List (StageRun Unit Stg Unit Bool))
-    (r : StageRun Unit Stg Unit Bool),
+    (after : Multiset (Pending Stg Unit) → StageRun Unit Stg Unit Bool →
+      Multiset (Pending Stg Unit)) : Prop :=
+  ∀ (θ β : Unit → ENNReal) (stages : Multiset Stg) (carried : Multiset Unit)
+    (pre post : List (StageRun Unit Stg Unit Bool)) (r : StageRun Unit Stg Unit Bool),
     leaseVerdict θ β (windowGrade budget (pre ++ r :: post)) = .accept →
-    (pre ++ r :: post).foldl after pend₀ = 0 →
-    ∀ o ∈ pre.foldl after pend₀ + r.emits, ∃ s ∈ r :: post, M.Discharges s o
+    (pre ++ r :: post).foldl after (windowStart stages carried) = 0 →
+    ∀ p ∈ pre.foldl after (windowStart stages carried) + r.emits.map Pending.obl,
+      ∃ s ∈ r :: post, M.Clears s p
 -- Mutant: JSG V's displayed transition, which checks only the witness
 theorem pass_sound_mutant : ¬ PassSoundHolds retuneRed (afterListed retuneRed)
 ```
 
-`PassSoundHolds M (afterStage M)` is `pass_sound` at these fixtures: `Passes` unfolds to the grade check and `pendingAfter`, which is the fold of `afterStage`. In the counterexample, EF emits RetuneDisabledInRed while Red, and PR later produces the witness. The mutant lets PR discharge it, so the window passes, though EF, its only authority, never discharges it.
+`PassSoundHolds M (afterStage M)` is `pass_sound` at these fixtures. `Passes` unfolds to the grade check and `pendingAfter`, the fold of `afterStage`, from `windowStart`. In the counterexample, EF emits RetuneDisabledInRed while Red, and PR later produces the witness. The mutant lets PR discharge it, so the window passes, though EF, its only authority, never discharges it.
 
 ### 20. `pass_complete`: restated copy
 ```lean
 -- Statement
-theorem pass_complete (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (pend₀ : Multiset O)
-    (pre : List (StageRun ι St O W)) (r : StageRun ι St O W)
+theorem pass_complete (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (stages : Multiset St)
+    (carried : Multiset O) (pre : List (StageRun ι St O W)) (r : StageRun ι St O W)
     (hgrade : leaseVerdict θ β (windowGrade kind (pre ++ [r])) = .accept)
-    (hlast : ∀ o ∈ pendingAfter M pend₀ pre + r.emits, M.Discharges r o) :
-    Passes kind θ β M pend₀ (pre ++ [r])
+    (hlast : ∀ p ∈ pendingAfter M (windowStart stages carried) pre + r.emits.map Pending.obl,
+      M.Clears r p) :
+    Passes kind θ β M stages carried (pre ++ [r])
 -- The claim at the fixtures, with the pass condition as a parameter
 def PassCompleteHolds (passes : (Unit → ENNReal) → (Unit → ENNReal) →
-    DischargeMatrix Unit ℕ Unit → Multiset ℕ → List (StageRun Unit Unit ℕ Unit) → Prop) : Prop :=
-  ∀ θ β M pend₀ (pre : List (StageRun Unit Unit ℕ Unit)) r,
+    DischargeMatrix Unit ℕ Unit → Multiset Unit → Multiset ℕ →
+      List (StageRun Unit Unit ℕ Unit) → Prop) : Prop :=
+  ∀ θ β M stages carried (pre : List (StageRun Unit Unit ℕ Unit)) r,
     leaseVerdict θ β (windowGrade budget (pre ++ [r])) = .accept →
-    (∀ o ∈ pendingAfter M pend₀ pre + r.emits, M.Discharges r o) →
-    passes θ β M pend₀ (pre ++ [r])
--- Mutant: passing also requires JSG V's I_Σ
+    (∀ p ∈ pendingAfter M (windowStart stages carried) pre + r.emits.map Pending.obl,
+      M.Clears r p) →
+    passes θ β M stages carried (pre ++ [r])
+-- Mutant: passing also requires JSG V's I_Σ, on the obligations alone
 theorem pass_complete_mutant :
-    ¬ PassCompleteHolds
-      (fun θ β M pend₀ run => Passes budget θ β M pend₀ run ∧ ISigma M pend₀ run)
+    ¬ PassCompleteHolds (fun θ β M stages carried run =>
+      Passes budget θ β M stages carried run ∧ ISigma M stages carried run)
 ```
 
-The counterexample is one idle stage from an empty Σ. It passes, but I_Σ asks the empty multiset to fall, and nothing is below it.
+The counterexample is one idle stage, whose window starts with only its ticket. The stage clears the ticket, so the window passes. But I_Σ, read on JSG V's Σ, asks the empty multiset of obligations to fall, and nothing is below it.
 
 ### 21. `LoaderStep.inv_step`: restated copy, two mutants
 ```lean
 -- Statement
-theorem LoaderStep.inv_step [Preorder O] (prims : Prims Bytes D) (M : DischargeMatrix St O W)
+theorem LoaderStep.inv_step (prims : Prims Bytes D) (M : DischargeMatrix St O W)
     (s t : LoaderState ι St O Bytes D) (hs : LoaderInv kind prims s)
     (h : LoaderStep kind prims M s t) : LoaderInv kind prims t
 -- Mutant: SCp3's T-Row, LoaderStep without hiso and hround
@@ -381,7 +401,7 @@ theorem loader_inv_step_sirus_mutant :
 theorem LoaderStep.progress [Preorder O] (prims : Prims Bytes D) (M : DischargeMatrix St O W)
     (s t : LoaderState ι St O Bytes D) (h : LoaderStep kind prims M s t) :
     Multiset.IsDershowitzMannaLT t.pending s.pending
--- Mutant: JSG V's progress lemma, hdis ∨ hsmall for both
+-- Mutant: JSG V's progress lemma in place of the ticket
 theorem loader_progress_mutant :
     ¬ ∀ s t, OrStep hitmapOnly s t → Multiset.IsDershowitzMannaLT t.pending s.pending
 -- Mutant: SCp3's check rules, each a step from a state to itself
@@ -390,7 +410,7 @@ theorem loader_progress_selfloop_mutant :
       Multiset.IsDershowitzMannaLT t.pending s.pending
 ```
 
-Under JSG V's "or", a stage that discharges RequiresHitmap and emits OmegaPrecond qualifies, and Σ goes from {1} to {2}. A self-loop leaves Σ where it was. The Dershowitz–Manna order allows neither.
+Under JSG V's "or", with no ticket pending, a stage that discharges RequiresHitmap and emits OmegaPrecond qualifies, and what is pending goes from {1} to {2}. A self-loop leaves it where it was. The Dershowitz–Manna order allows neither. With the ticket, every emitted obligation ranks below the ticket the stage clears.
 
 ### 23. `threads_spec`: restated copy
 ```lean
@@ -402,16 +422,31 @@ theorem threads_spec_mutant :
     ¬ ∀ θ : ENNReal, θ ≠ ⊤ → ∀ xs : List ENNReal, (ResidualOnly θ xs ↔ xs.sum ≤ θ)
 ```
 
+### The Loader runs a window
+```lean
+-- Witness: from T-Boot's state, EF and then PR, and the window passes
+theorem loader_runs_window :
+    ∃ s₁ s₂, LoaderStep budget toyPrims hitmap (bootState toyPrims efPrBoot (0 : Multiset Unit)) s₁
+      ∧ LoaderStep budget toyPrims hitmap s₁ s₂
+      ∧ s₂.pending = 0 ∧ LoaderInv budget toyPrims s₂
+      ∧ Passes budget (fun _ => 0) (fun _ => 0) hitmap efPrBoot.stages 0 [efEmits, prRuns]
+-- Must-fail: from the same state, a run with no stages
+theorem empty_run_fails :
+    ¬ Passes budget (fun _ => 0) (fun _ => 0) hitmap efPrBoot.stages 0 []
+```
+
+EF emits RequiresHitmap and clears only its ticket. That's the step v2's first draft couldn't take, since its `LoaderStep` required every stage to discharge a pending obligation. PR then clears its ticket and discharges RequiresHitmap. This is the run `pass_sound`'s witness uses, now through the Loader.
+
 ### Witnesses
 
 Each witness proves every hypothesis of its theorem, then the conclusion, for one concrete instance.
 
 | Theorem | Hypotheses | Instance |
 | --- | --- | --- |
-| `lease_breach` | `hwide` | [0, 5] with lease 1, under θ = 10 |
+| `lease_sound` | `hout` | [0, 5] with lease 1, under θ = 10, which is wider than its lease; and [5, 5] with lease 0, under θ = 1, which is over its threshold |
 | `lease_complete` | `hlease`, `hin` | [0, 1] with lease 1, under θ = 1 |
-| `pass_sound` | `hpass`, `ho` | EF emits RequiresHitmap and PR discharges it; the run split at EF |
+| `pass_sound` | `hpass`, `hp` | a window of EF and PR: EF emits RequiresHitmap, and PR discharges it; the run split at EF |
 | `pass_complete` | `hgrade`, `hlast` | the same run, with PR as the last stage |
-| `LoaderStep.inv_step` | `hs`, `h` | one stage prices a row and discharges the one pending obligation; the invariant is proved after the step too |
-| `LoaderStep.progress` | `h` | a stage discharges OmegaPrecond and emits RequiresHitmap |
+| `LoaderStep.inv_step` | `hs`, `h` | from T-Boot's state, one stage prices a row and clears its ticket; the invariant is proved after the step too |
+| `LoaderStep.progress` | `h` | from T-Boot's state with OmegaPrecond carried in, a stage clears its ticket and replaces OmegaPrecond by RequiresHitmap |
 | `threads_spec` | `hθ` | θ = 10 with stages 3 then 4, where both sides hold; θ = 1 with stages 2 then 0, where neither does |
