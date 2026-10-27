@@ -63,7 +63,13 @@ Proved in #42.
 
 ## `mfGate_signed`
 
-*Not yet proved.*
+Proved in #44.
+
+1. Induction on t, starting from s (`Nat.le_induction`). When t = s, `hs` and `ht` contradict each other, so there's nothing to show.
+2. For the step from t to t + 1, ask whether the class was still in `MF t`.
+3. If it was, it left at step t. The gate's rule at t is either "nothing removed", which this contradicts, or "the removal is signed", which is what we need.
+4. If it wasn't, it had already left, and the induction hypothesis gives a step u before t, so before t + 1 too.
+5. So under the gate, a failure class can't leave the must-fail set unsigned, however many steps pass. A gate that accepts every change lets GOLDEN_RULE_BREACH go.
 
 ## `lease_sound`
 
