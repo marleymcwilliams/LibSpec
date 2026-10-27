@@ -112,4 +112,21 @@ theorem LoaderStep.inv_step (prims : Prims Bytes D) (M : DischargeMatrix St O W)
       subst hp1
       exact hiso i hp2
 
+theorem threads_spec (θ : ENNReal) (hθ : θ ≠ ⊤) (xs : List ENNReal) :
+    Threads θ xs ↔ xs.sum ≤ θ := by
+  induction xs generalizing θ with
+  | nil => simp [Threads]
+  | cons x xs ih =>
+    have hres : residual θ x ≠ ⊤ := ne_top_of_le_ne_top hθ tsub_le_self
+    show (x ≤ θ ∧ Threads (residual θ x) xs) ↔ (x :: xs).sum ≤ θ
+    rw [ih (residual θ x) hres, List.sum_cons]
+    unfold residual
+    constructor
+    · rintro ⟨hx, hs⟩
+      calc x + xs.sum ≤ x + (θ - x) := add_le_add le_rfl hs
+        _ = θ := add_tsub_cancel_of_le hx
+    · intro h
+      have hx : x ≤ θ := le_trans le_self_add h
+      exact ⟨hx, (ENNReal.le_sub_iff_add_le_left (ne_top_of_le_ne_top hθ hx) hx).mpr h⟩
+
 end JSG
