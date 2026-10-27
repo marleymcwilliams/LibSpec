@@ -84,4 +84,17 @@ theorem pass_complete (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (sta
   unfold afterStage
   exact Multiset.filter_eq_nil.mpr fun p hp => not_not.mpr (hlast p hp)
 
+theorem LoaderStep.inv_step (prims : Prims Bytes D) (M : DischargeMatrix St O W)
+    (s t : LoaderState ι St O Bytes D) (hs : LoaderInv kind prims s)
+    (h : LoaderStep kind prims M s t) : LoaderInv kind prims t := by
+  cases h with
+  | stage r rows ε receipt hprice hiso hround hbudget hticket =>
+    obtain ⟨h1, h2, h3, h4, h5, h6, h7, -, -, -⟩ := hs
+    refine ⟨h1, h2, h3, h4, h5, ?_, h7, hround, hbudget, rfl⟩
+    rintro ⟨st, i⟩ (hp | ⟨hp1, hp2⟩)
+    · exact h6 _ hp
+    · simp only at hp1 hp2 ⊢
+      subst hp1
+      exact hiso i hp2
+
 end JSG
