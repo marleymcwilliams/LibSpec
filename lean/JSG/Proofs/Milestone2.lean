@@ -112,6 +112,32 @@ theorem LoaderStep.inv_step (prims : Prims Bytes D) (M : DischargeMatrix St O W)
       subst hp1
       exact hiso i hp2
 
+theorem LoaderStep.progress [Preorder O] (prims : Prims Bytes D) (M : DischargeMatrix St O W)
+    (s t : LoaderState ι St O Bytes D) (h : LoaderStep kind prims M s t) :
+    Multiset.IsDershowitzMannaLT t.pending s.pending := by
+  cases h with
+  | stage r rows ε receipt hprice hiso hround hbudget hticket =>
+    show Multiset.IsDershowitzMannaLT (afterStage M s.pending r) s.pending
+    unfold afterStage
+    classical
+    refine ⟨s.pending.filter (fun p => ¬ M.Clears r p),
+      (r.emits.map Pending.obl).filter (fun p => ¬ M.Clears r p),
+      s.pending.filter (fun p => M.Clears r p), ?_, ?_, ?_, ?_⟩
+    · intro hZ
+      have hmem : Pending.ticket r.stage ∈ s.pending.filter (fun p => M.Clears r p) :=
+        Multiset.mem_filter.mpr ⟨hticket, rfl⟩
+      rw [hZ] at hmem
+      simp at hmem
+    · exact Multiset.filter_add ..
+    · rw [add_comm]
+      exact (Multiset.filter_add_not ..).symm
+    · intro y hy
+      obtain ⟨hy1, -⟩ := Multiset.mem_filter.mp hy
+      obtain ⟨e, -, rfl⟩ := Multiset.mem_map.mp hy1
+      refine ⟨Pending.ticket r.stage, Multiset.mem_filter.mpr ⟨hticket, rfl⟩, ?_⟩
+      show (e : WithTop O) < ⊤
+      exact WithTop.coe_lt_top e
+
 theorem threads_spec (θ : ENNReal) (hθ : θ ≠ ⊤) (xs : List ENNReal) :
     Threads θ xs ↔ xs.sum ≤ θ := by
   induction xs generalizing θ with
