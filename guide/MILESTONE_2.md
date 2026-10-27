@@ -53,7 +53,13 @@ Proved by Marley (#34).
 
 ## `bridge`
 
-*Not yet proved.*
+Proved in #42.
+
+1. An input is accepted under a dial when every axis's upper bound is within the threshold the dial gives: `(gradeOf x i).hi ≤ (dial i)⁻¹`.
+2. Take an input accepted under the stricter dial₂. Unfolding both verdicts, `split_ifs` turns that acceptance into the condition for dial₂.
+3. `h` says dial₁ ≤ dial₂ on every axis, and inverting flips the order, so (dial₂ i)⁻¹ ≤ (dial₁ i)⁻¹ (`ENNReal.inv_le_inv`).
+4. Chaining the two, every upper bound is within dial₁'s threshold too, so the input is accepted under dial₁, and the other branch can't happen.
+5. So a stricter dial never admits more inputs. A dial stored un-inverted gets this backwards, as the `id` mutant shows.
 
 ## `mfGate_signed`
 
