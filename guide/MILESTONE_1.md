@@ -79,6 +79,37 @@ Proved in #31.
 4. Otherwise the last step is `min Rmax (…)`, which is at most Rmax whatever came before (`min_le_left`).
 5. So no weight and no readings can make the nightly check fail: the theorem proves the defect, not a safeguard.
 
+## Gate
+
+How each item of ROADMAP's "Gate for every milestone" is met. The evidence for the first five is `main`'s CI run on the merge of #31: [run 40444516625](https://github.com/marleymcwilliams/LibSpec/actions/runs/40444516625).
+
+- **`lake build` is green, with no `sorry` in the milestone's proof file.** The build and leanchecker passed, and `check.sh`'s forbidden-token scan of `Proofs/`, `Lemmas/` and `Tests/` printed "ok".
+- **`#print axioms` on each theorem lists only `propext`, `Classical.choice` and `Quot.sound`.** The axiom audit's sweep (111 theorems in 4 modules) printed each of the eight within those three: `combine_comm` [propext, Classical.choice, Quot.sound]; `combine_assoc` [propext, Classical.choice, Quot.sound]; `interchange` [propext, Classical.choice, Quot.sound]; `verdict_sound` [propext, Classical.choice, Quot.sound]; `verdict_complete` [propext, Classical.choice, Quot.sound]; `residual_spec` [propext, Classical.choice, Quot.sound]; `no_flip` [propext, Classical.choice, Quot.sound]; `fold_check_vacuous` [propext, Classical.choice, Quot.sound].
+- **The statements check confirms the frozen files are unchanged.** It printed "ok (statements-v1): lean/JSG/Statements.lean lean/JSG/Defs.lean lean/lean-toolchain lean/lake-manifest.json lean/lakefile.toml".
+- **Comparator confirms each proof against its frozen statement.** It accepted `JSG.Solution` against `JSG.Statements` with only the three permitted axioms ("Your solution is okay!"). Its not-yet-proved list names none of Milestone 1's theorems: `Loader.safe`, `Loader.terminates`, `bridge`, `charge_append`, `charge_chatter`, `dwell_lower_bound`, `expiry_tightens`, `mfGate_signed`.
+- **Each theorem's named mutant is proved to violate it, and every must-pass control is accepted.**
+  - **Mutants**, in `Tests/Mutants.lean`: `combine_comm_mutant`, `combine_assoc_mutant`, `interchange_mutant` and `interchange_scp2_mutant`, `verdict_sound_mutant` and `verdict_sound_unknownOnly_mutant`, `verdict_complete_mutant`, `residual_spec_mutant` and `fold_check_vacuous_mutant`.
+  - **`no_flip`:** `no_flip_mutant` breaks the conclusion only with a grader that `noninterfering_mutant` shows breaks the hypothesis.
+  - **Must-pass**, in `Tests/Calibration.lean`: `verdict_calibrated` accepts the must-pass set, `unknown_on_infinite_threshold_passes` accepts an unknown on an infinite threshold, and `budget_stages_fail_together` accepts each stage on its own.
+  - All of these build in that run, and the audit swept them.
+- **Layer-map rows are set to Proved, and the guide's text names the Lean theorem.** In #32, MASTER_GUIDE's five Milestone 1 rows name their theorems, with each row's limits noted.
+- **A short note, in your words.** It follows.
+
 ## Closing note
 
-*To come, in your words, when the gate is met.*
+All eight Milestone 1 theorems are proved. Comparator accepts each one against `statements-v1`, and none uses an axiom beyond `propext`, `Classical.choice` and `Quot.sound`. Each has a mutant proved to break it, or for `no_flip`, to break its hypothesis.
+
+**What is now proved**
+- A window's grade doesn't depend on the order or grouping of its stages, or on whether they ran in sequence or side by side (`combine_comm`, `combine_assoc`, `interchange`).
+- The verdict is sound and complete. An axis whose upper bound exceeds its threshold rejects the whole grade, including an unknown on a finite threshold (`verdict_sound`). Point evidence within every threshold is accepted (`verdict_complete`).
+- When stage one fits within a finite budget, checking stage two against what it left gives the same answer as checking their total (`residual_spec`).
+- A noninterfering grader's metrics can't flip its verdict (`no_flip`).
+- JSG IV's capped fold never exceeds its cap, so its nightly check could never fail (`fold_check_vacuous`). This is a proved defect, not a safeguard.
+
+**What it does not show**
+- Anything about a running system. These are facts about the definitions in `Defs.lean`. Whether intervals contain the true values, and whether thresholds are right, belong to the CI layer and to signed decisions.
+- That any real grader is noninterfering. `no_flip` assumes it, and each grader's proof is still owed.
+- Residual checking beyond one budget axis and two stages, or what an overspent stage should leave. That question is parked for `statements-v2`.
+- That an interval wider than a point, but within its threshold, must be accepted. The definition accepts it, but no theorem requires it.
+- Calibration beyond the test sets in `Calibration.lean`.
+- That the statements say what I mean. CI shows the proofs conform to them; whether they're the right statements is my judgment, not Lean's.

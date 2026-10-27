@@ -4,6 +4,11 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-26
 
+### Milestone 1 merged and its gate recorded (#32)
+- **Merges:** once #23 was in, the seven proof PRs (#25–#31) were merged in order, as Marley's brief allowed. #25 was retargeted to `main` by hand, since #23's branch wasn't deleted; GitHub retargeted the rest.
+- **Gate:** `guide/MILESTONE_1.md` records how each gate item is met against `main`'s CI run on #31's merge, and carries Marley's closing note verbatim. MASTER_GUIDE's layer map and roadmap use Marley's wording.
+- **Also:** the layer map's sentence on Lean status now covers "Proved", and ROADMAP's Milestone 1 note on the two SCp2 mutants is marked done (#24).
+
 ### `statements-v1` tagged, and the freeze confirmed (#22)
 - **The tag:** Marley tagged `statements-v1` (annotated) at bc76c3c, the merge of #20. Ruleset 25916221, "freeze statements tags", protects `refs/tags/statements-v*`: active, updates and deletions restricted, creation allowed, no bypass actors.
 - **The freeze test (#21):** a one-line comment added to `Statements.lean` on a throwaway branch failed CI at the statements check (run 40413606695). The diff named `lean/JSG/Statements.lean`, then "FAIL: files the statements depend on differ from statements-v1"; the build itself passed. The PR was closed unmerged and its branch deleted.
