@@ -67,19 +67,19 @@ Twenty-two terms, each with one home. The SIRUS name waits: not yet, since no v1
 
 ## Layer map
 
-Eleven components can be proved in Lean now and five more with analysis; the other eight are checked per instance, tested, open, or declared. Layers sort components by what justifies them, not by what enforces them: a Norm row is a declared value, and whether a gate also enforces it is a separate question. In v1 no gate enforces the Norm rows ([decisions/RAILS.md](decisions/RAILS.md)). Lean status is "Stub" wherever the Lean section below already states the theorem.
+Eleven components can be proved in Lean now and five more with analysis; the other eight are checked per instance, tested, open, or declared. Layers sort components by what justifies them, not by what enforces them: a Norm row is a declared value, and whether a gate also enforces it is a separate question. In v1 no gate enforces the Norm rows ([decisions/RAILS.md](decisions/RAILS.md)). Lean status is "Stub" wherever the Lean section below states a theorem not yet proved, and "Proved" once `lean/JSG/Proofs/` proves it, with any limits noted.
 
 | Component | Layer | Lean status | Source |
 | --- | --- | --- | --- |
-| Graded values: combine laws, interchange equation, residual threading | Lean now | Stub | JSG V §2 |
+| Graded values: combine laws, interchange equation, residual threading | Lean now | Proved (`combine_comm`, `combine_assoc`, `interchange`); residual threading only for one budget axis and two stages (`residual_spec`) | JSG V §2 |
 | Receipt integrity: replaying the addressed content yields the grade | Lean now | Not started | SIRUS spec §0.5; JSG V §6 |
-| Verdict: an axis over its threshold rejects, unknowns included; complete evidence within θ accepts | Lean now | Stub | SIRUS spec §1.2–1.3 |
-| Noninterference: metrics cannot change the grade | Lean now | Stub | SIRUS spec §1.4 |
+| Verdict: an axis over its threshold rejects, unknowns included; complete evidence within θ accepts | Lean now | Proved (`verdict_sound`, `verdict_complete`) | SIRUS spec §1.2–1.3 |
+| Noninterference: metrics cannot change the grade | Lean now | Proved for noninterfering graders (`no_flip`); no real grader shown noninterfering yet | SIRUS spec §1.4 |
 | Loader: invariant preserved; Dershowitz–Manna progress | Lean now | Stub | MDmaster SCp3; JSG V §3 |
 | Frontier charge: additive under regrouping; chattering never free | Lean now | Stub | PDE §10; MDmaster SCp2 |
 | Policy lattice: expiry tightens; bridge to acceptance | Lean now | Stub | JSG IV, Governance as Code |
-| Calibration: must-pass accepted, must-fail rejected, sets disjoint | Lean now | Stub | Core v2; Operational Playbook (must-fail coverage) |
-| Capped governance fold: bounded, with a vacuous nightly check | Lean now | Stub | JSG IV aggregator lemma |
+| Calibration: must-pass accepted, must-fail rejected, sets disjoint | Lean now | Proved for the test sets in `Calibration.lean` (`verdict_calibrated`) | Core v2; Operational Playbook (must-fail coverage) |
+| Capped governance fold: bounded, with a vacuous nightly check | Lean now | Proved (`fold_check_vacuous`) | JSG IV aggregator lemma |
 | Must-fail CI gate: accepted histories keep every unsigned failure class | Lean now | Stub | Draft0–7 |
 | Typed obligations (authority and witness); unknowns lease as interval width ≤ β | Lean now | Not started | JSG V §3; PDE §2.2, I4b |
 | CVaR tail-to-level step (C₀ = 1) | Lean + analysis | Not started | PDE Lemma 9.1 |
@@ -421,7 +421,7 @@ The rails are decided and persistent weakenings are deferred ([decisions/RAILS.m
 - [x] Decide whether the normative rails are must-fails inside the gates or a declared layer outside them: declared Norm-layer values that no v1 gate enforces ([decisions/RAILS.md](decisions/RAILS.md))
 - [x] Decide how persistent weakenings are handled: not yet. The choice between refill rate ρ, a cap on each weakening's cumulative duration and renewal cost escalating by a factor γ moves to the milestone that states the token bucket ([decisions/RAILS.md](decisions/RAILS.md))
 - [ ] Freeze the glossary and run one rename pass: 𝒰 for Ω, proof\_surface, Amber, invariant prefixes, combine for join
-- [ ] Lean milestone 1: graded values, verdict and completeness, residuals, noninterference, calibration, fold vacuity
+- [x] Lean milestone 1: graded values, verdict and completeness, residuals, noninterference, calibration, fold vacuity ([MILESTONE_1.md](MILESTONE_1.md))
 - [ ] Lean milestone 2: typed obligations, Loader safety and progress, frontier charge, policy lattice, the must-fail gate
 - [ ] Lean milestone 3 (analysis): CVaR tail-to-level, the corrected dwell bound, then the local KL–Fisher bound
 - [ ] CI: fail the build on any `b3:…` placeholder, on any must-fail removed without a signed weakening, and on any theorem without a mutant
