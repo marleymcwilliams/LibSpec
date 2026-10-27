@@ -86,6 +86,43 @@ theorem lease_complete (θ β : ι → ENNReal) (g : Grade ι) (hlease : WithinL
   · rfl
   · exact absurd (fun i => ⟨hin i, hlease i⟩) h
 
+theorem pass_sound (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (stages : Multiset St)
+    (carried : Multiset O) (pre post : List (StageRun ι St O W)) (r : StageRun ι St O W)
+    (hpass : Passes kind θ β M stages carried (pre ++ r :: post)) {p : Pending St O}
+    (hp : p ∈ pendingAfter M (windowStart stages carried) pre + r.emits.map Pending.obl) :
+    ∃ s ∈ r :: post, M.Clears s p := by
+  classical
+  obtain ⟨-, hzero⟩ := hpass
+  unfold pendingAfter at hzero hp
+  rw [List.foldl_append, List.foldl_cons] at hzero
+  -- An item still pending before a run that ends with nothing pending is cleared in it.
+  have key : ∀ (rest : List (StageRun ι St O W)) (Q : Multiset (Pending St O)),
+      p ∈ Q → rest.foldl (afterStage M) Q = 0 → ∃ s ∈ rest, M.Clears s p := by
+    intro rest
+    induction rest with
+    | nil =>
+      intro Q hQ h0
+      simp only [List.foldl_nil] at h0
+      simp [h0] at hQ
+    | cons s rest ih =>
+      intro Q hQ h0
+      by_cases hc : M.Clears s p
+      · exact ⟨s, List.mem_cons_self .., hc⟩
+      · rw [List.foldl_cons] at h0
+        have hQ' : p ∈ afterStage M Q s := by
+          unfold afterStage
+          exact Multiset.mem_filter.mpr ⟨Multiset.mem_add.mpr (Or.inl hQ), hc⟩
+        obtain ⟨s', hs', h'⟩ := ih _ hQ' h0
+        exact ⟨s', List.mem_cons_of_mem _ hs', h'⟩
+  by_cases hc : M.Clears r p
+  · exact ⟨r, List.mem_cons_self .., hc⟩
+  · have hmem :
+        p ∈ afterStage M (List.foldl (afterStage M) (windowStart stages carried) pre) r := by
+      unfold afterStage
+      exact Multiset.mem_filter.mpr ⟨hp, hc⟩
+    obtain ⟨s, hs, hcs⟩ := key post _ hmem hzero
+    exact ⟨s, List.mem_cons_of_mem _ hs, hcs⟩
+
 theorem pass_complete (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (stages : Multiset St)
     (carried : Multiset O) (pre : List (StageRun ι St O W)) (r : StageRun ι St O W)
     (hgrade : leaseVerdict θ β (windowGrade kind (pre ++ [r])) = .accept)
