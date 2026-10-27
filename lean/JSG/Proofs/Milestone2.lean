@@ -55,6 +55,21 @@ theorem bridge {Inp : Type} (gradeOf : Inp → Grade ι) {dial₁ dial₂ : ι �
   · rfl
   · exact absurd (fun i => (h₂ i).trans (ENNReal.inv_le_inv.mpr (h i))) h₁
 
+theorem mfGate_signed {C : Type} (signed : Set C → Prop) (MF : ℕ → Set C)
+    (hg : ∀ t, mfGate signed (MF t) (MF (t + 1))) {s t : ℕ} (hst : s ≤ t) {c : C}
+    (hs : c ∈ MF s) (ht : c ∉ MF t) :
+    ∃ u, s ≤ u ∧ u < t ∧ c ∈ MF u \ MF (u + 1) ∧ signed (MF u \ MF (u + 1)) := by
+  induction t, hst using Nat.le_induction with
+  | base => exact absurd hs ht
+  | succ t hst ih =>
+    by_cases hct : c ∈ MF t
+    · refine ⟨t, hst, Nat.lt_succ_self t, ⟨hct, ht⟩, ?_⟩
+      rcases hg t with hsub | hsig
+      · exact absurd (hsub hct) ht
+      · exact hsig
+    · obtain ⟨u, hsu, hut, hmem, hsig⟩ := ih hct
+      exact ⟨u, hsu, Nat.lt_succ_of_lt hut, hmem, hsig⟩
+
 theorem lease_sound (θ β : ι → ENNReal) (g : Grade ι) (i : ι)
     (hout : θ i < (g i).hi ∨ β i < (g i).width) : leaseVerdict θ β g = .reject := by
   unfold leaseVerdict
