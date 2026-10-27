@@ -17,7 +17,13 @@ the end once the gate is met: what is now proved, and what it does not show.
 
 ## `charge_append`
 
-*Not yet proved.*
+Proved in #35.
+
+1. `charge A jumps` is A times the sum of the jumps' sizes, each read in [0, ∞].
+2. Unfolding it, the left side is A times the sum of the sizes over `j₁ ++ j₂`.
+3. `List.map_append` takes the sizes of each part separately, and `List.sum_append` splits the sum into the sum over `j₁` plus the sum over `j₂`.
+4. `mul_add` distributes A over that sum, which is exactly the right side.
+5. So however the jumps are split into segments, the total charge is the same: regrouping can't hide a jump.
 
 ## `charge_chatter`
 
