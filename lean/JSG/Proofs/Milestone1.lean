@@ -26,6 +26,14 @@ theorem combine_assoc (g h k : Grade ι) :
   · exact Bound.ext (max_assoc _ _ _) (max_assoc _ _ _)
   · exact Bound.ext (add_assoc _ _ _) (add_assoc _ _ _)
 
+theorem interchange : Interchange (seqComp kind) (parComp kind) := by
+  intro a b c d
+  funext i
+  simp only [seqComp, parComp, combine]
+  cases kind i
+  · exact Bound.ext (max_max_max_comm _ _ _ _) (max_max_max_comm _ _ _ _)
+  · exact Bound.ext (add_add_add_comm _ _ _ _) (add_add_add_comm _ _ _ _)
+
 theorem verdict_sound (θ : ι → ENNReal) (g : Grade ι) (i : ι)
     (hover : θ i < (g i).hi) : verdict θ g = .reject := by
   unfold verdict
