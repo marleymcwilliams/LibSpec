@@ -8,6 +8,38 @@ None.
 
 ## Answered
 
+### Q5. What should an overspent stage leave for the stages after it?
+
+**Answered 2026-10-27: yes.** Check each stage's own fit as the budget threads through (`Threads`, `threads_spec`); `residual` stays as frozen.
+
+- **Question:** `residual` truncates at 0, and `residual_spec` covers only a first stage that fits (its `hx`). Once a stage overspends, later stages are checked against 0, and a stage of 0 still passes though the total is over θ (the IDEAS.md item this settles). Should v2 make the check fail closed by checking every stage's own fit as the budget threads through? Or should the residual take a value that marks the overspend, as SCp2 §7.4 does with ⊥?
+- **Recommended answer:** Check every stage's own fit, as the draft does.
+  - **What changes:** `residual` stays as v1 froze it. The new `Threads θ xs` checks each stage against what the earlier ones left, so an overspent stage fails its own check.
+  - **The theorem:** `threads_spec` says that, for finite θ, `Threads θ xs` holds exactly when the total is within θ, for any number of stages. That also lifts `residual_spec`'s two-stage limit.
+  - **Why not SCp2's ⊥:** its marker fails closed only behind a guard that rejects a ⊥ reading first, because SCp2's order puts ⊥ below every value (the master guide's defect "Unknown sits below every value"). In ENNReal, a residual's ⊥ is 0, which `residual` already returns.
+- **What breaks if wrong:** If you want the overspend recorded as a value, for a rejection certificate say, `Threads` doesn't carry it. A later version can add a marked residual beside it, which only adds. Either way no v1 statement changes, and none of the eight Milestone 1 proofs is affected.
+- **Can it be undone:** Yes, freely until `statements-v2` is tagged. After that, adding a marked residual is a tightening, but removing `threads_spec` is a weakening: it takes a new version, a CHANGELOG line and a signed decision.
+
+### Q6. Do receipt integrity and the token-bucket invariant belong in statements-v2?
+
+**Answered 2026-10-27: yes.** Neither goes in v2; each waits for the version that first needs it.
+
+- **Question:** The layer map lists receipt integrity (replaying the content at a receipt's address yields its grade) as "Lean now". Core object 4 prices weakenings against a token bucket. Should v2 state either?
+- **Recommended answer:** Neither. Each waits for the version that first needs it.
+  - **Receipt integrity:** what makes it true is collision resistance and replay determinism. Lean can't check either: both sit in the CI layer, with the determinism envelope and proof_surface replay. A Lean statement would assume a content-addressed store and a deterministic grader, and then hold almost by definition. No Milestone 2 theorem uses it, and the concrete Loader's L10 already binds the receipt bundle to its recorded root.
+  - **Token bucket:** its invariant depends on the choice RAILS.md deferred: a refill rate ρ, a cap on each weakening's cumulative duration, or renewal cost escalating by γ. That choice is a Norm-layer value and yours to make first. Neither `expiry_tightens` nor `bridge` depends on it.
+- **What breaks if wrong:** If you want either one in Milestone 2, it needs a version of its own sooner, which only adds statements. Nothing frozen changes.
+- **Can it be undone:** Yes. This only defers; nothing is frozen.
+
+### Q7. Does a Loader that is generic in its cryptographic primitives count as concrete?
+
+**Answered 2026-10-27: yes.** A Loader concrete in its rules and checks, and generic in its primitives, is the concrete Loader Milestone 2 owes.
+
+- **Question:** v2's Loader has SCp3's rules and checks. But L1–L4 and L10 call a digest, a signature check, a replay and a Merkle root that it takes as parameters (`Prims`), and its two theorems hold for every choice of them. Is that the "concrete Loader (L1–L10)" ROADMAP says Milestone 2 owes?
+- **Recommended answer:** Yes. Whether BLAKE3 collides, a signature verifies or a replay is byte-identical is a CI-layer question. What Lean can check is that the rules preserve the ten checks, whatever the primitives do. Milestone 2's note would then say that the Loader is concrete in its rules and checks, and generic in its primitives.
+- **What breaks if wrong:** If you want fixed primitives, an executable digest for example, a later version can fix `Prims` and restate the two theorems for it. That is an addition. Until then, Milestone 2's note shouldn't claim more than this.
+- **Can it be undone:** Yes, freely until `statements-v2` is tagged. After that, by adding statements.
+
 ### Q4. `verdict_unknown` covers only grades that are exactly unknown
 
 **Answered 2026-10-26: yes.** Replace it with `verdict_sound`, which is strictly stronger.

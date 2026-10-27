@@ -2,7 +2,40 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-10-27
+
+### `statements-v2` revised after Marley's review (#33, draft)
+- **Queue:** Marley answered Q5, Q6 and Q7 yes, as recommended.
+- **Leases:** `lease_breach` is widened into `lease_sound`: an axis over its threshold, or wider than its lease, rejects the grade. A gate that checks only widths satisfied both lease theorems, yet accepted [5, 5] under θ = 1; it is now `lease_sound`'s second mutant. `lease_complete` assumes `(g i).hi ≤ θ i` in place of `lo + β ≤ θ`. That's a stronger theorem, and `pointsOnly` still fails it.
+- **Tickets:**
+  - **The problem:** the first draft's `LoaderStep` needed every stage to discharge a pending obligation. A JSG V window starts with Σ empty, so no window could take its first step.
+  - **The fix:** each stage that T-Boot pins (`Boot.stages`) has a ticket, pending from the start (`windowStart`, `bootState`). A stage clears its own ticket when it runs (`DischargeMatrix.Clears`), and tickets rank above every obligation (`Pending.rank`).
+  - **What changes:** `LoaderStep`'s `hticket` replaces `hdis` and `hsmall`. `Passes` takes the window's stages, and `pass_sound` and `pass_complete` cover everything pending, tickets included.
+  - **Mutants:** JSG V's "or" now stands in for the ticket. I_Σ is read on the obligations alone, since JSG V's Σ has no tickets.
+- **New controls:** `loader_runs_window` runs EF and then PR through `LoaderStep` from `bootState`, and the window passes. `empty_run_fails` shows that, from the same state, a run with no stages doesn't pass.
+- **Provability check:** all seven theorems were proved in an uncommitted scratch file. Each proof is against its frozen statement, through `type_of%`, and uses only propext, Classical.choice and Quot.sound. With the two Loader theorems, the concrete Loader builds as a `Loader`, and what it has pending is well-founded whenever the obligations are.
+- **Left open:** stage order (IDEAS.md). It needs no decision now, because an ordered Loader can come later as a step relation contained in `LoaderStep`, and both theorems carry over.
+- **Docs:** CHANGELOG, ROADMAP, MASTER_GUIDE's sketch (regenerated and checked line by line), STATEMENTS_REVIEW (checked against the sources) and IDEAS are updated to match.
+
 ## 2026-10-26
+
+### `statements-v2` proposed (#33, draft)
+- **Scope:** Marley's brief, with one-time permission to edit `Defs.lean` and `Statements.lean` on a draft branch. Seven theorems and their definitions, appended as sections 8–11 of both files under a note that nothing above changed. Section numbers match across the two files, so `Defs.lean` skips 7, which has no definitions. The diff against `statements-v1` removes no line from any covered file.
+- **Drafting choices, all open to review until the tag:**
+  - Leases are interval width (`Bound.width`), checked by a separate `leaseVerdict` so `verdict` stays as frozen.
+  - Obligations follow JSG V's displayed stage transition. The issuer rule for Stage scope is folded into a single authority per obligation.
+  - The concrete Loader keeps what T-Boot pins in its state, so no step may change it. Its primitives are parameters (QUEUE.md, Q7). It has one stage rule: SCp3's T-Row premises, plus I6, I8 and JSG V's progress condition corrected from "or" to "and".
+  - The overspent residual is settled by `Threads`, leaving `residual` as frozen (QUEUE.md, Q5).
+- **Mutants:** each comes from a defect in `archive/`: SirusSC's `QPrime` and `Q`, JSG V's matrix, I_Σ and progress lemma, SCp3's T-Row and its s ⇒ s check rules, and SirusSC's axis-leak check. `threads_spec`'s comes from v1's `residual` used without `hx`. All of them, and a witness per theorem, are in `Tests/Mutants.lean`. They use only propext, Classical.choice and Quot.sound. The theorems themselves aren't proved: that's Milestone 2.
+- **Docs:**
+  - **MASTER_GUIDE:** its Lean sketch gains sections 8–11, generated from the two files and checked line by line. Three layer-map rows are updated, and the paragraph on deferred pieces now names what v2 adds.
+  - **ROADMAP:** Milestone 3's statements, and the compiler's, now get "a statements version of their own" rather than a number. The Milestone 2 row and note name v2's theorems.
+  - **IDEAS:** the overspent-residual item moves to Q5, and four new items record what drafting turned up.
+  - **STATEMENTS_REVIEW:** a v2 section, its quoted code checked against the sources.
+- **To undo:** close the draft PR. Nothing is tagged or merged.
+
+### Merged branches deleted
+- **Decision:** Marley's brief. Every remote branch already merged into `main` was deleted, 24 in all, after checking that none was the head or base of an open PR. Only `main` remains. A deleted branch can be pushed back from its merge commit's second parent.
 
 ### Milestone 1 merged and its gate recorded (#32)
 - **Merges:** once #23 was in, the seven proof PRs (#25–#31) were merged in order, as Marley's brief allowed. #25 was retargeted to `main` by hand, since #23's branch wasn't deleted; GitHub retargeted the rest.
