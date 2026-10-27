@@ -4,7 +4,7 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-26
 
-### `statements-v2` proposed, as a draft PR
+### `statements-v2` proposed (#33, draft)
 - **Scope:** Marley's brief, with one-time permission to edit `Defs.lean` and `Statements.lean` on a draft branch. Seven theorems and their definitions, appended as sections 8–11 of both files under a note that nothing above changed. Section numbers match across the two files, so `Defs.lean` skips 7, which has no definitions. The diff against `statements-v1` removes no line from any covered file.
 - **Drafting choices, all open to review until the tag:**
   - Leases are interval width (`Bound.width`), checked by a separate `leaseVerdict` so `verdict` stays as frozen.
