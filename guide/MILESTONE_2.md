@@ -93,7 +93,13 @@ Proved in #37.
 
 ## `pass_sound`
 
-*Not yet proved.*
+Proved in #47.
+
+1. In a passing run nothing is left at the end, and an item leaves what is pending only when a stage clears it (`afterStage` is a filter).
+2. So take an item pending before stage r, or emitted by it. If r clears it, we're done.
+3. Otherwise it's still pending after r, and since the run ends with nothing pending, a later stage must clear it.
+4. An induction on the rest of the run finds that stage: at each stage the item is either cleared, or it survives into what the next stage sees.
+5. So in a passing window, every ticket was cleared by its own stage, and every obligation by its authority with a witness of its type. JSG V's displayed transition, which clears by witness alone, fails this.
 
 ## `pass_complete`
 
