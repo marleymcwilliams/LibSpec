@@ -25,6 +25,14 @@ theorem verdict_sound (θ : ι → ENNReal) (g : Grade ι) (i : ι)
   · exact absurd (h i) (not_le.mpr hover)
   · rfl
 
+theorem verdict_complete (θ : ι → ENNReal) (g : Grade ι)
+    (hk : ∀ i, (g i).lo = (g i).hi) (hin : ∀ i, (g i).lo ≤ θ i) :
+    verdict θ g = .accept := by
+  unfold verdict
+  split_ifs with h
+  · rfl
+  · exact absurd (fun i => by rw [← hk i]; exact hin i) h
+
 theorem no_flip {E : Type} (θ : ι → ENNReal) (gradeOf : Evidence E → Grade ι)
     (hni : Noninterfering gradeOf) (r : E) (m m' : List (String × Float)) :
     verdict θ (gradeOf ⟨r, m⟩) = verdict θ (gradeOf ⟨r, m'⟩) := by
