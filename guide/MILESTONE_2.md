@@ -143,7 +143,13 @@ Proved in #45.
 
 ## The concrete Loader
 
-*Not yet built.*
+Built in #48, in `lean/JSG/Tests/ConcreteLoader.lean`.
+
+1. `concrete kind prims M` is a `Loader`. Its step is `LoaderStep`, its invariant is L1–L10 (`LoaderInv`), and its obligations are what each state has pending.
+2. Its two proof fields are this milestone's theorems: `inv_step` is `LoaderStep.inv_step`, and `progress` is `LoaderStep.progress`.
+3. `concrete_safe` applies `Loader.safe` to it: every state reachable from one that passes L1–L10 passes them too.
+4. `concrete_terminates` applies `Loader.terminates`. What is pending is well-founded whenever the obligations are, since every ticket ranks above every obligation, so the concrete Loader has no infinite run.
+5. `toy_safe` and `toy_terminates` apply both to the toy window in `Tests/Mutants.lean`. The Loader is concrete in its rules and checks, and generic in its cryptographic primitives (QUEUE.md, Q7): the theorems hold for any digest, signature check, replay and Merkle root.
 
 ## Closing note
 
