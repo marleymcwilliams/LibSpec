@@ -11,7 +11,13 @@ Proved by Marley in Phase 1 (#15).
 
 ## `combine_assoc`
 
-*Not yet proved.*
+Proved in #28.
+
+1. `combine` works axis by axis, so `funext i` compares the two sides at an arbitrary axis `i`.
+2. At that axis both sides apply `combineAxis (kind i)` twice, and `cases kind i` splits on whether the axis is a floor or a budget.
+3. On a floor axis both endpoints combine by max, and max is associative (`max_assoc`).
+4. On a budget axis both endpoints combine by +, and + is associative (`add_assoc`).
+5. `Bound.ext` turns the two endpoint equations into one equation of intervals. With `combine_comm`, any number of grades combine to the same result in any order and grouping.
 
 ## `interchange`
 
