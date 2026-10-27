@@ -133,7 +133,7 @@ Each milestone proves one block of `Statements.lean` and closes at the same gate
 | Milestone | Theorems | Read first | Expected difficulty |
 | --- | --- | --- | --- |
 | 1: Algebraic core | `combine_comm`, `combine_assoc`, `interchange`, `verdict_sound`, `verdict_complete`, `residual_spec`, `no_flip`, `fold_check_vacuous` | Mathematics in Lean ch. 2–4, 7; the `ENNReal` API | Low: case splits on axis kind, plus finding the right `ENNReal` lemmas |
-| 2: Obligations, Loader, charge, policy | Typed obligations, `Loader.safe`, `Loader.terminates`, `charge_append`, `charge_chatter`, `expiry_tightens`, `bridge`, `mfGate_signed` | Mathematics in Lean ch. 5–6 | Low to medium: Dershowitz–Manna and lattice lemmas take some finding |
+| 2: Obligations, Loader, charge, policy | Typed obligations and leases (`pass_sound`, `pass_complete`, `lease_breach`, `lease_complete`), `Loader.safe`, `Loader.terminates`, the concrete Loader (`LoaderStep.inv_step`, `LoaderStep.progress`), `threads_spec`, `charge_append`, `charge_chatter`, `expiry_tightens`, `bridge`, `mfGate_signed` | Mathematics in Lean ch. 5–6 | Low to medium: Dershowitz–Manna and lattice lemmas take some finding |
 | 3: Analysis layer | CVaR tail-to-level, `dwell_lower_bound`, local KL–Fisher bound, DRO envelope identity | Mathematics in Lean ch. 11–13 | Medium to high: the statements need as much care as the proofs |
 
 **Milestone 1 notes**, for right after the `statements-v1` tag:
@@ -145,10 +145,10 @@ Each milestone proves one block of `Statements.lean` and closes at the same gate
 
 **Milestone 2 notes**, for the milestone's closing note:
 
-- `Loader.safe` and `Loader.terminates` hold for any Loader, so Milestone 2's note must say that a concrete Loader (L1–L10) is still owed.
+- `Loader.safe` and `Loader.terminates` hold for any Loader. `statements-v2` states a concrete one: `LoaderStep`, whose invariant `LoaderInv` is L1–L10. Once `LoaderStep.inv_step` and `LoaderStep.progress` are proved, it can be built as a `Loader`, and the two theorems apply to it. Milestone 2's note must say whether that has happened, and that the Loader is generic in its cryptographic primitives (QUEUE.md, Q7).
 - The archive's one implemented Loader, SirusSC's `specchain/loader/loader.py`, doesn't supply it as written. It runs ten baseline checks numbered I1–I10, but only I1, the raw-data digest, is SCp3's I1 (our L1); the other nine are different checks under the same numbers. Its termination is a dwell countdown, with "strict decrease" set by which guard ran (`strict = guard.__name__ in ("guard_CBF", "guard_OMEGA")`), and its rank vector (`rank = [0, 0, 0, 0, 0]`) is never updated.
 
-Of Milestone 3's statements, only `dwell_lower_bound` is in `statements-v1`. Write and freeze the rest (a `statements-v2` tag) before any proof work on them starts.
+Of Milestone 3's statements, only `dwell_lower_bound` is frozen so far, in `statements-v1`. `statements-v2` holds Milestone 2's additions, so write and freeze the rest in a statements version of their own, before any proof work on them starts.
 
 **Gate for every milestone**
 
@@ -174,7 +174,7 @@ The goal is a tagged release that a stranger could clone and check. After it, yo
 **Then pick one:**
 
 - **Certificates.** Check PR/GKYP witnesses as exact rationals in Lean. The Thomson proof does this for semidefinite certificates: a numerical solver finds them, they are rounded to exact numbers, and Lean checks those numbers.
-- **The compiler.** State the Launchpad's adequacy theorem precisely, then freeze it as `statements-v3`.
+- **The compiler.** State the Launchpad's adequacy theorem precisely, then freeze it in a statements version of its own.
 - **Stop.** A tagged v1 with a proved core is a finished project.
 
 ## One sitting with Claude Code

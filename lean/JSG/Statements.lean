@@ -137,4 +137,91 @@ theorem dwell_lower_bound {d : ℝ → ℝ} {Smax r t₁ t₂ : ℝ} (hS : 0 < S
 -- Mutant: JSG I's version, which assumes |ḋ| ≥ α at the frontier instead of a speed
 -- bound; a trajectory with |ḋ| = 100α crosses far faster than the claimed τ_min.
 
+/-! ## statements-v2
+
+Sections 8 to 11 were added for `statements-v2` (guide/CHANGELOG.md); nothing above them
+changed. -/
+
+/-! ## 8. Leases (PDE I4b) -/
+
+/-- A breach rejects: an axis wider than its lease rejects the whole grade, even when
+    every axis is within its threshold. -/
+theorem lease_breach (θ β : ι → ENNReal) (g : Grade ι) (i : ι) (hwide : β i < (g i).width) :
+    leaseVerdict θ β g = .reject := by sorry
+-- Mutant: SirusSC's interval lift `QPrime`, whose one guard rejects ⊥
+-- (`guard_no_bottom`) and which never reads a width: [0, 5] passes on an axis leased 1
+-- under θ = 10.
+
+/-- Completeness for leased evidence: if every axis is within its lease, and its lower
+    end plus its lease is within its threshold, the grade is accepted. -/
+theorem lease_complete (θ β : ι → ENNReal) (g : Grade ι) (hlease : WithinLease β g)
+    (hin : ∀ i, (g i).lo + β i ≤ θ i) : leaseVerdict θ β g = .accept := by sorry
+-- Mutant: SirusSC's `Q`, where an axis holds a value or ⊥ and every guard rejects ⊥
+-- (`C_UNK_PRICED`). A reading wider than a point can only be ⊥ there, so [0, 1] leased 1
+-- is rejected under θ = 1.
+
+/-! ## 9. Typed obligations (JSG V §3) -/
+
+variable {St O W : Type}
+
+/-- Pass-soundness: split a passing window's run at any stage. Every obligation pending
+    before that stage, or emitted by it, is discharged by that stage or a later one, by
+    its authority and with a witness of its type. -/
+theorem pass_sound (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (pend₀ : Multiset O)
+    (pre post : List (StageRun ι St O W)) (r : StageRun ι St O W)
+    (hpass : Passes kind θ β M pend₀ (pre ++ r :: post)) {o : O}
+    (ho : o ∈ pendingAfter M pend₀ pre + r.emits) :
+    ∃ s ∈ r :: post, M.Discharges s o := by sorry
+-- Mutant: JSG V's displayed transition with its matrix, which lists PR or EF for
+-- RetuneDisabledInRed and leaves the issuer check to a parenthetical: PR discharges one
+-- that EF issued Stage-scoped, which only EF may discharge.
+
+/-- Completeness: a window passes if its grade is within its thresholds and leases, and
+    its last stage discharges every obligation still pending, those it emits included. -/
+theorem pass_complete (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (pend₀ : Multiset O)
+    (pre : List (StageRun ι St O W)) (r : StageRun ι St O W)
+    (hgrade : leaseVerdict θ β (windowGrade kind (pre ++ [r])) = .accept)
+    (hlast : ∀ o ∈ pendingAfter M pend₀ pre + r.emits, M.Discharges r o) :
+    Passes kind θ β M pend₀ (pre ++ [r]) := by sorry
+-- Mutant: JSG V's I_Σ-Progress read as part of passing, as its CI check runs it on
+-- passing runs: Σ must fall in the Dershowitz–Manna order at every stage. A window
+-- starts with Σ empty, which can't fall, so no window passes.
+
+/-! ## 10. A concrete Loader (SCp3 §3 and §6; JSG V §3) -/
+
+variable {Bytes D : Type}
+
+/-- Safety for the concrete Loader: every step preserves its invariant, L1–L10. With
+    `LoaderStep.progress`, this makes it a `Loader`, so `Loader.safe` covers its runs. -/
+theorem LoaderStep.inv_step [Preorder O] (prims : Prims Bytes D) (M : DischargeMatrix St O W)
+    (s t : LoaderState ι St O Bytes D) (hs : LoaderInv kind prims s)
+    (h : LoaderStep kind prims M s t) : LoaderInv kind prims t := by sorry
+-- Mutant: SCp3's T-Row, whose premises check I1–I5 and the budget but not I8, leaving it
+-- to T-Accept: a row whose debit pushes round-off past ε_max is accepted, and L8 fails.
+-- SirusSC's axis-leak check fails it too: an adapter missing from its declaration table
+-- may write any axis, and L6 fails.
+
+/-- Progress for the concrete Loader: every step lowers its pending obligations in the
+    Dershowitz–Manna order. With `LoaderStep.inv_step`, this makes it a `Loader`, so when
+    the order on obligations is well-founded, `Loader.terminates` rules out an infinite
+    run. -/
+theorem LoaderStep.progress [Preorder O] (prims : Prims Bytes D) (M : DischargeMatrix St O W)
+    (s t : LoaderState ι St O Bytes D) (h : LoaderStep kind prims M s t) :
+    Multiset.IsDershowitzMannaLT t.pending s.pending := by sorry
+-- Mutant: JSG V's progress lemma, which asks each stage to discharge an obligation *or*
+-- emit only smaller ones: a stage that discharges RequiresHitmap and emits OmegaPrecond,
+-- which ranks above it, raises Σ. SCp3's check rules fail it too, since T-AdapterAttest,
+-- T-AxisIsolation, T-AdapterMono and T-Attest each step s ⇒ s.
+
+/-! ## 11. Residual threading -/
+
+/-- When θ is finite, threading it through any number of stages accepts exactly when
+    their total is within θ. An overspent stage fails its own check, so the threading
+    fails there, whatever the later stages spend. -/
+theorem threads_spec (θ : ENNReal) (hθ : θ ≠ ⊤) (xs : List ENNReal) :
+    Threads θ xs ↔ xs.sum ≤ θ := by sorry
+-- Mutant: v1's residual check alone, which checks each later stage against what the
+-- earlier ones left but not that they fit. Once stage one overspends, the residual
+-- truncates to 0, which a stage of 0 still fits (θ = 1, stages 2 then 0).
+
 end JSG

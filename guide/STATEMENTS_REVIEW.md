@@ -1,6 +1,6 @@
 # Statements review: mutants and witnesses
 
-Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement.
+Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement. The [statements-v2](#statements-v2) section at the end does the same for the seven theorems that version adds.
 
 **How to read it.**
 - **Same Prop:** the mutant refutes the statement's own named definition with the mutant plugged in.
@@ -52,7 +52,7 @@ What the copy doesn't show is a set-level implementation failing `expiry_tighten
 
 Both hold for every `Loader` by construction. Building one requires proving `inv_step` and `progress`, and the two theorems only lift those fields from one step to whole runs. Their mutants are step relations that can't be built as Loaders. So the theorems can't catch a wrong Loader; they can only catch a wrong idea of what a Loader must prove.
 
-**A concrete Loader (L1–L10) is still owed.** When Milestone 2 proves these theorems, its milestone note must say so. ROADMAP's Milestone 2 now carries that reminder.
+**A concrete Loader (L1–L10) is still owed.** When Milestone 2 proves these theorems, its milestone note must say so. ROADMAP's Milestone 2 now carries that reminder. `statements-v2` states one, `LoaderStep`, with its own two theorems; see [statements-v2](#statements-v2).
 
 ## Side by side
 
@@ -267,3 +267,151 @@ The remaining witnesses already covered everything:
 - `combine_comm`, `combine_assoc`, `interchange`, `charge_append` and `charge_chatter` have no hypotheses.
 - `Loader.terminates` has only typeclass instances, which Lean finds for ℕ.
 - `mfGate_monotone`'s witness already proved `hg` and `hs`; it stays as `mfGate_accepts_kept_history`.
+
+## statements-v2
+
+Review support for the `statements-v2` proposal, read the same way as above. The seven theorems are in sections 8–11 of `lean/JSG/Statements.lean`, their definitions in the same sections of `lean/JSG/Defs.lean`, and their controls in the "statements-v2" part of `lean/JSG/Tests/Mutants.lean`. Every mutant comes from a defect in `archive/`, except `threads_spec`'s, which comes from v1's own `residual`.
+
+**Context.** Besides `variable {ι : Type} (kind : ι → Kind)`, section 9 adds `{St O W : Type}`: stages, obligations and witnesses. Section 10 adds `{Bytes D : Type}`: bytes and digests.
+
+**Fixtures.** The v2 controls use one axis (`Unit`). Where stages matter they use `Stg`, two of JSG V's stages (EF and PR), and otherwise `Unit`. Obligations are `Unit`, or ℕ where their order matters: ℕ's order stands in for JSG V's type order, with RequiresHitmap as 1 and OmegaPrecond, which ranks above it, as 2. The Loader controls use toy primitives: the digest is the identity, every signature verifies, replay returns the probe, and a bundle's root is its length.
+
+| Theorem | The mutant refutes | What differs from the statement | The defect it comes from |
+| --- | --- | --- | --- |
+| `lease_breach` | Restated copy | `leaseVerdict` → `qPrimeGate`, the plain verdict, which reads `hi` only | SirusSC `specchain/algebra/q_prime.py`: `QPrime`'s only guard is `guard_no_bottom` |
+| `lease_complete` | Restated copy | `leaseVerdict` → `pointsOnly`, which accepts points only | SirusSC `specchain/algebra/q.py`, where ⊥ absorbs, and `loader.py`'s guards, which reject it (`C_UNK_PRICED`) |
+| `pass_sound` | Restated copy (`PassSoundHolds`) | `afterStage` → `afterListed`, which checks only the witness | JSG V §3: the displayed stage transition, and the matrix row that lists PR or EF for RetuneDisabledInRed |
+| `pass_complete` | Restated copy (`PassCompleteHolds`) | `Passes` → `Passes ∧ ISigma` | JSG V §3: Invariant I_Σ-Progress, which its CI check runs on passing runs |
+| `LoaderStep.inv_step` | Restated copy, two mutants | `LoaderStep` → `TRowStep`, without `hiso` and `hround`; or → `SirusIsoStep`, with `hiso` waived for a stage missing from the table | SCp3 §6.3, rule T-Row; SirusSC `loader.py`, `_resolve_allowed_axes` and `_detect_axis_leaks` |
+| `LoaderStep.progress` | Restated copy, two mutants | `LoaderStep` → `OrStep`, with `hdis ∨ hsmall` for both; or → `LoaderStep` plus a step from every state to itself | JSG V §3, Lemma (Progress via multiset ordering); SCp3 §6.3, rules T-AdapterAttest, T-AxisIsolation, T-AdapterMono and T-Attest |
+| `threads_spec` | Restated copy | `Threads` → `ResidualOnly`, which checks only the last stage's fit | `statements-v1`'s `residual`, used without `residual_spec`'s `hx` (QUEUE.md, Q5) |
+
+**What this means.**
+- **No v1 statement or definition changes.** Each v2 theorem is new, and so is every definition it uses.
+- **`LoaderStep.inv_step` and `LoaderStep.progress` are the two fields a `Loader` needs.** Once both are proved, `LoaderStep kind prims M`, with `LoaderInv kind prims` as its invariant and each state's `pending` as its obligations, is a `Loader`, and `Loader.safe` and `Loader.terminates` apply to it. Unlike those two, these theorems can fail: each mutant is a step relation that breaks one.
+- **`pass_sound` and `pass_complete` are a pair, like `verdict_sound` and `verdict_complete`.** A transition that never discharges anything satisfies `pass_sound`; `pass_complete` rules it out.
+
+### 17. `lease_breach`: restated copy
+```lean
+-- Statement
+theorem lease_breach (θ β : ι → ENNReal) (g : Grade ι) (i : ι) (hwide : β i < (g i).width) :
+    leaseVerdict θ β g = .reject
+-- Mutant: SirusSC's QPrime, which never reads a width
+theorem lease_breach_mutant :
+    ¬ ∀ (θ β : Unit → ENNReal) (g : Grade Unit) (i : Unit),
+      β i < (g i).width → qPrimeGate θ β g = .reject
+```
+
+### 18. `lease_complete`: restated copy
+```lean
+-- Statement
+theorem lease_complete (θ β : ι → ENNReal) (g : Grade ι) (hlease : WithinLease β g)
+    (hin : ∀ i, (g i).lo + β i ≤ θ i) : leaseVerdict θ β g = .accept
+-- Mutant: SirusSC's Q, where a reading wider than a point can only be ⊥
+theorem lease_complete_mutant :
+    ¬ ∀ (θ β : Unit → ENNReal) (g : Grade Unit), WithinLease β g →
+      (∀ i, (g i).lo + β i ≤ θ i) → pointsOnly θ β g = .accept
+```
+
+### 19. `pass_sound`: restated copy
+```lean
+-- Statement
+theorem pass_sound (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (pend₀ : Multiset O)
+    (pre post : List (StageRun ι St O W)) (r : StageRun ι St O W)
+    (hpass : Passes kind θ β M pend₀ (pre ++ r :: post)) {o : O}
+    (ho : o ∈ pendingAfter M pend₀ pre + r.emits) :
+    ∃ s ∈ r :: post, M.Discharges s o
+-- The claim at the fixtures, with the stage transition as a parameter
+def PassSoundHolds (M : DischargeMatrix Stg Unit Bool)
+    (after : Multiset Unit → StageRun Unit Stg Unit Bool → Multiset Unit) : Prop :=
+  ∀ (θ β : Unit → ENNReal) (pend₀ : Multiset Unit) (pre post : List (StageRun Unit Stg Unit Bool))
+    (r : StageRun Unit Stg Unit Bool),
+    leaseVerdict θ β (windowGrade budget (pre ++ r :: post)) = .accept →
+    (pre ++ r :: post).foldl after pend₀ = 0 →
+    ∀ o ∈ pre.foldl after pend₀ + r.emits, ∃ s ∈ r :: post, M.Discharges s o
+-- Mutant: JSG V's displayed transition, which checks only the witness
+theorem pass_sound_mutant : ¬ PassSoundHolds retuneRed (afterListed retuneRed)
+```
+
+`PassSoundHolds M (afterStage M)` is `pass_sound` at these fixtures: `Passes` unfolds to the grade check and `pendingAfter`, which is the fold of `afterStage`. In the counterexample, EF emits RetuneDisabledInRed while Red, and PR later produces the witness. The mutant lets PR discharge it, so the window passes, though EF, its only authority, never discharges it.
+
+### 20. `pass_complete`: restated copy
+```lean
+-- Statement
+theorem pass_complete (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (pend₀ : Multiset O)
+    (pre : List (StageRun ι St O W)) (r : StageRun ι St O W)
+    (hgrade : leaseVerdict θ β (windowGrade kind (pre ++ [r])) = .accept)
+    (hlast : ∀ o ∈ pendingAfter M pend₀ pre + r.emits, M.Discharges r o) :
+    Passes kind θ β M pend₀ (pre ++ [r])
+-- The claim at the fixtures, with the pass condition as a parameter
+def PassCompleteHolds (passes : (Unit → ENNReal) → (Unit → ENNReal) →
+    DischargeMatrix Unit ℕ Unit → Multiset ℕ → List (StageRun Unit Unit ℕ Unit) → Prop) : Prop :=
+  ∀ θ β M pend₀ (pre : List (StageRun Unit Unit ℕ Unit)) r,
+    leaseVerdict θ β (windowGrade budget (pre ++ [r])) = .accept →
+    (∀ o ∈ pendingAfter M pend₀ pre + r.emits, M.Discharges r o) →
+    passes θ β M pend₀ (pre ++ [r])
+-- Mutant: passing also requires JSG V's I_Σ
+theorem pass_complete_mutant :
+    ¬ PassCompleteHolds
+      (fun θ β M pend₀ run => Passes budget θ β M pend₀ run ∧ ISigma M pend₀ run)
+```
+
+The counterexample is one idle stage from an empty Σ. It passes, but I_Σ asks the empty multiset to fall, and nothing is below it.
+
+### 21. `LoaderStep.inv_step`: restated copy, two mutants
+```lean
+-- Statement
+theorem LoaderStep.inv_step [Preorder O] (prims : Prims Bytes D) (M : DischargeMatrix St O W)
+    (s t : LoaderState ι St O Bytes D) (hs : LoaderInv kind prims s)
+    (h : LoaderStep kind prims M s t) : LoaderInv kind prims t
+-- Mutant: SCp3's T-Row, LoaderStep without hiso and hround
+theorem loader_inv_step_mutant :
+    ¬ ∀ s t, LoaderInv budget toyPrims s → TRowStep anyStage s t → LoaderInv budget toyPrims t
+-- Mutant: SirusSC's axis-leak check, hiso waived for a stage missing from the table
+theorem loader_inv_step_sirus_mutant :
+    ¬ ∀ s t, LoaderInv budget toyPrims s → SirusIsoStep anyStage s t →
+      LoaderInv budget toyPrims t
+```
+
+`TRowStep` and `SirusIsoStep` copy `LoaderStep`'s rule and change only the premises named. Under T-Row, a row that adds round-off 5 against a cap of 1 is accepted, and L8 fails afterwards. SCp3 leaves I8 to T-Accept, so its invariant holds when the run accepts, not after every step.
+
+### 22. `LoaderStep.progress`: restated copy, two mutants
+```lean
+-- Statement
+theorem LoaderStep.progress [Preorder O] (prims : Prims Bytes D) (M : DischargeMatrix St O W)
+    (s t : LoaderState ι St O Bytes D) (h : LoaderStep kind prims M s t) :
+    Multiset.IsDershowitzMannaLT t.pending s.pending
+-- Mutant: JSG V's progress lemma, hdis ∨ hsmall for both
+theorem loader_progress_mutant :
+    ¬ ∀ s t, OrStep hitmapOnly s t → Multiset.IsDershowitzMannaLT t.pending s.pending
+-- Mutant: SCp3's check rules, each a step from a state to itself
+theorem loader_progress_selfloop_mutant :
+    ¬ ∀ s t, (LoaderStep budget toyPrims anyStage s t ∨ t = s) →
+      Multiset.IsDershowitzMannaLT t.pending s.pending
+```
+
+Under JSG V's "or", a stage that discharges RequiresHitmap and emits OmegaPrecond qualifies, and Σ goes from {1} to {2}. A self-loop leaves Σ where it was. The Dershowitz–Manna order allows neither.
+
+### 23. `threads_spec`: restated copy
+```lean
+-- Statement
+theorem threads_spec (θ : ENNReal) (hθ : θ ≠ ⊤) (xs : List ENNReal) :
+    Threads θ xs ↔ xs.sum ≤ θ
+-- Mutant: v1's residual check alone
+theorem threads_spec_mutant :
+    ¬ ∀ θ : ENNReal, θ ≠ ⊤ → ∀ xs : List ENNReal, (ResidualOnly θ xs ↔ xs.sum ≤ θ)
+```
+
+### Witnesses
+
+Each witness proves every hypothesis of its theorem, then the conclusion, for one concrete instance.
+
+| Theorem | Hypotheses | Instance |
+| --- | --- | --- |
+| `lease_breach` | `hwide` | [0, 5] with lease 1, under θ = 10 |
+| `lease_complete` | `hlease`, `hin` | [0, 1] with lease 1, under θ = 1 |
+| `pass_sound` | `hpass`, `ho` | EF emits RequiresHitmap and PR discharges it; the run split at EF |
+| `pass_complete` | `hgrade`, `hlast` | the same run, with PR as the last stage |
+| `LoaderStep.inv_step` | `hs`, `h` | one stage prices a row and discharges the one pending obligation; the invariant is proved after the step too |
+| `LoaderStep.progress` | `h` | a stage discharges OmegaPrecond and emits RequiresHitmap |
+| `threads_spec` | `hθ` | θ = 10 with stages 3 then 4, where both sides hold; θ = 1 with stages 2 then 0, where neither does |

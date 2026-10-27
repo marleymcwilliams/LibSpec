@@ -114,4 +114,194 @@ def Calibrated {Inp : Type} (gate : Inp → Decision) (MP MF : Set Inp) : Prop :
 def mfGate {C : Type} (signed : Set C → Prop) (old new : Set C) : Prop :=
   old ⊆ new ∨ signed (old \ new)
 
+/-! ## statements-v2
+
+Sections 8 to 11 were added for `statements-v2` (guide/CHANGELOG.md); nothing above them
+changed. -/
+
+/-! ## 8. Leases (PDE I4b) -/
+
+/-- An interval's width: how much of the axis is still unknown. An unknown, [0, ∞], has
+    width ∞, and a point has width 0. -/
+def Bound.width (b : Bound) : ENNReal := b.hi - b.lo
+
+/-- PDE I4b's lease, read on intervals: every axis is known to within its lease β. An
+    axis wider than its lease is a breach. -/
+def WithinLease (β : ι → ENNReal) (g : Grade ι) : Prop := ∀ i, (g i).width ≤ β i
+
+/-- The verdict with PDE I4b's lease check: accept iff every axis is within both its
+    threshold and its lease. -/
+noncomputable def leaseVerdict (θ β : ι → ENNReal) (g : Grade ι) : Decision := by
+  classical
+  exact if ∀ i, (g i).hi ≤ θ i ∧ (g i).width ≤ β i then .accept else .reject
+
+/-! ## 9. Typed obligations (JSG V §3) -/
+
+variable {St O W : Type}
+
+/-- JSG V's published discharge matrix. Each obligation has an authority, the one stage
+    that may discharge it (for a Stage-scoped obligation, its issuer), and a witness type
+    W(o), read as a check on the witness a stage produces. -/
+structure DischargeMatrix (St O W : Type) where
+  authority : O → St
+  witness   : O → W → Prop
+
+/-- One stage's part in a window: the stage, the grade it adds, the obligations it emits,
+    and its witness. -/
+structure StageRun (ι St O W : Type) where
+  stage : St
+  grade : Grade ι
+  emits : Multiset O
+  wit   : W
+
+/-- A stage discharges `o` when it is `o`'s authority and its witness has type W(o). -/
+def DischargeMatrix.Discharges (M : DischargeMatrix St O W) (r : StageRun ι St O W)
+    (o : O) : Prop :=
+  M.authority o = r.stage ∧ M.witness o r.wit
+
+/-- JSG V's stage transition on obligations: add what the stage emits, then remove every
+    obligation it discharges. -/
+noncomputable def afterStage (M : DischargeMatrix St O W) (pend : Multiset O)
+    (r : StageRun ι St O W) : Multiset O := by
+  classical
+  exact (pend + r.emits).filter (fun o => ¬ M.Discharges r o)
+
+/-- The obligations still pending after a run of stages, from those pending at its start. -/
+noncomputable def pendingAfter (M : DischargeMatrix St O W) (pend₀ : Multiset O)
+    (run : List (StageRun ι St O W)) : Multiset O :=
+  run.foldl (afterStage M) pend₀
+
+/-- A window's grade: its stages' grades combined in sequence, from the known 0. -/
+def windowGrade (run : List (StageRun ι St O W)) : Grade ι :=
+  run.foldl (fun g r => seqComp kind g r.grade) (fun _ => Bound.known 0)
+
+/-- JSG V's verdict on a window (§3), with PDE I4b's leases: it passes iff its grade is
+    within its thresholds and leases, and no obligation is left. -/
+def Passes (θ β : ι → ENNReal) (M : DischargeMatrix St O W) (pend₀ : Multiset O)
+    (run : List (StageRun ι St O W)) : Prop :=
+  leaseVerdict θ β (windowGrade kind run) = .accept ∧ pendingAfter M pend₀ run = 0
+
+/-! ## 10. A concrete Loader (SCp3 §3 and §6; JSG V §3) -/
+
+variable {Bytes D : Type}
+
+/-- The primitives SCp3's checks call, abstracted: a canonical digest (BLAKE3-256 over
+    canon/v1 bytes), signature verification in the pinned identity graph, re-execution
+    under a ReplayPlan, and a receipt bundle's Merkle root. -/
+structure Prims (Bytes D : Type) where
+  digest : Bytes → D
+  sigOK  : Bytes → Prop
+  replay : Bytes → Bytes → Bytes
+  root   : List Bytes → D
+
+/-- What T-Boot pins for a run (SCp3 §6.3 and §7). No step changes it. -/
+structure Boot (ι St Bytes D : Type) where
+  raw        : Bytes                      -- L1: the raw data and its pinned digest
+  rawDigest  : D
+  configCert : Bytes                      -- L2: the ConfigCert
+  envLock    : Bytes                      -- L3: the EnvLock suite and its pinned digest
+  envDigest  : D
+  replayPlan : Bytes                      -- L4: the ReplayPlan, a probe and its output
+  probe      : Bytes
+  probeOut   : Bytes
+  seed       : D                          -- L5: the run seed and the seeds already used
+  ledger     : List D
+  declared   : St → Set ι                 -- L6: the axes each stage's adapter declared
+  adapter    : St → List Bytes → Grade ι  -- L7: each stage's adapter, from rows to a grade
+  epsMax     : ENNReal                    -- L8: the cap on accumulated round-off
+  budget     : ι → ENNReal                -- L9: the budgets B, per axis
+
+/-- A Loader state (SCp3 Definition 6.1, cut down): the boot record, the acceptance grade
+    q, the round-off so far, the (stage, axis) pairs written so far, the receipt bundle
+    with the root recorded for it, and the pending obligations. -/
+structure LoaderState (ι St O Bytes D : Type) where
+  boot    : Boot ι St Bytes D
+  q       : Grade ι
+  eps     : ENNReal
+  written : Set (St × ι)
+  bundle  : List Bytes
+  root    : D
+  pending : Multiset O
+
+variable (prims : Prims Bytes D)
+
+/-- L1, SCp3's I1 RAW_DIGEST_MATCH: the raw data hashes to its pinned digest. -/
+def L1 (s : LoaderState ι St O Bytes D) : Prop := prims.digest s.boot.raw = s.boot.rawDigest
+
+/-- L2, I2 CONFIG_CERT_VALID: the ConfigCert's signatures verify. -/
+def L2 (s : LoaderState ι St O Bytes D) : Prop := prims.sigOK s.boot.configCert
+
+/-- L3, I3 ENVLOCK_PINNED: the EnvLock suite matches its pinned digest. -/
+def L3 (s : LoaderState ι St O Bytes D) : Prop :=
+  prims.digest s.boot.envLock = s.boot.envDigest
+
+/-- L4, I4 REPLAY_PLAN_VALID: re-executing the probe under the ReplayPlan reproduces its
+    output. -/
+def L4 (s : LoaderState ι St O Bytes D) : Prop :=
+  prims.replay s.boot.replayPlan s.boot.probe = s.boot.probeOut
+
+/-- L5, I5 SEED_IS_FRESH: the run seed hasn't been used before. -/
+def L5 (s : LoaderState ι St O Bytes D) : Prop := s.boot.seed ∉ s.boot.ledger
+
+/-- L6, I6 AXIS_ISOLATION: every axis written so far was declared by the stage that
+    wrote it. -/
+def L6 (s : LoaderState ι St O Bytes D) : Prop := ∀ p ∈ s.written, p.2 ∈ s.boot.declared p.1
+
+/-- L7, I7 ADAPTER_MONOTONE, its homomorphism half: adapting two batches of rows together
+    grades the same as combining their grades. -/
+def L7 (s : LoaderState ι St O Bytes D) : Prop :=
+  ∀ st x y, s.boot.adapter st (x ++ y) = combine kind (s.boot.adapter st x) (s.boot.adapter st y)
+
+/-- L8, I8 ROUNDING_GUARD: the round-off accumulated so far is within its cap. -/
+def L8 (s : LoaderState ι St O Bytes D) : Prop := s.eps ≤ s.boot.epsMax
+
+/-- L9, I9 FRONTIER_BUDGET: every axis's upper bound is within its budget. -/
+def L9 (s : LoaderState ι St O Bytes D) : Prop := ∀ i, (s.q i).hi ≤ s.boot.budget i
+
+/-- L10, I10 AUDIT_BUNDLE_COMPLETE: the receipt bundle's Merkle root is the one recorded. -/
+def L10 (s : LoaderState ι St O Bytes D) : Prop := prims.root s.bundle = s.root
+
+/-- The Loader's invariant: L1–L10, SCp3's ten baseline checks, all pass. -/
+def LoaderInv (s : LoaderState ι St O Bytes D) : Prop :=
+  L1 prims s ∧ L2 prims s ∧ L3 prims s ∧ L4 prims s ∧ L5 s ∧ L6 s ∧ L7 kind s ∧ L8 s ∧ L9 s ∧
+    L10 prims s
+
+/-- One step of the concrete Loader: a stage runs (JSG V §3), guarded fail-closed as in
+    SCp3 §6.3, so a step whose premises fail isn't enabled and the run stops there. T-Boot
+    isn't a step: a run starts from a state that passes L1–L10. The step appends the
+    stage's receipt and records the bundle's new root. -/
+inductive LoaderStep [Preorder O] (M : DischargeMatrix St O W) :
+    LoaderState ι St O Bytes D → LoaderState ι St O Bytes D → Prop
+  | stage (s : LoaderState ι St O Bytes D) (r : StageRun ι St O W) (rows : List Bytes)
+      (ε : ENNReal) (receipt : Bytes)
+      -- the stage's adapter prices its rows (T-Row)
+      (hprice : r.grade = s.boot.adapter r.stage rows)
+      -- it writes only axes its adapter declared (I6)
+      (hiso : ∀ i, r.grade i ≠ Bound.known 0 → i ∈ s.boot.declared r.stage)
+      -- round-off stays within its cap (I8)
+      (hround : s.eps + ε ≤ s.boot.epsMax)
+      -- the new grade stays within the budgets (T-Row, I9)
+      (hbudget : ∀ i, (combine kind s.q r.grade i).hi ≤ s.boot.budget i)
+      -- it discharges at least one pending obligation
+      (hdis : ∃ o ∈ s.pending, M.Discharges r o)
+      -- each obligation it emits and doesn't discharge ranks below one it discharges
+      (hsmall : ∀ e ∈ r.emits, ¬ M.Discharges r e → ∃ o ∈ s.pending, M.Discharges r o ∧ e < o) :
+      LoaderStep M s
+        { s with
+          q := combine kind s.q r.grade
+          eps := s.eps + ε
+          written := s.written ∪ {p | p.1 = r.stage ∧ r.grade p.2 ≠ Bound.known 0}
+          bundle := s.bundle ++ [receipt]
+          root := prims.root (s.bundle ++ [receipt])
+          pending := afterStage M s.pending r }
+
+/-! ## 11. Residual threading -/
+
+/-- Thread a budget θ through stages, in order: each stage must fit within what the
+    earlier ones left. An overspent stage fails its own check, so the 0 that `residual`
+    truncates to never decides the outcome (QUEUE.md, Q5). -/
+def Threads : ENNReal → List ENNReal → Prop
+  | _, [] => True
+  | θ, x :: xs => x ≤ θ ∧ Threads (residual θ x) xs
+
 end JSG

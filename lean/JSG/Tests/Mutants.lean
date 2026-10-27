@@ -502,4 +502,434 @@ theorem dwell_lower_bound_witness :
   simp only [dWitness]
   rw [show (1 - t) - (1 - s) = -(t - s) by ring, abs_neg, one_mul]
 
+/-! ## statements-v2
+
+Controls for the theorems added in `statements-v2`, in the same style: a mutant taken
+from a real defect in `archive/`, and a witness. -/
+
+/-! ## lease_breach -/
+
+/-- [0, 5] on the single axis. -/
+def zeroFive : Grade Unit := fun _ => ⟨0, 5, by norm_num⟩
+
+/-- Mutant: SirusSC's interval lift `QPrime`, whose one guard rejects ⊥
+    (`guard_no_bottom`) and which never reads an interval's width, so it accepts on the
+    upper bound alone. -/
+noncomputable def qPrimeGate {ι : Type} (θ _β : ι → ENNReal) (g : Grade ι) : Decision :=
+  verdict θ g
+
+theorem lease_breach_mutant :
+    ¬ ∀ (θ β : Unit → ENNReal) (g : Grade Unit) (i : Unit),
+      β i < (g i).width → qPrimeGate θ β g = .reject := by
+  intro hc
+  have := hc θten (fun _ => 1) zeroFive () (by norm_num [zeroFive, Bound.width])
+  norm_num [qPrimeGate, verdict, θten, zeroFive] at this
+
+/-- Witness for `lease_breach` ([0, 5] leased 1 under θ = 10, axis `()`): the hypothesis
+    and the conclusion. -/
+theorem lease_breach_witness :
+    (fun _ : Unit => (1 : ENNReal)) () < (zeroFive ()).width
+      ∧ leaseVerdict θten (fun _ => 1) zeroFive = .reject := by
+  refine ⟨by norm_num [zeroFive, Bound.width], ?_⟩
+  norm_num [leaseVerdict, θten, zeroFive, Bound.width]
+
+/-! ## lease_complete -/
+
+/-- [0, 1] on the single axis. -/
+def zeroOne : Grade Unit := fun _ => ⟨0, 1, zero_le_one⟩
+
+/-- Mutant: SirusSC's `Q`, where an axis holds a value or ⊥, which absorbs whatever it
+    combines with, and every guard rejects a ⊥ (`C_UNK_PRICED`). A reading wider than a
+    point can only be ⊥ there, so it is rejected however small its lease. -/
+noncomputable def pointsOnly {ι : Type} (θ _β : ι → ENNReal) (g : Grade ι) : Decision := by
+  classical
+  exact if ∀ i, (g i).lo = (g i).hi ∧ (g i).hi ≤ θ i then .accept else .reject
+
+theorem lease_complete_mutant :
+    ¬ ∀ (θ β : Unit → ENNReal) (g : Grade Unit), WithinLease β g →
+      (∀ i, (g i).lo + β i ≤ θ i) → pointsOnly θ β g = .accept := by
+  intro hc
+  have := hc θone (fun _ => 1) zeroOne (fun _ => by simp [zeroOne, Bound.width])
+    (fun _ => by simp [zeroOne, θone])
+  simp [pointsOnly, zeroOne] at this
+
+/-- Witness for `lease_complete` ([0, 1] leased 1 under θ = 1): both hypotheses and the
+    conclusion. -/
+theorem lease_complete_witness :
+    WithinLease (fun _ => 1) zeroOne ∧ (∀ i, (zeroOne i).lo + 1 ≤ θone i)
+      ∧ leaseVerdict θone (fun _ => 1) zeroOne = .accept := by
+  refine ⟨fun _ => by simp [zeroOne, Bound.width], fun _ => by simp [zeroOne, θone], ?_⟩
+  simp [leaseVerdict, θone, zeroOne, Bound.width]
+
+/-! ## pass_sound -/
+
+/-- Two of JSG V's stages. -/
+inductive Stg | ef | pr
+  deriving DecidableEq
+
+/-- RetuneDisabledInRed, issued Stage-scoped by EF: only EF may discharge it, with a
+    witness that `clamp_state` isn't Red (`true`). -/
+def retuneRed : DischargeMatrix Stg Unit Bool := ⟨fun _ => .ef, fun _ w => w = true⟩
+
+/-- RequiresHitmap, Window-scoped: PR discharges it, with a witness that the hitmap is
+    present and authorized (`true`). -/
+def hitmap : DischargeMatrix Stg Unit Bool := ⟨fun _ => .pr, fun _ w => w = true⟩
+
+/-- EF emits the obligation while Red, so its own witness is `false`. -/
+def efEmits : StageRun Unit Stg Unit Bool := ⟨.ef, k 0, {()}, false⟩
+
+/-- PR runs with a witness of `true`. -/
+def prRuns : StageRun Unit Stg Unit Bool := ⟨.pr, k 0, 0, true⟩
+
+/-- `pass_sound`'s claim at these fixtures, with the stage transition as a parameter so
+    a wrong one can be plugged in. `PassSoundHolds M (afterStage M)` is the statement. -/
+def PassSoundHolds (M : DischargeMatrix Stg Unit Bool)
+    (after : Multiset Unit → StageRun Unit Stg Unit Bool → Multiset Unit) : Prop :=
+  ∀ (θ β : Unit → ENNReal) (pend₀ : Multiset Unit) (pre post : List (StageRun Unit Stg Unit Bool))
+    (r : StageRun Unit Stg Unit Bool),
+    leaseVerdict θ β (windowGrade budget (pre ++ r :: post)) = .accept →
+    (pre ++ r :: post).foldl after pend₀ = 0 →
+    ∀ o ∈ pre.foldl after pend₀ + r.emits, ∃ s ∈ r :: post, M.Discharges s o
+
+/-- Mutant: JSG V's displayed transition with its matrix, which lists PR or EF for
+    RetuneDisabledInRed and leaves the issuer check to a parenthetical, so any listed
+    stage with the right witness discharges it. -/
+noncomputable def afterListed (M : DischargeMatrix Stg Unit Bool) (pend : Multiset Unit)
+    (r : StageRun Unit Stg Unit Bool) : Multiset Unit := by
+  classical
+  exact (pend + r.emits).filter (fun o => ¬ M.witness o r.wit)
+
+theorem pass_sound_mutant : ¬ PassSoundHolds retuneRed (afterListed retuneRed) := by
+  intro hc
+  have := hc (fun _ => 0) (fun _ => 0) 0 [] [prRuns] efEmits
+    (by simp [leaseVerdict, windowGrade, seqComp, combine, combineAxis, budget, efEmits, prRuns,
+      k, Bound.known, Bound.width])
+    (by simp [afterListed, retuneRed, efEmits, prRuns])
+    () (by simp [efEmits])
+  simp [DischargeMatrix.Discharges, retuneRed, efEmits, prRuns] at this
+
+/-- Witness for `pass_sound` (EF emits RequiresHitmap and PR discharges it; the run split
+    at EF): the hypothesis, `ho`, and the conclusion. -/
+theorem pass_sound_witness :
+    Passes budget (fun _ => 0) (fun _ => 0) hitmap 0 ([] ++ efEmits :: [prRuns])
+      ∧ () ∈ pendingAfter hitmap 0 ([] : List (StageRun Unit Stg Unit Bool)) + efEmits.emits
+      ∧ ∃ s ∈ efEmits :: [prRuns], hitmap.Discharges s () := by
+  refine ⟨⟨?_, ?_⟩, by simp [pendingAfter, efEmits], prRuns, by simp, ?_⟩
+  · simp [leaseVerdict, windowGrade, seqComp, combine, combineAxis, budget, efEmits, prRuns,
+      k, Bound.known, Bound.width]
+  · simp [pendingAfter, afterStage, DischargeMatrix.Discharges, hitmap, efEmits, prRuns]
+  · simp [DischargeMatrix.Discharges, hitmap, prRuns]
+
+/-! ## pass_complete -/
+
+/-- Every stage may discharge every obligation, with any witness. -/
+def anyStage : DischargeMatrix Unit ℕ Unit := ⟨fun _ => (), fun _ _ => True⟩
+
+/-- A stage that adds nothing and emits nothing. -/
+def idle : StageRun Unit Unit ℕ Unit := ⟨(), k 0, 0, ()⟩
+
+/-- JSG V's I_Σ: Σ falls in the Dershowitz–Manna order at every stage. -/
+def ISigma (M : DischargeMatrix Unit ℕ Unit) (pend₀ : Multiset ℕ)
+    (run : List (StageRun Unit Unit ℕ Unit)) : Prop :=
+  ∀ pre r post, run = pre ++ r :: post →
+    Multiset.IsDershowitzMannaLT (afterStage M (pendingAfter M pend₀ pre) r)
+      (pendingAfter M pend₀ pre)
+
+/-- `pass_complete`'s claim at these fixtures, with the pass condition as a parameter.
+    `PassCompleteHolds (Passes budget)` is the statement. -/
+def PassCompleteHolds (passes : (Unit → ENNReal) → (Unit → ENNReal) →
+    DischargeMatrix Unit ℕ Unit → Multiset ℕ → List (StageRun Unit Unit ℕ Unit) → Prop) : Prop :=
+  ∀ θ β M pend₀ (pre : List (StageRun Unit Unit ℕ Unit)) r,
+    leaseVerdict θ β (windowGrade budget (pre ++ [r])) = .accept →
+    (∀ o ∈ pendingAfter M pend₀ pre + r.emits, M.Discharges r o) →
+    passes θ β M pend₀ (pre ++ [r])
+
+/-- Mutant: JSG V's I_Σ-Progress read as part of passing, as its CI check runs it on
+    passing runs. A window starts with Σ empty, which can't fall, so no window passes. -/
+theorem pass_complete_mutant :
+    ¬ PassCompleteHolds
+      (fun θ β M pend₀ run => Passes budget θ β M pend₀ run ∧ ISigma M pend₀ run) := by
+  intro hc
+  obtain ⟨-, hI⟩ := hc (fun _ => 0) (fun _ => 0) anyStage 0 [] idle
+    (by simp [leaseVerdict, windowGrade, seqComp, combine, combineAxis, budget, idle, k,
+      Bound.known, Bound.width])
+    (by simp [pendingAfter, idle])
+  obtain ⟨X, Y, Z, hZ, -, hN, -⟩ := hI [] idle [] rfl
+  simp only [pendingAfter, List.foldl_nil] at hN
+  exact hZ (add_eq_zero.mp hN.symm).2
+
+/-- Witness for `pass_complete` (EF emits RequiresHitmap and the last stage, PR,
+    discharges it): both hypotheses and the conclusion. -/
+theorem pass_complete_witness :
+    leaseVerdict (fun _ => 0) (fun _ => 0) (windowGrade budget ([efEmits] ++ [prRuns])) = .accept
+      ∧ (∀ o ∈ pendingAfter hitmap 0 [efEmits] + prRuns.emits, hitmap.Discharges prRuns o)
+      ∧ Passes budget (fun _ => 0) (fun _ => 0) hitmap 0 ([efEmits] ++ [prRuns]) := by
+  have hg : leaseVerdict (fun _ => 0) (fun _ => 0) (windowGrade budget ([efEmits] ++ [prRuns]))
+      = .accept := by
+    simp [leaseVerdict, windowGrade, seqComp, combine, combineAxis, budget, efEmits, prRuns, k,
+      Bound.known, Bound.width]
+  refine ⟨hg, fun o _ => by simp [DischargeMatrix.Discharges, hitmap, prRuns], hg, ?_⟩
+  simp [pendingAfter, afterStage, DischargeMatrix.Discharges, hitmap, efEmits, prRuns]
+
+/-! ## LoaderStep.inv_step and LoaderStep.progress -/
+
+/-- Toy primitives: bytes and digests are numbers, the digest is the identity, every
+    signature verifies, replay returns the probe, and a bundle's root is its length. -/
+def toyPrims : Prims ℕ ℕ := ⟨id, fun _ => True, fun _ x => x, List.length⟩
+
+/-- A boot record that passes L1–L5 and L7 under `toyPrims`. Each stage's adapter grades a
+    batch of rows by counting them, on a budget axis; the budget is 10 and the
+    round-off cap 1. -/
+def toyBoot (declared : Unit → Set Unit) : Boot Unit Unit ℕ ℕ where
+  raw := 0
+  rawDigest := 0
+  configCert := 0
+  envLock := 0
+  envDigest := 0
+  replayPlan := 0
+  probe := 0
+  probeOut := 0
+  seed := 1
+  ledger := []
+  declared := declared
+  adapter := fun _ rows => k rows.length
+  epsMax := 1
+  budget := fun _ => 10
+
+/-- A start state: nothing graded, no round-off, nothing written, an empty bundle with its
+    root, and the given obligations pending. -/
+def toyStart (declared : Unit → Set Unit) (pend : Multiset ℕ) : LoaderState Unit Unit ℕ ℕ ℕ :=
+  ⟨toyBoot declared, k 0, 0, ∅, [], 0, pend⟩
+
+theorem toyStart_inv (declared : Unit → Set Unit) (pend : Multiset ℕ) :
+    LoaderInv budget toyPrims (toyStart declared pend) := by
+  refine ⟨rfl, trivial, rfl, rfl, by simp [L5, toyStart, toyBoot], by simp [L6, toyStart],
+    ?_, by simp [L8, toyStart, toyBoot], ?_, rfl⟩
+  · intro st x y
+    funext i
+    ext <;> simp [toyStart, toyBoot, combine, combineAxis, budget, k, Bound.known]
+  · intro i
+    simp [toyStart, toyBoot, k, Bound.known]
+
+/-- A stage that prices one row, emits nothing, and runs with witness `()`. -/
+def oneRow : StageRun Unit Unit ℕ Unit := ⟨(), k 1, 0, ()⟩
+
+/-- Witness for `LoaderStep.inv_step` (one stage prices a row and discharges the one
+    pending obligation): the invariant before, the step, and the invariant after. -/
+theorem loader_inv_step_witness :
+    LoaderInv budget toyPrims (toyStart (fun _ => Set.univ) {1})
+      ∧ ∃ t, LoaderStep budget toyPrims anyStage (toyStart (fun _ => Set.univ) {1}) t
+        ∧ LoaderInv budget toyPrims t := by
+  refine ⟨toyStart_inv _ _, _, LoaderStep.stage _ oneRow [5] 0 7
+    (by funext i; simp [oneRow, toyStart, toyBoot, k]) (fun _ _ => Set.mem_univ _)
+    (by simp [toyStart, toyBoot])
+    (fun _ => by simp [toyStart, toyBoot, oneRow, combine, combineAxis, budget, k, Bound.known])
+    ⟨1, by simp [toyStart], by simp [DischargeMatrix.Discharges, anyStage, oneRow]⟩
+    (by simp [oneRow]), ?_⟩
+  refine ⟨rfl, trivial, rfl, rfl, by simp [L5, toyStart, toyBoot], fun _ _ => Set.mem_univ _,
+    ?_, by simp [L8, toyStart, toyBoot], ?_, rfl⟩
+  · intro st x y
+    funext i
+    ext <;> simp [toyStart, toyBoot, combine, combineAxis, budget, k, Bound.known]
+  · intro i
+    simp [toyStart, toyBoot, oneRow, combine, combineAxis, budget, k, Bound.known]
+
+/-- Mutant: SCp3's T-Row (§6.3). Its premises check I1–I5 in the old state, that the row
+    is typed and free of ⊥, and the budget, but neither I6 nor I8: `LoaderStep` without
+    `hiso` and `hround`. -/
+inductive TRowStep (M : DischargeMatrix Unit ℕ Unit) :
+    LoaderState Unit Unit ℕ ℕ ℕ → LoaderState Unit Unit ℕ ℕ ℕ → Prop
+  | stage (s : LoaderState Unit Unit ℕ ℕ ℕ) (r : StageRun Unit Unit ℕ Unit) (rows : List ℕ)
+      (ε : ENNReal) (receipt : ℕ)
+      (hprice : r.grade = s.boot.adapter r.stage rows)
+      (hbudget : ∀ i, (combine budget s.q r.grade i).hi ≤ s.boot.budget i)
+      (hdis : ∃ o ∈ s.pending, M.Discharges r o)
+      (hsmall : ∀ e ∈ r.emits, ¬ M.Discharges r e → ∃ o ∈ s.pending, M.Discharges r o ∧ e < o) :
+      TRowStep M s
+        { s with
+          q := combine budget s.q r.grade
+          eps := s.eps + ε
+          written := s.written ∪ {p | p.1 = r.stage ∧ r.grade p.2 ≠ Bound.known 0}
+          bundle := s.bundle ++ [receipt]
+          root := toyPrims.root (s.bundle ++ [receipt])
+          pending := afterStage M s.pending r }
+
+/-- A row whose debit adds round-off 5, past the cap of 1: T-Row accepts it, and L8 fails. -/
+theorem loader_inv_step_mutant :
+    ¬ ∀ s t, LoaderInv budget toyPrims s → TRowStep anyStage s t → LoaderInv budget toyPrims t := by
+  intro hc
+  obtain ⟨-, -, -, -, -, -, -, h8, -, -⟩ := hc _ _ (toyStart_inv (fun _ => Set.univ) {1})
+    (TRowStep.stage _ oneRow [5] 5 7 (by funext i; simp [oneRow, toyStart, toyBoot, k])
+      (fun _ => by simp [toyStart, toyBoot, oneRow, combine, combineAxis, budget, k, Bound.known])
+      ⟨1, by simp [toyStart], by simp [DischargeMatrix.Discharges, anyStage, oneRow]⟩
+      (by simp [oneRow]))
+  simp [L8, toyStart, toyBoot] at h8
+
+/-- Which stages SirusSC's declaration table lists: none, here. -/
+def inTable (_st : Unit) : Prop := False
+
+/-- Mutant: SirusSC's axis-leak check. `_resolve_allowed_axes` returns `None` for an
+    adapter missing from the declaration table, and `_detect_axis_leaks` then checks its
+    writes only against the state's axes, so it may write any of them: `LoaderStep`'s
+    `hiso`, waived for a stage not in the table. -/
+inductive SirusIsoStep (M : DischargeMatrix Unit ℕ Unit) :
+    LoaderState Unit Unit ℕ ℕ ℕ → LoaderState Unit Unit ℕ ℕ ℕ → Prop
+  | stage (s : LoaderState Unit Unit ℕ ℕ ℕ) (r : StageRun Unit Unit ℕ Unit) (rows : List ℕ)
+      (ε : ENNReal) (receipt : ℕ)
+      (hprice : r.grade = s.boot.adapter r.stage rows)
+      (hiso : ∀ i, r.grade i ≠ Bound.known 0 →
+        ¬ inTable r.stage ∨ i ∈ s.boot.declared r.stage)
+      (hround : s.eps + ε ≤ s.boot.epsMax)
+      (hbudget : ∀ i, (combine budget s.q r.grade i).hi ≤ s.boot.budget i)
+      (hdis : ∃ o ∈ s.pending, M.Discharges r o)
+      (hsmall : ∀ e ∈ r.emits, ¬ M.Discharges r e → ∃ o ∈ s.pending, M.Discharges r o ∧ e < o) :
+      SirusIsoStep M s
+        { s with
+          q := combine budget s.q r.grade
+          eps := s.eps + ε
+          written := s.written ∪ {p | p.1 = r.stage ∧ r.grade p.2 ≠ Bound.known 0}
+          bundle := s.bundle ++ [receipt]
+          root := toyPrims.root (s.bundle ++ [receipt])
+          pending := afterStage M s.pending r }
+
+/-- A stage missing from the table, which declared no axes, writes the one axis there
+    is, and L6 fails. -/
+theorem loader_inv_step_sirus_mutant :
+    ¬ ∀ s t, LoaderInv budget toyPrims s → SirusIsoStep anyStage s t →
+      LoaderInv budget toyPrims t := by
+  intro hc
+  obtain ⟨-, -, -, -, -, h6, -⟩ := hc _ _ (toyStart_inv (fun _ => ∅) {1})
+    (SirusIsoStep.stage _ oneRow [5] 0 7 (by funext i; simp [oneRow, toyStart, toyBoot, k])
+      (fun _ _ => Or.inl id)
+      (by simp [toyStart, toyBoot])
+      (fun _ => by simp [toyStart, toyBoot, oneRow, combine, combineAxis, budget, k, Bound.known])
+      ⟨1, by simp [toyStart], by simp [DischargeMatrix.Discharges, anyStage, oneRow]⟩
+      (by simp [oneRow]))
+  exact h6 ((), ()) (Or.inr ⟨rfl, by simp [oneRow, k, Bound.known]⟩)
+
+/-- RequiresHitmap is obligation 1 and OmegaPrecond, which ranks above it, obligation 2.
+    Only RequiresHitmap has a witness here. -/
+def hitmapOnly : DischargeMatrix Unit ℕ Unit := ⟨fun _ => (), fun o _ => o = 1⟩
+
+/-- A stage that discharges RequiresHitmap and emits OmegaPrecond. -/
+def raises : StageRun Unit Unit ℕ Unit := ⟨(), k 0, {2}, ()⟩
+
+/-- Mutant: JSG V's progress lemma, which asks each stage to discharge an obligation *or*
+    to emit only obligations smaller than ones it discharges: `LoaderStep` with
+    `hdis ∨ hsmall` for `hdis ∧ hsmall`. -/
+inductive OrStep (M : DischargeMatrix Unit ℕ Unit) :
+    LoaderState Unit Unit ℕ ℕ ℕ → LoaderState Unit Unit ℕ ℕ ℕ → Prop
+  | stage (s : LoaderState Unit Unit ℕ ℕ ℕ) (r : StageRun Unit Unit ℕ Unit) (rows : List ℕ)
+      (ε : ENNReal) (receipt : ℕ)
+      (hprice : r.grade = s.boot.adapter r.stage rows)
+      (hiso : ∀ i, r.grade i ≠ Bound.known 0 → i ∈ s.boot.declared r.stage)
+      (hround : s.eps + ε ≤ s.boot.epsMax)
+      (hbudget : ∀ i, (combine budget s.q r.grade i).hi ≤ s.boot.budget i)
+      (hprog : (∃ o ∈ s.pending, M.Discharges r o) ∨
+        ∀ e ∈ r.emits, ∃ o ∈ s.pending, M.Discharges r o ∧ e < o) :
+      OrStep M s
+        { s with
+          q := combine budget s.q r.grade
+          eps := s.eps + ε
+          written := s.written ∪ {p | p.1 = r.stage ∧ r.grade p.2 ≠ Bound.known 0}
+          bundle := s.bundle ++ [receipt]
+          root := toyPrims.root (s.bundle ++ [receipt])
+          pending := afterStage M s.pending r }
+
+/-- Σ goes from {RequiresHitmap} to {OmegaPrecond}, which is not lower. -/
+theorem loader_progress_mutant :
+    ¬ ∀ s t, OrStep hitmapOnly s t → Multiset.IsDershowitzMannaLT t.pending s.pending := by
+  intro hc
+  have h := hc _ _ (OrStep.stage (toyStart (fun _ => Set.univ) {1}) raises [] 0 7
+    (by funext i; simp [raises, toyStart, toyBoot, k]) (fun _ h => absurd rfl h)
+    (by simp [toyStart, toyBoot])
+    (fun _ => by simp [toyStart, toyBoot, raises, combine, combineAxis, budget, k, Bound.known])
+    (Or.inl ⟨1, by simp [toyStart], by simp [DischargeMatrix.Discharges, hitmapOnly, raises]⟩))
+  have hp : afterStage hitmapOnly ({1} : Multiset ℕ) raises = {2} := by
+    simp [afterStage, DischargeMatrix.Discharges, hitmapOnly, raises, Multiset.filter_singleton]
+  simp only [toyStart, hp] at h
+  obtain ⟨X, Y, Z, hZ, hM, hN, hlt⟩ := h
+  have hX : X = 0 := by
+    have hc := congrArg Multiset.card hN
+    rw [Multiset.card_add, Multiset.card_singleton] at hc
+    have := Multiset.card_pos.mpr hZ
+    exact Multiset.card_eq_zero.mp (by omega)
+  subst hX
+  rw [zero_add] at hM hN
+  obtain ⟨z, hz, hlt2⟩ := hlt 2 (by rw [← hM]; exact Multiset.mem_singleton_self 2)
+  rw [← hN, Multiset.mem_singleton] at hz
+  omega
+
+/-- Mutant: SCp3's check rules T-AdapterAttest, T-AxisIsolation, T-AdapterMono and T-Attest,
+    each written s ⇒ s (§6.3): `LoaderStep` with a step from every state to itself. -/
+theorem loader_progress_selfloop_mutant :
+    ¬ ∀ s t, (LoaderStep budget toyPrims anyStage s t ∨ t = s) →
+      Multiset.IsDershowitzMannaLT t.pending s.pending := by
+  intro hc
+  obtain ⟨X, Y, Z, hZ, hM, hN, hlt⟩ :=
+    hc (toyStart (fun _ => Set.univ) {1}) (toyStart (fun _ => Set.univ) {1}) (Or.inr rfl)
+  have hX : X = 0 := by
+    have hc := congrArg Multiset.card hN
+    simp only [toyStart, Multiset.card_add, Multiset.card_singleton] at hc
+    have := Multiset.card_pos.mpr hZ
+    exact Multiset.card_eq_zero.mp (by omega)
+  subst hX
+  simp only [toyStart, zero_add] at hM hN
+  obtain ⟨z, hz, hlt1⟩ := hlt 1 (by rw [← hM]; exact Multiset.mem_singleton_self 1)
+  rw [← hN, Multiset.mem_singleton] at hz
+  omega
+
+/-- OmegaPrecond (2) pending; a stage discharges it and emits RequiresHitmap (1), which
+    ranks below it. -/
+def onlyTwo : DischargeMatrix Unit ℕ Unit := ⟨fun _ => (), fun o _ => o = 2⟩
+def lowers : StageRun Unit Unit ℕ Unit := ⟨(), k 0, {1}, ()⟩
+
+/-- Witness for `LoaderStep.progress` (the stage replaces OmegaPrecond by RequiresHitmap):
+    the step and the conclusion. -/
+theorem loader_progress_witness :
+    ∃ t, LoaderStep budget toyPrims onlyTwo (toyStart (fun _ => Set.univ) {2}) t
+      ∧ Multiset.IsDershowitzMannaLT t.pending (toyStart (fun _ => Set.univ) {2}).pending := by
+  refine ⟨_, LoaderStep.stage _ lowers [] 0 7
+    (by funext i; simp [lowers, toyStart, toyBoot, k]) (fun _ h => absurd rfl h)
+    (by simp [toyStart, toyBoot])
+    (fun _ => by simp [toyStart, toyBoot, lowers, combine, combineAxis, budget, k, Bound.known])
+    ⟨2, by simp [toyStart], by simp [DischargeMatrix.Discharges, onlyTwo, lowers]⟩
+    (fun e he _ => ⟨2, by simp [toyStart], by simp [DischargeMatrix.Discharges, onlyTwo, lowers],
+      by simp [lowers] at he; omega⟩), ?_⟩
+  have hp : afterStage onlyTwo ({2} : Multiset ℕ) lowers = {1} := by
+    simp [afterStage, DischargeMatrix.Discharges, onlyTwo, lowers, Multiset.filter_singleton]
+  simp only [toyStart, hp]
+  exact ⟨0, {1}, {2}, by simp, by simp, by simp, by simp⟩
+
+/-! ## threads_spec -/
+
+/-- Mutant: v1's residual check alone. Each later stage is checked against the residual
+    the earlier ones left, but no stage before the last is checked to fit. -/
+def ResidualOnly : ENNReal → List ENNReal → Prop
+  | _, [] => True
+  | θ, [x] => x ≤ θ
+  | θ, x :: y :: rest => ResidualOnly (residual θ x) (y :: rest)
+
+/-- θ = 1, stages 2 then 0: stage one overspends, the residual truncates to 0, and stage
+    two's 0 still fits it. -/
+theorem threads_spec_mutant :
+    ¬ ∀ θ : ENNReal, θ ≠ ⊤ → ∀ xs : List ENNReal, (ResidualOnly θ xs ↔ xs.sum ≤ θ) := by
+  intro hc
+  have := (hc 1 ENNReal.one_ne_top [2, 0]).mp (by simp [ResidualOnly])
+  norm_num at this
+
+/-- Witness for `threads_spec` (θ = 10 with stages 3 then 4, which fit; θ = 1 with stages
+    2 then 0, where stage one overspends): the hypothesis and the conclusion for each. -/
+theorem threads_spec_witness :
+    (10 : ENNReal) ≠ ⊤ ∧ (Threads 10 [3, 4] ↔ ([3, 4] : List ENNReal).sum ≤ 10)
+      ∧ (1 : ENNReal) ≠ ⊤ ∧ (Threads 1 [2, 0] ↔ ([2, 0] : List ENNReal).sum ≤ 1) := by
+  refine ⟨by simp, ?_, ENNReal.one_ne_top, ?_⟩
+  · have h4 : (4 : ENNReal) ≤ residual 10 3 :=
+      (ENNReal.le_sub_iff_add_le_left (by norm_num) (by norm_num)).mpr (by norm_num)
+    exact iff_of_true ⟨by norm_num, h4, trivial⟩ (by norm_num)
+  · simp only [Threads, List.sum_cons, List.sum_nil]
+    constructor
+    · intro h; norm_num at h
+    · intro h; norm_num at h
+
 end JSG.Tests.Mutants
