@@ -117,7 +117,13 @@ Proved in #43.
 
 ## `LoaderStep.progress`
 
-*Not yet proved.*
+Proved in #46.
+
+1. In the Dershowitz–Manna order, one multiset is below another when it removes something and every item it adds ranks below something removed.
+2. After the step, what is pending is what was pending plus what the stage emits, minus everything the stage clears (`afterStage`).
+3. Split it that way: the items kept, the emitted items that stay, and the cleared items, which are what's removed.
+4. The cleared items include the stage's own ticket, which `hticket` says was pending, so something is removed.
+5. Every emitted item is an obligation, and every obligation ranks below every ticket (`WithTop.coe_lt_top`), so each ranks below the ticket the stage cleared.
 
 ## `threads_spec`
 
