@@ -24,7 +24,13 @@ Proved in #53.
 
 ## `kl_fisher_local`
 
-*Not yet proved.*
+Proved in #54.
+
+1. Along the ray t ↦ tθ, the log-partition function is the one-dimensional cgf of ⟪θ, T⟫, and the KL divergence of P\_θ from P₀ is ψ'(1) − ψ(1). That comes from the log-likelihood ratio of a tilted measure (`klDiv_tilted_self`).
+2. Write m(t) = ψ'(t) = ⟪θ, κ(tθ)⟫. By `hlip`, its derivative ⟪θ, H(tθ)θ⟫ stays within δt‖θ‖² of ‖θ‖², where δ = L‖θ‖, and that pins m(t) between ‖θ‖²(t − δt²/2) and ‖θ‖²(t + δt²/2).
+3. Cauchy's mean value theorem, applied to t·m(t) − ψ(tθ) and m(t)²/2, gives KL = ½m(1)²·ξ/m(ξ) for some ξ in (0, 1). The bounds on m put ξ/m(ξ) between 1/(1 + δ/2) and 1/(1 − δ/2), divided by ‖θ‖² (`kl_ray_bound`).
+4. That controls κ(θ)'s component along θ. Cauchy–Schwarz caps m(1)² by ‖θ‖²‖κ(θ)‖², and the mean value inequality keeps κ(θ) within L‖θ‖² of θ, which bounds the rest.
+5. A polynomial inequality then gives both halves, for every ε ≤ 1 (`kl_poly`, `kl_algebra`). The bound is in whitened coordinates; read in raw ones, as jsg-lab computes its radius, it fails (QUEUE.md, Q9).
 
 ## `dro_envelope`
 
