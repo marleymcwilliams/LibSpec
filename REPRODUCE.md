@@ -7,7 +7,12 @@ This takes a fresh machine through building everything, running the checks, and 
 - **git**, and network access to GitHub. The statements check asks GitHub for the latest `statements-v*` tag.
 - **elan**, the Lean toolchain manager ([installation](https://lean-lang.org/install/)). It installs the pinned Lean, v4.34.1 from `lean/lean-toolchain`, the first time you run `lake`.
 - **bash.** On Windows, use Git Bash, which comes with Git for Windows.
-- **About 10 GB of free disk**, since Mathlib and its prebuilt cache take about 7.5 GB, and **at least 8 GB of RAM**. A Lean process that loads Mathlib uses several GB, and on Windows about 8 GB each.
+- **About 10 GB of free disk**, since Mathlib and its prebuilt cache take about 7.5 GB, and **at least 8 GB of RAM**. These figures were measured on the 16 GB Windows machine this was built on:
+  - **A command-line build** of one module that imports Mathlib took about 2.5–3.5 GB at its peak, measured as the drop in available memory while it ran.
+  - **An editor tab** costs more. Each VS Code Lean worker with such a file open held about 8 GB.
+  - **Each project's Lean server** took about 2 GB more, even with no file loaded.
+
+  So close other Lean tabs before you build.
 - **For Comparator only:** Linux, with Go, Python 3 and, for the full-strength run, Rust and a systemd user manager. On Windows, use WSL or the GitHub Actions workflow below.
 
 ## 1. Clone

@@ -39,4 +39,4 @@ CI shows that the proofs conform to the statements. Whether the statements say t
 
 ## Credits
 
-LibSpec is Marley McWilliams's work, written with majority credit to AI assistance (Claude Code).
+LibSpec is Marley McWilliams's project. Marley wrote or approved every frozen statement and proved three of them; AI assistants (Claude Code and Claude) wrote the other proofs, the checks and most of the guide.
