@@ -9,6 +9,10 @@ Decisions Claude Code made without asking, because they are reversible and don't
 - **The queue:** Q8–Q10 are moved to Answered, as answered by tagging `statements-v3` at the draft's head. That keeps at most three entries open.
 - **The data:** openai/math is pinned at `7ef5c0c`, and only its `README.md`, `history.md`, `CONTENTS.md`, `lean/formalization.yaml`, a few `lean/docs/` pages, a challenge config and the three withdrawal notices were read, as data. None of its code was run.
 - **BLT:** its OS comes from its own documentation, CentOS 7.4. Lean's glibc requirement, 2.26 or later on x86-64, comes from the Lean reference's supported-platforms page.
+- **Marley's answers:** Q11 (the first five rows of twins), Q12 (θ = 0, no leases, the recommended sets, and two additions) and Q13 (GitHub Actions; Marley looks into BLT) are recorded as answered. Marley confirmed the reading of Q8–Q10.
+- **Carry-over (Q14):** Q12's answer asked for a proposal, axis by axis, of whether a dependency's doubt carries over. It's in §3 with its reasons, and queued as Q14, since it sets Norm-layer values. `dependency_withdrawn` carries even past a complete formalization, so the must-fail test, which sets every unknown axis to 0, can't excuse it.
+- **Reports:** the proposal now uses Q12's wording, "not accepted: evidence incomplete on …". The spec's `Decision.reject` keeps its frozen name.
+- **The `decide` claim, checked:** a scratch file with seven floor axes showed that the kernel decides `xverdict` at θ = 0, with a withdrawn axis combined in, using only the three axioms. It gets stuck on subtraction in `WithTop ℚ≥0`, so widths and residuals need proofs, not `decide`. §1 says so.
 
 ### Phase 6: the release work (#56, #57, #58)
 - **Cleanup:** after #55, the `wt-v3` worktree was removed, its `.lake/packages` junction first, and `guide/milestone-3-gate` was deleted. Only `main` remains.
