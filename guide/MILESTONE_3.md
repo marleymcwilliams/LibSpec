@@ -14,7 +14,13 @@ Proved by Marley (#51).
 
 ## `cvar_tail_to_level`
 
-*Not yet proved.*
+Proved in #53.
+
+1. Suppose instead that more than α of the mass has X > ε. Then ε is finite, since nothing exceeds ⊤.
+2. The tails {X > ε + 1/n} grow to {X > ε}, so by continuity from below one of them, at a level s above ε, still holds more than α of the mass.
+3. Every level t then gives t + E[(X − t)₊]/α ≥ s. That's clear if t ≥ s. If t < s, Markov's inequality gives E[(X − t)₊] ≥ (s − t)·μ{X > s}, which is at least (s − t)·α.
+4. So the CVaR, the infimum over all levels, is at least s, which is above ε. That contradicts h.
+5. The threshold stays ε throughout, which is the claim that C₀ = 1. The strict tail matters: a loss equal to ε everywhere has CVaR ε with all its mass at ε, which is why Lemma 9.1's "E < ε\_CKN" fails.
 
 ## `kl_fisher_local`
 
