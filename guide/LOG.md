@@ -4,6 +4,26 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-28
 
+### Phase 6: the release work (#56, #57, #58)
+- **Cleanup:** after #55, the `wt-v3` worktree was removed, its `.lake/packages` junction first, and `guide/milestone-3-gate` was deleted. Only `main` remains.
+- **Three PRs, one per item:**
+  - **#56** is the full-strength Comparator run;
+  - **#57** gives every layer-map row a status and a pointer;
+  - **#58** is README and REPRODUCE.
+
+  This entry rides on #58, so that the three don't conflict in this file. Merge them in that order. Nothing is tagged.
+- **Full-strength Comparator (#56):**
+  - **Trigger:** a `workflow_dispatch` job. GitHub won't start a workflow by hand until it's on the default branch, so the job also runs on any pull request that changes its own files, and #56 tested it that way. Its runs passed.
+  - **Pipefail:** Marley caught that the step pipes the script into `tee`, and a step without `shell:` runs with no pipefail, so a failing script would still show green. The step now has `shell: bash`. A throwaway branch, since deleted, made the script exit 1: the job stayed green before the fix and went red after it. The three earlier runs still count, because their logs end with the script's own pass line, which it prints only if every step succeeded.
+  - **Sandbox:** the only things built outside Comparator's sandbox are Mathlib's cache and the trusted challenge. The theorem list comes from the challenge, so all 26 frozen theorems must be proved.
+  - **nanoda** is pinned to nanoda_lib 0.4.30 (`d0a02cc`).
+  - **Wrapper:** the run uses `--pipe --wait` in place of the README's `--pty`, since the job has no terminal, and adds `NoNewPrivileges=yes`, since the runner's user can `sudo`. Before Comparator runs, the script shows that an AF_UNIX socket opens outside the wrapper and is refused inside it, and that `sudo` gains nothing inside it.
+- **Layer map (#57):** "Lean status" becomes "Status", and a new "Pointer" column links each row to its proof file and milestone note, or to its reason for being out of scope. The Proved rows keep their approved wording, and a script checked every link.
+- **README and REPRODUCE (#58):**
+  - REPRODUCE walks a fresh machine through `lake exe cache get`, `lake build`, `scripts/check.sh`, leanchecker and both Comparator runs, and says what each prints.
+  - It records the full-strength runs.
+  - Its disk figure comes from measuring Mathlib's packages: 7.5 GB.
+
 ### Milestone 3 merged and its gate recorded (#55)
 - **Branches:** with #49 and #50 merged, `guide/milestone-2-gate` and `statements/v3-proposal` were deleted, at Marley's request. The `statements-v3` tag keeps its commit, 0cd74ec.
 - **Merges:** the stack went in in order, #51–#54. Each PR after the first was retargeted to `main` before the branch under it was deleted, and the four branches were deleted after the last merge. #51 lands Marley's `dwell_lower_bound` word for word.
