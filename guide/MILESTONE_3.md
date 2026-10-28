@@ -22,7 +22,13 @@ Proved by Marley (#51).
 
 ## `dro_envelope`
 
-*Not yet proved.*
+Proved in #52.
+
+1. Near ρ₀, η\*(ρ) attains the infimum, so the dual value there is exactly η\*(ρ)·ρ + g(η\*(ρ)) (`ciInf_le` one way, `le_ciInf` the other).
+2. Using η\*(ρ₀) as the multiplier at ρ gives v(ρ) − v(ρ₀) ≤ η\*(ρ₀)(ρ − ρ₀): the line through v(ρ₀) with slope η\*(ρ₀) stays above v.
+3. Using η\*(ρ) as the multiplier at ρ₀ gives v(ρ) − v(ρ₀) ≥ η\*(ρ)(ρ − ρ₀).
+4. So v(ρ) − v(ρ₀) − η\*(ρ₀)(ρ − ρ₀) is at most |η\*(ρ) − η\*(ρ₀)|·|ρ − ρ₀|. Continuity makes the first factor as small as we like, which is the little-o that `hasDerivAt_iff_isLittleO` asks for.
+5. So the dual's slope in ρ is the minimizing multiplier. Every dual of this shape satisfies it, a wrong one included, so it doesn't show that the dual is the worst-case risk (QUEUE.md, Q10).
 
 ## Closing note
 
