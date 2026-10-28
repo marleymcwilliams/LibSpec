@@ -71,17 +71,17 @@ Eleven components can be proved in Lean now and five more with analysis; the oth
 
 | Component | Layer | Lean status | Source |
 | --- | --- | --- | --- |
-| Graded values: combine laws, interchange equation, residual threading | Lean now | Proved (`combine_comm`, `combine_assoc`, `interchange`); residual threading only for one budget axis and two stages (`residual_spec`). Stub for any number of stages, an overspent one included (`threads_spec`) | JSG V §2 |
+| Graded values: combine laws, interchange equation, residual threading | Lean now | Proved (`combine_comm`, `combine_assoc`, `interchange`); residual threading for one budget axis, through any number of stages, an overspent one included (`residual_spec`, `threads_spec`) | JSG V §2 |
 | Receipt integrity: replaying the addressed content yields the grade | Lean now | Not started | SIRUS spec §0.5; JSG V §6 |
 | Verdict: an axis over its threshold rejects, unknowns included; complete evidence within θ accepts | Lean now | Proved (`verdict_sound`, `verdict_complete`) | SIRUS spec §1.2–1.3 |
 | Noninterference: metrics cannot change the grade | Lean now | Proved for noninterfering graders (`no_flip`); no real grader shown noninterfering yet | SIRUS spec §1.4 |
-| Loader: invariant preserved; Dershowitz–Manna progress | Lean now | Stub, for any Loader and for a concrete one whose invariant is L1–L10 | MDmaster SCp3; JSG V §3 |
-| Frontier charge: additive under regrouping; chattering never free | Lean now | Stub | PDE §10; MDmaster SCp2 |
-| Policy lattice: expiry tightens; bridge to acceptance | Lean now | Stub | JSG IV, Governance as Code |
+| Loader: invariant preserved; Dershowitz–Manna progress | Lean now | Proved for any Loader (`Loader.safe`, `Loader.terminates`) and for a concrete one whose invariant is L1–L10 (`LoaderStep.inv_step`, `LoaderStep.progress`), built as a `Loader` in `Tests/ConcreteLoader.lean`; generic in its cryptographic primitives | MDmaster SCp3; JSG V §3 |
+| Frontier charge: additive under regrouping; chattering never free | Lean now | Proved (`charge_append`, `charge_chatter`) | PDE §10; MDmaster SCp2 |
+| Policy lattice: expiry tightens; bridge to acceptance | Lean now | Proved (`expiry_tightens`, by Marley; `bridge`) | JSG IV, Governance as Code |
 | Calibration: must-pass accepted, must-fail rejected, sets disjoint | Lean now | Proved for the test sets in `Calibration.lean` (`verdict_calibrated`) | Core v2; Operational Playbook (must-fail coverage) |
 | Capped governance fold: bounded, with a vacuous nightly check | Lean now | Proved (`fold_check_vacuous`) | JSG IV aggregator lemma |
-| Must-fail CI gate: accepted histories keep every unsigned failure class | Lean now | Stub | Draft0–7 |
-| Typed obligations (authority and witness); unknowns lease as interval width ≤ β | Lean now | Stub | JSG V §3; PDE §2.2, I4b |
+| Must-fail CI gate: accepted histories keep every unsigned failure class | Lean now | Proved for the gate's rule (`mfGate_signed`); CI doesn't yet run the gate on real histories | Draft0–7 |
+| Typed obligations (authority and witness); unknowns lease as interval width ≤ β | Lean now | Proved (`pass_sound`, `pass_complete`, `lease_sound`, `lease_complete`) | JSG V §3; PDE §2.2, I4b |
 | CVaR tail-to-level step (C₀ = 1) | Lean + analysis | Not started | PDE Lemma 9.1 |
 | No-Zeno dwell bound, corrected | Lean + analysis | Stub | JSG I Lemma 1 |
 | Local KL–Fisher quadratic bound | Lean + analysis | Not started | JSG I FIM bound |
@@ -716,7 +716,7 @@ The rails are decided and persistent weakenings are deferred ([decisions/RAILS.m
 - [x] Decide how persistent weakenings are handled: not yet. The choice between refill rate ρ, a cap on each weakening's cumulative duration and renewal cost escalating by a factor γ moves to the milestone that states the token bucket ([decisions/RAILS.md](decisions/RAILS.md))
 - [ ] Freeze the glossary and run one rename pass: 𝒰 for Ω, proof\_surface, Amber, invariant prefixes, combine for join
 - [x] Lean milestone 1: graded values, verdict and completeness, residuals, noninterference, calibration, fold vacuity ([MILESTONE_1.md](MILESTONE_1.md))
-- [ ] Lean milestone 2: typed obligations, Loader safety and progress, frontier charge, policy lattice, the must-fail gate
+- [x] Lean milestone 2: typed obligations, Loader safety and progress, frontier charge, policy lattice, the must-fail gate ([MILESTONE_2.md](MILESTONE_2.md))
 - [ ] Lean milestone 3 (analysis): CVaR tail-to-level, the corrected dwell bound, then the local KL–Fisher bound
 - [ ] CI: fail the build on any `b3:…` placeholder, on any must-fail removed without a signed weakening, and on any theorem without a mutant
 - [ ] Recover the SIRUS\_game runtime note and remove the SIRUS-algorithm sections from MDmaster

@@ -151,6 +151,42 @@ Built in #48, in `lean/JSG/Tests/ConcreteLoader.lean`.
 4. `concrete_terminates` applies `Loader.terminates`. What is pending is well-founded whenever the obligations are, since every ticket ranks above every obligation, so the concrete Loader has no infinite run.
 5. `toy_safe` and `toy_terminates` apply both to the toy window in `Tests/Mutants.lean`. The Loader is concrete in its rules and checks, and generic in its cryptographic primitives (QUEUE.md, Q7): the theorems hold for any digest, signature check, replay and Merkle root.
 
+## Gate
+
+How each item of ROADMAP's "Gate for every milestone" is met. The evidence for the first five is `main`'s CI run on the merge of #48: [run 40604363053](https://github.com/marleymcwilliams/LibSpec/actions/runs/40604363053).
+
+- **`lake build` is green, with no `sorry` in the milestone's proof file.** The build and leanchecker passed, and `check.sh`'s forbidden-token scan of `Proofs/`, `Lemmas/` and `Tests/` printed "ok".
+- **`#print axioms` on each theorem lists only `propext`, `Classical.choice` and `Quot.sound`.** The axiom audit's sweep (203 theorems in 6 modules) printed each of the fourteen within those three: `Loader.safe` [propext, Quot.sound]; `Loader.terminates` [propext, Classical.choice, Quot.sound]; `charge_append` [propext, Classical.choice, Quot.sound]; `charge_chatter` [propext, Classical.choice, Quot.sound]; `expiry_tightens` [none]; `bridge` [propext, Classical.choice, Quot.sound]; `mfGate_signed` [propext, Classical.choice, Quot.sound]; `lease_sound` [propext, Classical.choice, Quot.sound]; `lease_complete` [propext, Classical.choice, Quot.sound]; `pass_sound` [propext, Classical.choice, Quot.sound]; `pass_complete` [propext, Classical.choice, Quot.sound]; `LoaderStep.inv_step` [propext, Classical.choice, Quot.sound]; `LoaderStep.progress` [propext, Classical.choice, Quot.sound]; `threads_spec` [propext, Classical.choice, Quot.sound].
+- **The statements check confirms the frozen files are unchanged.** It printed "ok (statements-v2): lean/JSG/Statements.lean lean/JSG/Defs.lean lean/lean-toolchain lean/lake-manifest.json lean/lakefile.toml".
+- **Comparator confirms each proof against its frozen statement.** It accepted `JSG.Solution` against `JSG.Statements` with only the three permitted axioms ("Your solution is okay!"). Its not-yet-proved list names none of Milestone 2's theorems: `dwell_lower_bound`.
+- **Each theorem's named mutant is proved to violate it, and every must-pass control is accepted.**
+  - **Mutants**, in `Tests/Mutants.lean`: `charge_append_mutant`, `charge_chatter_mutant` and `charge_chatter_scp2_mutant`, `expiry_tightens_mutant`, `bridge_mutant`, `mfGate_signed_mutant`, `lease_sound_mutant` and `lease_sound_widthsOnly_mutant`, `lease_complete_mutant`, `pass_sound_mutant`, `pass_complete_mutant`, `loader_inv_step_mutant` and `loader_inv_step_sirus_mutant`, `loader_progress_mutant` and `loader_progress_selfloop_mutant`, and `threads_spec_mutant`.
+  - **`Loader.safe` and `Loader.terminates`:** both hold for every `Loader`, so their mutants are step relations that can't be built as one: `loader_safe_mutant`, `loader_terminates_mutant` and `retry_breaks_progress` (STATEMENTS_REVIEW.md). `Tests/ConcreteLoader.lean` (#48) applies both to the concrete Loader (`concrete_safe`, `concrete_terminates`), and to the toy window in `Tests/Mutants.lean` (`toy_safe`, `toy_terminates`).
+  - **Must-pass**, in `Tests/Mutants.lean`: each theorem's witness (`loader_safe_witness` to `threads_spec_witness`), and `loader_runs_window`, which runs a two-stage window through the Loader from boot until it passes. `empty_run_fails` is its must-fail control. Milestone 1's controls in `Tests/Calibration.lean` still pass.
+  - All of these build in that run, and the audit swept them, each within the three axioms.
+- **Layer-map rows are set to Proved, and the guide's text names the Lean theorem.** In #49, MASTER_GUIDE's six Milestone 2 rows use your approved wording, which names their theorems and notes each row's limits.
+- **A short note, in your words.** It follows.
+
 ## Closing note
 
-*To come, in your words, when the gate is met.*
+All fourteen Milestone 2 theorems are proved, `expiry_tightens` by me. Comparator accepts each one against `statements-v2`, and none uses an axiom beyond `propext`, `Classical.choice` and `Quot.sound`. Each has a mutant proved to break it, except Loader.safe and Loader.terminates, which hold for every Loader; their mutants are step relations that can't be built as one.
+
+**What is now proved**
+- Any Loader keeps its invariant along every run, and has no infinite run when its obligations can't shrink forever (`Loader.safe`, `Loader.terminates`).
+- The concrete Loader preserves SCp3's ten checks, L1–L10, at every step and lowers what is pending (`LoaderStep.inv_step`, `LoaderStep.progress`). It is built as a `Loader` in `Tests/ConcreteLoader.lean` (#48), so both general theorems apply to it, and a two-stage window runs through it from boot and passes.
+- Frontier charge adds up over concatenation, and chattering costs twice a single jump (`charge_append`, `charge_chatter`).
+- Expiring a weakening only tightens policy, and a stricter dial never admits more (`expiry_tightens`, `bridge`).
+- Every failure class that leaves the must-fail set leaves in a signed step (`mfGate_signed`).
+- In a passing window, every stage has run, and every obligation was discharged by its authority with a witness of its type (`pass_sound`). A window passes when its grade fits and its last stage clears what's left (`pass_complete`).
+- An axis over its threshold or wider than its lease rejects the grade, and a grade with every axis within both is accepted (`lease_sound`, `lease_complete`).
+- Threading a finite budget through any number of stages accepts exactly when their total fits, an overspent stage included (`threads_spec`).
+
+**What it does not show**
+- That the cryptography holds. The Loader is generic in its primitives (Q7): whether digests collide, signatures verify or replays reproduce is the CI layer's question. L1–L5 and L7 are checked once at boot, and no step changes what they check.
+- That stages run in JSG V's order. The Loader doesn't enforce it.
+- What a stopped run means. The Loader has no accept rule or halt certificate yet.
+- Completeness for every passing window. `pass_complete` needs the last stage to clear everything, so a gate that insisted on that would still satisfy it.
+- Residual threading for whole grades. `threads_spec` covers one budget axis at a time.
+- That CI runs the must-fail gate on real histories. Only its rule is proved.
+- Receipt integrity and the token bucket, which wait for a later version (Q6).
+- That the statements say what I mean. CI shows the proofs conform to them; whether they're the right statements is my judgment, not Lean's.

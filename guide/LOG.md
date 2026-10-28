@@ -4,6 +4,13 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-27
 
+### Milestone 2 merged and its gate recorded (#49)
+- **Merges:** with `statements-v2` tagged and #33 merged, the stack went in in order, #34–#48. Each PR after the first was retargeted to `main` before the branch under it was deleted, so none was closed, and the fifteen branches were deleted after the last merge. #34 lands Marley's `expiry_tightens` word for word. It also touches `Solution.lean`, which isn't on CLAUDE.md's list, so I merged it with the rest.
+- **Proof order:** Marley's `expiry_tightens` first, since its PR creates the proof file, then mine, easiest first. The seven v2 proofs come from the scratch provability check; the six v1 proofs are new.
+- **The concrete Loader is a test file (#48):** a proof file may restate only frozen theorems, because Comparator checks every theorem in `Proofs/`, and `Lemmas/` shouldn't depend on proofs. So `concrete`, its `Loader.safe` and `Loader.terminates` corollaries, and the instance that makes what is pending well-founded when the obligations are, all live in `Tests/ConcreteLoader.lean`.
+- **Gate:** `guide/MILESTONE_2.md` records how each gate item is met against `main`'s CI run on #48's merge, and carries Marley's closing note verbatim. MASTER_GUIDE's six Milestone 2 rows use Marley's approved wording, "Lean milestone 2" is ticked, and ROADMAP's Milestone 2 note is marked done.
+- **Branches:** `statements/v2-proposal` deleted, at Marley's request. The `statements-v2` tag keeps its commit, f05831f.
+
 ### `statements-v2` revised after Marley's review (#33, draft)
 - **Queue:** Marley answered Q5, Q6 and Q7 yes, as recommended.
 - **Leases:** `lease_breach` is widened into `lease_sound`: an axis over its threshold, or wider than its lease, rejects the grade. A gate that checks only widths satisfied both lease theorems, yet accepted [5, 5] under θ = 1; it is now `lease_sound`'s second mutant. `lease_complete` assumes `(g i).hi ≤ θ i` in place of `lo + β ≤ θ`. That's a stronger theorem, and `pointsOnly` still fails it.
