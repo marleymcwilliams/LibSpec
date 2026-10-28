@@ -169,7 +169,7 @@ How each item of ROADMAP's "Gate for every milestone" is met. The evidence for t
 
 ## Closing note
 
-All fourteen Milestone 2 theorems are proved, `expiry_tightens` by me. Comparator accepts each one against `statements-v2`, and none uses an axiom beyond `propext`, `Classical.choice` and `Quot.sound`. Each has a mutant proved to break it.
+All fourteen Milestone 2 theorems are proved, `expiry_tightens` by me. Comparator accepts each one against `statements-v2`, and none uses an axiom beyond `propext`, `Classical.choice` and `Quot.sound`. Each has a mutant proved to break it, except Loader.safe and Loader.terminates, which hold for every Loader; their mutants are step relations that can't be built as one.
 
 **What is now proved**
 - Any Loader keeps its invariant along every run, and has no infinite run when its obligations can't shrink forever (`Loader.safe`, `Loader.terminates`).
