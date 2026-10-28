@@ -25,6 +25,61 @@ theorem dwell_lower_bound {d : ℝ → ℝ} {Smax r t₁ t₂ : ℝ} (hS : 0 < S
   rw [div_le_iff₀ hS]
   linarith [le_abs_self (2 * r)]
 
+theorem cvar_tail_to_level (μ : Measure Ω) (α : ENNReal) {X : Ω → ENNReal}
+    (hX : AEMeasurable X μ) {ε : ENNReal} (h : cvar μ α X ≤ ε) :
+    μ {ω | ε < X ω} ≤ α := by
+  by_contra hlt
+  rw [not_le] at hlt
+  have hε : ε ≠ ⊤ := by
+    rintro rfl
+    simp at hlt
+  -- the levels ε + 1/n increase to ε from above, so their tails increase to ε's
+  have hmono : Monotone fun n : ℕ => {ω | ε + (n : ENNReal)⁻¹ < X ω} := by
+    intro m n hmn ω hω
+    change ε + (n : ENNReal)⁻¹ < X ω
+    refine lt_of_le_of_lt ?_ (show ε + (m : ENNReal)⁻¹ < X ω from hω)
+    gcongr
+  have hU : ⋃ n : ℕ, {ω | ε + (n : ENNReal)⁻¹ < X ω} = {ω | ε < X ω} := by
+    ext ω
+    rw [Set.mem_iUnion]
+    change (∃ n : ℕ, ε + (n : ENNReal)⁻¹ < X ω) ↔ ε < X ω
+    constructor
+    · rintro ⟨n, hn⟩
+      exact lt_of_le_of_lt le_self_add hn
+    · intro hω
+      obtain ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt (tsub_pos_of_lt hω).ne'
+      exact ⟨n, by rwa [lt_tsub_iff_left] at hn⟩
+  have htend := tendsto_measure_iUnion_atTop (μ := μ) hmono
+  rw [hU] at htend
+  obtain ⟨n, hn⟩ := (htend.eventually (lt_mem_nhds hlt)).exists
+  simp only [Function.comp_apply] at hn
+  set s := ε + (n : ENNReal)⁻¹ with hs
+  have hεs : ε < s := ENNReal.lt_add_right hε (ENNReal.inv_ne_zero.2 (ENNReal.natCast_ne_top n))
+  -- every level t gives at least s
+  have hall : ∀ t : ENNReal, s ≤ t + (∫⁻ ω, (X ω - t) ∂μ) / α := by
+    intro t
+    rcases le_or_gt s t with hst | hts
+    · exact hst.trans le_self_add
+    · have hsub : {ω | s < X ω} ⊆ {ω | s - t ≤ X ω - t} := by
+        intro ω hω
+        exact tsub_le_tsub_right (show s < X ω from hω).le t
+      have hint : (s - t) * μ {ω | s < X ω} ≤ ∫⁻ ω, (X ω - t) ∂μ :=
+        calc (s - t) * μ {ω | s < X ω} ≤ (s - t) * μ {ω | s - t ≤ X ω - t} := by
+              gcongr
+          _ ≤ ∫⁻ ω, (X ω - t) ∂μ :=
+              mul_meas_ge_le_lintegral₀ (hX.sub aemeasurable_const) (s - t)
+      have hp : 1 ≤ μ {ω | s < X ω} / α := by
+        rw [ENNReal.le_div_iff_mul_le (Or.inr (ne_bot_of_gt hn)) (Or.inl hn.ne_top), one_mul]
+        exact hn.le
+      calc s = t + (s - t) := (add_tsub_cancel_of_le hts.le).symm
+        _ ≤ t + (s - t) * μ {ω | s < X ω} / α := by
+          gcongr
+          calc s - t = (s - t) * 1 := (mul_one _).symm
+            _ ≤ (s - t) * (μ {ω | s < X ω} / α) := by gcongr
+            _ = (s - t) * μ {ω | s < X ω} / α := (mul_div_assoc _ _ _).symm
+        _ ≤ t + (∫⁻ ω, (X ω - t) ∂μ) / α := by gcongr
+  exact absurd (h.trans_lt hεs) (not_lt.2 (le_iInf hall))
+
 theorem dro_envelope (S : Set ℝ) (g : ℝ → ℝ) (ηstar : ℝ → ℝ) {ρ₀ : ℝ}
     (hmin : ∀ᶠ ρ in nhds ρ₀, ηstar ρ ∈ S ∧ ∀ η ∈ S, ηstar ρ * ρ + g (ηstar ρ) ≤ η * ρ + g η)
     (hcont : ContinuousAt ηstar ρ₀) :
