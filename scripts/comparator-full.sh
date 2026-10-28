@@ -16,6 +16,7 @@
 # with a systemd user manager, and comparator, lean4export, landrun and nanoda_bin on PATH
 # (scripts/build-comparator-tools.sh <dest> --with-nanoda).
 set -euo pipefail
+echo "THROWAWAY: failing on purpose, to test the job reports it"; exit 1
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 lean_dir="$root/lean"
