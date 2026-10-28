@@ -13,7 +13,8 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
   This entry rides on #58, so that the three don't conflict in this file. Merge them in that order. Nothing is tagged.
 - **Full-strength Comparator (#56):**
-  - **Trigger:** a `workflow_dispatch` job. GitHub won't start a workflow by hand until it's on the default branch, so the job also runs on any pull request that changes its own files, and #56 tested it that way. All three runs passed.
+  - **Trigger:** a `workflow_dispatch` job. GitHub won't start a workflow by hand until it's on the default branch, so the job also runs on any pull request that changes its own files, and #56 tested it that way. Its runs passed.
+  - **Pipefail:** Marley caught that the step pipes the script into `tee`, and a step without `shell:` runs with no pipefail, so a failing script would still show green. The step now has `shell: bash`. A throwaway branch, since deleted, made the script exit 1: the job stayed green before the fix and went red after it. The three earlier runs still count, because their logs end with the script's own pass line, which it prints only if every step succeeded.
   - **Sandbox:** the only things built outside Comparator's sandbox are Mathlib's cache and the trusted challenge. The theorem list comes from the challenge, so all 26 frozen theorems must be proved.
   - **nanoda** is pinned to nanoda_lib 0.4.30 (`d0a02cc`).
   - **Wrapper:** the run uses `--pipe --wait` in place of the README's `--pty`, since the job has no terminal, and adds `NoNewPrivileges=yes`, since the runner's user can `sudo`. Before Comparator runs, the script shows that an AF_UNIX socket opens outside the wrapper and is refused inside it, and that `sudo` gains nothing inside it.
