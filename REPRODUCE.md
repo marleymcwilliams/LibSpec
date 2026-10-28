@@ -106,10 +106,11 @@ The script differs from the README's command in two ways, both for running unatt
 
 ## Full-strength runs
 
-The runs so far came from #56, which added the workflow, before it was merged. Each checked `main`'s proofs, since #56 changes no Lean file. A run started by hand on `main` gets a row here too.
+The runs so far came from #56, which added the workflow, before it was merged. Each checked `main`'s proofs, since #56 changes no Lean file. A run started by hand on `main` gets a row here too. The three earliest ran before the step had `shell: bash`, when a failing script could still have shown green. Their logs show they passed: each ends with the script's own pass line, which it prints only if every step succeeded.
 
 | Date | Run | Commit | Result |
 | --- | --- | --- | --- |
+| 2026-10-28 | [40761806692](https://github.com/marleymcwilliams/LibSpec/actions/runs/40761806692) | #56's head `104874b`, on `main` at `2e6cbf7` | **Passed**, the first run whose step has `shell: bash`, so a failing script turns it red: the same checks as the row below, 5 min |
 | 2026-10-28 | [40757821081](https://github.com/marleymcwilliams/LibSpec/actions/runs/40757821081) | #56's head `8e25f5b`, on `main` at `2e6cbf7` | **Passed.** Both probes passed: AF_UNIX opens outside the wrapper and is refused inside, and `sudo` gains nothing inside. The self-test passed, the mutant was rejected for its statement, and the Lean kernel and nanoda each accept all 26 frozen theorems. Linux 7.0.0-1017-azure, systemd 255, 4.5 min |
 | 2026-10-28 | [40757022820](https://github.com/marleymcwilliams/LibSpec/actions/runs/40757022820) | #56's head `e4a1a00`, on `main` at `2e6cbf7` | Passed, before the AF_UNIX probe had its positive control |
 | 2026-10-28 | [40755807109](https://github.com/marleymcwilliams/LibSpec/actions/runs/40755807109) | #56's head `432039e`, on `main` at `2e6cbf7` | Passed, before the wrapper probe existed |
