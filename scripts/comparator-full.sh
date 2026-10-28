@@ -56,14 +56,30 @@ with open(path, "w") as f:
 PY
 }
 
-# wrapped <config>: Comparator inside the systemd-run wrapper.
-wrapped() {
+# in_wrapper <command>...: a command inside the systemd-run wrapper.
+in_wrapper() {
   systemd-run --user --quiet --collect --wait --pipe \
     --property=RestrictAddressFamilies=~AF_UNIX \
     --property=NoNewPrivileges=yes \
     -E PATH="$PATH" -E HOME="$HOME" --working-directory "$lean_dir" \
-    -- bash -c 'lake env comparator "$1"' comparator "$1"
+    -- "$@"
 }
+
+# wrapped <config>: Comparator inside the wrapper.
+wrapped() { in_wrapper bash -c 'lake env comparator "$1"' comparator "$1"; }
+
+step "The wrapper is in force"
+in_wrapper true || { echo "FAIL: systemd-run couldn't start a service"; exit 1; }
+if in_wrapper python3 -c 'import socket; socket.socket(socket.AF_UNIX)' 2> /dev/null; then
+  echo "FAIL: an AF_UNIX socket opened inside the wrapper"
+  exit 1
+fi
+echo "ok: AF_UNIX sockets are refused inside the wrapper"
+if in_wrapper sudo -n true 2> /dev/null; then
+  echo "FAIL: sudo gained privileges inside the wrapper"
+  exit 1
+fi
+echo "ok: sudo gains no privileges inside the wrapper"
 
 step "The challenge's theorems (JSG.Statements, built outside the sandbox: it is trusted)"
 (cd "$lean_dir" && lake build JSG.Statements)

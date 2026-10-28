@@ -100,7 +100,7 @@ jobs:
           {
             echo '### Comparator, full strength'
             echo '```'
-            grep -E '^(kernel|systemd|lean|commit):|frozen theorems$|Running .* kernel|Your solution is okay|^ok:|^FAIL|comparator-full.sh: passed' \
+            grep -E '^(kernel|systemd|lean|commit):|frozen theorems$|Running .* kernel|kernel accepts|Your solution is okay|^ok:|^FAIL|comparator-full.sh: passed' \
               "$RUNNER_TEMP/comparator-full.log" || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
