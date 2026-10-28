@@ -70,11 +70,13 @@ wrapped() { in_wrapper bash -c 'lake env comparator "$1"' comparator "$1"; }
 
 step "The wrapper is in force"
 in_wrapper true || { echo "FAIL: systemd-run couldn't start a service"; exit 1; }
-if in_wrapper python3 -c 'import socket; socket.socket(socket.AF_UNIX)' 2> /dev/null; then
+unix_socket='import socket; socket.socket(socket.AF_UNIX)'
+python3 -c "$unix_socket" || { echo "FAIL: the probe can't open an AF_UNIX socket even outside the wrapper"; exit 1; }
+if in_wrapper python3 -c "$unix_socket" 2> /dev/null; then
   echo "FAIL: an AF_UNIX socket opened inside the wrapper"
   exit 1
 fi
-echo "ok: AF_UNIX sockets are refused inside the wrapper"
+echo "ok: AF_UNIX sockets open outside the wrapper and are refused inside it"
 if in_wrapper sudo -n true 2> /dev/null; then
   echo "FAIL: sudo gained privileges inside the wrapper"
   exit 1
