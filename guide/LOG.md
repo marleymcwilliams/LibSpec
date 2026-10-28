@@ -4,6 +4,15 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-28
 
+### Milestone 3 merged and its gate recorded (#55)
+- **Branches:** with #49 and #50 merged, `guide/milestone-2-gate` and `statements/v3-proposal` were deleted, at Marley's request. The `statements-v3` tag keeps its commit, 0cd74ec.
+- **Merges:** the stack went in in order, #51–#54. Each PR after the first was retargeted to `main` before the branch under it was deleted, and the four branches were deleted after the last merge. #51 lands Marley's `dwell_lower_bound` word for word.
+- **Proof order:** Marley's `dwell_lower_bound` first, since its PR creates the proof file, then mine, easiest first: `dro_envelope`, `cvar_tail_to_level`, `kl_fisher_local`. All three come from the `statements-v3` provability check.
+- **Helper lemmas:** `kl_fisher_local`'s four helpers live in `lean/JSG/Lemmas/KLFisher.lean`, which the proof file imports, because Comparator checks every theorem in `Proofs/` against the frozen statements. The scratch proof's `ray_bound` became `kl_ray_bound`, without its unused hypothesis `0 ≤ δ`.
+- **Opens:** `Milestone3.lean` also opens `ProbabilityTheory`, for the cgf lemmas, which `Statements.lean` doesn't. Before pushing, a local check confirmed by `rfl` that each restated theorem still has its frozen statement's type, and Comparator agrees.
+- **Gate:** `guide/MILESTONE_3.md` records how each gate item is met against `main`'s CI run on #54's merge, and carries Marley's closing note verbatim. MASTER_GUIDE's analysis rows use Marley's approved wording: four rows Proved, and the Jacobi frontier defect out of scope (Q8). Its opening sentence now counts the Jacobi defect apart, and "Lean milestone 3" is ticked. ROADMAP's Milestone 3 notes are marked done.
+- **Editor servers:** Marley asked me to stop any `lake serve` my scratch work had left running. By then none was: the worktree and scratchpad servers had already exited, and the two still running, for the main tree and the toolchain's sources, aren't mine.
+
 ### `statements-v3` proposed (#50, draft)
 - **Scope:** Marley's brief, with one-time permission to edit `Defs.lean` and `Statements.lean` on a draft branch, as for v2. Three theorems and their definitions are appended as sections 12–14 of both files, under a note that nothing above changed. The diff against `statements-v2` removes no line from any covered file. The Jacobi frontier defect is left out, and that's Q8.
 - **Corrected forms:** each source claim needed correcting before it could be stated. The corrections are in STATEMENTS_REVIEW's v3 section:

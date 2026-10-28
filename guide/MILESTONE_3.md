@@ -42,6 +42,35 @@ Proved in #52.
 4. So v(ρ) − v(ρ₀) − η\*(ρ₀)(ρ − ρ₀) is at most |η\*(ρ) − η\*(ρ₀)|·|ρ − ρ₀|. Continuity makes the first factor as small as we like, which is the little-o that `hasDerivAt_iff_isLittleO` asks for.
 5. So the dual's slope in ρ is the minimizing multiplier. Every dual of this shape satisfies it, a wrong one included, so it doesn't show that the dual is the worst-case risk (QUEUE.md, Q10).
 
+## Gate
+
+How each item of ROADMAP's "Gate for every milestone" is met. The evidence for the first five is `main`'s CI run on the merge of #54: [run 40746039446](https://github.com/marleymcwilliams/LibSpec/actions/runs/40746039446).
+
+- **`lake build` is green, with no `sorry` in the milestone's proof file.** The build and leanchecker passed, and `check.sh`'s forbidden-token scan of `Proofs/`, `Lemmas/` and `Tests/` printed "ok".
+- **`#print axioms` on each theorem lists only `propext`, `Classical.choice` and `Quot.sound`.** The axiom audit's sweep (252 theorems in 8 modules) printed each of the four with exactly those three: `dwell_lower_bound`, `cvar_tail_to_level`, `kl_fisher_local` and `dro_envelope`. So did the four helper lemmas in `Lemmas/KLFisher.lean`: `klDiv_tilted_self`, `kl_ray_bound`, `kl_poly` and `kl_algebra`.
+- **The statements check confirms the frozen files are unchanged.** It printed "ok (statements-v3): lean/JSG/Statements.lean lean/JSG/Defs.lean lean/lean-toolchain lean/lake-manifest.json lean/lakefile.toml".
+- **Comparator confirms each proof against its frozen statement.** It accepted `JSG.Solution` against `JSG.Statements` with only the three permitted axioms ("Your solution is okay!"). Its not-yet-proved list is empty: all 26 frozen theorems are proved.
+- **Each theorem's named mutant is proved to violate it, and every must-pass control is accepted.**
+  - **Mutants**, in `Tests/Mutants.lean`: `dwell_lower_bound_mutant` (JSG I's lemma, with a lower bound on speed), `cvar_tail_to_level_mutant` (PDE Lemma 9.1's strict conclusion), `kl_fisher_local_mutant` (jsg-lab's raw-coordinate radius) and `dro_envelope_mutant` (JSG II's KL dual read with η as the tilt).
+  - **Must-pass**, in `Tests/Mutants.lean`: each theorem's witness, `dwell_lower_bound_witness` to `dro_envelope_witness`, which proves every hypothesis and the conclusion for one instance. Milestone 1's controls in `Tests/Calibration.lean` still pass.
+  - All of these build in that run, and the audit swept them, each within the three axioms.
+- **Layer-map rows are set to Proved, and the guide's text names the Lean theorem.** In #55, MASTER_GUIDE's four analysis rows use your approved wording, which names their theorems and notes each row's limits. The Jacobi frontier defect's row is marked out of scope, with Q8's reason, and the layer map's opening sentence counts it apart.
+- **A short note, in your words.** It follows.
+
 ## Closing note
 
-*To come, in your words, when the gate is met.*
+All four Milestone 3 theorems are proved, `dwell_lower_bound` by me. Comparator accepts each one against `statements-v3`, and neither they nor the four helper lemmas in `Lemmas/KLFisher.lean` use an axiom beyond `propext`, `Classical.choice` and `Quot.sound`. Each has a mutant proved to break it. With this milestone, all 26 frozen theorems are proved.
+
+**What is now proved**
+- If a loss's CVaR at tail mass α is at most ε, the loss exceeds ε on a set of measure at most α, for any measure and any α (`cvar_tail_to_level`). No constant is lost: C₀ = 1.
+- If the signed distance to a frontier moves no faster than S_max, going from +r to −r takes at least 2r/S_max (`dwell_lower_bound`).
+- In whitened coordinates, if the Fisher information stays within L‖x‖ of the identity along the segment from 0 to θ, and L‖θ‖ ≤ ε ≤ 1, the KL divergence of P_θ from P₀ is within a factor 1 ± ε of ½‖κ(θ)‖² (`kl_fisher_local`).
+- For a dual value of the form inf over η of ηρ + g(η), if a minimizing multiplier η*(ρ) attains the infimum near ρ₀ and is continuous at ρ₀, the dual's slope at ρ₀ is η*(ρ₀) (`dro_envelope`).
+
+**What it does not show**
+- The rest of PDE Lemma 9.1. Its rescaling to the CKN threshold and its Vitali overlap count aren't stated.
+- That crossings can't pile up in finite time. The dwell bound covers a crossing from +r to −r; excluding sliding along the frontier, which JSG I's α was for, isn't stated.
+- The KL–Fisher bound in raw coordinates, where it fails. `kl_fisher_local` also assumes the gradient and Hessian along the segment rather than deriving them.
+- That the dual equals the worst-case risk. `dro_envelope` is about the dual value; strong duality isn't stated, so the identity isn't claimed for the risk itself.
+- Anything about estimates from data. These are statements about exact distributions; jsg-lab's numerical checks, such as JSG II's 5% finite-difference test, aren't covered.
+- That the statements say what I mean. CI shows the proofs conform to them; whether they're the right statements is my judgment, not Lean's.
