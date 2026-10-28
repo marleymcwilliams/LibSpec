@@ -38,7 +38,7 @@ So `statements-v4` adds an executable twin for each definition in the first five
 | | What |
 | --- | --- |
 | **Proved,** and frozen in `statements-v4` | each twin agrees with its frozen definition; through that, every v1–v3 theorem about the twinned definitions holds of what the harness computes |
-| **Proved,** in test files | the pilot's must-pass and must-fail verdicts, for its fixed records, by `decide`: checked by the kernel, with no native evaluation. A scratch check with seven floor axes found the kernel decides comparisons and max in `WithTop ℚ≥0`, which is all the pilot needs at θ = 0. It gets stuck on subtraction there, so a width or a residual needs a proof, not `decide` |
+| **Proved,** in test files | the pilot's must-pass and must-fail verdicts, for its fixed records, by `decide`: checked by the kernel, with no native evaluation. A scratch check with seven floor axes found that plain `decide` handles comparisons and max in `WithTop ℚ≥0`, which is all the pilot needs at θ = 0. It stops at subtraction and addition, because Lean marks rational arithmetic irreducible and `decide` respects that. `decide +kernel` hands the whole evaluation to the kernel, which decides widths, residuals and budgets too, with only the three axioms. It is kernel evaluation, not native |
 | **Tested** | JSON parsing and printing (round-trip and golden-file tests); the collectors that turn release data into records; the real primitives; other implementations (§2) |
 | **CI layer** | Comparator's runs on formalizations (§4) |
 | **Trusted** | Lean's compiler, for `lake exe`. The kernel checks the agreement theorems about the Lean definitions, not the compiled binary. The `decide` proofs above cover the fixed records without trusting it |
