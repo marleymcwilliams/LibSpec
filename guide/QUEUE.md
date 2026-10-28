@@ -4,7 +4,37 @@ Questions only you can answer: anything that changes a statement's meaning, a No
 
 ## Open
 
+### Q11. Freeze executable twins of the core definitions as statements-v4?
+
+- **Question:** v1.0 proves things about the gate's definitions, but they can't run: `ENNReal` arithmetic is noncomputable, `verdict` decides classically, and `LoaderStep` is a relation. [EXECUTABLE_GATE.md](EXECUTABLE_GATE.md) §1 proposes executable twins over `WithTop ℚ≥0`, with a theorem that each agrees with its frozen definition, frozen as `statements-v4` and driven by a thin harness, `lake exe jsg-gate`. Should v4 freeze them, and which ones?
+- **Recommended answer:** Yes, for every definition in §1's table: graded values and `combine`, `verdict`, `residual` and `Threads`, `Bound.width` and `leaseVerdict`, the typed obligations and `Passes`, and `LoaderStep` as a step function, with soundness and completeness. `Prims` stays abstract (Q7). Every frozen gate theorem then applies to what the harness computes.
+- **What breaks if wrong:** If a smaller first step is better, v4 could freeze only `combine`, `verdict` and `leaseVerdict`, which are what the pilot needs. The rest can follow in a later version, which only adds. A different carrier than `WithTop ℚ≥0` changes every agreement theorem, so it's cheapest to settle now. `Float` would break agreement outright.
+- **Can it be undone:** Yes, freely until `statements-v4` is tagged. After that, adding twins is a tightening, and removing one is a weakening.
+
+### Q12. The pilot's axes and thresholds
+
+- **Question:** The pilot (§3) grades each manuscript on seven floor axes: `withdrawn`, `dependency_withdrawn`, `formal_proof`, `statement_fidelity`, `axioms`, `independent_review` and `novelty`. Their thresholds and leases are Norm-layer values. What should they be, and what goes in the must-pass and must-fail sets?
+- **Recommended answer:**
+  - **Thresholds:** θ = 0 on every axis, with no leases, so a manuscript is accepted only when every doubt is known to be 0.
+  - **Must-fail:** the three withdrawn manuscripts, each rejected on known axes alone, even with every unknown axis set to 0, plus synthetic controls.
+  - **Must-pass:** synthetic records until a named reviewer checks a formalized manuscript's statement against its paper.
+
+  Under this answer every real manuscript is rejected today, because `statement_fidelity`, `independent_review` and `novelty` are unknown for all 721. The pilot's report is then each manuscript's list of unknowns.
+- **What breaks if wrong:** If θ = 0 everywhere is too strict to be useful, a lease on `independent_review` or `novelty` would let formalized, statement-checked results pass. That weakens "unknown axes must reject" from IDEAS, so it should be your call, not a default. Picking the reviewer for `statement_fidelity` is also yours.
+- **Can it be undone:** Yes. They're declared values, so changing a threshold changes the pilot's verdicts, not any theorem. Removing a must-fail class is a weakening (decisions/RAILS.md).
+
+### Q13. Where do heavy builds run?
+
+- **Question:** You suggested Lewis & Clark's BLT cluster for heavy builds, if its OS can run current Lean. Its documentation says CentOS Linux 7.4. That has glibc 2.17, below the 2.26 that Lean's x86-64 Linux releases need, and a 3.10 kernel without Landlock, so neither Lean nor Comparator's sandbox would run (§4). Should BLT be used, and for what?
+- **Recommended answer:** Ask BLT's administrators for its current OS, and whether it has a container runtime such as Apptainer; the documentation may be out of date, since CentOS 7 reached end of life in June 2024. Until then, run everything on GitHub Actions. Either way, use BLT, if at all, only for trusted builds (LibSpec, Mathlib-scale experiments). Never build the openai/math library outside a sandbox: building a Lean library runs its code.
+- **What breaks if wrong:** If GitHub's hosted runners prove too small for some release challenges (4 cores, 16 GB, 6 hours per job), those challenges wait. The alternatives are larger paid runners, or a disposable VM elsewhere with the same sandbox.
+- **Can it be undone:** Yes. Nothing is frozen.
+
+## Answered
+
 ### Q8. Which analysis statements belong in statements-v3?
+
+**Answered 2026-10-28: yes, as recommended,** by tagging `statements-v3` at the draft's head (#50).
 
 - **Question:** ROADMAP's Milestone 3 lists the CVaR tail-to-level step, `dwell_lower_bound`, the local KL–Fisher bound and the DRO envelope identity. MASTER_GUIDE's roadmap line leaves out the DRO identity, and the layer map also has the geometry-scaled Jacobi frontier defect. `dwell_lower_bound` is already frozen in v1. Which of the rest go into v3?
 - **Recommended answer:** CVaR, KL–Fisher and DRO, as the draft has them. MASTER_GUIDE's roadmap line gains the DRO identity, to match ROADMAP. The Jacobi defect waits, because its statement isn't well-posed yet:
@@ -16,6 +46,8 @@ Questions only you can answer: anything that changes a statement's meaning, a No
 
 ### Q9. State the KL–Fisher bound in whitened coordinates, with κ = ∇ψ?
 
+**Answered 2026-10-28: yes, as recommended,** by tagging `statements-v3` at the draft's head (#50).
+
 - **Question:** JSG I's Theorem 2 measures the cumulants in F⁻¹ but never says which norm its radius and Hessian-Lipschitz constant use. Read in raw coordinates, as jsg-lab does, it is false (the mutant). The draft states it in whitened coordinates: V's inner product is the Fisher metric at 0, so F is the identity, which `hlip` at x = 0 forces. It also takes the cumulants as ψ's gradient (`hgrad`), not as the mean of T under P\_θ. Is that the statement you want?
 - **Recommended answer:** Yes, on both counts.
   - **Whitening loses no generality.** Any F ≻ 0 whitens by the change of variables T ↦ F^{−1/2}T. In those coordinates the Euclidean norms are the F and F⁻¹ norms the source writes, and JSG I says its norms are Fisher-induced (line 2243). A general-F form is equivalent, but needs square roots of operators.
@@ -24,6 +56,8 @@ Questions only you can answer: anything that changes a statement's meaning, a No
 - **Can it be undone:** Yes, freely until the tag. After it, either corollary only adds.
 
 ### Q10. State the DRO envelope identity for the dual alone, and duality later?
+
+**Answered 2026-10-28: yes, as recommended,** by tagging `statements-v3` at the draft's head (#50).
 
 - **Question:** JSG II's `thm:rho-sense` says dv/dρ = η\* for v the worst-case risk. The draft states it for the dual value, the infimum over multipliers η of ηρ + g(η), which covers JSG II's KL dual (corrected) and its Wasserstein dual. Strong duality, that this dual equals the worst-case risk, isn't stated. Is that enough for v3?
 - **Recommended answer:** Yes. The envelope identity is the property JSG II's 5% check and quarantine hook rely on. Strong duality for KL needs more:
@@ -34,8 +68,6 @@ Questions only you can answer: anything that changes a statement's meaning, a No
   The hypothesis is a continuous minimizer selection, not JSG II's uniqueness. Uniqueness suffices when g is convex, as both duals are, but proving that needs Fenchel conjugacy.
 - **What breaks if wrong:** Every dual of this shape satisfies the identity, JSG II's own wrong KL dual included. So `dro_envelope` says nothing about whether a dual is the right one, and neither does the finite-difference check built on it. If you need that, it's a duality statement, which only adds.
 - **Can it be undone:** Yes. Adding duality later only adds.
-
-## Answered
 
 ### Q5. What should an overspent stage leave for the stages after it?
 

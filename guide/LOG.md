@@ -4,6 +4,12 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-28
 
+### The executable gate proposed (#60)
+- **Scope:** Marley's brief asked for a design proposal with no code: the executable gate, and its first pilot, grading the openai/math release. It's in a new `guide/EXECUTABLE_GATE.md`, and its decisions are queued as Q11–Q13.
+- **The queue:** Q8–Q10 are moved to Answered, as answered by tagging `statements-v3` at the draft's head. That keeps at most three entries open.
+- **The data:** openai/math is pinned at `7ef5c0c`, and only its `README.md`, `history.md`, `CONTENTS.md`, `lean/formalization.yaml`, a few `lean/docs/` pages, a challenge config and the three withdrawal notices were read, as data. None of its code was run.
+- **BLT:** its OS comes from its own documentation, CentOS 7.4. Lean's glibc requirement, 2.26 or later on x86-64, comes from the Lean reference's supported-platforms page.
+
 ### Phase 6: the release work (#56, #57, #58)
 - **Cleanup:** after #55, the `wt-v3` worktree was removed, its `.lake/packages` junction first, and `guide/milestone-3-gate` was deleted. Only `main` remains.
 - **Three PRs, one per item:**
