@@ -67,7 +67,7 @@ Twenty-two terms, each with one home. The SIRUS name waits: not yet, since no v1
 
 ## Layer map
 
-Eleven components can be proved in Lean now and four more with analysis; a fifth, the Jacobi frontier defect, is out of scope until it's well-posed. The other eight are checked per instance, tested, open, or declared. Layers sort components by what justifies them, not by what enforces them: a Norm row is a declared value, and whether a gate also enforces it is a separate question. In v1 no gate enforces the Norm rows ([decisions/RAILS.md](decisions/RAILS.md)). Lean status is "Stub" wherever the Lean section below states a theorem not yet proved, and "Proved" once `lean/JSG/Proofs/` proves it, with any limits noted.
+Twelve components can be proved in Lean now and four more with analysis; a fifth, the Jacobi frontier defect, is out of scope until it's well-posed. The other eight are checked per instance, tested, open, or declared. Layers sort components by what justifies them, not by what enforces them: a Norm row is a declared value, and whether a gate also enforces it is a separate question. In v1 no gate enforces the Norm rows ([decisions/RAILS.md](decisions/RAILS.md)). Lean status is "Stub" wherever the Lean section below states a theorem not yet proved, and "Proved" once `lean/JSG/Proofs/` proves it, with any limits noted.
 
 | Component | Layer | Lean status | Source |
 | --- | --- | --- | --- |
@@ -82,6 +82,7 @@ Eleven components can be proved in Lean now and four more with analysis; a fifth
 | Capped governance fold: bounded, with a vacuous nightly check | Lean now | Proved (`fold_check_vacuous`) | JSG IV aggregator lemma |
 | Must-fail CI gate: accepted histories keep every unsigned failure class | Lean now | Proved for the gate's rule (`mfGate_signed`); CI doesn't yet run the gate on real histories | Draft0–7 |
 | Typed obligations (authority and witness); unknowns lease as interval width ≤ β | Lean now | Proved (`pass_sound`, `pass_complete`, `lease_sound`, `lease_complete`) | JSG V §3; PDE §2.2, I4b |
+| Executable twins: graded values, combine, verdict, residual threading, widths and leases, computed exactly | Lean now | Stub: eight agreement theorems in the `statements-v4` draft ([QUEUE.md](QUEUE.md), Q11 and Q15) | [EXECUTABLE_GATE.md](EXECUTABLE_GATE.md) §1 | Core v2; SIRUS spec §1.4, whose Q′ must commute with its projection π |
 | CVaR tail-to-level step (C₀ = 1) | Lean + analysis | Proved (`cvar_tail_to_level`), for any measure and tail mass. This is the tail-to-level step only; Lemma 9.1's rescaling to the CKN threshold and its Vitali overlap count aren't stated | PDE Lemma 9.1 |
 | No-Zeno dwell bound, corrected | Lean + analysis | Proved (`dwell_lower_bound`, by Marley), with the speed bound S\_max in place of JSG I's α | JSG I Lemma 1 |
 | Local KL–Fisher quadratic bound | Lean + analysis | Proved (`kl_fisher_local`) in whitened coordinates, for every ε ≤ 1. Read in raw coordinates, as jsg-lab computes its radius, the bound fails | JSG I FIM bound |
@@ -725,6 +726,118 @@ theorem dro_envelope (S : Set ℝ) (g : ℝ → ℝ) (ηstar : ℝ → ℝ) {ρ�
 -- ρ/η + (1/η) log E[e^{ηℓ}], whose slope in ρ is 1/η*, not η*. For a Gaussian loss of
 -- variance 2 the dual is 2√ρ and η* = √ρ: at ρ = 4 the slope is 1/2, but η* = 2.
 
+/-! ## statements-v4
+
+Section 15 was added for `statements-v4` (guide/CHANGELOG.md); nothing above it changed. -/
+
+/-! ## 15. Executable twins (guide/EXECUTABLE_GATE.md §1) -/
+
+/-- An exact value's place in [0, ∞]: ∞ stays ∞, and each nonnegative rational is itself.
+    The twins below compute in `WithTop ℚ≥0`, whose order and arithmetic are decidable;
+    this cast is how each one is compared with its frozen definition. -/
+noncomputable def xcast (x : WithTop ℚ≥0) : ENNReal := WithTop.map (fun q : ℚ≥0 => (q : NNReal)) x
+
+/-- The executable twin of `Bound`: an interval in [0, ∞] with exact ends. -/
+structure XBound where
+  lo : WithTop ℚ≥0
+  hi : WithTop ℚ≥0
+  le : lo ≤ hi
+
+/-- The bound a twin stands for: both ends cast into `ENNReal`. -/
+noncomputable def XBound.toBound (b : XBound) : Bound :=
+  ⟨xcast b.lo, xcast b.hi, (WithTop.map_le_iff _ NNRat.cast_le).2 b.le⟩
+
+/-- The twin of `Bound.known`. -/
+def XBound.known (x : WithTop ℚ≥0) : XBound := ⟨x, x, le_rfl⟩
+
+/-- The twin of a known value stands for that value, known. -/
+theorem xknown_agrees (x : WithTop ℚ≥0) : (XBound.known x).toBound = Bound.known (xcast x) := by
+  sorry
+-- Mutant: a reading taken as an upper bound only, [0, x], which forgets that x is known:
+-- the known 1 becomes [0, 1], whose width is 1, not 0.
+
+/-- The twin of `Bound.unknown`. -/
+def XBound.unknown : XBound := ⟨0, ⊤, le_top⟩
+
+/-- The twin of the unknown stands for the unknown, [0, ∞]. -/
+theorem xunknown_agrees : XBound.unknown.toBound = Bound.unknown := by sorry
+-- Mutant: an unknown at the bottom of the order, [0, 0], as SCp1's order puts ⊥ below every
+-- value and SirusSC's `Q.leq` lets ⊥ pass any bound.
+
+/-- The twin of `combineAxis`: max on floors, + on budgets. -/
+def xcombineAxis : Kind → XBound → XBound → XBound
+  | .floor,  a, b => ⟨max a.lo b.lo, max a.hi b.hi, max_le_max a.le b.le⟩
+  | .budget, a, b => ⟨a.lo + b.lo, a.hi + b.hi, add_le_add a.le b.le⟩
+
+/-- The twin of `Grade`. -/
+abbrev XGrade (ι : Type) := ι → XBound
+
+/-- The grade a twin stands for, axis by axis. -/
+noncomputable def XGrade.toGrade (g : XGrade ι) : Grade ι := fun i => (g i).toBound
+
+/-- The twin of `combine`. Core v2 makes `seqComp` and `parComp` both `combine`, so this is
+    their twin too. -/
+def xcombine (g h : XGrade ι) : XGrade ι := fun i => xcombineAxis (kind i) (g i) (h i)
+
+/-- Combining twins and then casting is combining their casts: max on floors, + on
+    budgets. -/
+theorem xcombine_agrees (g h : XGrade ι) :
+    (xcombine kind g h).toGrade = combine kind g.toGrade h.toGrade := by sorry
+-- Mutant: SirusSC's `Interval.join` and `Interval.plus`, where ⊥ absorbs. On a floor, the
+-- unknown combined with the known 1 stays [0, ∞], where `combine` gives [1, ∞].
+
+/-- The twin of `verdict`, for finitely many axes, which it checks one by one. -/
+def xverdict [Fintype ι] (θ : ι → WithTop ℚ≥0) (g : XGrade ι) : Decision :=
+  if ∀ i, (g i).hi ≤ θ i then .accept else .reject
+
+/-- On finitely many axes, the twin verdict is the frozen verdict on the cast threshold
+    and grade, so `verdict_sound` and `verdict_complete` hold of it. -/
+theorem xverdict_agrees [Fintype ι] (θ : ι → WithTop ℚ≥0) (g : XGrade ι) :
+    xverdict θ g = verdict (xcast ∘ θ) g.toGrade := by sorry
+-- Mutant: SirusSC's `Q.leq` as a threshold check, which skips an axis holding ⊥
+-- ("bottom <= x"): it accepts the unknown under θ = 1.
+
+/-- The twin of `residual`. Subtraction in `WithTop ℚ≥0` truncates at 0, as in `ENNReal`. -/
+def xresidual (θ x : WithTop ℚ≥0) : WithTop ℚ≥0 := θ - x
+
+/-- The twin residual casts to the frozen residual, ∞ − ∞ = 0 included. -/
+theorem xresidual_agrees (θ x : WithTop ℚ≥0) :
+    xcast (xresidual θ x) = residual (xcast θ) (xcast x) := by sorry
+-- Mutant: v1's check of each stage against the full θ, a residual that returns θ:
+-- θ = x = 1 leaves 1, not 0.
+
+/-- The twin of `Threads`: a test that returns `true` when the budget threads through the
+    stages. -/
+def xthreads : WithTop ℚ≥0 → List (WithTop ℚ≥0) → Bool
+  | _, [] => true
+  | θ, x :: xs => decide (x ≤ θ) && xthreads (xresidual θ x) xs
+
+/-- The twin threading test returns `true` exactly when the cast budget threads through
+    the cast stages. -/
+theorem xthreads_agrees (θ : WithTop ℚ≥0) (xs : List (WithTop ℚ≥0)) :
+    xthreads θ xs = true ↔ Threads (xcast θ) (xs.map xcast) := by sorry
+-- Mutant: v1's residual check alone, `threads_spec`'s mutant, run on the twins: θ = 1 with
+-- stages 2 then 0 passes, though stage one overspends.
+
+/-- The twin of `Bound.width`. -/
+def XBound.width (b : XBound) : WithTop ℚ≥0 := b.hi - b.lo
+
+/-- The twin width casts to the frozen width. A known ∞, such as [∞, ∞], has width 0. -/
+theorem xwidth_agrees (b : XBound) : xcast b.width = b.toBound.width := by sorry
+-- Mutant: a width that is ∞ whenever the upper end is, as a floating-point gate finds it:
+-- there ∞ − ∞ is NaN, which no finite lease admits. [∞, ∞] gets width ∞, not 0.
+
+/-- The twin of `leaseVerdict`, for finitely many axes. -/
+def xleaseVerdict [Fintype ι] (θ β : ι → WithTop ℚ≥0) (g : XGrade ι) : Decision :=
+  if ∀ i, (g i).hi ≤ θ i ∧ (g i).width ≤ β i then .accept else .reject
+
+/-- On finitely many axes, the twin lease verdict is the frozen one on the cast
+    thresholds, leases and grade, so `lease_sound` and `lease_complete` hold of it. -/
+theorem xleaseVerdict_agrees [Fintype ι] (θ β : ι → WithTop ℚ≥0) (g : XGrade ι) :
+    xleaseVerdict θ β g = leaseVerdict (xcast ∘ θ) (xcast ∘ β) g.toGrade := by sorry
+-- Mutant: SirusSC's `QPrime`, which never reads a width, run on the twins: [0, 5] leased 1
+-- passes under θ = 10.
+
 end JSG
 ```
 
@@ -732,9 +845,11 @@ end JSG
 
 `statements-v3` adds the analysis layer's other three statements: CVaR tail to level, the local KL–Fisher bound in whitened coordinates, and the DRO envelope identity for any dual of the form ηρ + g(η), with η the multiplier. Each source claim needed correcting first ([STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md#statements-v3)). Strong duality, that the dual equals the worst-case risk, and the Jacobi frontier defect wait ([QUEUE.md](QUEUE.md), Q8 and Q10).
 
+`statements-v4` adds executable twins of the core's graded values, `combine`, `verdict`, residual threading, widths and leases. They compute in `WithTop ℚ≥0`, and each has a theorem that it agrees with its frozen definition ([EXECUTABLE_GATE.md](EXECUTABLE_GATE.md) §1). The obligation and Loader twins wait for a version with an implementation to test them against ([QUEUE.md](QUEUE.md), Q11).
+
 ## Known defects and proposed fixes
 
-Twenty-five defects so far. The last seven came from an outside review of v1 and are fixed in core v2.
+Twenty-six defects so far. The last seven came from an outside review of v1 and are fixed in core v2.
 
 | Defect | Where | Why it matters | Proposed fix |
 | --- | --- | --- | --- |
@@ -750,6 +865,7 @@ Twenty-five defects so far. The last seven came from an outside review of v1 and
 | "If the CI passes, the work is correct" | Human\_Guide, step 4 | CI shows conformance, not correctness; cross-checking two agents misses errors they share | Reword: "If CI passes, the work conforms to the spec" |
 | JSG V's Lax Exchange theorem runs against its own interchange law | JSG V §4, Lax Exchange Law; restated in the proofs appendix | The interchange law (§2) makes piping each subsystem first the worse order; the theorem, with ∘ read as function composition, and its proof's last sentence make wiring first the worse one. On a sum axis with x = 1, x′ = 0, y = 0, y′ = 1, piping first grades 2 and wiring first 1 | Moot in core v2: sequence and parallel both use ⊕, so interchange is an equation and JSG V's rule becomes the `interchange` mutant |
 | Unknown sits below every value | SCp1 Def 2.1 and Appendix A; SCp2 Assumption 3.2; SirusSC `Q.leq` | ⊥ ≤ x for every x, so a bare threshold check q ≤ θ accepts an unknown axis, as the `verdict_sound` mutant that reads lo does. Only a separate guard that rejects ⊥ first (SCp1's I9, guard-first pricing) keeps it fail-closed | Core v2: unknown is \[0, ∞\] and the verdict reads hi, so the check itself rejects (`verdict_sound`) |
+| SirusSC's ⊥ absorbs known evidence | SirusSC `specchain/algebra/q_prime.py`, `Interval.join` and `Interval.plus`; `q.py`, `hetero_join` and `sequential` | Combining an unknown with known evidence discards the evidence: on a floor, ⊥ joined with a known 1 stays ⊥, where interval arithmetic gives [1, ∞]. No verdict changes, since the upper end is ∞ either way, but a report would call the axis unknown when it is known to be at least 1 | Combine interval ends separately, as core v2 does; `xcombine_agrees` freezes that for the twins |
 | SCp2 and MDmaster disagree on which axes carry the frontier debit | SCp2 §5, eq. (1)–(2) and Prop. 5.2 (F2); MDmaster.md:409, its SCp2 summary; SirusSC `greedy_upper_bound` | SCp2 prices max-axes only and pins the sum part at 0 (price\_π(e) ∈ Q\_M × {0}; F2: "On S-axes, (Δfr)\_S = 0"). Its max-fold doesn't double-charge repeats, so a crossing and its reversal cost no more than the larger of the two. MDmaster says the opposite: "Debits accrue only on sum-axes; max-axes remain invariant". The code charges both, max on M and sum on S, with S not pinned at 0. A reader of the summary takes the debit for a cumulative spend; the paper makes it an idempotent rate | Core v2's charge is total variation, additive under concatenation (`charge_append`): MDmaster's reading. SCp2's max-fold becomes a `charge_chatter` mutant (ROADMAP, Milestone 1 notes) |
 | PDE Lemma 9.1 claims strict smallness | PDE §9.2, Lemma 9.1 and its note "Why C₀ = 1" | The lemma says cells outside the tail have E < ε\_CKN, but the tail-to-level step gives only E ≤ ε, and with every constant at 1 a loss equal to ε everywhere breaks it. The note's argument, μ{X > τ} > α ⇒ CVaR ≥ τ, covers only CVaR < ε | Conclude E ≤ ε outside a tail of measure at most α, which follows from μ{X > τ} > α ⇒ CVaR > τ (`cvar_tail_to_level`) |
 | The KL–Fisher bound leaves its norms unstated | JSG I Theorem 2; jsg-lab `stats/fisher.py` | In raw coordinates the bound is false, and jsg-lab's `FisherContext` computes its radius r = ε/L\_ψ from the raw features' third moments without whitening. Its remark that the constants are "sharp to first order" is wrong too: the first-order slack is ε/3 | State it in whitened coordinates, where the Fisher norms are Euclidean (`kl_fisher_local`); estimate L\_ψ after whitening, as JSG II's `estimate_Lpsi` does |
@@ -802,6 +918,7 @@ The rails are decided and persistent weakenings are deferred ([decisions/RAILS.m
 - [x] Lean milestone 1: graded values, verdict and completeness, residuals, noninterference, calibration, fold vacuity ([MILESTONE_1.md](MILESTONE_1.md))
 - [x] Lean milestone 2: typed obligations, Loader safety and progress, frontier charge, policy lattice, the must-fail gate ([MILESTONE_2.md](MILESTONE_2.md))
 - [x] Lean milestone 3 (analysis): CVaR tail-to-level, the corrected dwell bound, the local KL–Fisher bound and the DRO envelope identity ([MILESTONE_3.md](MILESTONE_3.md))
+- [ ] Lean milestone 4 (executable twins): graded values, combine, verdict, residual threading, widths and leases, each proved to agree with its frozen definition ([EXECUTABLE_GATE.md](EXECUTABLE_GATE.md))
 - [ ] CI: fail the build on any `b3:…` placeholder, on any must-fail removed without a signed weakening, and on any theorem without a mutant
 - [ ] Recover the SIRUS\_game runtime note and remove the SIRUS-algorithm sections from MDmaster
 - [ ] Move the Navier–Stokes spine to a research notebook, outside the guide's dependency graph

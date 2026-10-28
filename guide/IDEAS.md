@@ -22,6 +22,13 @@ New ideas land here, never in the current milestone (stop rule 2).
 - **jsg-lab's DRO is loss-free.** `DRO.step` (`archive/Reach/jsg-lab/src/jsg/dro/soft_transport.py`) takes η\* from a soft-transport cost that never reads the loss, and never computes the dual value. It's a ready-made must-fail control for any executable envelope check.
 - **Hypothesis counterexamples in Lean.** STATEMENTS_REVIEW gives a counterexample for each v3 hypothesis in prose. The DRO ones (S = {1, 2}) are cheap to prove, and would make the review's claims checked ones.
 
+## Found while drafting statements-v4
+
+- **`decide +kernel` for the pilot.** It evaluates the twins' rational arithmetic, where plain `decide` stops at `Rat.add` and `Rat.sub`, which Lean marks irreducible. The pilot's must-pass and must-fail proofs could use it throughout. It is kernel evaluation, not native.
+- **`deriving Fintype` failed** on a seven-constructor enum under Mathlib v4.34.1: the derived `Finset` was built from `Axis.enumList_nodup`, whose type didn't match. The pilot's axis type needs a hand-written instance such as `Fintype.ofList`. Worth reporting upstream with a minimal example.
+- **A Mathlib lemma.** There is no truncated-subtraction cast from ℚ≥0 to ℝ≥0, since `NNRat.cast_sub` needs a `DivisionRing`. Milestone 4's helper could go upstream.
+- **SirusSC's π.** Rule 1 of the SIRUS spec's §1.4 says composition over Q′ must commute with its projection π, the shape of `xcombine_agrees`. Read with ⊥ as the unknown, π could be the first differential test's map from SirusSC's carriers to the twins.
+
 ## Certificates
 
 - Reach's `check_positive_real` (`archive/Reach/jsg-lab/src/jsg/control/pr_checks.py`) reports positive realness without a certificate in two ways. It returns PR whenever the KYP LMI solve ends `optimal_inaccurate` (`if prob.status in (cp.OPTIMAL, cp.OPTIMAL_INACCURATE): return True, float(eps_min)`, lines 40–41), reporting the requested `eps_min` as the margin; an inaccurate solve is not a witness. Otherwise, even when the solver reports the LMI infeasible, it falls back to a 256-point frequency grid on the band (`margin = _phase_grid_margin(sys, band)`, then `return bool(margin >= eps_min), …`, lines 43–44), and a grid samples finitely many frequencies. An exact-rational checker in Lean, the Certificates option, should reject both: a ready-made negative control. Its test asserts only `ok in (True, False)`.

@@ -285,4 +285,60 @@ theorem dro_envelope (S : Set ℝ) (g : ℝ → ℝ) (ηstar : ℝ → ℝ) {ρ�
 -- ρ/η + (1/η) log E[e^{ηℓ}], whose slope in ρ is 1/η*, not η*. For a Gaussian loss of
 -- variance 2 the dual is 2√ρ and η* = √ρ: at ρ = 4 the slope is 1/2, but η* = 2.
 
+/-! ## statements-v4
+
+Section 15 was added for `statements-v4` (guide/CHANGELOG.md); nothing above it changed. -/
+
+/-! ## 15. Executable twins (guide/EXECUTABLE_GATE.md §1) -/
+
+/-- The twin of a known value stands for that value, known. -/
+theorem xknown_agrees (x : WithTop ℚ≥0) : (XBound.known x).toBound = Bound.known (xcast x) := by
+  sorry
+-- Mutant: a reading taken as an upper bound only, [0, x], which forgets that x is known:
+-- the known 1 becomes [0, 1], whose width is 1, not 0.
+
+/-- The twin of the unknown stands for the unknown, [0, ∞]. -/
+theorem xunknown_agrees : XBound.unknown.toBound = Bound.unknown := by sorry
+-- Mutant: an unknown at the bottom of the order, [0, 0], as SCp1's order puts ⊥ below every
+-- value and SirusSC's `Q.leq` lets ⊥ pass any bound.
+
+/-- Combining twins and then casting is combining their casts: max on floors, + on
+    budgets. -/
+theorem xcombine_agrees (g h : XGrade ι) :
+    (xcombine kind g h).toGrade = combine kind g.toGrade h.toGrade := by sorry
+-- Mutant: SirusSC's `Interval.join` and `Interval.plus`, where ⊥ absorbs. On a floor, the
+-- unknown combined with the known 1 stays [0, ∞], where `combine` gives [1, ∞].
+
+/-- On finitely many axes, the twin verdict is the frozen verdict on the cast threshold
+    and grade, so `verdict_sound` and `verdict_complete` hold of it. -/
+theorem xverdict_agrees [Fintype ι] (θ : ι → WithTop ℚ≥0) (g : XGrade ι) :
+    xverdict θ g = verdict (xcast ∘ θ) g.toGrade := by sorry
+-- Mutant: SirusSC's `Q.leq` as a threshold check, which skips an axis holding ⊥
+-- ("bottom <= x"): it accepts the unknown under θ = 1.
+
+/-- The twin residual casts to the frozen residual, ∞ − ∞ = 0 included. -/
+theorem xresidual_agrees (θ x : WithTop ℚ≥0) :
+    xcast (xresidual θ x) = residual (xcast θ) (xcast x) := by sorry
+-- Mutant: v1's check of each stage against the full θ, a residual that returns θ:
+-- θ = x = 1 leaves 1, not 0.
+
+/-- The twin threading test returns `true` exactly when the cast budget threads through
+    the cast stages. -/
+theorem xthreads_agrees (θ : WithTop ℚ≥0) (xs : List (WithTop ℚ≥0)) :
+    xthreads θ xs = true ↔ Threads (xcast θ) (xs.map xcast) := by sorry
+-- Mutant: v1's residual check alone, `threads_spec`'s mutant, run on the twins: θ = 1 with
+-- stages 2 then 0 passes, though stage one overspends.
+
+/-- The twin width casts to the frozen width. A known ∞, such as [∞, ∞], has width 0. -/
+theorem xwidth_agrees (b : XBound) : xcast b.width = b.toBound.width := by sorry
+-- Mutant: a width that is ∞ whenever the upper end is, as a floating-point gate finds it:
+-- there ∞ − ∞ is NaN, which no finite lease admits. [∞, ∞] gets width ∞, not 0.
+
+/-- On finitely many axes, the twin lease verdict is the frozen one on the cast
+    thresholds, leases and grade, so `lease_sound` and `lease_complete` hold of it. -/
+theorem xleaseVerdict_agrees [Fintype ι] (θ β : ι → WithTop ℚ≥0) (g : XGrade ι) :
+    xleaseVerdict θ β g = leaseVerdict (xcast ∘ θ) (xcast ∘ β) g.toGrade := by sorry
+-- Mutant: SirusSC's `QPrime`, which never reads a width, run on the twins: [0, 5] leased 1
+-- passes under θ = 10.
+
 end JSG

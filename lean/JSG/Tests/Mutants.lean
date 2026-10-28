@@ -1559,4 +1559,228 @@ theorem dro_envelope_witness :
       exact hval ρ hρ
     simpa using h2.congr_of_eventuallyEq heq
 
+/-! ## statements-v4
+
+Controls for the theorems added in `statements-v4`, in the same style. Each mutant is a
+twin with a known defect: from SirusSC's `specchain` where it has one, and otherwise from
+v1's and v2's own controls. Two are invented, and say so. The controls import only the
+definitions, so they prove the casts of 0, 1, the numerals and ∞ here, from `xcast`'s
+definition. Where a witness computes a twin's value, the kernel does it: plain `decide`
+for comparisons, and `decide +kernel` where a rational subtraction comes in, since Lean marks
+rational arithmetic irreducible and plain `decide` stops there. Neither is native
+evaluation. -/
+
+/-- `xcast` on an exact rational, by its definition. -/
+theorem xcast_coe (q : ℚ≥0) : xcast (q : WithTop ℚ≥0) = ((q : NNReal) : ENNReal) := rfl
+
+theorem xcast_zero : xcast 0 = 0 := by
+  rw [← WithTop.coe_zero, xcast_coe, NNRat.cast_zero, ENNReal.coe_zero]
+
+theorem xcast_one : xcast 1 = 1 := by
+  rw [← WithTop.coe_one, xcast_coe, NNRat.cast_one, ENNReal.coe_one]
+
+theorem xcast_ofNat (n : ℕ) [n.AtLeastTwo] :
+    xcast (no_index (OfNat.ofNat n)) = OfNat.ofNat n := by
+  rw [← WithTop.coe_ofNat, xcast_coe, NNRat.cast_ofNat, ENNReal.coe_ofNat]
+
+theorem xcast_top : xcast ⊤ = ⊤ := rfl
+
+/-- A known exact value on the single axis. -/
+def xk (x : WithTop ℚ≥0) : XGrade Unit := fun _ => XBound.known x
+
+/-- The unknown on the single axis. -/
+def xunk : XGrade Unit := fun _ => XBound.unknown
+
+/-! ## xknown_agrees -/
+
+/-- Mutant: a reading taken as an upper bound only, [0, x], which forgets that x is known.
+    Invented: no source in `archive/` reads a point this way. -/
+def upperOnly (x : WithTop ℚ≥0) : XBound := ⟨0, x, zero_le⟩
+
+/-- The known 1 read as [0, 1] has lower end 0, not 1. -/
+theorem xknown_agrees_mutant : ¬ ∀ x, (upperOnly x).toBound = Bound.known (xcast x) := by
+  intro hc
+  have := congrArg Bound.lo (hc 1)
+  simp [upperOnly, XBound.toBound, Bound.known, xcast_zero, xcast_one] at this
+
+/-- Witness for `xknown_agrees` (the known ∞, which a withdrawn manuscript's `withdrawn` axis
+    holds): its twin stands for [∞, ∞]. -/
+theorem xknown_agrees_witness :
+    (XBound.known ⊤).toBound = Bound.known (xcast ⊤) ∧ xcast ⊤ = ⊤ := ⟨rfl, rfl⟩
+
+/-! ## xunknown_agrees -/
+
+/-- Mutant: an unknown at the bottom of the order, [0, 0], as SCp1's order puts ⊥ below
+    every value and SirusSC's `Q.leq` lets ⊥ pass any bound. -/
+def bottomUnknown : XBound := XBound.known 0
+
+/-- [0, 0] has upper end 0, not ∞. -/
+theorem xunknown_agrees_mutant : bottomUnknown.toBound ≠ Bound.unknown := by
+  intro h
+  have := congrArg Bound.hi h
+  simp [bottomUnknown, XBound.known, XBound.toBound, Bound.unknown, xcast_zero] at this
+
+/-- Witness for `xunknown_agrees`. The statement has no parameters, so its one instance is the
+    statement itself, checked here end by end from the definitions. -/
+theorem xunknown_agrees_witness : XBound.unknown.toBound = Bound.unknown := by
+  ext
+  · simp [XBound.toBound, XBound.unknown, Bound.unknown, xcast_zero]
+  · rfl
+
+/-! ## xcombine_agrees -/
+
+/-- Mutant: SirusSC's `Interval.join` and `Interval.plus`, where ⊥ absorbs whatever it
+    combines with. Here ⊥ is the unknown, [0, ∞]. -/
+def absorbAxis (k : Kind) (a b : XBound) : XBound :=
+  if (a.lo = 0 ∧ a.hi = ⊤) ∨ (b.lo = 0 ∧ b.hi = ⊤) then XBound.unknown else xcombineAxis k a b
+
+/-- `absorbAxis` on every axis. -/
+def absorbCombine {ι : Type} (kind : ι → Kind) (g h : XGrade ι) : XGrade ι :=
+  fun i => absorbAxis (kind i) (g i) (h i)
+
+/-- On a floor, the unknown combined with the known 1 is [1, ∞], but `absorbCombine` keeps it
+    at [0, ∞]. -/
+theorem xcombine_agrees_mutant :
+    ¬ ∀ g h : XGrade Unit,
+      (absorbCombine floor g h).toGrade = combine floor g.toGrade h.toGrade := by
+  intro hc
+  have := congrArg (fun g => (g ()).lo) (hc xunk (xk 1))
+  simp [absorbCombine, absorbAxis, xunk, xk, XBound.unknown, XBound.known, XGrade.toGrade,
+    XBound.toBound, combine, combineAxis, floor, xcast_zero, xcast_one] at this
+
+/-- Witness for `xcombine_agrees` (on a floor, the unknown combined with the known 1): both
+    sides are [1, ∞]. -/
+theorem xcombine_agrees_witness :
+    (xcombine floor xunk (xk 1)).toGrade = combine floor xunk.toGrade (xk 1).toGrade := by
+  funext i
+  ext <;> simp [xcombine, xcombineAxis, combine, combineAxis, floor, xunk, xk, XBound.unknown,
+      XBound.known, XGrade.toGrade, XBound.toBound, xcast_zero, xcast_one, xcast_top]
+
+/-! ## xverdict_agrees -/
+
+/-- Mutant: SirusSC's `Q.leq` as a threshold check. It skips an axis holding ⊥
+    ("bottom <= x"), so an unknown passes any threshold. -/
+def leqSkipsUnknown {ι : Type} [Fintype ι] (θ : ι → WithTop ℚ≥0) (g : XGrade ι) : Decision :=
+  if ∀ i, ((g i).lo = 0 ∧ (g i).hi = ⊤) ∨ (g i).hi ≤ θ i then .accept else .reject
+
+/-- Under θ = 1 the unknown is rejected, but `leqSkipsUnknown` accepts it. -/
+theorem xverdict_agrees_mutant :
+    ¬ ∀ (θ : Unit → WithTop ℚ≥0) (g : XGrade Unit),
+      leqSkipsUnknown θ g = verdict (xcast ∘ θ) g.toGrade := by
+  intro hc
+  have := hc (fun _ => 1) xunk
+  simp [leqSkipsUnknown, verdict, xunk, XBound.unknown, XGrade.toGrade, XBound.toBound,
+    xcast_one, xcast_top] at this
+
+/-- Witness for `xverdict_agrees` (the unknown under θ = 1): both sides reject, and `decide`
+    computes the twin's verdict. -/
+theorem xverdict_agrees_witness :
+    xverdict (fun _ => 1) xunk = verdict (xcast ∘ fun _ => 1) xunk.toGrade
+      ∧ xverdict (fun _ => 1) xunk = .reject := by
+  have h : xverdict (fun _ => 1) xunk = .reject := by decide
+  refine ⟨?_, h⟩
+  rw [h]
+  simp [verdict, xunk, XBound.unknown, XGrade.toGrade, XBound.toBound, xcast_one, xcast_top]
+
+/-! ## xresidual_agrees -/
+
+/-- Mutant: v1's check of each stage against the full θ (`residualFull`), as a twin. -/
+def xresidualFull (θ _x : WithTop ℚ≥0) : WithTop ℚ≥0 := θ
+
+/-- θ = x = 1 leaves 0, but `xresidualFull` leaves 1. -/
+theorem xresidual_agrees_mutant :
+    ¬ ∀ θ x : WithTop ℚ≥0, xcast (xresidualFull θ x) = residual (xcast θ) (xcast x) := by
+  intro hc
+  have := hc 1 1
+  simp [xresidualFull, residual, xcast_one] at this
+
+/-- Witness for `xresidual_agrees` (θ = x = 1): both sides are 0. -/
+theorem xresidual_agrees_witness : xcast (xresidual 1 1) = residual (xcast 1) (xcast 1) := by
+  simp [xresidual, residual, xcast_zero, xcast_one]
+
+/-! ## xthreads_agrees -/
+
+/-- Mutant: v1's residual check alone (`ResidualOnly`), as a twin. Each later stage is checked
+    against the residual the earlier ones left, but no stage before the last is checked to
+    fit. -/
+def xResidualOnly : WithTop ℚ≥0 → List (WithTop ℚ≥0) → Bool
+  | _, [] => true
+  | θ, [x] => decide (x ≤ θ)
+  | θ, x :: y :: rest => xResidualOnly (xresidual θ x) (y :: rest)
+
+/-- θ = 1, stages 2 then 0: stage one overspends, the residual truncates to 0, and stage two's
+    0 still fits it. -/
+theorem xthreads_agrees_mutant :
+    ¬ ∀ (θ : WithTop ℚ≥0) (xs : List (WithTop ℚ≥0)),
+      (xResidualOnly θ xs = true ↔ Threads (xcast θ) (xs.map xcast)) := by
+  intro hc
+  have h1 : xResidualOnly 1 [2, 0] = true := by simp [xResidualOnly]
+  have := (hc 1 [2, 0]).mp h1
+  simp [Threads, xcast_one, xcast_ofNat] at this
+
+/-- Witness for `xthreads_agrees` (θ = 10 with stages 3 then 4, which fit; θ = 1 with stages 2
+    then 0, where stage one overspends): both sides agree on each. -/
+theorem xthreads_agrees_witness :
+    (xthreads 10 [3, 4] = true ↔ Threads (xcast 10) ([3, 4].map xcast))
+      ∧ (xthreads 1 [2, 0] = true ↔ Threads (xcast 1) ([2, 0].map xcast)) := by
+  constructor
+  · refine iff_of_true (by decide +kernel) ?_
+    simp only [Threads, List.map, xcast_ofNat, residual]
+    exact ⟨by norm_num,
+      (ENNReal.le_sub_iff_add_le_left (by norm_num) (by norm_num)).mpr (by norm_num), trivial⟩
+  · refine iff_of_false (by simp [xthreads]) ?_
+    simp [Threads, xcast_one, xcast_ofNat]
+
+/-! ## xwidth_agrees -/
+
+/-- Mutant: a width that is ∞ whenever the upper end is, as a floating-point gate finds it:
+    there ∞ − ∞ is NaN, which no finite lease admits. Invented: no twin in `archive/`
+    computes a width. -/
+def floatWidth (b : XBound) : WithTop ℚ≥0 := if b.hi = ⊤ then ⊤ else b.hi - b.lo
+
+/-- The known ∞ has width 0, but `floatWidth` gives it ∞. -/
+theorem xwidth_agrees_mutant : ¬ ∀ b : XBound, xcast (floatWidth b) = b.toBound.width := by
+  intro hc
+  have := hc (XBound.known ⊤)
+  simp [floatWidth, XBound.known, XBound.toBound, Bound.width, xcast_top] at this
+
+/-- Witness for `xwidth_agrees` (the known ∞): both widths are 0, since ∞ − ∞ is 0 in both
+    carriers. -/
+theorem xwidth_agrees_witness :
+    xcast (XBound.known ⊤).width = (XBound.known ⊤).toBound.width := by
+  simp [XBound.width, XBound.known, XBound.toBound, Bound.width, xcast_top, xcast_zero]
+
+/-! ## xleaseVerdict_agrees -/
+
+/-- [0, 5] on the single axis, with exact ends. -/
+def xZeroFive : XGrade Unit := fun _ => ⟨0, 5, by decide⟩
+
+/-- Mutant: SirusSC's `QPrime`, which never reads a width, as a twin: the twin of
+    `qPrimeGate`. -/
+def xQPrimeGate {ι : Type} [Fintype ι] (θ _β : ι → WithTop ℚ≥0) (g : XGrade ι) : Decision :=
+  xverdict θ g
+
+/-- [0, 5] is over its lease of 1 but within θ = 10, and `xQPrimeGate` accepts it. -/
+theorem xleaseVerdict_agrees_mutant :
+    ¬ ∀ (θ β : Unit → WithTop ℚ≥0) (g : XGrade Unit),
+      xQPrimeGate θ β g = leaseVerdict (xcast ∘ θ) (xcast ∘ β) g.toGrade := by
+  intro hc
+  have h : xQPrimeGate (fun _ => (10 : WithTop ℚ≥0)) (fun _ => 1) xZeroFive = .accept := by
+    decide
+  have := hc (fun _ => 10) (fun _ => 1) xZeroFive
+  rw [h] at this
+  simp [leaseVerdict, xZeroFive, XGrade.toGrade, XBound.toBound, Bound.width, xcast_zero,
+    xcast_one, xcast_ofNat] at this
+
+/-- Witness for `xleaseVerdict_agrees` ([0, 5] leased 1 under θ = 10): both sides reject, and
+    `decide +kernel` computes the twin's verdict, width included. -/
+theorem xleaseVerdict_agrees_witness :
+    xleaseVerdict (fun _ => 10) (fun _ => 1) xZeroFive
+      = leaseVerdict (xcast ∘ fun _ => 10) (xcast ∘ fun _ => 1) xZeroFive.toGrade := by
+  have h : xleaseVerdict (fun _ => (10 : WithTop ℚ≥0)) (fun _ => 1) xZeroFive = .reject := by
+    decide +kernel
+  rw [h]
+  simp [leaseVerdict, xZeroFive, XGrade.toGrade, XBound.toBound, Bound.width, xcast_zero,
+    xcast_one, xcast_ofNat]
+
 end JSG.Tests.Mutants

@@ -4,6 +4,14 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-28
 
+### statements-v4 drafted (#62)
+- **Scope (Q11):** the twins of the graded values, `combine`, `verdict`, `residual` and `Threads`, and `Bound.width` and `leaseVerdict`, with eight agreement theorems, in a new section 15 of `Defs.lean` and `Statements.lean`. The obligation and Loader twins wait.
+- **The form, queued as Q15:** `WithTop ℚ≥0` as the carrier; `[Fintype ι]` for the two verdicts; `xcombine` standing for `seqComp` and `parComp`; and a theorem each for `known` and `unknown`.
+- **Mutants:** each is an executable twin with a known defect, so EXECUTABLE_GATE §2 can run it as a negative control. Four come from SirusSC's `specchain` and SCp1, two from v1's and v2's controls, and two are invented: a point read as an upper bound, and floating point's ∞ − ∞.
+- **Provability check:** all eight are proved in an uncommitted scratch file against this draft's `JSG.Statements`, each checked by `rfl` on its type, with only the three axioms. The frozen twins also ran under `#eval`.
+- **A new defect:** SirusSC's absorbing ⊥ joins the master guide's table, from `xcombine_agrees`'s mutant.
+- **Stacked on #60,** whose queue and proposal it builds on.
+
 ### The executable gate proposed (#60)
 - **Scope:** Marley's brief asked for a design proposal with no code: the executable gate, and its first pilot, grading the openai/math release. It's in a new `guide/EXECUTABLE_GATE.md`, and its decisions are queued as Q11–Q13.
 - **The queue:** Q8–Q10 are moved to Answered, as answered by tagging `statements-v3` at the draft's head. That keeps at most three entries open.

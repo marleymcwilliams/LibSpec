@@ -2,6 +2,17 @@
 
 Every statements version after `statements-v1` records here whether it tightens or weakens the statements, and so does every change in between to a file the statements check covers: `lean/JSG/Defs.lean`, `lean/JSG/Statements.lean`, their project imports, `lean/lean-toolchain`, `lean/lake-manifest.json` and `lean/lakefile.toml`, so Lean and Mathlib upgrades count too. A weakening also needs a signed decision (`guide/decisions/RAILS.md`).
 
+## statements-v4
+
+Tightens: it only adds statements. Executable twins of the core's definitions, each with a theorem that it agrees with its frozen definition, go in a new section 15 of `lean/JSG/Defs.lean` and `lean/JSG/Statements.lean` (guide/EXECUTABLE_GATE.md §1; QUEUE.md, Q11 and Q15). The twins compute in `WithTop ℚ≥0`. No `statements-v1`–`v3` definition or statement changes, so the 26 proofs of Milestones 1–3 stand as they are.
+
+- **Graded values:** `xknown_agrees`, `xunknown_agrees`.
+- **Combining:** `xcombine_agrees`, which covers `seqComp` and `parComp` too, since core v2 makes both `combine`.
+- **Verdicts:** `xverdict_agrees`, `xleaseVerdict_agrees`, and the width the second reads, `xwidth_agrees`.
+- **Residual threading:** `xresidual_agrees`, `xthreads_agrees`.
+
+The obligation and Loader twins wait for a later version (QUEUE.md, Q11).
+
 ## statements-v3
 
 Tightens: it only adds statements. Three theorems for Milestone 3, the analysis layer, and the definitions they use, go in new sections 12–14 of `lean/JSG/Defs.lean` and `lean/JSG/Statements.lean`. No `statements-v1` or `statements-v2` definition or statement changes, so the 22 proofs of Milestones 1 and 2 stand as they are.

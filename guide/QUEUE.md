@@ -15,6 +15,20 @@ Questions only you can answer: anything that changes a statement's meaning, a No
 - **What breaks if wrong:** Under θ = 0, only `dependency_withdrawn` can change a verdict. Whenever a manuscript's formalization isn't complete, one of its own formal axes is already above 0, so the other carried doubts change only what its report lists. They would start to decide verdicts if a threshold were ever raised above 0. If `dependency_withdrawn` didn't carry, a manuscript that rests on a withdrawn result, but isn't withdrawn itself, could be accepted. The three real must-fails are withdrawn themselves, so they would still fail, but the synthetic two-step must-fail would catch it.
 - **Can it be undone:** Yes. It's a declared rule of the pilot, so changing it changes reports and, through `dependency_withdrawn`, verdicts, but no theorem.
 
+### Q15. The form of the statements-v4 twins
+
+- **Question:** The `statements-v4` draft freezes the twins Q11 chose, in a form that needs your approval:
+  - **The carrier:** `WithTop ℚ≥0`, exact nonnegative rationals plus ∞, cast into `ENNReal` by `xcast`.
+  - **Finitely many axes:** `xverdict` and `xleaseVerdict` need `[Fintype ι]`, since a check of every axis must visit each one. The frozen verdicts allow any axis type, so their agreement theorems cover the finite ones.
+  - **One twin for `combine`, `seqComp` and `parComp`:** core v2 makes the last two `combine`, so `xcombine` stands for all three.
+  - **Eight theorems,** one for each twin, `known` and `unknown` included. The pilot's "unknown axes must reject" rests on `xunknown_agrees`, with `xverdict_agrees` and `verdict_sound`.
+- **Recommended answer:** Yes, as drafted.
+- **What breaks if wrong:**
+  - Another carrier would change every twin and every agreement theorem. `WithTop ℕ` would be simpler, but couldn't hold a doubt of 1/2, and floating point breaks agreement outright.
+  - `Fintype` costs nothing a harness could use, since it can only ever check finitely many axes.
+  - If a later version separates `seqComp` from `combine`, it adds an `xseqComp` twin, and nothing here changes.
+- **Can it be undone:** Yes, freely until `statements-v4` is tagged. After that, adding a twin is a tightening, and changing one is a weakening, which needs a signed decision.
+
 ## Answered
 
 ### Q11. Freeze executable twins of the core definitions as statements-v4?

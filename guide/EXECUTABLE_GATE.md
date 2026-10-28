@@ -161,7 +161,7 @@ Your answers, recorded in [QUEUE.md](QUEUE.md):
 Still open: **Q14**, which axes carry a dependency's doubt (§3).
 
 The order of work:
-1. **A `statements-v4` draft:** the twins, their agreement theorems, a mutant and a witness for each, and a provability check, in a draft PR as for v2 and v3. Started.
+1. **A `statements-v4` draft:** the twins, their agreement theorems, a mutant and a witness for each, and a provability check, in a draft PR as for v2 and v3. Started: #62, with its form queued as Q15.
 2. **Milestone 4,** proving them.
 3. **The harness**, the corpus and the differential tests, with every mutant as a negative control.
 4. **The pilot:**
