@@ -2,6 +2,28 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-10-28
+
+### `statements-v3` proposed (#50, draft)
+- **Scope:** Marley's brief, with one-time permission to edit `Defs.lean` and `Statements.lean` on a draft branch, as for v2. Three theorems and their definitions are appended as sections 12–14 of both files, under a note that nothing above changed. The diff against `statements-v2` removes no line from any covered file. The Jacobi frontier defect is left out, and that's Q8.
+- **Corrected forms:** each source claim needed correcting before it could be stated. The corrections are in STATEMENTS_REVIEW's v3 section:
+  - **CVaR:** Lemma 9.1's strict inequality is dropped.
+  - **KL–Fisher:** stated in whitened coordinates (Q9), with the Hessian bound only along the segment.
+  - **DRO:** the multiplier, not the tilt; the dual rather than the risk (Q10).
+- **Mutants:** each comes from a defect in `archive/`:
+  - PDE Lemma 9.1's strict conclusion;
+  - jsg-lab's `FisherContext`, which takes its radius from raw third moments without whitening;
+  - JSG II's KL dual, which uses η as both the multiplier and the tilt.
+
+  The KL–Fisher controls compute a fair coin's KL divergences from the definitions, and the DRO controls use Mathlib's Gaussian mgf. All of them, and a witness per theorem, are in `Tests/Mutants.lean`, within propext, Classical.choice and Quot.sound.
+- **Provability check:** all three theorems are proved in an uncommitted scratch file. Each proof is against its frozen statement, checked by `rfl` on the types, and uses only the three axioms. `kl_fisher_local` holds for every ε ≤ 1 in whitened coordinates. Its proof, Cauchy's mean value theorem along the ray, needs four helper lemmas.
+- **Docs:** CHANGELOG, QUEUE (Q8–Q10), ROADMAP, MASTER_GUIDE and IDEAS are updated to match. MASTER_GUIDE's changes:
+  - its sketch gains sections 12–14, generated from the two files and checked line by line;
+  - three layer-map rows move to Stub;
+  - its roadmap line gains the DRO identity;
+  - five defects join its table.
+- **Editor servers:** my edits to the worktree's `Defs.lean` and `Statements.lean` opened them in Marley's VS Code, whose worker for `Defs.lean` loaded Mathlib (~8 GB). From then on I edited Lean files by script.
+
 ## 2026-10-27
 
 ### Milestone 2 merged and its gate recorded (#49)

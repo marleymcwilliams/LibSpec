@@ -134,7 +134,7 @@ Each milestone proves one block of `Statements.lean` and closes at the same gate
 | --- | --- | --- | --- |
 | 1: Algebraic core | `combine_comm`, `combine_assoc`, `interchange`, `verdict_sound`, `verdict_complete`, `residual_spec`, `no_flip`, `fold_check_vacuous` | Mathematics in Lean ch. 2–4, 7; the `ENNReal` API | Low: case splits on axis kind, plus finding the right `ENNReal` lemmas |
 | 2: Obligations, Loader, charge, policy | Typed obligations and leases (`pass_sound`, `pass_complete`, `lease_sound`, `lease_complete`), `Loader.safe`, `Loader.terminates`, the concrete Loader (`LoaderStep.inv_step`, `LoaderStep.progress`), `threads_spec`, `charge_append`, `charge_chatter`, `expiry_tightens`, `bridge`, `mfGate_signed` | Mathematics in Lean ch. 5–6 | Low to medium: Dershowitz–Manna and lattice lemmas take some finding |
-| 3: Analysis layer | CVaR tail-to-level, `dwell_lower_bound`, local KL–Fisher bound, DRO envelope identity | Mathematics in Lean ch. 11–13 | Medium to high: the statements need as much care as the proofs |
+| 3: Analysis layer | CVaR tail to level (`cvar_tail_to_level`), `dwell_lower_bound`, the local KL–Fisher bound (`kl_fisher_local`), the DRO envelope identity (`dro_envelope`) | Mathematics in Lean ch. 11–13 | Medium to high: the statements need as much care as the proofs |
 
 **Milestone 1 notes**, for right after the `statements-v1` tag:
 
@@ -148,7 +148,12 @@ Each milestone proves one block of `Statements.lean` and closes at the same gate
 - `Loader.safe` and `Loader.terminates` hold for any Loader. `statements-v2` states a concrete one: `LoaderStep`, whose invariant `LoaderInv` is L1–L10, and which starts from `bootState` and runs each stage once, on its ticket. Once `LoaderStep.inv_step` and `LoaderStep.progress` are proved, it can be built as a `Loader`, and the two theorems apply to it. Milestone 2's note must say whether that has happened, and that the Loader is generic in its cryptographic primitives (QUEUE.md, Q7). Done: it was built in #48, and the closing note in `MILESTONE_2.md` says both.
 - The archive's one implemented Loader, SirusSC's `specchain/loader/loader.py`, doesn't supply it as written. It runs ten baseline checks numbered I1–I10, but only I1, the raw-data digest, is SCp3's I1 (our L1); the other nine are different checks under the same numbers. Its termination is a dwell countdown, with "strict decrease" set by which guard ran (`strict = guard.__name__ in ("guard_CBF", "guard_OMEGA")`), and its rank vector (`rank = [0, 0, 0, 0, 0]`) is never updated.
 
-Of Milestone 3's statements, only `dwell_lower_bound` is frozen so far, in `statements-v1`. `statements-v2` holds Milestone 2's additions, so write and freeze the rest in a statements version of their own, before any proof work on them starts.
+Of Milestone 3's statements, `dwell_lower_bound` is frozen in `statements-v1`, and `statements-v3` proposes the other three (#50). Freeze them before any proof work on them starts.
+
+**Milestone 3 notes**, for the milestone's closing note:
+
+- `dro_envelope` is about the dual value. That the dual equals the worst-case risk is strong duality, which isn't stated (QUEUE.md, Q10), so the note shouldn't claim the identity for the risk itself.
+- `kl_fisher_local` is in whitened coordinates (QUEUE.md, Q9). Its proof's four helper lemmas belong in `Lemmas/`: the KL divergence of a tilted measure, the one-dimensional bound along the ray, and two pieces of algebra.
 
 **Gate for every milestone**
 

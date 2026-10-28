@@ -1,6 +1,6 @@
 # Statements review: mutants and witnesses
 
-Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement. The [statements-v2](#statements-v2) section at the end does the same for the seven theorems that version adds.
+Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement. The [statements-v2](#statements-v2) and [statements-v3](#statements-v3) sections at the end do the same for the seven and three theorems those versions add.
 
 **How to read it.**
 - **Same Prop:** the mutant refutes the statement's own named definition with the mutant plugged in.
@@ -450,3 +450,186 @@ Each witness proves every hypothesis of its theorem, then the conclusion, for on
 | `LoaderStep.inv_step` | `hs`, `h` | from T-Boot's state, one stage prices a row and clears its ticket; the invariant is proved after the step too |
 | `LoaderStep.progress` | `h` | from T-Boot's state with OmegaPrecond carried in, a stage clears its ticket and replaces OmegaPrecond by RequiresHitmap |
 | `threads_spec` | `hθ` | θ = 10 with stages 3 then 4, where both sides hold; θ = 1 with stages 2 then 0, where neither does |
+
+## statements-v3
+
+Review support for the `statements-v3` proposal, read the same way as above. Its three theorems are in sections 12–14 of `lean/JSG/Statements.lean`, their definitions in the same sections of `lean/JSG/Defs.lean`, and their controls in the "statements-v3" part of `lean/JSG/Tests/Mutants.lean`. Every mutant comes from a defect in `archive/`.
+
+**Scope** ([Q8](QUEUE.md)). Milestone 3 is the analysis layer. `dwell_lower_bound` is already frozen in `statements-v1`, so v3 adds the other three: the CVaR tail-to-level step, the local KL–Fisher bound and the DRO envelope identity. The geometry-scaled Jacobi frontier defect is left out. JSG I never defines its defect Δ\_fr, and its bound adds ‖S‖∞ to ‖∇S‖∞, which have different units.
+
+**Context.**
+- **Section 12** adds `{Ω : Type} [MeasurableSpace Ω]`, the outcomes.
+- **Section 13** adds `{V : Type}`, a real Hilbert space for the dictionary's statistics and the natural parameters. Its inner product is the Fisher metric at 0, so the coordinates are whitened ([Q9](QUEUE.md)).
+- **Opens:** both files open `MeasureTheory`, and `Statements.lean` also opens `InformationTheory`, for `klDiv`.
+
+**Fixtures.**
+- **CVaR:** a point mass on `Unit`, and `Bool` with masses 1/4 and 3/4.
+- **KL–Fisher:** a fair coin on `Bool` with the statistic ±c. Its log-partition function is log cosh(cx), its cumulant c·tanh(cx) and its Fisher information c²/cosh²(cx). The controls derive all three, and the coin's KL divergences, from the definitions.
+- **DRO:** a Gaussian loss of variance 2, through Mathlib's `gaussianReal 0 2` and `mgf_id_gaussianReal`. Its KL dual's g(η) = η log E[e^{ℓ/η}] is 1/η.
+
+| Theorem | The mutant refutes | What differs from the statement | The defect it comes from |
+| --- | --- | --- | --- |
+| `cvar_tail_to_level` | Restated copy | `{ω \| ε < X ω}` → `{ω \| ε ≤ X ω}`; Ω = `Unit` | PDE Lemma 9.1's conclusion, E < ε\_CKN outside the tail, with every constant at 1 |
+| `kl_fisher_local` | Restated copy (`KLFisherRaw`), at the fair coin | `‖H x - 1‖` → `‖H x - H 0‖`, and `‖κ θ‖ ^ 2` → `κ θ ^ 2 / H 0 1`: the Fisher information at 0 needn't be the identity | jsg-lab's `FisherContext` (`stats/fisher.py`): r = ε/L\_ψ, with L\_ψ the raw features' largest third absolute moment |
+| `dro_envelope` | Restated copy (`TiltEnvelope`) | `η * ρ + g η` → `ρ / η + k η`: η read as the tilt | JSG II's KL dual, whose η is both the multiplier (ηρ) and the tilt (e^{ηℓ}) |
+
+**What this means.**
+- **No `statements-v1` or `statements-v2` statement or definition changes.** Each v3 theorem is new, and so is every definition it uses.
+- **Each source claim needed correcting, and the corrected forms are true.** All three are proved in an uncommitted scratch file ([Provability check](#provability-check-v3)).
+- **Where a source's statement was false, it became the mutant.** Where only its argument was wrong, the section below says so.
+
+### 24. `cvar_tail_to_level`: restated copy
+```lean
+-- Statement
+theorem cvar_tail_to_level (μ : Measure Ω) (α : ENNReal) {X : Ω → ENNReal}
+    (hX : AEMeasurable X μ) {ε : ENNReal} (h : cvar μ α X ≤ ε) :
+    μ {ω | ε < X ω} ≤ α
+-- Mutant: PDE Lemma 9.1's conclusion, with every constant at 1
+theorem cvar_tail_to_level_mutant :
+    ¬ ∀ (μ : Measure Unit) (α : ENNReal) (X : Unit → ENNReal), AEMeasurable X μ →
+      ∀ ε, cvar μ α X ≤ ε → μ {ω | ε ≤ X ω} ≤ α
+```
+
+**Source.** `archive/DissipativePDEs.pdf`, §9.2: Lemma 9.1 (CVaR→CKN constant) and the note "Why C₀ = 1 is universal"; §9.3, Step 1.
+
+**What the source gets wrong, and the correction.**
+- **The note's argument is too weak.** It says μ{X > τ} > α implies CVaR₁₋α(X) ≥ τ, and concludes that CVaR ≤ ε forces μ{X > ε} ≤ α. But the contrapositive of what it says covers only CVaR < ε. The conclusion is still true, because μ{X > τ} > α in fact forces CVaR > τ. By continuity from below, some level s > τ still has μ{X > s} > α, and then every level t gives t + E[(X − t)₊]/α ≥ s. That's the proof.
+- **Lemma 9.1's conclusion is strict.** It says every cell outside the tail has E\_rk < ε\_CKN, but Step 1 gives only E\_rk ≤ ε. With every constant at 1, the strict form fails for a loss equal to ε everywhere. That's the mutant.
+- **The quantifier is misplaced.** "For every grid cell k, CVaR₁₋α E\_rk ≤ ε" takes the CVaR of a single number. §9.4's checklist shows the CVaR is over the grid's cells, of k ↦ E\_rk, which is what Ω and X are here.
+- **"Aggregate measure ≥ 1 − α"** needs the total mass to be 1. The theorem bounds the tail instead, so it needs no mass.
+
+**Mathlib** (Loogle, then `#check`ed against the pin): no CVaR, VaR or quantile. The proof uses Markov's inequality (`mul_meas_ge_le_lintegral₀`) and continuity from below (`tendsto_measure_iUnion_atTop`).
+
+**Definition.** `cvar μ α X` is Rockafellar and Uryasev's infimum, over levels t in [0, ∞], of t + E[(X − t)₊]/α, in ENNReal. When α ≤ 1, a level below 0 does no better than 0, so for a nonnegative loss this is the usual CVaR.
+
+**Hypotheses.**
+- **`hX`, a.e.-measurability.** Without it the lower integral can't see the tail. Take Bool with the trivial σ-algebra, where only ∅ and Bool are measurable. Let μ be the point mass at `true`, X = 2 on `true` and 0 on `false`, α = 1/2 and ε = 1. Every measurable function is constant, so the lower integral of (X − t)₊ is 0 and the CVaR is 0. But μ{X > 1} = μ{true} = 1.
+- **None on μ or α.** It holds for every measure and every α in [0, ∞]. For α = 0 the CVaR is X's essential supremum.
+
+### 25. `kl_fisher_local`: restated copy, at the fair coin
+```lean
+-- Statement
+theorem kl_fisher_local (μ : Measure Ω) [IsProbabilityMeasure μ] (T : Ω → V)
+    (κ : V → V) (H : V → V →L[ℝ] V) {L ε : ℝ} {θ : V}
+    (hgrad : ∀ x ∈ segment ℝ 0 θ, HasGradientAt (logPartition μ T) (κ x) x)
+    (hhess : ∀ x ∈ segment ℝ 0 θ, HasFDerivAt κ (H x) x)
+    (hcenter : κ 0 = 0)
+    (hlip : ∀ x ∈ segment ℝ 0 θ, ‖H x - 1‖ ≤ L * ‖x‖)
+    (hint : θ ∈ interior {x | Integrable (fun ω => Real.exp (inner ℝ x (T ω))) μ})
+    (hr : L * ‖θ‖ ≤ ε) (hε : ε ≤ 1) :
+    ENNReal.ofReal ((1 - ε) / 2 * ‖κ θ‖ ^ 2) ≤ klDiv (expFamily μ T θ) μ ∧
+      klDiv (expFamily μ T θ) μ ≤ ENNReal.ofReal ((1 + ε) / 2 * ‖κ θ‖ ^ 2)
+-- The claim in raw coordinates, at the fair coin
+def KLFisherRaw : Prop :=
+  ∀ (T : Bool → ℝ) (κ : ℝ → ℝ) (H : ℝ → ℝ →L[ℝ] ℝ) (L ε θ : ℝ),
+    (∀ x ∈ segment ℝ 0 θ, HasGradientAt (logPartition coin T) (κ x) x) →
+    (∀ x ∈ segment ℝ 0 θ, HasFDerivAt κ (H x) x) → κ 0 = 0 →
+    (∀ x ∈ segment ℝ 0 θ, ‖H x - H 0‖ ≤ L * ‖x‖) →
+    θ ∈ interior {x | Integrable (fun ω => Real.exp (inner ℝ x (T ω))) coin} →
+    L * ‖θ‖ ≤ ε → ε ≤ 1 →
+    ENNReal.ofReal ((1 - ε) / 2 * (κ θ ^ 2 / H 0 1)) ≤ klDiv (expFamily coin T θ) coin ∧
+      klDiv (expFamily coin T θ) coin ≤ ENNReal.ofReal ((1 + ε) / 2 * (κ θ ^ 2 / H 0 1))
+-- Mutant: jsg-lab's raw-coordinate radius
+theorem kl_fisher_local_mutant : ¬ KLFisherRaw
+```
+
+With `H 0 = 1`, `KLFisherRaw` is `kl_fisher_local` at the coin, `κ θ ^ 2 / 1` standing for `‖κ θ‖ ^ 2`.
+
+**Source.** `archive/Buckshot_Roulette/JSGI.tex`: the setup (line 1063), Theorem 2, "FIM-invariant local equivalence" (`thm:FIMbound`, lines 1069–1081), and the remark "Tight constants" (`rem:constants`, lines 1095–1097). The code is `archive/Reach/jsg-lab/src/jsg/stats/fisher.py`.
+
+**What the source gets wrong or leaves vague, and the correction.**
+- **Which norms?** The theorem writes ‖κ‖\_{F⁻¹} but never says which norm ‖θ‖ ≤ r and the Hessian-Lipschitz constant use. In raw coordinates it's false; that's the mutant. The paper means Fisher norms:
+  - its setup's dictionary is "whitened" (line 1063);
+  - JSG II's `estimate_Lpsi` takes a whitening, `F_whiten`;
+  - JSG I says "All norms are Fisher-induced (Theorem 2) unless noted" (line 2243).
+
+  So the statement is in whitened coordinates: V's inner product is the Fisher metric at 0, F is the identity, and ‖κ‖\_{F⁻¹} is ‖κ‖. That loses nothing, since any F ≻ 0 whitens by the change of variables T ↦ F^{−1/2}T.
+- **Less than Hessian-Lipschitz is needed.** The proof uses only ‖H(x) − F‖ ≤ L‖x‖ along the segment from 0 to θ, not a Lipschitz bound on a neighborhood. That's a weaker hypothesis, so the theorem is stronger.
+- **ε = 1 is allowed.** The source has 0 < ε < 1; the statement allows any ε ≤ 1.
+- **"Sharp to first order in ε" is wrong.** Along a ray where ψ'' falls linearly at rate L, KL/(½‖κ‖²) = 1 + δ/3 + O(δ²), with δ = L‖θ‖. So to first order the bound's slack is ε/3, not ε. For quadratic ψ the ratio is exactly 1, so no ε is needed at all, and "optimal for quadratic ψ" has nothing to be optimal about. Neither remark is part of the theorem.
+- **The theorem itself is true,** for every ε ≤ 1. It's proved below.
+
+**Mathlib** (Loogle, then `#check`ed against the pin):
+- **Present:** the KL divergence (`InformationTheory.klDiv`, `klDiv_of_ac_of_integrable`), log-likelihood ratios of tilted measures (`llr_tilted_left`, `llr_self`), tilted measures (`Measure.tilted`, `isProbabilityMeasure_tilted`), the one-dimensional cumulant generating function (`cgf`, `integrableExpSet`, `integral_tilted_mul_self`, `memLp_tilted_mul`), gradients (`HasGradientAt`), Cauchy's mean value theorem (`exists_ratio_hasDerivAt_eq_ratio_slope`) and the mean value inequality (`norm_image_sub_le_of_norm_deriv_le_segment'`).
+- **Absent:** Fisher information, a multivariate cgf, and differentiating ∫ exp⟪θ, T⟫ in θ beyond one dimension. The proof needs none of them: along the ray t ↦ tθ, ψ is the one-dimensional cgf of ⟪θ, T⟫.
+
+**Definitions.**
+- `expFamily μ T θ` is P\_θ: μ tilted by ⟪θ, T⟫, which is Mathlib's `Measure.tilted`.
+- `logPartition μ T θ` is ψ(θ) = log E\_μ[exp⟪θ, T⟫].
+- The cumulants κ and the Fisher information H aren't definitions. The statement takes them as functions and pins them down by `hgrad` and `hhess`, so κ = ∇ψ, as the source writes κ\_mix = ∇ψ ([Q9](QUEUE.md)).
+
+**Hypotheses.** The counterexamples use the fair coin with statistic ±1. At θ = log 2 its KL divergence is (3/5) log 2 − log(5/4) ≈ 0.193, and ½κ² = ½(3/5)² = 0.18.
+- **`hgrad`, κ is ψ's gradient.** Without it, κ(x) = x with H = 1, L = 0 and ε = 0 meets the rest, and the bound would make the KL divergence ½θ² ≈ 0.240.
+- **`hhess`, H is κ's derivative.** Without it, H = 1, L = 0 and ε = 0 with the coin's true κ = tanh meet the rest, and the bound would make it ½ tanh² θ = 0.18.
+- **`hcenter`, centered statistics.** The statistic 1 ± 1 tilts the coin the same way, so it has the same KL divergences, but κ(0) = E[T] = 1. At θ = 0 the lower bound then reads ½(1 − ε) ≤ 0.
+- **`hlip`, whitened, with the Fisher information moving at most L‖x‖.** Without whitening, the mutant fails it. Without the rate, L = 0 and ε = 0 again make the bound claim ½ tanh² θ.
+- **`hint`, θ is an interior natural parameter.** No counterexample: `hgrad`, `hcenter` and `hlip` imply it. Mathlib's integral of a non-integrable function is 0, so ψ jumps where the natural parameter space ends, and `hgrad` rules out a jump on the segment. I kept it for two reasons. It says what the source assumes, that P\_θ is a regular exponential family member. And without it the statement would lean on that convention. Since the others imply it, keeping it doesn't narrow the theorem.
+- **`hr`, the radius.** At θ = 10, with L = 1 and ε = 1/10, `hlip` holds. But the KL divergence, about 0.69, exceeds ½(1 + ε) tanh² 10 ≈ 0.55.
+- **`hε`, ε ≤ 1.** This is the source's range, closed at 1. For larger ε the lower bound says nothing. Whether the upper bound still holds there is open: the proof needs ψ'' > 0 along the ray, which δ ≤ 1 gives.
+
+The mutant's counterexample is the statistic ±1/4. `FisherContext` takes L\_ψ = (1/4)³ = 1/64 and, with its ε = 0.1, r = 6.4. At θ = 8 log 2 ≈ 5.5, inside r, the KL divergence is (81/17) log 2 − log 17 ≈ 0.469. That exceeds (1 + ε)/2 · κ²/F = (11/20)(15/17)² ≈ 0.428.
+
+### 26. `dro_envelope`: restated copy
+```lean
+-- Statement
+theorem dro_envelope (S : Set ℝ) (g : ℝ → ℝ) (ηstar : ℝ → ℝ) {ρ₀ : ℝ}
+    (hmin : ∀ᶠ ρ in nhds ρ₀, ηstar ρ ∈ S ∧ ∀ η ∈ S, ηstar ρ * ρ + g (ηstar ρ) ≤ η * ρ + g η)
+    (hcont : ContinuousAt ηstar ρ₀) :
+    HasDerivAt (dualValue S g) (ηstar ρ₀) ρ₀
+-- The bounds read with η as the tilt
+noncomputable def tiltDual (S : Set ℝ) (k : ℝ → ℝ) (ρ : ℝ) : ℝ := ⨅ η : S, ρ / (η : ℝ) + k η
+-- The claim with the bounds read in the tilt
+def TiltEnvelope : Prop :=
+  ∀ (S : Set ℝ) (k ηstar : ℝ → ℝ) (ρ₀ : ℝ),
+    (∀ᶠ ρ in nhds ρ₀, ηstar ρ ∈ S ∧ ∀ η ∈ S, ρ / ηstar ρ + k (ηstar ρ) ≤ ρ / η + k η) →
+    ContinuousAt ηstar ρ₀ → HasDerivAt (tiltDual S k) (ηstar ρ₀) ρ₀
+-- Mutant: JSG II's KL dual, with η read as the tilt
+theorem dro_envelope_mutant : ¬ TiltEnvelope
+```
+
+**Source.** `archive/Buckshot_Roulette/JSGII.tex`, in "DRO Closure": the KL dual (lines 679–681), Theorem "Strong duality & uniqueness of η\*" (`thm:duality-uniq`, line 699) and Theorem "ρ-sensitivity & envelope identity" (`thm:rho-sense`, lines 728–740). The 5% finite-difference check that relies on it is at lines 177, 562–567, 629–630, 769 and 781–784. The code is `archive/Reach/jsg-lab/src/jsg/dro/soft_transport.py`.
+
+**What the source gets wrong, and the correction.**
+- **The KL dual is wrong.** It reads inf over η > 0 of ηρ + (1/η) log E[e^{ηℓ}], which uses η as the multiplier in ηρ and as the tilt in e^{ηℓ}. The units show it: a tilt has units 1/[ℓ], so ηρ isn't a loss. The right dual, which follows from the Donsker–Varadhan formula, is inf over η > 0 of ηρ + η log E[e^{ℓ/η}], with η the multiplier. For a Gaussian loss of variance σ², the source's formula gives inf η(ρ + σ²/2) = 0, but the worst-case mean is σ√(2ρ).
+- **dv/dρ = η\* holds for the multiplier, not the tilt.** Read with the source's e^{ηℓ}, η is a tilt t. The dual is then inf over t of ρ/t + (1/t) log E[e^{tℓ}], and dv/dρ = 1/t\*. That's the mutant: for variance 2, v = 2√ρ and t\* = √ρ, so at ρ = 4 the slope is 1/2 while t\* = 2.
+- **A unique η\* is enough only with convexity.** When g is convex, as in both of JSG II's duals, a unique minimizer makes v differentiable: the minimizers are exactly v's supergradients (Fenchel duality). Without convexity it fails. Take S = {1} ∪ {2 + 1/n : n ≥ 1}, g(1) = 0 and g(2 + 1/n) = 1/n. Then the minimizer at ρ₀ = 0 is unique (η = 1), but v(ρ) = ρ for ρ ≥ 0 and 2ρ just below 0.
+
+  The statement assumes a continuous minimizer selection instead:
+  - it's what JSG II's "shrinking η\* bracket" observes;
+  - uniqueness plus compactness gives it (Berge's maximum theorem);
+  - proving the convex form would need Fenchel conjugacy, which Mathlib has only in part.
+- **The check can't catch a wrong dual.** Every dual of the form ηρ + g(η) satisfies the identity, the source's wrong one included. So the 5% check tests the solver, not the duality. This theorem doesn't show that the dual equals the worst-case risk either ([Q10](QUEUE.md)).
+- **jsg-lab never computes v.** `DRO.step` finds η\* by bisection on a soft-transport cost, `_g`, that never reads the loss, and stores η\* alone. So the check can't run against its output.
+- **The θ-gradient half** of `thm:rho-sense`, ∇\_θ R = E[∇\_θ φ̃\_{η\*}], uses the smoothed Wasserstein c-transform φ̃ even in the KL case. It isn't in v3.
+
+**Mathlib** (Loogle, then `#check`ed against the pin): no envelope or Danskin theorem. A search for "envelope" finds only category-theory names, and "danskin" finds nothing. The proof uses `ciInf_le`, `le_ciInf` and `hasDerivAt_iff_isLittleO`. The controls use `mgf_id_gaussianReal`.
+
+**Definition.** `dualValue S g ρ` is the infimum, over multipliers η in S, of ηρ + g(η). Both of JSG II's duals fit. Its KL dual takes S = (0, ∞) and g(η) = η log E\_P[e^{ℓ/η}], and its smoothed Wasserstein dual takes S = [0, ∞) and g(η) = E\_P[φ̃\_η].
+
+**Hypotheses.** The counterexamples use S = {1, 2}, g(1) = 0 and g(2) = −1. Then v(ρ) = min(ρ, 2ρ − 1), which has a kink at ρ₀ = 1.
+- **`hmin`, at every radius near ρ₀.** The constant selection η\* = 2 is continuous and attains v for every ρ ≤ 1, ρ₀ included, but at no ρ above 1.
+- **`hcont`.** The selection that is 2 for ρ ≤ 1 and 1 above attains v at every ρ, and jumps at 1.
+
+In both cases v isn't differentiable at 1.
+
+### Provability check (v3)
+
+All three theorems are proved in an uncommitted scratch file. Each proof is against its frozen statement, since an `example` checks by `rfl` that their types are equal, and each uses only propext, Classical.choice and Quot.sound.
+- **`cvar_tail_to_level`,** about 50 lines: the argument in §24's first bullet.
+- **`kl_fisher_local`,** about 300 lines, with four helper lemmas that belong in `Lemmas/`:
+  - Along the ray t ↦ tθ, ψ is the cgf of ⟪θ, T⟫, and the KL divergence is ψ'(1) − ψ(1), from the log-likelihood ratio of a tilted measure.
+  - Cauchy's mean value theorem, applied to tψ'(t) − ψ(t) and ψ'(t)²/2, gives KL = ½ψ'(1)²·ξ/ψ'(ξ) for some ξ in (0, 1).
+  - The bound on ψ'' puts ξ/ψ'(ξ) between 1/(1 + δ/2) and 1/(1 − δ/2), times 1/‖θ‖².
+  - The mean value inequality keeps the part of κ(θ) across θ within δ‖θ‖.
+  - The rest is algebra, for every ε ≤ 1.
+- **`dro_envelope`,** about 40 lines. For ρ near ρ₀, η\*(ρ)(ρ − ρ₀) ≤ v(ρ) − v(ρ₀) ≤ η\*(ρ₀)(ρ − ρ₀), and continuity squeezes the slope to η\*(ρ₀).
+
+### Witnesses (v3)
+
+Each witness proves every hypothesis of its theorem, then the conclusion, for one concrete instance.
+
+| Theorem | Hypotheses | Instance |
+| --- | --- | --- |
+| `cvar_tail_to_level` | `hX`, `h` | `Bool` with a quarter of the mass on `true`, a loss of 2 there and 0 elsewhere, tail mass 1/2 and ε = 1. The level 0 gives a CVaR of at most (1/2)/(1/2) = 1, and the loss exceeds 1 on a quarter of the mass |
+| `kl_fisher_local` | all seven | the fair coin with statistic ±1, which is whitened, at θ = log 2, with L = 1 and ε = 7/10. Its KL divergence, (3/5) log 2 − log(5/4) ≈ 0.193, lies between 0.054 and 0.306 |
+| `dro_envelope` | `hmin`, `hcont` | the KL dual of a Gaussian loss of variance 2, at ρ₀ = 1. Its bounds are ηρ + 1/η, minimized by η\*(ρ) = 1/√ρ, which is continuous. The dual is 2√ρ, whose slope at 1 is η\*(1) = 1 |

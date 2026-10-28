@@ -338,4 +338,44 @@ def Threads : ENNReal → List ENNReal → Prop
   | _, [] => True
   | θ, x :: xs => x ≤ θ ∧ Threads (residual θ x) xs
 
+/-! ## statements-v3
+
+Sections 12 to 14 were added for `statements-v3` (guide/CHANGELOG.md); nothing above them
+changed. -/
+
+open MeasureTheory
+
+/-! ## 12. CVaR (PDE §9) -/
+
+variable {Ω : Type} [MeasurableSpace Ω]
+
+/-- Conditional value-at-risk at tail mass α, in Rockafellar–Uryasev form: the infimum, over
+    levels t, of t + E[(X − t)₊]/α. For a probability measure and α in (0, 1) it is the mean
+    of X over its worst α of mass, which PDE §9 writes CVaR₁₋α. The loss is nonnegative, so
+    it and its CVaR lie in [0, ∞]. -/
+noncomputable def cvar (μ : Measure Ω) (α : ENNReal) (X : Ω → ENNReal) : ENNReal :=
+  ⨅ t : ENNReal, t + (∫⁻ ω, (X ω - t) ∂μ) / α
+
+/-! ## 13. Exponential families (JSG I, Theorem 2) -/
+
+variable {V : Type} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
+
+/-- JSG I's exponential family through P₀ = μ, for a dictionary of statistics T valued in V:
+    P_θ has density proportional to exp⟪θ, T⟫ with respect to μ. -/
+noncomputable def expFamily (μ : Measure Ω) (T : Ω → V) (θ : V) : Measure Ω :=
+  μ.tilted fun ω => inner ℝ θ (T ω)
+
+/-- Its log-partition function, ψ(θ) = log E_μ[exp⟪θ, T⟫]. Its gradient is the mixed
+    cumulants κ(θ) = E_{P_θ}[T], and its Hessian is the Fisher information. -/
+noncomputable def logPartition (μ : Measure Ω) (T : Ω → V) (θ : V) : ℝ :=
+  Real.log (∫ ω, Real.exp (inner ℝ θ (T ω)) ∂μ)
+
+/-! ## 14. Dual values (JSG II, ρ-sensitivity) -/
+
+/-- A dual value at radius ρ: the infimum, over multipliers η in S, of the bounds ηρ + g(η).
+    JSG II's KL dual is this with S = (0, ∞) and g(η) = η log E_P[exp(ℓ/η)]; its smoothed
+    Wasserstein dual takes S = [0, ∞) and g(η) = E_P[φ̃_η]. -/
+noncomputable def dualValue (S : Set ℝ) (g : ℝ → ℝ) (ρ : ℝ) : ℝ :=
+  ⨅ η : S, (η : ℝ) * ρ + g η
+
 end JSG
