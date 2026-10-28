@@ -67,7 +67,7 @@ Twenty-two terms, each with one home. The SIRUS name waits: not yet, since no v1
 
 ## Layer map
 
-Eleven components can be proved in Lean now and five more with analysis; the other eight are checked per instance, tested, open, or declared. Layers sort components by what justifies them, not by what enforces them: a Norm row is a declared value, and whether a gate also enforces it is a separate question. In v1 no gate enforces the Norm rows ([decisions/RAILS.md](decisions/RAILS.md)). Lean status is "Stub" wherever the Lean section below states a theorem not yet proved, and "Proved" once `lean/JSG/Proofs/` proves it, with any limits noted.
+Eleven components can be proved in Lean now and four more with analysis; a fifth, the Jacobi frontier defect, is out of scope until it's well-posed. The other eight are checked per instance, tested, open, or declared. Layers sort components by what justifies them, not by what enforces them: a Norm row is a declared value, and whether a gate also enforces it is a separate question. In v1 no gate enforces the Norm rows ([decisions/RAILS.md](decisions/RAILS.md)). Lean status is "Stub" wherever the Lean section below states a theorem not yet proved, and "Proved" once `lean/JSG/Proofs/` proves it, with any limits noted.
 
 | Component | Layer | Lean status | Source |
 | --- | --- | --- | --- |
@@ -82,11 +82,11 @@ Eleven components can be proved in Lean now and five more with analysis; the oth
 | Capped governance fold: bounded, with a vacuous nightly check | Lean now | Proved (`fold_check_vacuous`) | JSG IV aggregator lemma |
 | Must-fail CI gate: accepted histories keep every unsigned failure class | Lean now | Proved for the gate's rule (`mfGate_signed`); CI doesn't yet run the gate on real histories | Draft0–7 |
 | Typed obligations (authority and witness); unknowns lease as interval width ≤ β | Lean now | Proved (`pass_sound`, `pass_complete`, `lease_sound`, `lease_complete`) | JSG V §3; PDE §2.2, I4b |
-| CVaR tail-to-level step (C₀ = 1) | Lean + analysis | Stub (`cvar_tail_to_level`) | PDE Lemma 9.1 |
-| No-Zeno dwell bound, corrected | Lean + analysis | Stub | JSG I Lemma 1 |
-| Local KL–Fisher quadratic bound | Lean + analysis | Stub (`kl_fisher_local`), in whitened coordinates | JSG I FIM bound |
-| DRO envelope identity dv/dρ = η\* | Lean + analysis | Stub (`dro_envelope`), for the dual value; strong duality isn't stated | JSG II ρ-sensitivity |
-| Geometry-scaled Jacobi frontier defect | Lean + analysis | Not started: its defect Δ\_fr isn't defined yet ([QUEUE.md](QUEUE.md), Q8) | JSG I Lemma 3 |
+| CVaR tail-to-level step (C₀ = 1) | Lean + analysis | Proved (`cvar_tail_to_level`), for any measure and tail mass. This is the tail-to-level step only; Lemma 9.1's rescaling to the CKN threshold and its Vitali overlap count aren't stated | PDE Lemma 9.1 |
+| No-Zeno dwell bound, corrected | Lean + analysis | Proved (`dwell_lower_bound`, by Marley), with the speed bound S\_max in place of JSG I's α | JSG I Lemma 1 |
+| Local KL–Fisher quadratic bound | Lean + analysis | Proved (`kl_fisher_local`) in whitened coordinates, for every ε ≤ 1. Read in raw coordinates, as jsg-lab computes its radius, the bound fails | JSG I FIM bound |
+| DRO envelope identity dv/dρ = η\* | Lean + analysis | Proved (`dro_envelope`) for the dual value, given a minimizing multiplier that moves continuously. Strong duality, that the dual is the worst-case risk, isn't stated | JSG II ρ-sensitivity |
+| Geometry-scaled Jacobi frontier defect | Lean + analysis | Out of scope: its defect Δ\_fr is never defined, and its bound adds ‖S‖∞ to ‖∇S‖∞, which have different units ([QUEUE.md](QUEUE.md), Q8) | JSG I Lemma 3 |
 | PR/GKYP witnesses | Certificate | Not applicable | JSG II–IV |
 | CBF tube residuals and saltation replay | Certificate | Not applicable | JSG III |
 | Statistical gates: HAC and bootstrap CIs, BY FDR, SPRT, MTC; interval enclosure (lo ≤ truth ≤ hi) at a declared coverage | CI / test | Not applicable | JSG II |
@@ -801,7 +801,7 @@ The rails are decided and persistent weakenings are deferred ([decisions/RAILS.m
 - [ ] Freeze the glossary and run one rename pass: 𝒰 for Ω, proof\_surface, Amber, invariant prefixes, combine for join
 - [x] Lean milestone 1: graded values, verdict and completeness, residuals, noninterference, calibration, fold vacuity ([MILESTONE_1.md](MILESTONE_1.md))
 - [x] Lean milestone 2: typed obligations, Loader safety and progress, frontier charge, policy lattice, the must-fail gate ([MILESTONE_2.md](MILESTONE_2.md))
-- [ ] Lean milestone 3 (analysis): CVaR tail-to-level, the corrected dwell bound, the local KL–Fisher bound and the DRO envelope identity
+- [x] Lean milestone 3 (analysis): CVaR tail-to-level, the corrected dwell bound, the local KL–Fisher bound and the DRO envelope identity ([MILESTONE_3.md](MILESTONE_3.md))
 - [ ] CI: fail the build on any `b3:…` placeholder, on any must-fail removed without a signed weakening, and on any theorem without a mutant
 - [ ] Recover the SIRUS\_game runtime note and remove the SIRUS-algorithm sections from MDmaster
 - [ ] Move the Navier–Stokes spine to a research notebook, outside the guide's dependency graph
