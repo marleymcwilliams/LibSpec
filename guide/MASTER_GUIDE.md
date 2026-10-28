@@ -82,11 +82,11 @@ Eleven components can be proved in Lean now and five more with analysis; the oth
 | Capped governance fold: bounded, with a vacuous nightly check | Lean now | Proved (`fold_check_vacuous`) | JSG IV aggregator lemma |
 | Must-fail CI gate: accepted histories keep every unsigned failure class | Lean now | Proved for the gate's rule (`mfGate_signed`); CI doesn't yet run the gate on real histories | Draft0–7 |
 | Typed obligations (authority and witness); unknowns lease as interval width ≤ β | Lean now | Proved (`pass_sound`, `pass_complete`, `lease_sound`, `lease_complete`) | JSG V §3; PDE §2.2, I4b |
-| CVaR tail-to-level step (C₀ = 1) | Lean + analysis | Not started | PDE Lemma 9.1 |
+| CVaR tail-to-level step (C₀ = 1) | Lean + analysis | Stub (`cvar_tail_to_level`) | PDE Lemma 9.1 |
 | No-Zeno dwell bound, corrected | Lean + analysis | Stub | JSG I Lemma 1 |
-| Local KL–Fisher quadratic bound | Lean + analysis | Not started | JSG I FIM bound |
-| DRO envelope identity dv/dρ = η\* | Lean + analysis | Not started | JSG II ρ-sensitivity |
-| Geometry-scaled Jacobi frontier defect | Lean + analysis | Not started | JSG I Lemma 3 |
+| Local KL–Fisher quadratic bound | Lean + analysis | Stub (`kl_fisher_local`), in whitened coordinates | JSG I FIM bound |
+| DRO envelope identity dv/dρ = η\* | Lean + analysis | Stub (`dro_envelope`), for the dual value; strong duality isn't stated | JSG II ρ-sensitivity |
+| Geometry-scaled Jacobi frontier defect | Lean + analysis | Not started: its defect Δ\_fr isn't defined yet ([QUEUE.md](QUEUE.md), Q8) | JSG I Lemma 3 |
 | PR/GKYP witnesses | Certificate | Not applicable | JSG II–IV |
 | CBF tube residuals and saltation replay | Certificate | Not applicable | JSG III |
 | Statistical gates: HAC and bootstrap CIs, BY FDR, SPRT, MTC; interval enclosure (lo ≤ truth ≤ hi) at a declared coverage | CI / test | Not applicable | JSG II |
@@ -648,14 +648,93 @@ theorem threads_spec (θ : ENNReal) (hθ : θ ≠ ⊤) (xs : List ENNReal) :
 -- earlier ones left but not that they fit. Once stage one overspends, the residual
 -- truncates to 0, which a stage of 0 still fits (θ = 1, stages 2 then 0).
 
+/-! ## statements-v3
+
+Sections 12 to 14 were added for `statements-v3` (guide/CHANGELOG.md); nothing above them
+changed. -/
+
+open MeasureTheory InformationTheory
+
+/-! ## 12. CVaR tail to level (PDE §9) -/
+variable {Ω : Type} [MeasurableSpace Ω]
+
+/-- Conditional value-at-risk at tail mass α, in Rockafellar–Uryasev form: the infimum, over
+    levels t, of t + E[(X − t)₊]/α. For a probability measure and α in (0, 1) it is the mean
+    of X over its worst α of mass, which PDE §9 writes CVaR₁₋α. The loss is nonnegative, so
+    it and its CVaR lie in [0, ∞]. -/
+noncomputable def cvar (μ : Measure Ω) (α : ENNReal) (X : Ω → ENNReal) : ENNReal :=
+  ⨅ t : ENNReal, t + (∫⁻ ω, (X ω - t) ∂μ) / α
+
+/-- Tail to level, with no constant lost (PDE Lemma 9.1, C₀ = 1): if a loss's CVaR at tail
+    mass α is at most ε, the loss exceeds ε on a set of measure at most α. -/
+theorem cvar_tail_to_level (μ : Measure Ω) (α : ENNReal) {X : Ω → ENNReal}
+    (hX : AEMeasurable X μ) {ε : ENNReal} (h : cvar μ α X ≤ ε) :
+    μ {ω | ε < X ω} ≤ α := by sorry
+-- Mutant: PDE Lemma 9.1's own conclusion, that every cell outside the tail has E < ε_CKN.
+-- With every constant at 1 that reads μ{X ≥ ε} ≤ α, which a loss equal to ε everywhere
+-- breaks: its CVaR is ε, and all of its mass sits at ε.
+
+/-! ## 13. Local KL–Fisher bound (JSG I, Theorem 2) -/
+variable {V : Type} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
+
+/-- JSG I's exponential family through P₀ = μ, for a dictionary of statistics T valued in V:
+    P_θ has density proportional to exp⟪θ, T⟫ with respect to μ. -/
+noncomputable def expFamily (μ : Measure Ω) (T : Ω → V) (θ : V) : Measure Ω :=
+  μ.tilted fun ω => inner ℝ θ (T ω)
+
+/-- Its log-partition function, ψ(θ) = log E_μ[exp⟪θ, T⟫]. Its gradient is the mixed
+    cumulants κ(θ) = E_{P_θ}[T], and its Hessian is the Fisher information. -/
+noncomputable def logPartition (μ : Measure Ω) (T : Ω → V) (θ : V) : ℝ :=
+  Real.log (∫ ω, Real.exp (inner ℝ θ (T ω)) ∂μ)
+
+/-- JSG I's local KL–Fisher bound, in whitened coordinates. Along the segment from 0 to θ, let
+    the log-partition function have gradient κ, the mixed cumulants, and Hessian H, the Fisher
+    information, within L‖x‖ of the identity. If the statistics are centered, θ is an interior
+    natural parameter and L‖θ‖ ≤ ε ≤ 1, the KL divergence of P_θ from P₀ is within a factor
+    1 ± ε of half the squared norm of κ(θ). -/
+theorem kl_fisher_local (μ : Measure Ω) [IsProbabilityMeasure μ] (T : Ω → V)
+    (κ : V → V) (H : V → V →L[ℝ] V) {L ε : ℝ} {θ : V}
+    (hgrad : ∀ x ∈ segment ℝ 0 θ, HasGradientAt (logPartition μ T) (κ x) x)
+    (hhess : ∀ x ∈ segment ℝ 0 θ, HasFDerivAt κ (H x) x)
+    (hcenter : κ 0 = 0)
+    (hlip : ∀ x ∈ segment ℝ 0 θ, ‖H x - 1‖ ≤ L * ‖x‖)
+    (hint : θ ∈ interior {x | Integrable (fun ω => Real.exp (inner ℝ x (T ω))) μ})
+    (hr : L * ‖θ‖ ≤ ε) (hε : ε ≤ 1) :
+    ENNReal.ofReal ((1 - ε) / 2 * ‖κ θ‖ ^ 2) ≤ klDiv (expFamily μ T θ) μ ∧
+      klDiv (expFamily μ T θ) μ ≤ ENNReal.ofReal ((1 + ε) / 2 * ‖κ θ‖ ^ 2) := by sorry
+-- Mutant: jsg-lab's FisherContext (stats/fisher.py), which reads the bound in raw
+-- coordinates: it takes L_ψ from the features' raw third absolute moments and never
+-- whitens, so H 0 needn't be the identity. For a ±1/4 feature, ε = 0.1 and L_ψ = 1/64 give
+-- r = 6.4; at θ = 8 log 2, inside it, KL ≈ 0.47 exceeds (1 + ε)/2 · κ²/F ≈ 0.43.
+
+/-! ## 14. DRO envelope identity (JSG II, ρ-sensitivity) -/
+/-- A dual value at radius ρ: the infimum, over multipliers η in S, of the bounds ηρ + g(η).
+    JSG II's KL dual is this with S = (0, ∞) and g(η) = η log E_P[exp(ℓ/η)]; its smoothed
+    Wasserstein dual takes S = [0, ∞) and g(η) = E_P[φ̃_η]. -/
+noncomputable def dualValue (S : Set ℝ) (g : ℝ → ℝ) (ρ : ℝ) : ℝ :=
+  ⨅ η : S, (η : ℝ) * ρ + g η
+
+/-- The envelope identity dv/dρ = η* (JSG II, ρ-sensitivity), for a dual value v(ρ), the
+    infimum over multipliers η in S of ηρ + g(η): if η*(ρ) attains it at every radius near ρ₀
+    and is continuous at ρ₀, then v has derivative η*(ρ₀) at ρ₀. -/
+theorem dro_envelope (S : Set ℝ) (g : ℝ → ℝ) (ηstar : ℝ → ℝ) {ρ₀ : ℝ}
+    (hmin : ∀ᶠ ρ in nhds ρ₀, ηstar ρ ∈ S ∧ ∀ η ∈ S, ηstar ρ * ρ + g (ηstar ρ) ≤ η * ρ + g η)
+    (hcont : ContinuousAt ηstar ρ₀) :
+    HasDerivAt (dualValue S g) (ηstar ρ₀) ρ₀ := by sorry
+-- Mutant: JSG II's KL dual with η read as the tilt, as in its e^{ηℓ}. Its bounds are then
+-- ρ/η + (1/η) log E[e^{ηℓ}], whose slope in ρ is 1/η*, not η*. For a Gaussian loss of
+-- variance 2 the dual is 2√ρ and η* = √ρ: at ρ = 4 the slope is 1/2, but η* = 2.
+
 end JSG
 ```
 
 `statements-v2` adds typed obligations with witness types and authorities (pass-soundness), with a ticket for each of a window's stages; leases; a concrete Loader whose invariant is L1–L10; and residual threading through any number of stages. Three pieces remain deferred: receipt integrity (replaying the content at a receipt's address yields its grade) and the token-bucket trace invariant for weakenings, both to a later version ([QUEUE.md](QUEUE.md), Q6), and a `Noninterfering` proof for each concrete grader. v1's `monotone_compose` and `discharge_wf` are dropped, since each held for any implementation. `no_flip` and `mustFail_monotone` are restated where they can fail: on the grader, and on the CI gate.
 
+`statements-v3` adds the analysis layer's other three statements: CVaR tail to level, the local KL–Fisher bound in whitened coordinates, and the DRO envelope identity for any dual of the form ηρ + g(η), with η the multiplier. Each source claim needed correcting first ([STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md#statements-v3)). Strong duality, that the dual equals the worst-case risk, and the Jacobi frontier defect wait ([QUEUE.md](QUEUE.md), Q8 and Q10).
+
 ## Known defects and proposed fixes
 
-Twenty defects so far. The last seven came from an outside review of v1 and are fixed in core v2.
+Twenty-five defects so far. The last seven came from an outside review of v1 and are fixed in core v2.
 
 | Defect | Where | Why it matters | Proposed fix |
 | --- | --- | --- | --- |
@@ -672,6 +751,11 @@ Twenty defects so far. The last seven came from an outside review of v1 and are 
 | JSG V's Lax Exchange theorem runs against its own interchange law | JSG V §4, Lax Exchange Law; restated in the proofs appendix | The interchange law (§2) makes piping each subsystem first the worse order; the theorem, with ∘ read as function composition, and its proof's last sentence make wiring first the worse one. On a sum axis with x = 1, x′ = 0, y = 0, y′ = 1, piping first grades 2 and wiring first 1 | Moot in core v2: sequence and parallel both use ⊕, so interchange is an equation and JSG V's rule becomes the `interchange` mutant |
 | Unknown sits below every value | SCp1 Def 2.1 and Appendix A; SCp2 Assumption 3.2; SirusSC `Q.leq` | ⊥ ≤ x for every x, so a bare threshold check q ≤ θ accepts an unknown axis, as the `verdict_sound` mutant that reads lo does. Only a separate guard that rejects ⊥ first (SCp1's I9, guard-first pricing) keeps it fail-closed | Core v2: unknown is \[0, ∞\] and the verdict reads hi, so the check itself rejects (`verdict_sound`) |
 | SCp2 and MDmaster disagree on which axes carry the frontier debit | SCp2 §5, eq. (1)–(2) and Prop. 5.2 (F2); MDmaster.md:409, its SCp2 summary; SirusSC `greedy_upper_bound` | SCp2 prices max-axes only and pins the sum part at 0 (price\_π(e) ∈ Q\_M × {0}; F2: "On S-axes, (Δfr)\_S = 0"). Its max-fold doesn't double-charge repeats, so a crossing and its reversal cost no more than the larger of the two. MDmaster says the opposite: "Debits accrue only on sum-axes; max-axes remain invariant". The code charges both, max on M and sum on S, with S not pinned at 0. A reader of the summary takes the debit for a cumulative spend; the paper makes it an idempotent rate | Core v2's charge is total variation, additive under concatenation (`charge_append`): MDmaster's reading. SCp2's max-fold becomes a `charge_chatter` mutant (ROADMAP, Milestone 1 notes) |
+| PDE Lemma 9.1 claims strict smallness | PDE §9.2, Lemma 9.1 and its note "Why C₀ = 1" | The lemma says cells outside the tail have E < ε\_CKN, but the tail-to-level step gives only E ≤ ε, and with every constant at 1 a loss equal to ε everywhere breaks it. The note's argument, μ{X > τ} > α ⇒ CVaR ≥ τ, covers only CVaR < ε | Conclude E ≤ ε outside a tail of measure at most α, which follows from μ{X > τ} > α ⇒ CVaR > τ (`cvar_tail_to_level`) |
+| The KL–Fisher bound leaves its norms unstated | JSG I Theorem 2; jsg-lab `stats/fisher.py` | In raw coordinates the bound is false, and jsg-lab's `FisherContext` computes its radius r = ε/L\_ψ from the raw features' third moments without whitening. Its remark that the constants are "sharp to first order" is wrong too: the first-order slack is ε/3 | State it in whitened coordinates, where the Fisher norms are Euclidean (`kl_fisher_local`); estimate L\_ψ after whitening, as JSG II's `estimate_Lpsi` does |
+| JSG II's KL dual mixes the multiplier and the tilt | JSG II, DRO Closure, KL case | inf over η of ηρ + (1/η) log E[e^{ηℓ}] uses η as both, so for a Gaussian loss it returns 0 instead of σ√(2ρ), and "dv/dρ = η\*" holds only for the multiplier | inf over η of ηρ + η log E[e^{ℓ/η}]; the envelope identity for the multiplier (`dro_envelope`) |
+| The envelope check can't catch a wrong dual | JSG II's 5% finite-difference check; jsg-lab `dro/soft_transport.py` | Every dual of the form ηρ + g(η) satisfies dv/dρ = η\*, a wrong one included, and jsg-lab's η\* never reads the loss | A duality statement, that the dual equals the worst-case risk, before the check certifies anything ([QUEUE.md](QUEUE.md), Q10) |
+| The Jacobi frontier defect isn't well-posed | JSG I Lemma 3 | Δ\_fr is never defined, and its bound adds ‖S‖∞ to ‖∇S‖∞, which have different units | Define Δ\_fr and fix the units before stating it ([QUEUE.md](QUEUE.md), Q8) |
 | Subadditive frontier debit lets regrouping net out chattering | PDE Lemma 10.1; v1 core object 4 | Jumps v and −v cost 2A‖v‖ charged separately and 0 merged | Charge total variation at the finest resolution |
 | `safety_or_halt` proves only termination | v1 Lean stubs; SCp3 | Well-foundedness is a variant, not an invariant, and a step counter satisfies any lexicographic rank | Prove invariant preservation separately; take progress from pending obligations |
 | ⊤ means both "unknown" and "infinitely bad" | JSG V; PDE I4b; SCp2 | The unknowns lease has no representation, since one unknown makes a whole budget axis ⊤ | Interval-valued axes |
@@ -717,7 +801,7 @@ The rails are decided and persistent weakenings are deferred ([decisions/RAILS.m
 - [ ] Freeze the glossary and run one rename pass: 𝒰 for Ω, proof\_surface, Amber, invariant prefixes, combine for join
 - [x] Lean milestone 1: graded values, verdict and completeness, residuals, noninterference, calibration, fold vacuity ([MILESTONE_1.md](MILESTONE_1.md))
 - [x] Lean milestone 2: typed obligations, Loader safety and progress, frontier charge, policy lattice, the must-fail gate ([MILESTONE_2.md](MILESTONE_2.md))
-- [ ] Lean milestone 3 (analysis): CVaR tail-to-level, the corrected dwell bound, then the local KL–Fisher bound
+- [ ] Lean milestone 3 (analysis): CVaR tail-to-level, the corrected dwell bound, the local KL–Fisher bound and the DRO envelope identity
 - [ ] CI: fail the build on any `b3:…` placeholder, on any must-fail removed without a signed weakening, and on any theorem without a mutant
 - [ ] Recover the SIRUS\_game runtime note and remove the SIRUS-algorithm sections from MDmaster
 - [ ] Move the Navier–Stokes spine to a research notebook, outside the guide's dependency graph

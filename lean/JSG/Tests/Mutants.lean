@@ -1102,4 +1102,461 @@ theorem threads_spec_witness :
     · intro h; norm_num at h
     · intro h; norm_num at h
 
+/-! ## statements-v3
+
+Controls for the theorems added in `statements-v3`, in the same style. Each mutant comes
+from a defect in `archive/`: PDE Lemma 9.1's strict inequality, jsg-lab's raw-coordinate
+radius, and JSG II's KL dual read with η as the tilt. The KL–Fisher controls use a fair
+coin, whose ±c statistic has log-partition function log cosh(c x); the DRO controls use a
+Gaussian loss of variance 2. -/
+
+open MeasureTheory ProbabilityTheory InformationTheory
+
+/-! ## cvar_tail_to_level -/
+
+/-- Mutant: PDE Lemma 9.1's conclusion, that every cell outside the tail has E < ε_CKN.
+    With every constant at 1, the tail it bounds is {X ≥ ε}. A loss equal to 1 everywhere has
+    CVaR 1 at tail mass 1/2, but all of its mass is at 1. -/
+theorem cvar_tail_to_level_mutant :
+    ¬ ∀ (μ : Measure Unit) (α : ENNReal) (X : Unit → ENNReal), AEMeasurable X μ →
+      ∀ ε, cvar μ α X ≤ ε → μ {ω | ε ≤ X ω} ≤ α := by
+  intro hc
+  have h1 : cvar (Measure.dirac ()) 2⁻¹ (fun _ => 1) ≤ 1 := iInf_le_of_le 1 (by simp)
+  have h2 := hc (Measure.dirac ()) 2⁻¹ (fun _ => 1) aemeasurable_const 1 h1
+  have h3 : {ω : Unit | (1 : ENNReal) ≤ 1} = Set.univ := by simp
+  rw [h3, measure_univ] at h2
+  exact absurd h2 (not_le.2 (ENNReal.inv_lt_one.2 ENNReal.one_lt_two))
+
+/-- A quarter of the mass on `true`, the rest on `false`. -/
+noncomputable def quarterMass : Measure Bool :=
+  (4⁻¹ : ENNReal) • Measure.dirac true + (3 * 4⁻¹ : ENNReal) • Measure.dirac false
+
+/-- A loss of 2 on `true` and 0 on `false`. -/
+def twoOnTrue : Bool → ENNReal := fun b => if b then 2 else 0
+
+/-- Witness for `cvar_tail_to_level` (tail mass 1/2, ε = 1): the loss is measurable; its CVaR
+    is at most 1, since the level 0 gives E[X]/α = (1/2)/(1/2); and it exceeds 1 on a quarter
+    of the mass, within 1/2. -/
+theorem cvar_tail_to_level_witness :
+    AEMeasurable twoOnTrue quarterMass ∧ cvar quarterMass 2⁻¹ twoOnTrue ≤ 1 ∧
+      quarterMass {ω | 1 < twoOnTrue ω} ≤ 2⁻¹ := by
+  refine ⟨Measurable.of_discrete.aemeasurable, ?_, ?_⟩
+  · refine iInf_le_of_le 0 ?_
+    have h : ∫⁻ ω, (twoOnTrue ω - 0) ∂quarterMass = 2⁻¹ := by
+      simp only [tsub_zero, quarterMass, lintegral_add_measure, lintegral_smul_measure,
+        lintegral_dirac, twoOnTrue, ↓reduceIte, Bool.false_eq_true, smul_eq_mul, mul_zero,
+        add_zero]
+      rw [show (4 : ENNReal) = 2 * 2 by norm_num, ENNReal.mul_inv (by simp) (by simp), mul_assoc,
+        ENNReal.inv_mul_cancel (by simp) (by simp), mul_one]
+    rw [h, zero_add, ENNReal.div_self (by simp) (by simp)]
+  · have h : {ω | (1 : ENNReal) < twoOnTrue ω} = {true} := by
+      ext b
+      cases b <;> simp [twoOnTrue]
+    have h2 : quarterMass {true} = 4⁻¹ := by simp [quarterMass]
+    rw [h, h2]
+    exact ENNReal.inv_le_inv.2 (by norm_num)
+
+/-! ## kl_fisher_local -/
+
+/-- A fair coin. -/
+noncomputable def coin : Measure Bool :=
+  (2⁻¹ : ENNReal) • (Measure.dirac true + Measure.dirac false)
+
+instance : IsProbabilityMeasure coin := by
+  constructor
+  simp only [coin, Measure.smul_apply, Measure.add_apply, measure_univ, smul_eq_mul]
+  rw [one_add_one_eq_two, ENNReal.inv_mul_cancel (by simp) (by simp)]
+
+lemma integral_coin (f : Bool → ℝ) : ∫ ω, f ω ∂coin = (f true + f false) / 2 := by
+  rw [coin, integral_smul_measure, integral_add_measure Integrable.of_finite Integrable.of_finite,
+    integral_dirac, integral_dirac]
+  simp [ENNReal.toReal_inv]
+  ring
+
+/-- The statistic ±c on the coin. -/
+noncomputable def pm (c : ℝ) : Bool → ℝ := fun b => if b then c else -c
+
+lemma logPartition_pm (c x : ℝ) : logPartition coin (pm c) x = Real.log (Real.cosh (c * x)) := by
+  rw [logPartition, integral_coin, Real.cosh_eq]
+  simp [pm, RCLike.inner_apply]
+
+lemma hasDerivAt_tanh' (x : ℝ) : HasDerivAt Real.tanh (1 / Real.cosh x ^ 2) x := by
+  have h := (Real.hasDerivAt_sinh x).div (Real.hasDerivAt_cosh x) (Real.cosh_pos x).ne'
+  have he : Real.sinh / Real.cosh = Real.tanh :=
+    funext fun y => (Real.tanh_eq_sinh_div_cosh y).symm
+  rw [he] at h
+  convert h using 1
+  have h1 : Real.cosh x * Real.cosh x - Real.sinh x * Real.sinh x = 1 := by
+    have := Real.cosh_sq_sub_sinh_sq x
+    nlinarith
+  rw [h1]
+
+lemma hasDerivAt_logCosh (y : ℝ) :
+    HasDerivAt (fun y => Real.log (Real.cosh y)) (Real.tanh y) y := by
+  have h := (Real.hasDerivAt_cosh y).log (Real.cosh_pos y).ne'
+  rwa [← Real.tanh_eq_sinh_div_cosh] at h
+
+/-- The coin's mixed cumulant, c tanh(c x). -/
+noncomputable def coinκ (c : ℝ) : ℝ → ℝ := fun x => c * Real.tanh (c * x)
+
+/-- The coin's Fisher information, c² / cosh²(c x). -/
+noncomputable def coinH (c : ℝ) : ℝ → ℝ →L[ℝ] ℝ :=
+  fun x => (c ^ 2 / Real.cosh (c * x) ^ 2) • (1 : ℝ →L[ℝ] ℝ)
+
+lemma coin_hasGradientAt (c x : ℝ) : HasGradientAt (logPartition coin (pm c)) (coinκ c x) x := by
+  have he : logPartition coin (pm c) = fun y => Real.log (Real.cosh (c * y)) :=
+    funext (logPartition_pm c)
+  rw [he]
+  apply HasDerivAt.hasGradientAt'
+  have h := (hasDerivAt_logCosh (c * x)).comp x ((hasDerivAt_id x).const_mul c)
+  exact h.congr_deriv (by simp only [coinκ, mul_one]; ring)
+
+lemma coin_hasFDerivAt (c x : ℝ) : HasFDerivAt (coinκ c) (coinH c x) x := by
+  have h := ((hasDerivAt_tanh' (c * x)).comp x ((hasDerivAt_id x).const_mul c)).const_mul c
+  have h2 : HasDerivAt (coinκ c) (c ^ 2 / Real.cosh (c * x) ^ 2) x :=
+    h.congr_deriv (by ring)
+  rw [hasDerivAt_iff_hasFDerivAt] at h2
+  convert h2 using 1
+  ext
+  simp [coinH]
+
+lemma tanh_nonneg' {y : ℝ} (hy : 0 ≤ y) : 0 ≤ Real.tanh y := by
+  rw [Real.tanh_eq_sinh_div_cosh]
+  exact div_nonneg (Real.sinh_nonneg_iff.2 hy) (Real.cosh_pos y).le
+
+lemma tanh_le_self' {y : ℝ} (hy : 0 ≤ y) : Real.tanh y ≤ y := by
+  have hcont : ContinuousOn Real.tanh (Set.Icc 0 y) :=
+    fun x _ => (hasDerivAt_tanh' x).continuousAt.continuousWithinAt
+  have := image_le_of_deriv_right_le_deriv_boundary (f := Real.tanh)
+    (f' := fun x => 1 / Real.cosh x ^ 2) (a := 0) (b := y) hcont
+    (fun x _ => (hasDerivAt_tanh' x).hasDerivWithinAt) (B := id) (B' := fun _ => 1)
+    (by simp) continuousOn_id (fun x _ => (hasDerivAt_id x).hasDerivWithinAt)
+    (fun x _ => by
+      rw [div_le_one (by positivity)]
+      nlinarith [Real.one_le_cosh x]) (show y ∈ Set.Icc 0 y from ⟨hy, le_rfl⟩)
+  simpa using this
+
+lemma tanh_sq_eq (y : ℝ) : Real.tanh y ^ 2 = 1 - 1 / Real.cosh y ^ 2 := by
+  rw [Real.tanh_eq_sinh_div_cosh, div_pow]
+  have hc : Real.cosh y ^ 2 ≠ 0 := pow_ne_zero 2 (Real.cosh_pos y).ne'
+  field_simp
+  have := Real.cosh_sq_sub_sinh_sq y
+  linarith
+
+lemma tanh_sq_le {y : ℝ} (hy : 0 ≤ y) : Real.tanh y ^ 2 ≤ y := by
+  have h1 := tanh_le_self' hy
+  have h2 := tanh_nonneg' hy
+  have h3 := (Real.tanh_lt_one y).le
+  nlinarith
+
+/-- The Fisher information moves at most c³x from c² on [0, ∞). -/
+lemma coinH_sub {c x : ℝ} (hc : 0 ≤ c) (hx : 0 ≤ x) : ‖coinH c x - coinH c 0‖ ≤ c ^ 3 * ‖x‖ := by
+  have h : coinH c x - coinH c 0 = (c ^ 2 / Real.cosh (c * x) ^ 2 - c ^ 2) • (1 : ℝ →L[ℝ] ℝ) := by
+    simp only [coinH, mul_zero, Real.cosh_zero, one_pow, div_one]
+    exact (sub_smul _ _ _).symm
+  rw [h, norm_smul, norm_one, mul_one, Real.norm_eq_abs, Real.norm_of_nonneg hx]
+  have h1 : c ^ 2 / Real.cosh (c * x) ^ 2 - c ^ 2 = -(c ^ 2 * Real.tanh (c * x) ^ 2) := by
+    rw [tanh_sq_eq]
+    ring
+  rw [h1, abs_neg, abs_of_nonneg (by positivity)]
+  have h2 := tanh_sq_le (mul_nonneg hc hx)
+  calc c ^ 2 * Real.tanh (c * x) ^ 2 ≤ c ^ 2 * (c * x) := by gcongr
+    _ = c ^ 3 * x := by ring
+
+/-- KL divergence of a tilted probability measure from its base. -/
+lemma klDiv_tilted_self' {Ω : Type} [MeasurableSpace Ω] (μ : Measure Ω) [IsProbabilityMeasure μ]
+    {f : Ω → ℝ} (hexp : Integrable (fun ω => Real.exp (f ω)) μ) (hf : AEMeasurable f μ)
+    (hfi : Integrable f (μ.tilted f)) :
+    klDiv (μ.tilted f) μ =
+      ENNReal.ofReal (∫ ω, f ω ∂(μ.tilted f) - Real.log (∫ ω, Real.exp (f ω) ∂μ)) := by
+  have : IsProbabilityMeasure (μ.tilted f) := isProbabilityMeasure_tilted hexp
+  have hac : μ.tilted f ≪ μ := tilted_absolutelyContinuous μ f
+  have h1 : llr (μ.tilted f) μ =ᵐ[μ] fun ω => f ω - Real.log (∫ z, Real.exp (f z) ∂μ) := by
+    filter_upwards [llr_tilted_left (Measure.AbsolutelyContinuous.refl μ) hexp hf, llr_self μ]
+      with ω h1 h2
+    rw [h1, h2]
+    simp
+  have h2 : llr (μ.tilted f) μ =ᵐ[μ.tilted f]
+      fun ω => f ω - Real.log (∫ z, Real.exp (f z) ∂μ) := hac.ae_le h1
+  have hint : Integrable (llr (μ.tilted f) μ) (μ.tilted f) :=
+    (hfi.sub (integrable_const _)).congr h2.symm
+  rw [klDiv_of_ac_of_integrable hac hint, integral_congr_ae h2,
+    integral_sub hfi (integrable_const _)]
+  simp
+
+lemma klDiv_coin (c θ : ℝ) : klDiv (expFamily coin (pm c) θ) coin =
+    ENNReal.ofReal (c * θ * Real.tanh (c * θ) - Real.log (Real.cosh (c * θ))) := by
+  have hexp : Integrable (fun ω => Real.exp (inner ℝ θ (pm c ω))) coin := Integrable.of_finite
+  have : IsProbabilityMeasure (coin.tilted fun ω => inner ℝ θ (pm c ω)) :=
+    isProbabilityMeasure_tilted hexp
+  rw [expFamily, klDiv_tilted_self' coin hexp Measurable.of_discrete.aemeasurable
+      Integrable.of_finite, integral_tilted, integral_coin, integral_coin,
+    Real.tanh_eq, Real.cosh_eq]
+  congr 1
+  simp only [pm, RCLike.inner_apply, conj_trivial, ↓reduceIte, Bool.false_eq_true,
+    smul_eq_mul, neg_mul]
+  have hp : 0 < Real.exp (c * θ) + Real.exp (-(c * θ)) := by positivity
+  field_simp
+  ring
+
+lemma tanh_log_two : Real.tanh (Real.log 2) = 3 / 5 := by
+  rw [Real.tanh_eq, Real.exp_neg, Real.exp_log two_pos]
+  norm_num
+
+lemma cosh_log_two : Real.cosh (Real.log 2) = 5 / 4 := by
+  rw [Real.cosh_eq, Real.exp_neg, Real.exp_log two_pos]
+  norm_num
+
+lemma exp_two_log_two : Real.exp (2 * Real.log 2) = 4 := by
+  rw [show 2 * Real.log 2 = Real.log 2 + Real.log 2 by ring, Real.exp_add, Real.exp_log two_pos]
+  norm_num
+
+lemma tanh_two_log_two : Real.tanh (2 * Real.log 2) = 15 / 17 := by
+  rw [Real.tanh_eq, Real.exp_neg, exp_two_log_two]
+  norm_num
+
+lemma cosh_two_log_two : Real.cosh (2 * Real.log 2) = 17 / 8 := by
+  rw [Real.cosh_eq, Real.exp_neg, exp_two_log_two]
+  norm_num
+
+lemma interior_coin (T : Bool → ℝ) :
+    interior {x : ℝ | Integrable (fun ω => Real.exp (inner ℝ x (T ω))) coin} = Set.univ := by
+  rw [show {x : ℝ | Integrable (fun ω => Real.exp (inner ℝ x (T ω))) coin} = Set.univ from
+    Set.eq_univ_of_forall fun _ => Integrable.of_finite]
+  exact interior_univ
+
+/-- Witness for `kl_fisher_local` (the fair coin with statistic ±1, which is whitened;
+    L = 1, ε = 7/10, θ = log 2): every hypothesis, then the conclusion, where the KL
+    divergence (3/5) log 2 − log(5/4) ≈ 0.19 lies between 0.054 and 0.306. -/
+theorem kl_fisher_local_witness :
+    (∀ x ∈ segment ℝ 0 (Real.log 2), HasGradientAt (logPartition coin (pm 1)) (coinκ 1 x) x) ∧
+    (∀ x ∈ segment ℝ 0 (Real.log 2), HasFDerivAt (coinκ 1) (coinH 1 x) x) ∧
+    coinκ 1 0 = 0 ∧
+    (∀ x ∈ segment ℝ 0 (Real.log 2), ‖coinH 1 x - 1‖ ≤ 1 * ‖x‖) ∧
+    Real.log 2 ∈ interior {x : ℝ | Integrable (fun ω => Real.exp (inner ℝ x (pm 1 ω))) coin} ∧
+    1 * ‖Real.log 2‖ ≤ 7 / 10 ∧ (7 / 10 : ℝ) ≤ 1 ∧
+    ENNReal.ofReal ((1 - 7 / 10) / 2 * ‖coinκ 1 (Real.log 2)‖ ^ 2) ≤
+        klDiv (expFamily coin (pm 1) (Real.log 2)) coin ∧
+      klDiv (expFamily coin (pm 1) (Real.log 2)) coin ≤
+        ENNReal.ofReal ((1 + 7 / 10) / 2 * ‖coinκ 1 (Real.log 2)‖ ^ 2) := by
+  have hlog := Real.log_two_gt_d9
+  have hlog' := Real.log_two_lt_d9
+  have hseg : ∀ x ∈ segment ℝ 0 (Real.log 2), 0 ≤ x := by
+    intro x hx
+    rw [segment_eq_Icc (by linarith)] at hx
+    exact hx.1
+  have hκ : ‖coinκ 1 (Real.log 2)‖ = 3 / 5 := by
+    simp [coinκ, tanh_log_two]
+  have h54lo := Real.one_sub_inv_le_log_of_pos (show (0 : ℝ) < 5 / 4 by norm_num)
+  have h54hi := Real.log_le_sub_one_of_pos (show (0 : ℝ) < 5 / 4 by norm_num)
+  refine ⟨fun x _ => coin_hasGradientAt 1 x, fun x _ => coin_hasFDerivAt 1 x,
+    by simp [coinκ], fun x hx => ?_, by rw [interior_coin]; trivial, ?_, by norm_num, ?_, ?_⟩
+  · have h := coinH_sub zero_le_one (hseg x hx)
+    have h0 : coinH 1 0 = 1 := by simp [coinH]
+    rw [h0] at h
+    simpa using h
+  · rw [Real.norm_of_nonneg (by linarith)]
+    linarith
+  · rw [klDiv_coin, hκ]
+    apply ENNReal.ofReal_le_ofReal
+    simp only [one_mul, tanh_log_two, cosh_log_two]
+    norm_num at h54lo h54hi ⊢
+    linarith
+  · rw [klDiv_coin, hκ]
+    apply ENNReal.ofReal_le_ofReal
+    simp only [one_mul, tanh_log_two, cosh_log_two]
+    norm_num at h54lo h54hi ⊢
+    linarith
+
+/-- JSG I's bound in raw coordinates, as jsg-lab's `FisherContext` (`stats/fisher.py`) applies
+    it, at the fair coin: the Fisher information at 0 is F = H 0 1, the cumulants are measured
+    in its inverse, and the radius comes from H's Lipschitz constant without whitening. With
+    H 0 = 1 this is `kl_fisher_local` at the coin. -/
+def KLFisherRaw : Prop :=
+  ∀ (T : Bool → ℝ) (κ : ℝ → ℝ) (H : ℝ → ℝ →L[ℝ] ℝ) (L ε θ : ℝ),
+    (∀ x ∈ segment ℝ 0 θ, HasGradientAt (logPartition coin T) (κ x) x) →
+    (∀ x ∈ segment ℝ 0 θ, HasFDerivAt κ (H x) x) → κ 0 = 0 →
+    (∀ x ∈ segment ℝ 0 θ, ‖H x - H 0‖ ≤ L * ‖x‖) →
+    θ ∈ interior {x | Integrable (fun ω => Real.exp (inner ℝ x (T ω))) coin} →
+    L * ‖θ‖ ≤ ε → ε ≤ 1 →
+    ENNReal.ofReal ((1 - ε) / 2 * (κ θ ^ 2 / H 0 1)) ≤ klDiv (expFamily coin T θ) coin ∧
+      klDiv (expFamily coin T θ) coin ≤ ENNReal.ofReal ((1 + ε) / 2 * (κ θ ^ 2 / H 0 1))
+
+/-- Mutant: `FisherContext`'s raw coordinates. Its radius r = ε / L_ψ takes L_ψ as the
+    largest third absolute moment of the raw features, which for a ±1/4 feature is 1/64; with
+    its ε = 0.1, r = 6.4. At θ = 8 log 2 ≈ 5.5, inside r, the KL divergence
+    (81/17) log 2 − log 17 ≈ 0.47 exceeds (1 + ε)/2 · κ²/F = (11/20)(15/17)² ≈ 0.43. -/
+theorem kl_fisher_local_mutant : ¬ KLFisherRaw := by
+  intro hc
+  have hlog := Real.log_two_gt_d9
+  have hlog' := Real.log_two_lt_d9
+  have hθ : (0 : ℝ) ≤ 8 * Real.log 2 := by linarith
+  have hseg : ∀ x ∈ segment ℝ 0 (8 * Real.log 2), 0 ≤ x := by
+    intro x hx
+    rw [segment_eq_Icc hθ] at hx
+    exact hx.1
+  have h := (hc (pm (1 / 4)) (coinκ (1 / 4)) (coinH (1 / 4)) (1 / 64) (1 / 10) (8 * Real.log 2)
+    (fun x _ => coin_hasGradientAt _ x) (fun x _ => coin_hasFDerivAt _ x) (by simp [coinκ])
+    (fun x hx => by
+      have := coinH_sub (show (0 : ℝ) ≤ 1 / 4 by norm_num) (hseg x hx)
+      norm_num at this ⊢
+      exact this)
+    (by rw [interior_coin]; trivial)
+    (by rw [Real.norm_of_nonneg hθ]; linarith) (by norm_num)).2
+  have hcθ : 1 / 4 * (8 * Real.log 2) = 2 * Real.log 2 := by ring
+  rw [klDiv_coin] at h
+  simp only [coinκ, coinH, hcθ, tanh_two_log_two, cosh_two_log_two, mul_zero, Real.cosh_zero]
+    at h
+  rw [ENNReal.ofReal_le_ofReal_iff (by norm_num)] at h
+  -- log (17/8) = log 2 + log (17/16) ≤ log 2 + 1/16
+  have h1716 := Real.log_le_sub_one_of_pos (show (0 : ℝ) < 17 / 16 by norm_num)
+  have hsplit : Real.log (17 / 8) = Real.log 2 + Real.log (17 / 16) := by
+    rw [← Real.log_mul (by norm_num) (by norm_num)]
+    norm_num
+  rw [hsplit] at h
+  norm_num at h h1716
+  linarith
+
+/-! ## dro_envelope -/
+
+/-- (1/η) log E[e^{ηℓ}] for a Gaussian loss ℓ of variance 2. -/
+noncomputable def gaussTilt (η : ℝ) : ℝ := 1 / η * Real.log (mgf id (gaussianReal 0 2) η)
+
+lemma gaussTilt_eq {η : ℝ} (hη : η ≠ 0) : gaussTilt η = η := by
+  rw [gaussTilt, mgf_id_gaussianReal, Real.log_exp]
+  field_simp
+  push_cast
+  ring
+
+/-- η log E[e^{ℓ/η}] for the same loss: the KL dual's g. -/
+noncomputable def gaussDual (η : ℝ) : ℝ := η * Real.log (mgf id (gaussianReal 0 2) (1 / η))
+
+lemma gaussDual_eq {η : ℝ} (hη : η ≠ 0) : gaussDual η = 1 / η := by
+  rw [gaussDual, mgf_id_gaussianReal, Real.log_exp]
+  field_simp
+  push_cast
+  ring
+
+/-- The bounds read with η as the tilt. -/
+noncomputable def tiltDual (S : Set ℝ) (k : ℝ → ℝ) (ρ : ℝ) : ℝ := ⨅ η : S, ρ / (η : ℝ) + k η
+
+/-- The envelope claim with the bounds read in the tilt. -/
+def TiltEnvelope : Prop :=
+  ∀ (S : Set ℝ) (k ηstar : ℝ → ℝ) (ρ₀ : ℝ),
+    (∀ᶠ ρ in nhds ρ₀, ηstar ρ ∈ S ∧ ∀ η ∈ S, ρ / ηstar ρ + k (ηstar ρ) ≤ ρ / η + k η) →
+    ContinuousAt ηstar ρ₀ → HasDerivAt (tiltDual S k) (ηstar ρ₀) ρ₀
+
+/-- AM–GM in the two forms the controls use. -/
+lemma two_sqrt_le {ρ η : ℝ} (hρ : 0 < ρ) (hη : 0 < η) :
+    2 * Real.sqrt ρ ≤ ρ / η + η ∧ 2 * Real.sqrt ρ ≤ η * ρ + 1 / η := by
+  have hs := Real.sq_sqrt hρ.le
+  have hs0 := Real.sqrt_nonneg ρ
+  constructor
+  · rw [div_add' _ _ _ hη.ne', le_div_iff₀ hη]
+    nlinarith [sq_nonneg (Real.sqrt ρ - η)]
+  · rw [show η * ρ + 1 / η = (η * η * ρ + 1) / η by field_simp, le_div_iff₀ hη]
+    nlinarith [sq_nonneg (η * Real.sqrt ρ - 1)]
+
+/-- Mutant: JSG II's KL dual with η read as the tilt, as in its e^{ηℓ}. For a Gaussian loss of
+    variance 2 the bounds are ρ/η + η, the dual is 2√ρ and the minimizing tilt is √ρ: at
+    ρ = 4 the slope is 1/2, but η* = 2. -/
+theorem dro_envelope_mutant : ¬ TiltEnvelope := by
+  intro hc
+  have hval : ∀ ρ : ℝ, 0 < ρ → tiltDual (Set.Ioi 0) gaussTilt ρ = 2 * Real.sqrt ρ := by
+    intro ρ hρ
+    have hsq : 0 < Real.sqrt ρ := Real.sqrt_pos.2 hρ
+    apply le_antisymm
+    · refine ciInf_le_of_le ⟨0, ?_⟩ ⟨Real.sqrt ρ, hsq⟩ ?_
+      · rintro _ ⟨η, rfl⟩
+        have := η.2
+        simp only [Set.mem_Ioi] at this
+        dsimp only
+        rw [gaussTilt_eq this.ne']
+        positivity
+      · simp only
+        rw [gaussTilt_eq hsq.ne', Real.div_sqrt]
+        ring_nf
+        exact le_rfl
+    · have : Nonempty (Set.Ioi (0 : ℝ)) := ⟨⟨1, Set.mem_Ioi.2 one_pos⟩⟩
+      refine le_ciInf fun η => ?_
+      have hη : (0 : ℝ) < η := η.2
+      rw [gaussTilt_eq hη.ne']
+      exact (two_sqrt_le hρ hη).1
+  have hmin : ∀ᶠ ρ in nhds (4 : ℝ), Real.sqrt ρ ∈ Set.Ioi 0 ∧
+      ∀ η ∈ Set.Ioi 0, ρ / Real.sqrt ρ + gaussTilt (Real.sqrt ρ) ≤ ρ / η + gaussTilt η := by
+    filter_upwards [lt_mem_nhds (show (0 : ℝ) < 4 by norm_num)] with ρ hρ
+    have hsq : 0 < Real.sqrt ρ := Real.sqrt_pos.2 hρ
+    refine ⟨hsq, fun η hη => ?_⟩
+    rw [gaussTilt_eq hsq.ne', gaussTilt_eq (ne_of_gt hη), Real.div_sqrt]
+    have := (two_sqrt_le hρ hη).1
+    linarith
+  have h := hc (Set.Ioi 0) gaussTilt Real.sqrt 4 hmin Real.continuous_sqrt.continuousAt
+  have h2 : HasDerivAt (fun ρ => 2 * Real.sqrt ρ) (1 / 2) 4 := by
+    have := (Real.hasDerivAt_sqrt (show (4 : ℝ) ≠ 0 by norm_num)).const_mul 2
+    convert this using 1
+    rw [show (4 : ℝ) = 2 ^ 2 by norm_num, Real.sqrt_sq (by norm_num)]
+    norm_num
+  have heq : tiltDual (Set.Ioi 0) gaussTilt =ᶠ[nhds 4] fun ρ => 2 * Real.sqrt ρ := by
+    filter_upwards [lt_mem_nhds (show (0 : ℝ) < 4 by norm_num)] with ρ hρ
+    exact hval ρ hρ
+  have h3 := (h.congr_of_eventuallyEq heq.symm).unique h2
+  rw [show (4 : ℝ) = 2 ^ 2 by norm_num, Real.sqrt_sq (by norm_num)] at h3
+  norm_num at h3
+
+/-- The KL dual's minimizing multiplier for that loss, η*(ρ) = 1/√ρ. -/
+noncomputable def invSqrt (ρ : ℝ) : ℝ := 1 / Real.sqrt ρ
+
+/-- Witness for `dro_envelope` (the KL dual of the same Gaussian loss, ρ₀ = 1): its bounds
+    are ηρ + 1/η, minimized by η*(ρ) = 1/√ρ, which is continuous; the dual is 2√ρ, whose
+    slope at 1 is η*(1) = 1. -/
+theorem dro_envelope_witness :
+    (∀ᶠ ρ in nhds (1 : ℝ), invSqrt ρ ∈ Set.Ioi 0 ∧
+      ∀ η ∈ Set.Ioi (0 : ℝ), invSqrt ρ * ρ + gaussDual (invSqrt ρ) ≤ η * ρ + gaussDual η) ∧
+    ContinuousAt invSqrt 1 ∧ HasDerivAt (dualValue (Set.Ioi 0) gaussDual) (invSqrt 1) 1 := by
+  unfold invSqrt
+  have hval : ∀ ρ : ℝ, 0 < ρ → dualValue (Set.Ioi 0) gaussDual ρ = 2 * Real.sqrt ρ := by
+    intro ρ hρ
+    have hsq : 0 < Real.sqrt ρ := Real.sqrt_pos.2 hρ
+    have hinv : 0 < 1 / Real.sqrt ρ := by positivity
+    apply le_antisymm
+    · refine ciInf_le_of_le ⟨0, ?_⟩ ⟨1 / Real.sqrt ρ, hinv⟩ ?_
+      · rintro _ ⟨η, rfl⟩
+        have := η.2
+        simp only [Set.mem_Ioi] at this
+        dsimp only
+        rw [gaussDual_eq this.ne']
+        positivity
+      · simp only
+        rw [gaussDual_eq hinv.ne']
+        field_simp
+        rw [Real.sq_sqrt hρ.le]
+        ring_nf
+        exact le_rfl
+    · have : Nonempty (Set.Ioi (0 : ℝ)) := ⟨⟨1, Set.mem_Ioi.2 one_pos⟩⟩
+      refine le_ciInf fun η => ?_
+      have hη : (0 : ℝ) < η := η.2
+      rw [gaussDual_eq hη.ne']
+      exact (two_sqrt_le hρ hη).2
+  refine ⟨?_, ?_, ?_⟩
+  · filter_upwards [lt_mem_nhds (show (0 : ℝ) < 1 by norm_num)] with ρ hρ
+    have hsq : 0 < Real.sqrt ρ := Real.sqrt_pos.2 hρ
+    have hinv : 0 < 1 / Real.sqrt ρ := by positivity
+    refine ⟨hinv, fun η hη => ?_⟩
+    rw [gaussDual_eq hinv.ne', gaussDual_eq (ne_of_gt hη)]
+    have := (two_sqrt_le hρ hη).2
+    have h1 : 1 / Real.sqrt ρ * ρ + 1 / (1 / Real.sqrt ρ) = 2 * Real.sqrt ρ := by
+      field_simp
+      rw [Real.sq_sqrt hρ.le]
+      ring
+    linarith
+  · exact (continuousAt_const.div Real.continuous_sqrt.continuousAt (by simp))
+  · have h2 : HasDerivAt (fun ρ => 2 * Real.sqrt ρ) 1 1 := by
+      have := (Real.hasDerivAt_sqrt (show (1 : ℝ) ≠ 0 by norm_num)).const_mul 2
+      convert this using 1
+      simp
+    have heq : dualValue (Set.Ioi 0) gaussDual =ᶠ[nhds 1] fun ρ => 2 * Real.sqrt ρ := by
+      filter_upwards [lt_mem_nhds (show (0 : ℝ) < 1 by norm_num)] with ρ hρ
+      exact hval ρ hρ
+    simpa using h2.congr_of_eventuallyEq heq
+
 end JSG.Tests.Mutants

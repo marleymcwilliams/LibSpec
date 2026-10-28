@@ -228,4 +228,61 @@ theorem threads_spec (θ : ENNReal) (hθ : θ ≠ ⊤) (xs : List ENNReal) :
 -- earlier ones left but not that they fit. Once stage one overspends, the residual
 -- truncates to 0, which a stage of 0 still fits (θ = 1, stages 2 then 0).
 
+/-! ## statements-v3
+
+Sections 12 to 14 were added for `statements-v3` (guide/CHANGELOG.md); nothing above them
+changed. -/
+
+open MeasureTheory InformationTheory
+
+/-! ## 12. CVaR tail to level (PDE §9) -/
+
+variable {Ω : Type} [MeasurableSpace Ω]
+
+/-- Tail to level, with no constant lost (PDE Lemma 9.1, C₀ = 1): if a loss's CVaR at tail
+    mass α is at most ε, the loss exceeds ε on a set of measure at most α. -/
+theorem cvar_tail_to_level (μ : Measure Ω) (α : ENNReal) {X : Ω → ENNReal}
+    (hX : AEMeasurable X μ) {ε : ENNReal} (h : cvar μ α X ≤ ε) :
+    μ {ω | ε < X ω} ≤ α := by sorry
+-- Mutant: PDE Lemma 9.1's own conclusion, that every cell outside the tail has E < ε_CKN.
+-- With every constant at 1 that reads μ{X ≥ ε} ≤ α, which a loss equal to ε everywhere
+-- breaks: its CVaR is ε, and all of its mass sits at ε.
+
+/-! ## 13. Local KL–Fisher bound (JSG I, Theorem 2) -/
+
+variable {V : Type} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [CompleteSpace V]
+
+/-- JSG I's local KL–Fisher bound, in whitened coordinates. Along the segment from 0 to θ, let
+    the log-partition function have gradient κ, the mixed cumulants, and Hessian H, the Fisher
+    information, within L‖x‖ of the identity. If the statistics are centered, θ is an interior
+    natural parameter and L‖θ‖ ≤ ε ≤ 1, the KL divergence of P_θ from P₀ is within a factor
+    1 ± ε of half the squared norm of κ(θ). -/
+theorem kl_fisher_local (μ : Measure Ω) [IsProbabilityMeasure μ] (T : Ω → V)
+    (κ : V → V) (H : V → V →L[ℝ] V) {L ε : ℝ} {θ : V}
+    (hgrad : ∀ x ∈ segment ℝ 0 θ, HasGradientAt (logPartition μ T) (κ x) x)
+    (hhess : ∀ x ∈ segment ℝ 0 θ, HasFDerivAt κ (H x) x)
+    (hcenter : κ 0 = 0)
+    (hlip : ∀ x ∈ segment ℝ 0 θ, ‖H x - 1‖ ≤ L * ‖x‖)
+    (hint : θ ∈ interior {x | Integrable (fun ω => Real.exp (inner ℝ x (T ω))) μ})
+    (hr : L * ‖θ‖ ≤ ε) (hε : ε ≤ 1) :
+    ENNReal.ofReal ((1 - ε) / 2 * ‖κ θ‖ ^ 2) ≤ klDiv (expFamily μ T θ) μ ∧
+      klDiv (expFamily μ T θ) μ ≤ ENNReal.ofReal ((1 + ε) / 2 * ‖κ θ‖ ^ 2) := by sorry
+-- Mutant: jsg-lab's FisherContext (stats/fisher.py), which reads the bound in raw
+-- coordinates: it takes L_ψ from the features' raw third absolute moments and never
+-- whitens, so H 0 needn't be the identity. For a ±1/4 feature, ε = 0.1 and L_ψ = 1/64 give
+-- r = 6.4; at θ = 8 log 2, inside it, KL ≈ 0.47 exceeds (1 + ε)/2 · κ²/F ≈ 0.43.
+
+/-! ## 14. DRO envelope identity (JSG II, ρ-sensitivity) -/
+
+/-- The envelope identity dv/dρ = η* (JSG II, ρ-sensitivity), for a dual value v(ρ), the
+    infimum over multipliers η in S of ηρ + g(η): if η*(ρ) attains it at every radius near ρ₀
+    and is continuous at ρ₀, then v has derivative η*(ρ₀) at ρ₀. -/
+theorem dro_envelope (S : Set ℝ) (g : ℝ → ℝ) (ηstar : ℝ → ℝ) {ρ₀ : ℝ}
+    (hmin : ∀ᶠ ρ in nhds ρ₀, ηstar ρ ∈ S ∧ ∀ η ∈ S, ηstar ρ * ρ + g (ηstar ρ) ≤ η * ρ + g η)
+    (hcont : ContinuousAt ηstar ρ₀) :
+    HasDerivAt (dualValue S g) (ηstar ρ₀) ρ₀ := by sorry
+-- Mutant: JSG II's KL dual with η read as the tilt, as in its e^{ηℓ}. Its bounds are then
+-- ρ/η + (1/η) log E[e^{ηℓ}], whose slope in ρ is 1/η*, not η*. For a Gaussian loss of
+-- variance 2 the dual is 2√ρ and η* = √ρ: at ρ = 4 the slope is 1/2, but η* = 2.
+
 end JSG

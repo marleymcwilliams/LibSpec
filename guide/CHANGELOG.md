@@ -2,6 +2,16 @@
 
 Every statements version after `statements-v1` records here whether it tightens or weakens the statements, and so does every change in between to a file the statements check covers: `lean/JSG/Defs.lean`, `lean/JSG/Statements.lean`, their project imports, `lean/lean-toolchain`, `lean/lake-manifest.json` and `lean/lakefile.toml`, so Lean and Mathlib upgrades count too. A weakening also needs a signed decision (`guide/decisions/RAILS.md`).
 
+## statements-v3
+
+Tightens: it only adds statements. Three theorems for Milestone 3, the analysis layer, and the definitions they use, go in new sections 12–14 of `lean/JSG/Defs.lean` and `lean/JSG/Statements.lean`. No `statements-v1` or `statements-v2` definition or statement changes, so the 22 proofs of Milestones 1 and 2 stand as they are.
+
+- **CVaR tail to level** (PDE Lemma 9.1, C₀ = 1): `cvar_tail_to_level`.
+- **The local KL–Fisher bound** (JSG I, Theorem 2), in whitened coordinates (QUEUE.md, Q9): `kl_fisher_local`.
+- **The DRO envelope identity** (JSG II, ρ-sensitivity), for any dual of the form ηρ + g(η), with η the multiplier (QUEUE.md, Q10): `dro_envelope`.
+
+Milestone 3's fourth theorem, `dwell_lower_bound`, is frozen in `statements-v1`. The geometry-scaled Jacobi frontier defect is left out (QUEUE.md, Q8).
+
 ## statements-v2
 
 Tightens: it only adds statements. Seven theorems for Milestone 2, and the definitions they use, go in new sections 8–11 of `lean/JSG/Defs.lean` and `lean/JSG/Statements.lean`. No `statements-v1` definition or statement changes, so the eight Milestone 1 proofs stand as they are.

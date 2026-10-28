@@ -4,7 +4,36 @@ Questions only you can answer: anything that changes a statement's meaning, a No
 
 ## Open
 
-None.
+### Q8. Which analysis statements belong in statements-v3?
+
+- **Question:** ROADMAP's Milestone 3 lists the CVaR tail-to-level step, `dwell_lower_bound`, the local KL–Fisher bound and the DRO envelope identity. MASTER_GUIDE's roadmap line leaves out the DRO identity, and the layer map also has the geometry-scaled Jacobi frontier defect. `dwell_lower_bound` is already frozen in v1. Which of the rest go into v3?
+- **Recommended answer:** CVaR, KL–Fisher and DRO, as the draft has them. MASTER_GUIDE's roadmap line gains the DRO identity, to match ROADMAP. The Jacobi defect waits, because its statement isn't well-posed yet:
+  - JSG I never defines Δ\_fr. It is a commutator across the frontier, a distribution supported on Σ, so ∫‖Δ\_fr(x\_t)‖ dt along a trajectory isn't defined.
+  - Its bound adds ‖S‖∞ and ‖∇S‖∞, which have different units, while calling its constants unit-free.
+  - Mathlib has no multivector calculus on stratified spaces and no Filippov solutions.
+- **What breaks if wrong:** If you want the Jacobi defect in Milestone 3, it needs a definition of Δ\_fr first, then a version of its own; adding it later only adds. If the DRO identity shouldn't be in Milestone 3, drop it before the tag. After the tag, removing it is a weakening.
+- **Can it be undone:** Yes, freely until `statements-v3` is tagged. After that, adding a statement is a tightening, and removing one is a weakening: it takes a new version, a CHANGELOG line and a signed decision.
+
+### Q9. State the KL–Fisher bound in whitened coordinates, with κ = ∇ψ?
+
+- **Question:** JSG I's Theorem 2 measures the cumulants in F⁻¹ but never says which norm its radius and Hessian-Lipschitz constant use. Read in raw coordinates, as jsg-lab does, it is false (the mutant). The draft states it in whitened coordinates: V's inner product is the Fisher metric at 0, so F is the identity, which `hlip` at x = 0 forces. It also takes the cumulants as ψ's gradient (`hgrad`), not as the mean of T under P\_θ. Is that the statement you want?
+- **Recommended answer:** Yes, on both counts.
+  - **Whitening loses no generality.** Any F ≻ 0 whitens by the change of variables T ↦ F^{−1/2}T. In those coordinates the Euclidean norms are the F and F⁻¹ norms the source writes, and JSG I says its norms are Fisher-induced (line 2243). A general-F form is equivalent, but needs square roots of operators.
+  - **On κ:** the source defines κ\_mix = E\_{P\_θ}[T] = ∇ψ(θ). Stating it through ∇ψ avoids integrals valued in V. That the two agree is a standard identity, which Mathlib has in one dimension (`integral_tilted_mul_self`).
+- **What breaks if wrong:** If you want the cumulants as the mean ∫ T ∂P\_θ, a corollary has to show the two agree, which takes differentiation under the integral sign in V. It also needs V finite-dimensional and ‖T‖ integrable under P\_θ. If you want general F, a corollary has to transport the bound through F^{1/2}. Either is an addition.
+- **Can it be undone:** Yes, freely until the tag. After it, either corollary only adds.
+
+### Q10. State the DRO envelope identity for the dual alone, and duality later?
+
+- **Question:** JSG II's `thm:rho-sense` says dv/dρ = η\* for v the worst-case risk. The draft states it for the dual value, the infimum over multipliers η of ηρ + g(η), which covers JSG II's KL dual (corrected) and its Wasserstein dual. Strong duality, that this dual equals the worst-case risk, isn't stated. Is that enough for v3?
+- **Recommended answer:** Yes. The envelope identity is the property JSG II's 5% check and quarantine hook rely on. Strong duality for KL needs more:
+  - **Weak duality is within reach,** from `llr_tilted_right`: E\_Q[ℓ] − η KL(Q‖P) ≤ η log E\_P[e^{ℓ/η}].
+  - **Attainment isn't:** the tilted measure has to hit KL = ρ exactly, which is more work.
+  - **The smoothed Wasserstein dual isn't the primal at all.** It differs by its smoothing bias.
+
+  The hypothesis is a continuous minimizer selection, not JSG II's uniqueness. Uniqueness suffices when g is convex, as both duals are, but proving that needs Fenchel conjugacy.
+- **What breaks if wrong:** Every dual of this shape satisfies the identity, JSG II's own wrong KL dual included. So `dro_envelope` says nothing about whether a dual is the right one, and neither does the finite-difference check built on it. If you need that, it's a duality statement, which only adds.
+- **Can it be undone:** Yes. Adding duality later only adds.
 
 ## Answered
 
