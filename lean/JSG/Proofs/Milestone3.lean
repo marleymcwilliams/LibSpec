@@ -1,4 +1,5 @@
 import JSG.Defs
+import JSG.Lemmas.KLFisher
 
 /-!
 Milestone 3 proofs: the analysis layer. The corrected dwell bound from `statements-v1`, and
@@ -79,6 +80,138 @@ theorem cvar_tail_to_level (μ : Measure Ω) (α : ENNReal) {X : Ω → ENNReal}
             _ = (s - t) * μ {ω | s < X ω} / α := (mul_div_assoc _ _ _).symm
         _ ≤ t + (∫⁻ ω, (X ω - t) ∂μ) / α := by gcongr
   exact absurd (h.trans_lt hεs) (not_lt.2 (le_iInf hall))
+
+theorem kl_fisher_local (μ : Measure Ω) [IsProbabilityMeasure μ] (T : Ω → V)
+    (κ : V → V) (H : V → V →L[ℝ] V) {L ε : ℝ} {θ : V}
+    (hgrad : ∀ x ∈ segment ℝ 0 θ, HasGradientAt (logPartition μ T) (κ x) x)
+    (hhess : ∀ x ∈ segment ℝ 0 θ, HasFDerivAt κ (H x) x)
+    (hcenter : κ 0 = 0)
+    (hlip : ∀ x ∈ segment ℝ 0 θ, ‖H x - 1‖ ≤ L * ‖x‖)
+    (hint : θ ∈ interior {x | Integrable (fun ω => Real.exp (inner ℝ x (T ω))) μ})
+    (hr : L * ‖θ‖ ≤ ε) (hε : ε ≤ 1) :
+    ENNReal.ofReal ((1 - ε) / 2 * ‖κ θ‖ ^ 2) ≤ klDiv (expFamily μ T θ) μ ∧
+      klDiv (expFamily μ T θ) μ ≤ ENNReal.ofReal ((1 + ε) / 2 * ‖κ θ‖ ^ 2) := by
+  set Y : Ω → ℝ := fun ω => inner ℝ θ (T ω) with hY
+  have hseg : ∀ t ∈ Set.Icc (0 : ℝ) 1, t • θ ∈ segment ℝ 0 θ := by
+    intro t ht
+    rw [segment_eq_image]
+    exact ⟨t, ht, by simp⟩
+  have hline : ∀ t : ℝ, HasDerivAt (fun s : ℝ => s • θ) θ t := by
+    intro t
+    simpa using (hasDerivAt_id t).smul_const θ
+  have hg : ∀ t ∈ Set.Icc (0 : ℝ) 1,
+      HasDerivAt (fun s : ℝ => logPartition μ T (s • θ)) (inner ℝ θ (κ (t • θ))) t := by
+    intro t ht
+    have h1 := ((hgrad _ (hseg t ht)).hasFDerivAt).comp_hasDerivAt t (hline t)
+    rw [InnerProductSpace.toDual_apply_apply, real_inner_comm] at h1
+    exact h1
+  have hm : ∀ t ∈ Set.Icc (0 : ℝ) 1,
+      HasDerivAt (fun s : ℝ => inner ℝ θ (κ (s • θ))) (inner ℝ θ (H (t • θ) θ)) t := by
+    intro t ht
+    have h1 := (hhess _ (hseg t ht)).comp_hasDerivAt t (hline t)
+    have h2 := (hasDerivAt_const t θ).inner ℝ h1
+    simp only [inner_zero_left, add_zero] at h2
+    exact h2
+  have hg0 : logPartition μ T ((0 : ℝ) • θ) = 0 := by simp [logPartition]
+  have hm0 : inner ℝ θ (κ ((0 : ℝ) • θ)) = 0 := by simp [hcenter]
+  have hcgf : cgf Y μ = fun s : ℝ => logPartition μ T (s • θ) := by
+    funext t
+    simp [cgf, mgf, logPartition, Y, real_inner_smul_left]
+  have h1int : (1 : ℝ) ∈ interior (integrableExpSet Y μ) := by
+    have hcont : Continuous fun t : ℝ => t • θ := continuous_id.smul continuous_const
+    have hsub : (fun t : ℝ => t • θ) ⁻¹'
+        interior {x | Integrable (fun ω => Real.exp (inner ℝ x (T ω))) μ}
+          ⊆ integrableExpSet Y μ := by
+      intro t ht
+      have h3 := interior_subset ht
+      simpa [integrableExpSet, Y, real_inner_smul_left] using h3
+    refine interior_mono hsub ?_
+    rw [(isOpen_interior.preimage hcont).interior_eq]
+    simpa using hint
+  have hexp : Integrable (fun ω => Real.exp (Y ω)) μ := by
+    simpa [integrableExpSet] using interior_subset h1int
+  have hYm : AEMeasurable Y μ := by
+    have h3 := Real.measurable_log.comp_aemeasurable hexp.aemeasurable
+    simpa [Function.comp_def] using h3
+  have hYi : Integrable Y (μ.tilted Y) := by
+    have h3 := memLp_tilted_mul h1int 1
+    simp only [one_mul] at h3
+    exact memLp_one_iff_integrable.1 (by simpa using h3)
+  have hKL : klDiv (expFamily μ T θ) μ =
+      ENNReal.ofReal (inner ℝ θ (κ θ) - logPartition μ T θ) := by
+    have h3 := integral_tilted_mul_self h1int
+    simp only [one_mul] at h3
+    have h4 : deriv (cgf Y μ) 1 = inner ℝ θ (κ θ) := by
+      rw [hcgf]
+      simpa using (hg 1 ⟨zero_le_one, le_rfl⟩).deriv
+    rw [expFamily, klDiv_tilted_self μ hexp hYm hYi, h3, h4]
+    simp [logPartition, Y]
+  rcases eq_or_ne θ 0 with rfl | hθ0
+  · have h0 : klDiv (expFamily μ T 0) μ = 0 := by
+      rw [hKL]
+      simp [hcenter, logPartition]
+    simp [h0, hcenter]
+  have hρ : 0 < ‖θ‖ := norm_pos_iff.2 hθ0
+  have hL : 0 ≤ L := by
+    have h1 := hlip θ (right_mem_segment ℝ 0 θ)
+    by_contra hneg
+    push Not at hneg
+    have : L * ‖θ‖ < 0 := mul_neg_of_neg_of_pos hneg hρ
+    linarith [norm_nonneg (H θ - 1)]
+  have hh : ∀ t ∈ Set.Icc (0 : ℝ) 1,
+      |inner ℝ θ (H (t • θ) θ) - ‖θ‖ ^ 2| ≤ (L * ‖θ‖) * t * ‖θ‖ ^ 2 := by
+    intro t ht
+    have h1 : inner ℝ θ (H (t • θ) θ) - ‖θ‖ ^ 2 = inner ℝ θ ((H (t • θ) - 1) θ) := by
+      simp [inner_sub_right]
+    rw [h1]
+    calc |inner ℝ θ ((H (t • θ) - 1) θ)| ≤ ‖θ‖ * ‖(H (t • θ) - 1) θ‖ :=
+          abs_real_inner_le_norm _ _
+      _ ≤ ‖θ‖ * (‖H (t • θ) - 1‖ * ‖θ‖) := by
+          gcongr
+          exact ContinuousLinearMap.le_opNorm _ _
+      _ ≤ ‖θ‖ * ((L * ‖t • θ‖) * ‖θ‖) := by
+          gcongr
+          exact hlip _ (hseg t ht)
+      _ = (L * ‖θ‖) * t * ‖θ‖ ^ 2 := by
+          rw [norm_smul, Real.norm_of_nonneg ht.1]
+          ring
+  obtain ⟨hm1lo, hm1hi, hK0, hKup, hKlo⟩ :=
+    kl_ray_bound (sq_pos_of_pos hρ) (hr.trans hε) hg hm hh hg0 hm0
+  simp only [one_smul] at hm1lo hm1hi hK0 hKup hKlo
+  have hCS : inner ℝ θ (κ θ) ^ 2 ≤ ‖θ‖ ^ 2 * ‖κ θ‖ ^ 2 := by
+    have h1 := abs_real_inner_le_norm θ (κ θ)
+    rw [← mul_pow, ← sq_abs]
+    exact pow_le_pow_left₀ (abs_nonneg _) h1 2
+  have hclose : ‖κ θ - θ‖ ≤ L * ‖θ‖ ^ 2 := by
+    have hder : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivWithinAt (fun s : ℝ => κ (s • θ) - s • θ)
+        (H (t • θ) θ - θ) (Set.Icc 0 1) t := by
+      intro t ht
+      have h1 := (hhess _ (hseg t ht)).comp_hasDerivAt t (hline t)
+      exact (h1.sub (hline t)).hasDerivWithinAt
+    have hbound : ∀ t ∈ Set.Ico (0 : ℝ) 1, ‖H (t • θ) θ - θ‖ ≤ L * ‖θ‖ ^ 2 := by
+      intro t ht
+      have ht' := Set.Ico_subset_Icc_self ht
+      calc ‖H (t • θ) θ - θ‖ = ‖(H (t • θ) - 1) θ‖ := by simp
+        _ ≤ ‖H (t • θ) - 1‖ * ‖θ‖ := ContinuousLinearMap.le_opNorm _ _
+        _ ≤ (L * ‖t • θ‖) * ‖θ‖ := by
+            gcongr
+            exact hlip _ (hseg t ht')
+        _ ≤ L * ‖θ‖ ^ 2 := by
+            rw [norm_smul, Real.norm_of_nonneg ht.1]
+            have h2 : t ≤ 1 := ht.2.le
+            have h3 : 0 ≤ L * ‖θ‖ * ‖θ‖ := by positivity
+            nlinarith
+    have h1 := norm_image_sub_le_of_norm_deriv_le_segment' hder hbound 1 ⟨zero_le_one, le_rfl⟩
+    simpa [hcenter] using h1
+  have hnorm : ‖κ θ‖ ^ 2 ≤ (L * ‖θ‖) ^ 2 * ‖θ‖ ^ 2 + 2 * inner ℝ θ (κ θ) - ‖θ‖ ^ 2 := by
+    have h1 := norm_sub_sq_real (κ θ) θ
+    rw [real_inner_comm] at h1
+    have h2 : ‖κ θ - θ‖ ^ 2 ≤ (L * ‖θ‖ ^ 2) ^ 2 := pow_le_pow_left₀ (norm_nonneg _) hclose 2
+    nlinarith
+  rw [hKL]
+  obtain ⟨hlo', hhi'⟩ := kl_algebra hρ hL hr hε hm1lo hm1hi hK0 hKup hKlo hCS hnorm
+    (by positivity)
+  exact ⟨ENNReal.ofReal_le_ofReal hlo', ENNReal.ofReal_le_ofReal hhi'⟩
 
 theorem dro_envelope (S : Set ℝ) (g : ℝ → ℝ) (ηstar : ℝ → ℝ) {ρ₀ : ℝ}
     (hmin : ∀ᶠ ρ in nhds ρ₀, ηstar ρ ∈ S ∧ ∀ η ∈ S, ηstar ρ * ρ + g (ηstar ρ) ≤ η * ρ + g η)
