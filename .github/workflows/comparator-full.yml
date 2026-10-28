@@ -89,7 +89,9 @@ jobs:
           echo "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus" >> "$GITHUB_ENV"
           XDG_RUNTIME_DIR="/run/user/$uid" systemctl --user is-system-running --wait || true
 
+      # shell: bash runs the step with -o pipefail, so the script's exit status survives tee.
       - name: Comparator, full strength
+        shell: bash
         run: |
           export PATH="$HOME/comparator-full-tools/bin:$PATH"
           bash scripts/comparator-full.sh 2>&1 | tee "$RUNNER_TEMP/comparator-full.log"
