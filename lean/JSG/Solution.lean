@@ -1,5 +1,6 @@
 import JSG.Proofs.Milestone1
 import JSG.Proofs.Milestone2
+import JSG.Proofs.Milestone3
 
 /-!
 Solution root for Comparator. It imports every file in `JSG/Proofs/`; each proof
