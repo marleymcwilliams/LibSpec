@@ -290,13 +290,17 @@ def entries (j : Json) : Except String (Array Json) :=
 
 /-- The `diff` command: recomputes the oracle's answer to every vector in the corpus,
     compares each answer the other file gives (`null` means unsupported, and is skipped), and
-    lists the vectors where they differ. The flag says whether there were none. -/
-def diffJson (corpusJ answersJ : Json) : Except String (Json × Bool) := do
+    lists the vectors where they differ. Without a model, the flag says whether there were
+    none. With one, it also lists the answered vectors where the model differs from the
+    oracle, and the flag says whether the two lists are the same. -/
+def diffJson (corpusJ answersJ : Json) (model : Option Impl := none) :
+    Except String (Json × Bool) := do
   let vecs ← (← entries corpusJ).mapM fun e => do
     return ((← (← e.getObjVal? "id").getNat?), ← vecOfJson (← e.getObjVal? "vector"))
   let mut compared := 0
   let mut skipped := 0
   let mut differ : Array Nat := #[]
+  let mut expected : Array Nat := #[]
   for e in ← entries answersJ do
     let id ← (← e.getObjVal? "id").getNat?
     let some (_, v) := (vecs[id]?.filter (·.1 = id)).orElse fun _ => vecs.find? (·.1 = id)
@@ -306,8 +310,17 @@ def diffJson (corpusJ answersJ : Json) : Except String (Json × Bool) := do
     | .ok a =>
       compared := compared + 1
       if (← ansOfJson v a) != oracle.answer v then differ := differ.push id
-  let out := Json.mkObj [("vectors", toJson vecs.size), ("compared", toJson compared),
-    ("skipped", toJson skipped), ("disagreements", Json.arr (differ.map fun i => toJson i))]
-  return (out, differ.isEmpty)
+      if let some m := model then
+        if disagrees m v then expected := expected.push id
+  let base := [("vectors", toJson vecs.size), ("compared", toJson compared),
+    ("skipped", toJson skipped), ("disagreementCount", toJson differ.size),
+    ("disagreements", Json.arr (differ.map fun i => toJson i))]
+  match model with
+  | none => return (Json.mkObj base, differ.isEmpty)
+  | some _ =>
+    let same := differ == expected
+    return (Json.mkObj (base ++ [("expectedCount", toJson expected.size),
+      ("expected", Json.arr (expected.map fun i => toJson i)), ("asExpected", Json.bool same)]),
+      same)
 
 end JSG.Harness
