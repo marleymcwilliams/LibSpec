@@ -1,0 +1,108 @@
+name: Comparator (full strength)
+
+# The gold-standard check from the Lean reference's "Validating Proofs": Comparator with the
+# nanoda kernel enabled and the full sandbox, landrun inside the systemd-run wrapper from
+# Comparator's README (scripts/comparator-full.sh). CI's everyday Comparator step is the
+# best-effort run. Start this one by hand: Actions, "Comparator (full strength)", "Run
+# workflow". It also runs on a pull request that changes it, so a change is tested before
+# it lands. REPRODUCE.md records its runs.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - .github/workflows/comparator-full.yml
+      - scripts/comparator-full.sh
+      - scripts/build-comparator-tools.sh
+
+permissions:
+  contents: read
+
+jobs:
+  comparator-full:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Restore the Lean toolchain
+        id: elan-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ runner.os }}-${{ hashFiles('lean/lean-toolchain') }}
+
+      - name: Install the Lean toolchain, retrying network errors
+        if: steps.elan-cache.outputs.cache-hit != 'true'
+        working-directory: lean
+        run: |
+          for attempt in 1 2 3 4 5; do
+            if curl -sSf --retry 3 -o "$RUNNER_TEMP/elan-init.sh" \
+                https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh &&
+              sh "$RUNNER_TEMP/elan-init.sh" -y --default-toolchain none &&
+              "$HOME/.elan/bin/lean" --version; then
+              exit 0
+            fi
+            if [ "$attempt" -lt 5 ]; then
+              echo "Attempt $attempt failed; retrying in $((attempt * 30)) s"
+              sleep $((attempt * 30))
+            fi
+          done
+          echo "Couldn't install the Lean toolchain in 5 attempts"
+          exit 1
+
+      - name: Put elan on PATH
+        run: echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      # Only Mathlib's cache: nothing of this repo is built outside Comparator's sandbox,
+      # except the trusted challenge, which comparator-full.sh builds to list its theorems.
+      - name: Fetch the Mathlib cache
+        working-directory: lean
+        run: lake exe cache get
+
+      - name: Restore Comparator tools, with nanoda
+        id: tools
+        uses: actions/cache@v4
+        with:
+          path: ~/comparator-full-tools
+          key: comparator-full-tools-${{ runner.os }}-${{ hashFiles('scripts/build-comparator-tools.sh', 'lean/lean-toolchain') }}
+
+      - uses: actions/setup-go@v5
+        if: steps.tools.outputs.cache-hit != 'true'
+        with:
+          go-version: stable
+
+      - name: Build Comparator tools, with nanoda
+        if: steps.tools.outputs.cache-hit != 'true'
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          bash scripts/build-comparator-tools.sh "$HOME/comparator-full-tools" --with-nanoda
+
+      # systemd-run --user needs a user manager; a runner has none until lingering starts one.
+      - name: Start a systemd user manager for the runner
+        run: |
+          sudo loginctl enable-linger "$USER"
+          uid="$(id -u)"
+          for i in $(seq 1 60); do [ -S "/run/user/$uid/bus" ] && break; sleep 1; done
+          echo "XDG_RUNTIME_DIR=/run/user/$uid" >> "$GITHUB_ENV"
+          echo "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus" >> "$GITHUB_ENV"
+          XDG_RUNTIME_DIR="/run/user/$uid" systemctl --user is-system-running --wait || true
+
+      # shell: bash runs the step with -o pipefail, so the script's exit status survives tee.
+      - name: Comparator, full strength
+        shell: bash
+        run: |
+          export PATH="$HOME/comparator-full-tools/bin:$PATH"
+          bash scripts/comparator-full.sh 2>&1 | tee "$RUNNER_TEMP/comparator-full.log"
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo '### Comparator, full strength'
+            echo '```'
+            grep -E '^(kernel|systemd|lean|commit):|frozen theorems$|Running .* kernel|kernel accepts|Your solution is okay|^ok:|^FAIL|comparator-full.sh: passed' \
+              "$RUNNER_TEMP/comparator-full.log" || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
