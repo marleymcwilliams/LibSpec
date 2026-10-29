@@ -1,3 +1,5 @@
+import JSG.Pilot.Core
+
 /-!
 Root of the executable gate's pilot (guide/EXECUTABLE_GATE.md §3), for the axiom audit
 (`lean/AxiomAudit.lean`). Import every file in `JSG/Pilot/` here. The audit fails if a pilot
