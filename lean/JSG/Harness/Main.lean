@@ -1,11 +1,11 @@
-import JSG.Harness.Corpus
+import JSG.Harness.Mutants
 
 /-!
 The harness's commands, which `lean/Gate.lean` runs:
 
     lake env lean --run Gate.lean report FILE
     lake env lean --run Gate.lean corpus
-    lake env lean --run Gate.lean diff CORPUS ANSWERS
+    lake env lean --run Gate.lean diff CORPUS ANSWERS [--expect sirus]
 
 Each reads JSON from its files, or from standard input for a file named `-`, calls the proved
 twins, and writes JSON to standard output. They parse, call and print, and hold no logic of their
@@ -20,7 +20,8 @@ def usage : String :=
   "usage: lake env lean --run Gate.lean COMMAND\n" ++
   "  report FILE           the verdict and report on one grade under one policy\n" ++
   "  corpus                every test vector, with the oracle's answer\n" ++
-  "  diff CORPUS ANSWERS   where ANSWERS differs from the oracle; exit 1 if anywhere"
+  "  diff CORPUS ANSWERS   where ANSWERS differs from the oracle; exit 1 if anywhere\n" ++
+  "    --expect sirus      exit 1 unless it differs exactly where SirusSC's model does"
 
 /-- Reads FILE, or standard input when FILE is `-`. -/
 def readInput (path : String) : IO String :=
@@ -48,12 +49,18 @@ def run (args : List String) : IO UInt32 := do
   | ["corpus"] =>
     IO.println corpusJson.compress
     pure 0
-  | ["diff", c, a] =>
+  | "diff" :: c :: a :: rest =>
+    let model ← match rest with
+      | [] => pure none
+      | ["--expect", "sirus"] => pure (some sirusModel)
+      | _ =>
+        IO.eprintln usage
+        return 2
     let cj ← readJson c
     let aj ← readJson a
-    match (do diffJson (← cj) (← aj)) with
+    match (do diffJson (← cj) (← aj) model) with
     | .ok (out, ok) =>
-      IO.println out.pretty
+      IO.println out.compress
       pure (if ok then 0 else 1)
     | .error e =>
       IO.eprintln s!"Gate.lean: {e}"
