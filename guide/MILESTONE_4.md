@@ -66,3 +66,13 @@ Proved in #68.
 3. Since lo ≤ hi, nothing truncates, but ∞ needs care: a known ∞, [∞, ∞], has width ∞ − ∞, which is 0 in both carriers.
 4. That case matters to the pilot. A withdrawn manuscript's `withdrawn` axis is [∞, ∞], a point, not an interval of infinite width.
 5. A floating-point gate gets it wrong, since ∞ − ∞ is NaN there. The mutant `floatWidth` gives ∞, and doesn't agree.
+
+## `xleaseVerdict_agrees`
+
+Proved in #69.
+
+1. The lease verdict accepts exactly when every axis's upper end is within its threshold and its width within its lease.
+2. The twin's widths cast to the frozen widths (`xwidth_agrees`), so after rewriting, both conditions compare cast values.
+3. `xcast_le_iff` turns each cast comparison into the twin's own, so the two conditions are the same proposition.
+4. As with `xverdict_agrees`, the two `if`s then agree, however each decides it.
+5. So `lease_sound` and `lease_complete` hold of the executable lease verdict on finitely many axes. SirusSC's `QPrime`, which never reads a width, doesn't agree: it accepts [0, 5] leased 1 under θ = 10.
