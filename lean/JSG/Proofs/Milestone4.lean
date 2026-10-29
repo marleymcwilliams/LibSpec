@@ -33,4 +33,10 @@ theorem xresidual_agrees (θ x : WithTop ℚ≥0) :
 
 theorem xwidth_agrees (b : XBound) : xcast b.width = b.toBound.width := xcast_sub b.hi b.lo
 
+theorem xleaseVerdict_agrees [Fintype ι] (θ β : ι → WithTop ℚ≥0) (g : XGrade ι) :
+    xleaseVerdict θ β g = leaseVerdict (xcast ∘ θ) (xcast ∘ β) g.toGrade := by
+  unfold xleaseVerdict leaseVerdict
+  simp only [XGrade.toGrade, Function.comp_apply, ← xwidth_agrees]
+  simp only [XBound.toBound, xcast_le_iff]
+
 end JSG
