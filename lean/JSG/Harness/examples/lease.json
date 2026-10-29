@@ -1,0 +1,4 @@
+{"axes": ["error rate"],
+ "grade": [{"lo": "0", "hi": "5"}],
+ "thresholds": ["10"],
+ "leases": ["1"]}

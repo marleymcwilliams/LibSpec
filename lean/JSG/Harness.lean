@@ -1,4 +1,6 @@
 import JSG.Harness.Report
+import JSG.Harness.Json
+import JSG.Harness.Main
 
 /-!
 Root of the executable gate's harness (guide/EXECUTABLE_GATE.md §1 and §2), for the axiom

@@ -1,0 +1,4 @@
+{"verdict": "reject",
+ "report":
+ "not accepted: evidence incomplete on error rate (wider than its lease)",
+ "outside": [{"reason": "wider than its lease", "axis": "error rate"}]}

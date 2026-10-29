@@ -1,0 +1,6 @@
+{"verdict": "reject",
+ "report":
+ "not accepted: evidence incomplete on withdrawn (above its threshold), novelty (unknown)",
+ "outside":
+ [{"reason": "above its threshold", "axis": "withdrawn"},
+  {"reason": "unknown", "axis": "novelty"}]}
