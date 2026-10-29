@@ -48,7 +48,7 @@ From the repository root:
 bash scripts/check.sh
 ```
 
-It runs four steps and ends with `check.sh: passed`:
+It runs five steps and ends with `check.sh: passed`:
 
 | Step | What it checks | What you should see |
 | --- | --- | --- |
@@ -56,6 +56,7 @@ It runs four steps and ends with `check.sh: passed`:
 | Forbidden tokens | no `sorry`, `admit`, `axiom` or native evaluation in `Proofs/`, `Lemmas/`, `Tests/`, `Harness/` or `Pilot/`, or in `lean/Gate.lean` | `ok` |
 | Axiom audit | `#print axioms` on every theorem in `Proofs/`, `Lemmas/`, `Tests/`, `Harness/` and `Pilot/` (`lean/AxiomAudit.lean`) | each theorem lists only `propext`, `Classical.choice` and `Quot.sound`, then `ok` |
 | Statements unchanged | `Defs.lean`, `Statements.lean`, their imports, the toolchain, the Mathlib pin and the lakefile, against the latest `statements-v*` tag | `ok (statements-v4): …`, or `ok (statements-v3): …` at v1.0 |
+| Links | every relative link in the Markdown outside `archive/`, and the heading its anchor names (`scripts/check-links.py`). On Windows, run it with `PYTHON=python` | `… links checked, 0 broken` |
 
 To replay every module through Lean's kernel as well, as CI does:
 
