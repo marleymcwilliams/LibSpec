@@ -57,6 +57,16 @@ Proved in #67.
 4. If both are finite, it comes down to the cast from ℚ≥0 to ℝ≥0, for which Mathlib has no truncated-subtraction lemma. A helper proves it: if x ≤ θ, write θ = x + d, and both sides are d; otherwise both are 0 (`nnrat_cast_tsub`).
 5. So the twin leaves exactly the budget the spec does after each stage. v1's `residualFull`, which leaves θ, doesn't agree.
 
+## `xthreads_agrees`
+
+Proved in #70.
+
+1. Both sides walk the stages from the front, so the proof is an induction on the list of stages, for every budget θ.
+2. With no stages, both hold: the test returns `true`, and `Threads` is `True`.
+3. With a first stage x, the test checks x ≤ θ and then threads what's left, while `Threads` checks xcast x ≤ xcast θ and threads the frozen residual.
+4. `xcast_le_iff` matches the first checks, and `xresidual_agrees` turns the frozen residual into the cast of the twin's, so the induction hypothesis matches the rest.
+5. Unlike `threads_spec`, it holds for an unlimited budget too. v1's residual check alone, which never checks that the early stages fit, doesn't agree: take θ = 1 with stages 2 then 0.
+
 ## `xwidth_agrees`
 
 Proved in #68.
