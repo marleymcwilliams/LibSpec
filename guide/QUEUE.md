@@ -4,7 +4,13 @@ Questions only you can answer: anything that changes a statement's meaning, a No
 
 ## Open
 
+None right now.
+
+## Answered
+
 ### Q14. Which axes carry a dependency's doubt?
+
+**Answered 2026-10-29: yes, with one change for consistency:** `dependency_withdrawn` carries unless the manuscript's own formalization is complete and its statement has been checked. Then Lean has re-established the result independently, so a withdrawn dependency can't undermine it. Under θ = 0 this changes no verdict today.
 
 - **Question:** When a manuscript rests on another, the pilot combines its grade with what carries over from the other, by the spec's `combine`. Which of the seven axes should carry a dependency's doubt to the manuscripts that rest on it? As Q12's answer asked, [EXECUTABLE_GATE.md](EXECUTABLE_GATE.md) §3 proposes an answer for each axis, with its reasons.
 - **Recommended answer:**
@@ -17,6 +23,8 @@ Questions only you can answer: anything that changes a statement's meaning, a No
 
 ### Q15. The form of the statements-v4 twins
 
+**Answered 2026-10-29: yes:** `WithTop ℚ≥0`, finitely many axes, and one twin for `combine`, `seqComp` and `parComp`.
+
 - **Question:** The `statements-v4` draft freezes the twins Q11 chose, in a form that needs your approval:
   - **The carrier:** `WithTop ℚ≥0`, exact nonnegative rationals plus ∞, cast into `ENNReal` by `xcast`.
   - **Finitely many axes:** `xverdict` and `xleaseVerdict` need `[Fintype ι]`, since a check of every axis must visit each one. The frozen verdicts allow any axis type, so their agreement theorems cover the finite ones.
@@ -28,8 +36,6 @@ Questions only you can answer: anything that changes a statement's meaning, a No
   - `Fintype` costs nothing a harness could use, since it can only ever check finitely many axes.
   - If a later version separates `seqComp` from `combine`, it adds an `xseqComp` twin, and nothing here changes.
 - **Can it be undone:** Yes, freely until `statements-v4` is tagged. After that, adding a twin is a tightening, and changing one is a weakening, which needs a signed decision.
-
-## Answered
 
 ### Q11. Freeze executable twins of the core definitions as statements-v4?
 

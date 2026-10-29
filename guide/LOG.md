@@ -4,6 +4,13 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-28
 
+### Q14 and Q15 answered; the pilot's logic in Lean; v1.0 and v4 told apart (#62)
+- **The queue:** Q15, yes as drafted. Q14, yes, with `dependency_withdrawn` also stopping at a complete formalization, whose statement has been checked. Both are recorded as answered, and none is open. Under θ = 0 no carried doubt can now change a verdict. The must-fail test still holds, since each of the three withdrawn manuscripts is rejected on its own `withdrawn`. The two-step must-fail now checks the report, and a new must-pass record checks that a withdrawn dependency doesn't carry past a complete formalization.
+- **The pilot's logic, in Lean (Marley's request):** the doubts from raw facts, the carry-over rule, the closure and the report go in the pilot's own module, `lean/JSG/Pilot/`. The collectors supply only raw facts and dependency edges, and the harness stays logic-free. `dependency_withdrawn` is computed, not collected, since whether it counts depends on completeness. A scratch check proved, for the v4 twins and with only the three axioms, that masking never adds doubt, that combining never lowers it, and that no dependency can rescue a rejected manuscript.
+- **Harness:** `lake env lean --run Gate.lean`, not `lake exe jsg-gate`. An executable target would change `lean/lakefile.toml`, which the statements check covers, so it would need a new statements version. The `JSG.*` glob already builds `JSG/Pilot/`. The axiom audit and the token scan must be extended to it when it lands.
+- **README and REPRODUCE:** their status is labelled as of v1.0, with what v4 adds and what is pending until Milestone 4.
+- **The merge of `main`:** #60 had been stacked on #58 alone, so this branch lacked #57's layer-map columns. The new layer-map row now follows #57's format.
+
 ### statements-v4 drafted (#62)
 - **Scope (Q11):** the twins of the graded values, `combine`, `verdict`, `residual` and `Threads`, and `Bound.width` and `leaseVerdict`, with eight agreement theorems, in a new section 15 of `Defs.lean` and `Statements.lean`. The obligation and Loader twins wait.
 - **The form, queued as Q15:** `WithTop ℚ≥0` as the carrier; `[Fintype ι]` for the two verdicts; `xcombine` standing for `seqComp` and `parComp`; and a theorem each for `known` and `unknown`.

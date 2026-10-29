@@ -6,10 +6,17 @@ LibSpec takes the JSG/SIRUS governance corpus, a set of papers and specs on grad
 
 ## Status
 
-Version 1.0. **All 26 frozen theorems are proved.**
+**As of v1.0** (the tag `v1.0`, at `0c36127`), **all 26 frozen theorems are proved.**
 - **Comparator** checks each proof against its frozen statement, and allows only `propext`, `Classical.choice` and `Quot.sound`.
 - **Controls:** each theorem has a mutant, a plausible wrong version proved to fail it, and a witness, an instance proved to satisfy it.
 - **Frozen versions:** the statements were frozen in three versions, `statements-v1` to `statements-v3`, each before its proofs were written. No statement was changed to make a proof go through.
+
+**Since v1.0,** `statements-v4` adds eight frozen theorems. They are executable twins of the core's graded values, combine, verdict, residual threading, widths and leases, each with a theorem that it agrees with its frozen definition ([the executable gate](guide/EXECUTABLE_GATE.md), [the changelog](guide/CHANGELOG.md)). So `main` holds 34 frozen theorems, of which 26 are proved. Until Milestone 4 proves the other eight:
+- Comparator's everyday run lists them as not yet proved, and still passes;
+- the full-strength run fails, since it requires every frozen theorem to be proved;
+- the twins run and their controls pass, but nothing yet proves that they agree with the frozen definitions.
+
+To check v1.0 itself, check out its tag ([REPRODUCE.md](REPRODUCE.md)).
 
 ## What is proved, and what isn't
 
