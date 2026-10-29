@@ -28,4 +28,7 @@ theorem xverdict_agrees [Fintype ι] (θ : ι → WithTop ℚ≥0) (g : XGrade �
   unfold xverdict verdict
   simp only [XGrade.toGrade, XBound.toBound, Function.comp_apply, xcast_le_iff]
 
+theorem xresidual_agrees (θ x : WithTop ℚ≥0) :
+    xcast (xresidual θ x) = residual (xcast θ) (xcast x) := xcast_sub θ x
+
 end JSG
