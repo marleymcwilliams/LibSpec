@@ -23,7 +23,7 @@ def whyWords {n : ℕ} (name : Fin n → String) (r : Raw) (a : Axis) : Why n �
     | .dependencyWithdrawn => "unknown: its dependencies aren't read yet"
     | .formalProof =>
       if r.challenges.isEmpty then "unknown: no formalization"
-      else "unknown: our Comparator run is pending"
+      else "unknown: no trusted Comparator result yet"
     | .statementFidelity => "unknown: no named reviewer has checked its statement"
     | .axioms => "unknown: no challenge"
     | _ => "unknown"
@@ -49,7 +49,7 @@ def firstReport : String :=
     ["# The pilot's first report", "",
      "openai/math at `7ef5c0c`, θ = 0 on every axis, no leases. Every verdict below is " ++
        "proved by the kernel (`JSG.Pilot.Calibration`).", "",
-     "## The sample", "",
+     "## The sample", "", Sample.comparatorNote, "",
      "| Manuscript | Family | Report |", "| --- | --- | --- |"] ++ sample ++
     ["", "## The synthetic records", "",
      "| Record | Set | Report |", "| --- | --- | --- |"] ++ synth) ++ "\n"

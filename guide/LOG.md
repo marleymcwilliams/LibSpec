@@ -4,6 +4,11 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-29
 
+### Comparator's first measurements (#83, #84)
+- **The run:** [run 40916190535](https://github.com/marleymcwilliams/LibSpec/actions/runs/40916190535), on `Catalan`, `DeligneDrinfeld`, `BogomolovPopInjectivity` and `JointDickman`. Comparator accepted all four, with nanoda and Lean's kernel, in 2 h 29 min and 22.7 GB. The table is in EXECUTABLE_GATE §4.
+- **Decided: an untrusted run's results don't count.** The release's lakefile ran outside the sandbox before Comparator did, as #83 says, so `pilot/data/comparator-results.json` marks the run untrusted. `pilot/to_lean.py` counts results only from a trusted run, and the report names this one. The stricter choice, and it changes no verdict: the four aren't accepted either way, since `statement_fidelity`, `independent_review` and `novelty` are unknown.
+- **Corrected:** §4 said a hosted runner had about 14 GB of free disk. This one had 86 GB, and 104 GB after the workflow's cleanup. It also said the release was about 54,000 files, which is only where GitHub's tree listing stops.
+
 ### The pilot's first report (#84)
 - **The data:** `pilot/to_lean.py` writes `lean/JSG/Pilot/Sample.lean` from the collector's facts. It translates and decides nothing, and it fails if a dependency edge leaves the sample.
 - **The proofs** are in `JSG.Pilot.Calibration`, by `decide +kernel`:

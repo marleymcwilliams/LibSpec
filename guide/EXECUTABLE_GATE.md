@@ -173,7 +173,26 @@ Real manuscripts join it once their unknown axes are resolved, the first candida
 **GitHub Actions: Comparator, and anything that builds the release's Lean code.**
 - `comparator-full.yml` has shown that the full sandbox works there: Linux 7.0, a systemd user manager and Landlock, on a fresh VM for every run.
 - The pilot would run Comparator on each release challenge the same way. Their toolchain is `leanprover/lean4:v4.34.1`, the same as ours, so the same tools apply.
-- A hosted runner has 4 cores, 16 GB of memory, about 14 GB of free disk, and a 6-hour job limit. The release's library is about 54,000 files, with several large dependencies (PrimeNumberTheoremAnd, Carleson and others). Some challenges may exceed those limits, so the pilot should measure them on a few before scaling.
+- A hosted runner has 4 cores, 16 GB of memory and a 6-hour job limit. It had 86 GB of free disk, and 104 GB once the pilot's workflow removed preinstalled toolchains. The release's library is more than 54,000 files, where GitHub's tree listing stops, with several large dependencies (PrimeNumberTheoremAnd, Carleson and others). Some challenges may exceed those limits, so the pilot should measure them on a few before scaling.
+
+**Measured on four challenges** ([run 40916190535](https://github.com/marleymcwilliams/LibSpec/actions/runs/40916190535), #83). Comparator accepted all four, with both nanoda and Lean's kernel, but the run isn't trusted (below), so these are measurements:
+
+| Stage | Time | Disk used |
+| --- | --- | --- |
+| The release's `lean/`, by sparse checkout | 70 s | 2.4 GB |
+| `lake update`, with Mathlib's cache | 3 min | 9.0 GB, 8.4 GB of it packages |
+| `Catalan` (005) | 85 min: 43 building, 41 in the kernels | 3.2 GB, 999 modules built |
+| `DeligneDrinfeld` (008) | 9 min | 0.2 GB, 22 modules |
+| `BogomolovPopInjectivity` (009) | 3 min | 0.05 GB, 6 modules |
+| `JointDickman` (012) | 48 min: 43 building, 3 in the kernels | 7.7 GB, 1,837 modules |
+| **All of it** | **2 h 29 min** | **22.7 GB** |
+
+What that means for scaling:
+- **Each challenge builds its part of the release from source.** Mathlib's cache covers only Mathlib, and the release has none of its own. The modules built averaged about 3.9 GB per thousand, and 1.4 to 2.6 seconds each on 4 cores.
+- **The whole release is far bigger:** 419 challenge configs, and more than 52,000 Lean modules. If every module is needed, that's at least 20 to 40 hours of building, before the kernel checks, and about 200 GB of disk. That doesn't fit one runner's 104 GB or 6 hours, so a full run must be split into jobs, by family for instance.
+- **The kernels can be as slow as the build.** nanoda took 41 minutes on `Catalan`, and 1 to 3 on the others.
+- **The 100-minute cap per challenge is too tight.** `Catalan` alone took 85 minutes.
+- **Trust:** fetching the dependencies runs the release's lakefile, which applies 24 patches outside Comparator's sandbox, on the same VM as the checker. So no result counts as evidence until the fetch and the check run in separate jobs, the check on a fresh VM that never runs the release's code outside the sandbox. That's proposed in #83, for your decision.
 
 **Lewis & Clark's BLT cluster, for heavy builds, if its OS can run current Lean.**
 - **As documented, it can't.** Its documentation ([About the cluster](https://watzek.github.io/BLTdocs/about-the-cluster.html)) says: "The cluster runs the CentOS Linux operating system, version 7.4". It has 144 cores and 1,500 GB of memory across one login node and three workers, uses Sun Grid Engine, and gives each user a 25 GB quota.
@@ -210,6 +229,8 @@ The order of work:
    - the sample's closure is settled, and no real manuscript in it is accepted;
    - the withdrawn three are not accepted on known axes alone;
    - the synthetic sets are `Calibrated`.
+
+   Comparator's results from #83's run are recorded in `pilot/data/comparator-results.json`, marked untrusted (§4). So `formal_proof` stays unknown for the four formalized manuscripts, and the report names the run.
 
    It stops there, before scaling to all 721.
 

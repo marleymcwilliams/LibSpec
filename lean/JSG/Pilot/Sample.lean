@@ -6,7 +6,12 @@ The pilot's sample: raw records of 9 manuscripts of openai/math at `7ef5c0c`
 (https://github.com/openai/math, Apache-2.0), collected by `pilot/collect.py`.
 They hold only facts, and `JSG.Pilot.Core` turns them into grades.
 
-No Comparator result is recorded, so no challenge counts as run.
+Comparator, in our [run
+40916190535](https://github.com/marleymcwilliams/LibSpec/actions/runs/40916190535), accepted
+`Catalan`, `BogomolovPopInjectivity`, `DeligneDrinfeld` and `JointDickman`. That run isn't
+trusted yet, since the release's lakefile ran outside Comparator's sandbox, on the same
+machine, before Comparator did (#83). So its results are measurements, and no challenge counts
+as run.
 -/
 
 namespace JSG.Pilot.Sample
@@ -51,6 +56,15 @@ def family : Fin size → Option String :=
    some "008",
    some "012",
    none]
+
+/-- Our Comparator runs on the sample's challenges, as the report states them. -/
+def comparatorNote : String :=
+  "Comparator, in our [run 40916190535](https://github.com/marleymcwilliams/LibSpec" ++
+    "/actions/runs/40916190535), accepted `Catalan`, `BogomolovPopInjectivity`, " ++
+    "`DeligneDrinfeld` and `JointDickman`. That run isn't trusted yet, since the " ++
+    "release's lakefile ran outside Comparator's sandbox, on the same machine, before" ++
+    " Comparator did (#83). So its results are measurements, and no challenge counts " ++
+    "as run."
 
 /-- The sample as a release: each manuscript's raw facts, and the manuscripts its withdrawal
     notice links to. -/
