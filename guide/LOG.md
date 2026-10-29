@@ -4,6 +4,12 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-29
 
+### The audit and the token scan cover the harness (#72)
+- **Why first:** Marley asked that the axiom audit and the forbidden-token scan reach any new directory before it holds code. The harness, the corpus and the differential tests go in `lean/JSG/Harness/`, with the entry point `lean/Gate.lean` (EXECUTABLE_GATE.md §1).
+- **The audit:** it sweeps `JSG/Harness/` too, reached through a new root, `lean/JSG/Harness.lean`, which has no code yet. A harness module not imported from that root fails the audit, as for the other three directories. A harness module holds code, so unlike a proof, lemma or test module it may declare no theorem. Every theorem it declares is audited.
+- **The token scan:** it covers `JSG/Harness/` and `lean/Gate.lean`.
+- **Shown to bite:** a throwaway branch added an unimported harness module and a `sorry` in `Gate.lean`, and CI went red on both. The branch was then deleted.
+
 ### Milestone 4 merged and its gate recorded (#71)
 - **Branches:** with #62 merged and `statements-v4` tagged at `f06c26a`, the `statements/v4-proposal` branch was deleted.
 - **Proof order:** easiest first, one theorem per PR: `xknown_agrees`, `xunknown_agrees`, `xverdict_agrees`, `xcombine_agrees`, `xresidual_agrees`, `xwidth_agrees`, `xleaseVerdict_agrees` and `xthreads_agrees` (#63–#70). The proofs are those of the `statements-v4` provability check. In the proof file they sit in statement order.
