@@ -4,6 +4,14 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-29
 
+### The pilot on the whole release (#85)
+- **Scaled, as Marley asked:** `pilot/collect.py --all` collects every manuscript, reading data only, and `pilot/reports/catalogue.md` reports on all of them, with its verdicts proved by the kernel.
+- **Corrected:** EXECUTABLE_GATE §3 and the entry for #82 said `CONTENTS.md` parses to 720 manuscripts against its stated 721. It lists all 721. The collector's pattern stopped at the parentheses in `Sharp-integral-fillings-in-CAT(0)-spaces-September-23-2026`, and now runs to the next `/`.
+- **Decided: what "all 721" grades.** The 721 that `CONTENTS.md` lists, and the 3 withdrawn manuscripts, 724 in all. `preprints/` also holds 27 earlier versions, each with the same title as a listed manuscript and an earlier date. They're recorded under `earlierVersions` and not graded.
+- **Decided: a docs page's link to an earlier version counts for its listed version.** Two pages, for families 342 and 376, link only an earlier version. Read literally, the two listed manuscripts would have no formalization. The record names the folder the page links, and a named reviewer still has to check the challenges' statements against the listed paper.
+- **The data as lists:** 724-entry `![…]` vectors overflow the elaborator's recursion depth, so `pilot/to_lean.py` writes lists, read through `nth`. `Sample.lean` changes form only: its proofs pass unchanged, and `first-sample.md` comes out byte for byte the same.
+- **Proofs that scale:** looking up one manuscript walks the list to it, about 29 s of kernel time for all 724. A first attempt that looked up records at every step of the closure grew Lean past 6.7 GB in 11 minutes, and was stopped. So the proofs check each list once and use Core's lemmas: `nth_mem`, `no_rescue`, `step_nil` and the new `settled_of_stable`. They take about two minutes in all.
+
 ### Comparator's first measurements (#83, #84)
 - **The run:** [run 40916190535](https://github.com/marleymcwilliams/LibSpec/actions/runs/40916190535), on `Catalan`, `DeligneDrinfeld`, `BogomolovPopInjectivity` and `JointDickman`. Comparator accepted all four, with nanoda and Lean's kernel, in 2 h 29 min and 22.7 GB. The table is in EXECUTABLE_GATE §4.
 - **Decided: an untrusted run's results don't count.** The release's lakefile ran outside the sandbox before Comparator did, as #83 says, so `pilot/data/comparator-results.json` marks the run untrusted. `pilot/to_lean.py` counts results only from a trusted run, and the report names this one. The stricter choice, and it changes no verdict: the four aren't accepted either way, since `statement_fidelity`, `independent_review` and `novelty` are unknown.
