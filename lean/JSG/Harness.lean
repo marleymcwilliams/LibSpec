@@ -1,5 +1,6 @@
 import JSG.Harness.Report
 import JSG.Harness.Json
+import JSG.Harness.Corpus
 import JSG.Harness.Main
 
 /-!
