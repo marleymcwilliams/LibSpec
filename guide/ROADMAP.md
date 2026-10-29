@@ -22,9 +22,10 @@ flowchart TB
   g6 --> c1("Certificates")
   g6 --> c2("The compiler")
   g6 --> c3("Stop")
+  g6 --> c4("The executable gate")
 ```
 
-*project roadmap · 7 phases, 6 gates, 3 closing options*
+*project roadmap · 7 phases, 6 gates, 4 closing options*
 
 Each diamond is a gate: the checklist at the end of that phase's section. Phase 1 feeds the same gate as Phase 2, because reviewing statements takes both.
 
@@ -180,7 +181,23 @@ The goal is a tagged release that a stranger could clone and check. After it, yo
 
 - **Certificates.** Check PR/GKYP witnesses as exact rationals in Lean. The Thomson proof does this for semidefinite certificates: a numerical solver finds them, they are rounded to exact numbers, and Lean checks those numbers.
 - **The compiler.** State the Launchpad's adequacy theorem precisely, then freeze it in a statements version of its own.
+- **The executable gate.** Run the core's definitions as executable twins, each proved to agree with its frozen definition, and pilot the gate on the openai/math release ([EXECUTABLE_GATE.md](EXECUTABLE_GATE.md)). `statements-v4` starts it; see the next section.
 - **Stop.** A tagged v1 with a proved core is a finished project.
+
+## After v1.0: the executable gate
+
+`statements-v4` starts the executable gate ([EXECUTABLE_GATE.md](EXECUTABLE_GATE.md)). Milestone 4 proves its theorems and closes at the same gate as Milestones 1–3. The harness, the differential tests and the pilot follow (EXECUTABLE_GATE.md §5).
+
+| Milestone | Theorems | Read first | Expected difficulty |
+| --- | --- | --- | --- |
+| 4: Executable twins | `xknown_agrees`, `xunknown_agrees`, `xcombine_agrees`, `xverdict_agrees`, `xresidual_agrees`, `xthreads_agrees`, `xwidth_agrees`, `xleaseVerdict_agrees` | Mathlib's `WithTop` and `NNRat` API; Milestone 1's proofs, which these mirror | Low: each reduces to a lemma about the cast `xcast`, and the draft's provability check proved all eight in about 50 lines |
+
+**Milestone 4 notes**, for the milestone's closing note:
+
+- The twins cover finitely many axes (`Fintype`), and only the definitions Q11 chose. The obligation and Loader twins, and with them `pass_sound` for what the harness computes, wait for a later version.
+- The cast lemmas belong in `Lemmas/`, as Milestone 3's helpers went in `Lemmas/KLFisher.lean`. One of them, truncated subtraction under the cast from ℚ≥0 to ℝ≥0, isn't in Mathlib.
+- The full-strength Comparator run takes every frozen theorem as a target. Once `statements-v4` is tagged, it fails until Milestone 4 is proved, and the everyday run lists the eight as not yet proved.
+- README and REPRODUCE describe v1.0, with a note on what v4 adds and what is pending. The closing PR updates their status, and records a full-strength run on `main`.
 
 ## One sitting with Claude Code
 

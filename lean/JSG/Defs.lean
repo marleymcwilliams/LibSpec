@@ -378,4 +378,66 @@ noncomputable def logPartition (μ : Measure Ω) (T : Ω → V) (θ : V) : ℝ :
 noncomputable def dualValue (S : Set ℝ) (g : ℝ → ℝ) (ρ : ℝ) : ℝ :=
   ⨅ η : S, (η : ℝ) * ρ + g η
 
+/-! ## statements-v4
+
+Section 15 was added for `statements-v4` (guide/CHANGELOG.md); nothing above it changed. -/
+
+/-! ## 15. Executable twins (guide/EXECUTABLE_GATE.md §1) -/
+
+/-- An exact value's place in [0, ∞]: ∞ stays ∞, and each nonnegative rational is itself.
+    The twins below compute in `WithTop ℚ≥0`, whose order and arithmetic are decidable;
+    this cast is how each one is compared with its frozen definition. -/
+noncomputable def xcast (x : WithTop ℚ≥0) : ENNReal := WithTop.map (fun q : ℚ≥0 => (q : NNReal)) x
+
+/-- The executable twin of `Bound`: an interval in [0, ∞] with exact ends. -/
+structure XBound where
+  lo : WithTop ℚ≥0
+  hi : WithTop ℚ≥0
+  le : lo ≤ hi
+
+/-- The bound a twin stands for: both ends cast into `ENNReal`. -/
+noncomputable def XBound.toBound (b : XBound) : Bound :=
+  ⟨xcast b.lo, xcast b.hi, (WithTop.map_le_iff _ NNRat.cast_le).2 b.le⟩
+
+/-- The twin of `Bound.known`. -/
+def XBound.known (x : WithTop ℚ≥0) : XBound := ⟨x, x, le_rfl⟩
+
+/-- The twin of `Bound.unknown`. -/
+def XBound.unknown : XBound := ⟨0, ⊤, le_top⟩
+
+/-- The twin of `combineAxis`: max on floors, + on budgets. -/
+def xcombineAxis : Kind → XBound → XBound → XBound
+  | .floor,  a, b => ⟨max a.lo b.lo, max a.hi b.hi, max_le_max a.le b.le⟩
+  | .budget, a, b => ⟨a.lo + b.lo, a.hi + b.hi, add_le_add a.le b.le⟩
+
+/-- The twin of `Grade`. -/
+abbrev XGrade (ι : Type) := ι → XBound
+
+/-- The grade a twin stands for, axis by axis. -/
+noncomputable def XGrade.toGrade (g : XGrade ι) : Grade ι := fun i => (g i).toBound
+
+/-- The twin of `combine`. Core v2 makes `seqComp` and `parComp` both `combine`, so this is
+    their twin too. -/
+def xcombine (g h : XGrade ι) : XGrade ι := fun i => xcombineAxis (kind i) (g i) (h i)
+
+/-- The twin of `verdict`, for finitely many axes, which it checks one by one. -/
+def xverdict [Fintype ι] (θ : ι → WithTop ℚ≥0) (g : XGrade ι) : Decision :=
+  if ∀ i, (g i).hi ≤ θ i then .accept else .reject
+
+/-- The twin of `residual`. Subtraction in `WithTop ℚ≥0` truncates at 0, as in `ENNReal`. -/
+def xresidual (θ x : WithTop ℚ≥0) : WithTop ℚ≥0 := θ - x
+
+/-- The twin of `Threads`: a test that returns `true` when the budget threads through the
+    stages. -/
+def xthreads : WithTop ℚ≥0 → List (WithTop ℚ≥0) → Bool
+  | _, [] => true
+  | θ, x :: xs => decide (x ≤ θ) && xthreads (xresidual θ x) xs
+
+/-- The twin of `Bound.width`. -/
+def XBound.width (b : XBound) : WithTop ℚ≥0 := b.hi - b.lo
+
+/-- The twin of `leaseVerdict`, for finitely many axes. -/
+def xleaseVerdict [Fintype ι] (θ β : ι → WithTop ℚ≥0) (g : XGrade ι) : Decision :=
+  if ∀ i, (g i).hi ≤ θ i ∧ (g i).width ≤ β i then .accept else .reject
+
 end JSG

@@ -5,7 +5,7 @@ A design proposal, with no code yet. v1.0 proves things about the gate's definit
 - **A thin harness** that drives them.
 - **Differential tests** for any other implementation, with every existing mutant as a negative control.
 
-Its first pilot grades the manuscripts of the openai/math release. Your answers to Q11–Q13 are recorded in [QUEUE.md](QUEUE.md), and this version follows them. One decision is still open: Q14, which axes carry a dependency's doubt (§3).
+Its first pilot grades the manuscripts of the openai/math release. Your answers to Q11–Q15 are recorded in [QUEUE.md](QUEUE.md), and this version follows them. None is open.
 
 ## 1. What runs, in what language, and what is proved versus tested
 
@@ -31,17 +31,18 @@ So `statements-v4` adds an executable twin for each definition in the first five
 
 **The prims stay abstract.** `Prims` (digest, signature check, replay, Merkle root) stays a parameter, as Q7 decided. The harness supplies real primitives, and they are tested, not proved.
 
-**The harness** would be `lake exe jsg-gate`. It reads a grade record and a policy (θ and β per axis) as JSON, calls the proved twins, and prints a report in the words §3 sets out. It holds no logic of its own, only parsing, the call and printing.
+**The harness** would be `lean/Gate.lean`, run as `lake env lean --run Gate.lean`, the way `ComparatorTargets.lean` runs. An executable target, for `lake exe`, would need a `lean_exe` entry in `lean/lakefile.toml`. The statements check covers that file, so the entry would need a new statements version. The harness reads raw records, dependency edges and a policy (θ and β per axis) as JSON, calls the pilot's module (§3), and prints its report. It holds no logic of its own, only parsing, the call and printing.
 
 **What is proved, what is tested, and what is trusted:**
 
 | | What |
 | --- | --- |
 | **Proved,** and frozen in `statements-v4` | each twin agrees with its frozen definition; through that, every v1–v3 theorem about the twinned definitions holds of what the harness computes |
+| **Proved,** in the pilot's module | masking never adds doubt, and combining with a dependency never lowers a manuscript's doubt. So no dependency can rescue a manuscript that its own record rejects (§3) |
 | **Proved,** in test files | the pilot's must-pass and must-fail verdicts, for its fixed records, by `decide`: checked by the kernel, with no native evaluation. A scratch check with seven floor axes found that plain `decide` handles comparisons and max in `WithTop ℚ≥0`, which is all the pilot needs at θ = 0. It stops at subtraction and addition, because Lean marks rational arithmetic irreducible and `decide` respects that. `decide +kernel` hands the whole evaluation to the kernel, which decides widths, residuals and budgets too, with only the three axioms. It is kernel evaluation, not native |
-| **Tested** | JSON parsing and printing (round-trip and golden-file tests); the collectors that turn release data into records; the real primitives; other implementations (§2) |
+| **Tested** | JSON parsing and printing (round-trip and golden-file tests); the collectors, which supply only raw records and dependency edges (§3); the real primitives; other implementations (§2) |
 | **CI layer** | Comparator's runs on formalizations (§4) |
-| **Trusted** | Lean's compiler, for `lake exe`. The kernel checks the agreement theorems about the Lean definitions, not the compiled binary. The `decide` proofs above cover the fixed records without trusting it |
+| **Trusted** | Lean's code generator and interpreter, which run the harness. The kernel checks the theorems about the Lean definitions, not what the interpreter does. The `decide` proofs above cover the fixed records without trusting it |
 
 ## 2. How other implementations are tested against the spec
 
@@ -81,7 +82,7 @@ v4's own mutants are already executable: SirusSC's absorbing ⊥ for `combine`, 
 | Axis | Value | Where it comes from | Known today? |
 | --- | --- | --- | --- |
 | `withdrawn` | [∞, ∞] if withdrawn, else [0, 0] | `preprints/<m>/README.md`: a withdrawal notice heads it ("Withdrawal notice: …") | **Yes**, for every folder |
-| `dependency_withdrawn` | [∞, ∞] if it rests on a withdrawn manuscript at any distance, else [0, 0], and unknown until its dependencies are read. What carries over (below) fills it | where a notice says so, the notice. Otherwise each paper's bibliography of companion papers | **Partly.** Two notices name their dependency; other citations aren't machine-readable yet |
+| `dependency_withdrawn` | not collected: the closure computes it (below). It is [0, 0] if the manuscript's formalization is complete. Otherwise it is unknown until its dependencies are read, and then [∞, ∞] if it rests on a withdrawn manuscript at any distance, else [0, 0] | the dependency edges: from a notice where it names one, and otherwise from each paper's bibliography of companion papers | **Partly.** Two notices name their dependency; other citations aren't machine-readable yet |
 | `formal_proof` | [0, 0] if the full-strength Comparator accepts a challenge for its top-line claim, [1, 1] if it rejects, unknown if none exists | the family's `lean/docs/<NNN>.md`, whose "Comparator links" table names the challenges, then our run | **Partly.** About 58% of top-line results have no formalization, and the runs haven't been done |
 | `statement_fidelity` | [0, 0] once a named reviewer confirms that the challenge states the paper's top-line claim, else unknown | `lean/docs/<NNN>.md`'s "Scope" prose, and `lean/formalization.yaml`, whose `review` is `status: unchecked` | **No**, for any manuscript |
 | `axioms` | [0, 0] if the challenge permits exactly `propext`, `Quot.sound` and `Classical.choice`, else [1, 1] | `lean/ComparatorChallenges/<name>.json`, then our run | **Yes**, for configs (the one checked permits exactly those three) |
@@ -90,21 +91,21 @@ v4's own mutants are already executable: SirusSC's absorbing ⊥ for `combine`, 
 
 **Today no real manuscript is accepted,** and that is the honest answer. With a finite threshold, an unknown axis makes the verdict `reject` (`verdict_sound`), and `statement_fidelity`, `independent_review` and `novelty` are unknown for all 721. The pilot's useful output is each manuscript's report, which lists what it would take to accept it.
 
-**What carries over from a dependency** (proposed; Q14). A manuscript's final grade is its own record combined, by `combine`, with what carries over from the final grade of each manuscript it depends on, so a doubt travels any distance. On a floor axis, combining with [0, 0] changes nothing, so an axis that doesn't carry contributes [0, 0]. Companion papers can cite each other, so the dependencies form a graph, not a tree. The final grades are then its least fixed point, which iterating reaches in finitely many steps, since every value is one of the records' own.
+**What carries over from a dependency** (Q14). A manuscript's final grade is its own record combined, by `combine`, with what carries over from the final grade of each manuscript it depends on, so a doubt travels any distance. On a floor axis, combining with [0, 0] changes nothing, so an axis that doesn't carry contributes [0, 0]. Companion papers can cite each other, so the dependencies form a graph, not a tree. The final grades are then its least fixed point, which iterating reaches in finitely many steps, since every value is one of the records' own.
 
-Call a manuscript's formalization **complete** when its own `formal_proof`, `axioms` and `statement_fidelity` are all known to be 0. Comparator has then checked a proof, using only the three axioms, of a statement that a named reviewer confirmed is the paper's claim.
+Call a manuscript's formalization **complete** when its own `formal_proof`, `axioms` and `statement_fidelity` are all known to be 0, so its statement has been checked. Comparator has then checked a proof, using only the three axioms, of a statement that a named reviewer confirmed is the paper's claim. Whether a manuscript is complete is read from its own record, before anything carries.
 
 | Axis | Does a dependency's doubt carry over? | Why |
 | --- | --- | --- |
 | `withdrawn` | No: it feeds `dependency_withdrawn` instead | A notice withdraws its own manuscript, not the ones that cite it. The withdrawal still counts against them, on the next axis |
-| `dependency_withdrawn` | Yes, always: a dependency's `withdrawn` and its own `dependency_withdrawn` both carry, at any distance | A withdrawn result undermines whatever rests on it, however far away: the two K3 papers were withdrawn because of the eightfolds paper. Even a complete formalization doesn't excuse it. The claim would be proved, but the manuscript would still argue from a result its authors withdrew, and need revising |
+| `dependency_withdrawn` | Yes, unless the manuscript's formalization is complete: a dependency's `withdrawn` and its own `dependency_withdrawn` both carry, at any distance | A withdrawn result undermines whatever rests on it, however far away: the two K3 papers were withdrawn because of the eightfolds paper. Your reason for the exception: a complete formalization, its statement checked, re-establishes the result in Lean independently, so a withdrawn dependency can't undermine it |
 | `formal_proof` | Yes, unless the manuscript's formalization is complete | Your reason: a complete formalization lets Comparator check the whole argument, the dependency's part included. Until then, a result that uses a dependency's theorem is only as well checked as that theorem |
 | `axioms` | The same | Comparator's axiom check of a complete formalization covers every lemma it imports, so the dependency's own configuration adds nothing. Otherwise an extra axiom behind a dependency's result is a doubt about what is built on it |
 | `statement_fidelity` | The same | A dependency's formal proof supports the result its paper states only if its challenge states that result. A complete formalization uses the dependency's Lean theorem as stated, so it doesn't need that |
 | `independent_review` | The same | A referee takes the results a paper cites as given, so a review of the manuscript doesn't cover its dependencies' arguments. A complete formalization does |
 | `novelty` | No | Your reason: a new result can rest on old ones. A priority question about a dependency is about the dependency |
 
-**What this changes under θ = 0.** Only `dependency_withdrawn` can change a verdict. When a manuscript's formalization isn't complete, one of its own formal axes is already above 0, so the other carried doubts change only what its report lists. They would begin to decide verdicts only if a threshold were raised above 0.
+**What this changes under θ = 0.** No carried doubt can change a verdict. Nothing carries into a manuscript whose formalization is complete. When it isn't complete, one of its own formal axes is already above 0. So carry-over decides what a report lists, and would decide verdicts only if a threshold were raised above 0.
 
 **What a report says** (Q12). A report never says "rejected", because the verdict is about the evidence, not the mathematics. When the verdict is `reject`, the report reads "not accepted: evidence incomplete on" and lists each axis above its threshold, with one of:
 - **unknown:** no evidence yet, or none read yet;
@@ -113,20 +114,37 @@ Call a manuscript's formalization **complete** when its own `formal_proof`, `axi
 
 An accepted manuscript's report reads "accepted: every axis is known to be within its threshold". The spec's `Decision.reject` keeps its frozen name; only the harness's words change.
 
+**Where the pilot's logic lives: in Lean, in the pilot's own module.** Everything the verdict or the report depends on is a Lean definition in `lean/JSG/Pilot/`, over the twins:
+- **From raw facts to doubts:** each axis's value in the first table, as a function of the raw facts in its "where it comes from" column. Those facts are a notice and its date, Comparator's result, the axioms a challenge permits, and whether a named reviewer's check, a review or a priority check exists.
+- **The carry-over rule:** what a dependency passes on. It reads the dependency's `withdrawn` into the `dependency_withdrawn` it passes on. Then it masks every axis that doesn't carry, given whether the dependent's formalization is complete. A masked axis is [0, 0].
+- **The dependency closure:** each manuscript's own doubts, combined by `xcombine` with what each of its dependencies' closures passes on. Its `dependency_withdrawn` starts as unknown until its dependencies have been read, and as [0, 0] once they have, or if its formalization is complete. Iterated from the raw records, the closure settles within as many rounds as there are manuscripts. That bound is for the module to prove: a walk round a cycle passes on no more than the same walk without the cycle.
+- **The report:** which axes are above their thresholds, and why.
+
+So the collectors supply only raw records and dependency edges, and the harness only parses, calls the module and prints. Nothing the verdict depends on lives in Python, or in any other collector code.
+
+**Proved in the module,** with only the three axioms:
+- **Masking never adds doubt:** each axis of a masked grade lies within the same axis unmasked, at both ends.
+- **Combining with a dependency never lowers a manuscript's doubt,** at either end, on a floor or a budget. So every round of the closure keeps each manuscript's own record.
+- **A consequence:** more doubt never turns a rejection into an acceptance, so no dependency can rescue a manuscript that its own record rejects.
+
+A scratch check proved all three for the `statements-v4` twins in about 40 lines, with one round of the closure as a fold over a manuscript's dependency edges.
+
+**Where it builds.** The `JSG.*` glob in `lean/lakefile.toml` already builds `lean/JSG/Pilot/`, so that file, which the statements check covers, doesn't change. The axiom audit and the forbidden-token scan cover only `Proofs/`, `Lemmas/` and `Tests/` today. So they must be extended to `Pilot/` when it lands: a stronger check, in files you merge.
+
 **Must-fail set.** The three withdrawn manuscripts, each of which carries a notice dated October 6, 2026:
 - "Algebraicity of Weil classes on split abelian eightfolds";
 - "Algebraicity of Kuga–Satake Correspondences for K3 Surfaces";
 - "The rational Hodge conjecture for products of K3 surfaces".
 
-The test is stronger than "not accepted": each must be **not accepted on known axes alone**. Set every unknown axis to its best value, [0, 0], and the verdict must still be `reject`. Each has `withdrawn` = [∞, ∞], and the two dependents also have `dependency_withdrawn` = [∞, ∞], through the eightfolds paper their notices name. Synthetic must-fails join them, none of which may be accepted:
+The test is stronger than "not accepted": each must be **not accepted on known axes alone**. Set every unknown axis to its best value, [0, 0], and the verdict must still be `reject`. Each has `withdrawn` = [∞, ∞]. That axis is its own, not carried, so it rejects whatever the test assumes. As the records stand, the two dependents also get `dependency_withdrawn` = [∞, ∞], through the eightfolds paper their notices name. In the test their formalizations count as complete, so that axis drops out, and `withdrawn` alone must reject them. Synthetic must-fails join them, none of which may be accepted:
 - a record with one unknown axis;
 - a formalization that Comparator rejects;
 - a challenge that permits an extra axiom;
-- a manuscript that isn't withdrawn itself but rests, two steps away, on one that is, which tests that `dependency_withdrawn` carries at any distance.
+- a manuscript that isn't withdrawn itself and whose formalization isn't complete, resting two steps away on one that is. Its own formal axes already reject it, so the test is that its report lists `dependency_withdrawn` through that chain, which shows the axis carries at any distance.
 
 **Must-pass set.** No real manuscript can pass today, since none has every axis known. The set starts with synthetic records:
 - a record whose axes are all known and within θ;
-- a complete formalization, with every axis of its own at 0, that rests on a manuscript nobody has reviewed. It tests that the formal axes and `independent_review` don't carry past a complete formalization.
+- a complete formalization, with every axis of its own at 0, that rests on a manuscript nobody has reviewed and on one that is withdrawn. It tests that nothing carries past a complete formalization, `dependency_withdrawn` included (Q14).
 
 Real manuscripts join it once their unknown axes are resolved, the first candidates being formalized results whose statement a named reviewer has checked against the paper. `Calibrated` requires the two sets to be disjoint, and the must-pass set to be accepted.
 
@@ -155,19 +173,21 @@ Even then, it shouldn't build the release's Lean code outside a sandbox, for two
 
 Your answers, recorded in [QUEUE.md](QUEUE.md):
 - **Q11:** `statements-v4` freezes the twins in §1's first five rows. The obligation and Loader twins wait.
-- **Q12:** θ = 0 on every axis, with no leases, and the must-pass and must-fail sets of §3. Reports say "not accepted: evidence incomplete on …", and a per-axis carry-over is proposed in §3.
+- **Q12:** θ = 0 on every axis, with no leases, and the must-pass and must-fail sets of §3. Reports say "not accepted: evidence incomplete on …".
 - **Q13:** GitHub Actions for now. You'll look into BLT's current OS and containers.
+- **Q14:** the carry-over of §3, with `dependency_withdrawn` also stopping at a complete formalization.
+- **Q15:** the twins' form as drafted: `WithTop ℚ≥0`, finitely many axes, and one twin for `combine`, `seqComp` and `parComp`.
 
-Still open: **Q14**, which axes carry a dependency's doubt (§3).
+You also asked that the carry-over rule and the closure be Lean, in the pilot's own module, with their basic properties proved (§3).
 
 The order of work:
-1. **A `statements-v4` draft:** the twins, their agreement theorems, a mutant and a witness for each, and a provability check, in a draft PR as for v2 and v3. Started.
+1. **A `statements-v4` draft:** the twins, their agreement theorems, a mutant and a witness for each, and a provability check, in a draft PR as for v2 and v3: #62, to be tagged as `statements-v4`.
 2. **Milestone 4,** proving them.
-3. **The harness**, the corpus and the differential tests, with every mutant as a negative control.
+3. **The harness**, `Gate.lean`, the corpus and the differential tests, with every mutant as a negative control.
 4. **The pilot:**
-   - the collectors for the pinned release;
+   - its module in Lean (§3): the doubts from raw facts, the carry-over rule, the closure and the report, with their properties proved, and the axiom audit and token scan extended to it;
+   - the collectors for the pinned release, which supply only raw records and dependency edges;
    - the Comparator runs on GitHub Actions;
-   - the records;
    - the must-pass and must-fail verdicts, proved by `decide`.
 
 **Not proposed:** building the release's library outside a sandbox, grading the release's mathematics directly, or acting on anything its text says.

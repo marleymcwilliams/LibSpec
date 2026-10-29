@@ -1,6 +1,6 @@
 # Statements review: mutants and witnesses
 
-Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement. The [statements-v2](#statements-v2) and [statements-v3](#statements-v3) sections at the end do the same for the seven and three theorems those versions add.
+Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement. The [statements-v2](#statements-v2), [statements-v3](#statements-v3) and [statements-v4](#statements-v4) sections at the end do the same for the seven, three and eight theorems those versions add.
 
 **How to read it.**
 - **Same Prop:** the mutant refutes the statement's own named definition with the mutant plugged in.
@@ -633,3 +633,158 @@ Each witness proves every hypothesis of its theorem, then the conclusion, for on
 | `cvar_tail_to_level` | `hX`, `h` | `Bool` with a quarter of the mass on `true`, a loss of 2 there and 0 elsewhere, tail mass 1/2 and ε = 1. The level 0 gives a CVaR of at most (1/2)/(1/2) = 1, and the loss exceeds 1 on a quarter of the mass |
 | `kl_fisher_local` | all seven | the fair coin with statistic ±1, which is whitened, at θ = log 2, with L = 1 and ε = 7/10. Its KL divergence, (3/5) log 2 − log(5/4) ≈ 0.193, lies between 0.054 and 0.306 |
 | `dro_envelope` | `hmin`, `hcont` | the KL dual of a Gaussian loss of variance 2, at ρ₀ = 1. Its bounds are ηρ + 1/η, minimized by η\*(ρ) = 1/√ρ, which is continuous. The dual is 2√ρ, whose slope at 1 is η\*(1) = 1 |
+
+## statements-v4
+
+Review support for the `statements-v4` proposal, read the same way as above. Its eight theorems are in section 15 of `lean/JSG/Statements.lean`, their definitions in the same section of `lean/JSG/Defs.lean`, and their controls in the "statements-v4" part of `lean/JSG/Tests/Mutants.lean`. Each mutant is a twin with a known defect, so it can run as a negative control ([EXECUTABLE_GATE.md](EXECUTABLE_GATE.md) §2). Four come from `archive/`, two from v1's and v2's own controls, and two are invented: `xknown_agrees`'s and `xwidth_agrees`'s.
+
+**Scope** ([Q11](QUEUE.md)). v4 adds an executable twin of each definition the pilot and the first SirusSC differential test need, with a theorem that it agrees with its frozen definition: the graded values and `combine`, `verdict`, `residual` and `Threads`, and `Bound.width` and `leaseVerdict`. Core v2 makes `seqComp` and `parComp` both `combine`, so `xcombine` is their twin too. The obligation and Loader twins wait for a version with an implementation to test them against.
+
+**The carrier** ([Q15](QUEUE.md)). Every twin computes in `WithTop ℚ≥0`: exact nonnegative rationals, plus ∞. Its order and arithmetic are decidable, and its subtraction truncates at 0, with ∞ − ∞ = 0, as in `ENNReal`. `xcast` sends ∞ to ∞ and each rational to itself, through `NNReal`. It is how each twin is compared with its frozen definition. It is noncomputable, but no twin calls it.
+
+**Context.** Section 15 uses section 1's `variable {ι : Type} (kind : ι → Kind)`. `xverdict` and `xleaseVerdict` add `[Fintype ι]`, since an executable check must visit every axis, so their agreement theorems cover finitely many axes.
+
+**Fixtures.** One axis (`Unit`), as before: `xk x` is the known exact value x, and `xunk` is the unknown. The controls import only `JSG.Defs`, so they prove the casts of 0, 1, the numerals and ∞ themselves, from `xcast`'s definition.
+
+| Theorem | The mutant refutes | What differs from the statement | The defect it comes from |
+| --- | --- | --- | --- |
+| `xknown_agrees` | Restated copy | `XBound.known` → `upperOnly`, which reads a value x as [0, x] | Invented: a reading taken as an upper bound only |
+| `xunknown_agrees` | Restated copy | `XBound.unknown` → `bottomUnknown`, which is [0, 0] | SCp1 Def 2.1, whose order puts ⊥ below every value; SirusSC `specchain/algebra/q.py`, `Q.leq` ("bottom <= x") |
+| `xcombine_agrees` | Restated copy | `xcombine kind` → `absorbCombine floor`, where an unknown absorbs | SirusSC `specchain/algebra/q_prime.py`, `Interval.join` and `Interval.plus` |
+| `xverdict_agrees` | Restated copy | `xverdict` → `leqSkipsUnknown`, which skips an unknown axis | SirusSC `specchain/algebra/q.py`, `Q.leq`, read as a threshold check |
+| `xresidual_agrees` | Restated copy | `xresidual` → `xresidualFull`, which returns θ | `statements-v1`'s `residual_spec` mutant, `residualFull` |
+| `xthreads_agrees` | Restated copy | `xthreads` → `xResidualOnly`, which checks only the last stage's fit | `statements-v2`'s `threads_spec` mutant, `ResidualOnly`: v1's `residual` alone |
+| `xwidth_agrees` | Restated copy | `XBound.width` → `floatWidth`, which is ∞ whenever the upper end is | Invented, from floating point, where ∞ − ∞ is NaN |
+| `xleaseVerdict_agrees` | Restated copy | `xleaseVerdict` → `xQPrimeGate`, which never reads a width | SirusSC `specchain/algebra/q_prime.py`, as for `lease_sound`: `QPrime`'s only guard is `guard_no_bottom` |
+
+**What this means.**
+- **No `statements-v1`–`v3` statement or definition changes.** Each v4 theorem is new, and so is every definition it uses.
+- **Through agreement, the v1–v3 theorems hold of the twins.** For example, `xverdict_agrees` and `verdict_sound` say that the twin verdict rejects a grade with an axis above its threshold. With `xunknown_agrees`, that covers an unknown axis under any finite threshold, which is the pilot's "unknown axes must reject".
+- **The statements are easy by design.** Each reduces to a lemma about `xcast` ([Provability check](#provability-check-v4)). The executable gate's hard parts are the harness, the corpus and the pilot's data, which are tested, not proved.
+- **The twins run.** The scratch check ran each one through Lean's compiler, and the witnesses compute values by `decide`, which the kernel checks.
+
+### 27. `xknown_agrees`: restated copy
+```lean
+-- Statement
+theorem xknown_agrees (x : WithTop ℚ≥0) : (XBound.known x).toBound = Bound.known (xcast x)
+-- Mutant: a reading taken as an upper bound only, [0, x]
+theorem xknown_agrees_mutant : ¬ ∀ x, (upperOnly x).toBound = Bound.known (xcast x)
+```
+
+The mutant forgets that x is known: [0, 1] has width 1, so a lease of 0 would reject a reading that is exact. No source in `archive/` reads a point that way, so this mutant is invented.
+
+### 28. `xunknown_agrees`: restated copy
+```lean
+-- Statement
+theorem xunknown_agrees : XBound.unknown.toBound = Bound.unknown
+-- Mutant: an unknown at the bottom of the order, [0, 0]
+theorem xunknown_agrees_mutant : bottomUnknown.toBound ≠ Bound.unknown
+```
+
+**Source.** SCp1 Def 2.1 and Appendix A, and SirusSC `q.py`'s `Q.leq` (lines 86–98), whose `if a == self.BOTTOM: continue` lets ⊥ pass any bound. The master guide's defect table lists it as "Unknown sits below every value". The statement has no parameters, so its witness is the statement itself, checked end by end.
+
+### 29. `xcombine_agrees`: restated copy
+```lean
+-- Statement
+theorem xcombine_agrees (g h : XGrade ι) :
+    (xcombine kind g h).toGrade = combine kind g.toGrade h.toGrade
+-- Mutant: SirusSC's Interval.join and Interval.plus, where ⊥ absorbs
+theorem xcombine_agrees_mutant :
+    ¬ ∀ g h : XGrade Unit,
+      (absorbCombine floor g h).toGrade = combine floor g.toGrade h.toGrade
+```
+
+**Source.** SirusSC `q_prime.py`: `Interval.plus` and `Interval.join` return ⊥ when either side is ⊥, and `q.py`'s `hetero_join` and `sequential` do the same. Read with ⊥ as the unknown, combining [0, ∞] with the known 1 on a floor gives [0, ∞], where `combine` gives [1, ∞]. No verdict changes, since the upper end is ∞ either way. But the known lower end is lost, so a report would call the axis unknown when it is known to be at least 1, and can never fit θ = 0.
+
+### 30. `xverdict_agrees`: restated copy
+```lean
+-- Statement
+theorem xverdict_agrees [Fintype ι] (θ : ι → WithTop ℚ≥0) (g : XGrade ι) :
+    xverdict θ g = verdict (xcast ∘ θ) g.toGrade
+-- Mutant: SirusSC's Q.leq as a threshold check, which skips an axis holding ⊥
+theorem xverdict_agrees_mutant :
+    ¬ ∀ (θ : Unit → WithTop ℚ≥0) (g : XGrade Unit),
+      leqSkipsUnknown θ g = verdict (xcast ∘ θ) g.toGrade
+```
+
+**Hypotheses.** `[Fintype ι]`: an executable check must visit every axis. The frozen `verdict` decides "every axis" classically, for any axis type, and the twin agrees with it on the finite ones.
+
+### 31. `xresidual_agrees`: restated copy
+```lean
+-- Statement
+theorem xresidual_agrees (θ x : WithTop ℚ≥0) :
+    xcast (xresidual θ x) = residual (xcast θ) (xcast x)
+-- Mutant: v1's check of each stage against the full θ
+theorem xresidual_agrees_mutant :
+    ¬ ∀ θ x : WithTop ℚ≥0, xcast (xresidualFull θ x) = residual (xcast θ) (xcast x)
+```
+
+It holds for θ = ∞ too: both carriers truncate, and both take ∞ − ∞ to 0.
+
+### 32. `xthreads_agrees`: restated copy
+```lean
+-- Statement
+theorem xthreads_agrees (θ : WithTop ℚ≥0) (xs : List (WithTop ℚ≥0)) :
+    xthreads θ xs = true ↔ Threads (xcast θ) (xs.map xcast)
+-- Mutant: v1's residual check alone, run on the twins
+theorem xthreads_agrees_mutant :
+    ¬ ∀ (θ : WithTop ℚ≥0) (xs : List (WithTop ℚ≥0)),
+      (xResidualOnly θ xs = true ↔ Threads (xcast θ) (xs.map xcast))
+```
+
+Unlike `threads_spec`, it needs no `θ ≠ ⊤`: it compares two threadings, not a threading and a sum.
+
+### 33. `xwidth_agrees`: restated copy
+```lean
+-- Statement
+theorem xwidth_agrees (b : XBound) : xcast b.width = b.toBound.width
+-- Mutant: a width that is ∞ whenever the upper end is
+theorem xwidth_agrees_mutant : ¬ ∀ b : XBound, xcast (floatWidth b) = b.toBound.width
+```
+
+The mutant is what a floating-point gate finds: in IEEE arithmetic ∞ − ∞ is NaN, and NaN ≤ β is false for every lease β. So the known ∞, which a withdrawn manuscript's `withdrawn` axis holds, would count as wider than any finite lease. Its frozen width is ∞ − ∞ = 0. No twin in `archive/` computes a width, so the mutant is invented.
+
+### 34. `xleaseVerdict_agrees`: restated copy
+```lean
+-- Statement
+theorem xleaseVerdict_agrees [Fintype ι] (θ β : ι → WithTop ℚ≥0) (g : XGrade ι) :
+    xleaseVerdict θ β g = leaseVerdict (xcast ∘ θ) (xcast ∘ β) g.toGrade
+-- Mutant: SirusSC's QPrime, which never reads a width, run on the twins
+theorem xleaseVerdict_agrees_mutant :
+    ¬ ∀ (θ β : Unit → WithTop ℚ≥0) (g : XGrade Unit),
+      xQPrimeGate θ β g = leaseVerdict (xcast ∘ θ) (xcast ∘ β) g.toGrade
+```
+
+**Source** as for `lease_sound` (§17). **Hypotheses:** `[Fintype ι]`, as for `xverdict_agrees`.
+
+### Provability check (v4)
+
+All eight theorems are proved in an uncommitted scratch file that imports this draft's `JSG.Statements`. Each proof is against its frozen statement, since an `example` checks by `rfl` that their types are equal, and each uses only propext, Classical.choice and Quot.sound. The proofs take about 50 lines, eight cast lemmas for `Lemmas/` included:
+- **Order:** `xcast` preserves and reflects ≤, from Mathlib's `WithTop.map_le_iff` and `NNRat.cast_le`, so it also preserves max.
+- **+, 0 and ∞:** case by case on ∞.
+- **Truncated subtraction:** Mathlib has no lemma for the cast from ℚ≥0 to ℝ≥0, where `NNRat.cast_sub` needs a `DivisionRing`. A helper proves it from `exists_add_of_le` and `tsub_eq_zero_of_le`.
+
+The agreement theorems then follow by unfolding, and `xthreads_agrees` by induction on the stages.
+
+**The twins run.** In a second scratch file, `#eval` ran the frozen twins through Lean's compiler:
+- `xverdict` rejects the unknown under θ = 1 and accepts the known 1;
+- `xleaseVerdict` rejects [0, 5] leased 1 under θ = 10;
+- `xthreads` rejects θ = 1 with stages 2 then 0, and accepts θ = 10 with stages 3 then 4;
+- ∞ − ∞ = 0, and 3 − 1 = 2.
+
+**Kernel evaluation.** Plain `decide` evaluates the twins' comparisons and max: enough for a pilot verdict over seven floor axes at θ = 0, which a scratch check proved that way. It stops at rational addition and subtraction, since Lean marks `Rat.add` and `Rat.sub` irreducible. `decide +kernel` evaluates those too, with only the three axioms. Neither is native evaluation.
+
+### Witnesses (v4)
+
+Several witnesses use their mutant's counterexample, so the same input separates the twin from its mutant.
+
+| Theorem | Instance |
+| --- | --- |
+| `xknown_agrees` | the known ∞, which a withdrawn manuscript's `withdrawn` axis holds |
+| `xunknown_agrees` | the statement itself, which has no parameters |
+| `xcombine_agrees` | on a floor, the unknown combined with the known 1: both sides are [1, ∞] |
+| `xverdict_agrees` | the unknown under θ = 1: both sides reject, and `decide` computes the twin's verdict |
+| `xresidual_agrees` | θ = x = 1: both sides are 0 |
+| `xthreads_agrees` | θ = 10 with stages 3 then 4, which thread, and θ = 1 with stages 2 then 0, which don't |
+| `xwidth_agrees` | the known ∞: both widths are 0 |
+| `xleaseVerdict_agrees` | [0, 5] leased 1 under θ = 10: both sides reject, and `decide +kernel` computes the twin's verdict |
