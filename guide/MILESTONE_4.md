@@ -16,3 +16,13 @@ Proved in #63.
 3. That is `Bound.known (xcast x)` by definition. The two sides differ only in which proof of lo ≤ hi each bound carries.
 4. Lean treats any two proofs of the same fact as equal, so `rfl` closes it.
 5. So a known reading keeps its width of 0 through the cast. The mutant `upperOnly`, which reads x as [0, x], doesn't.
+
+## `xunknown_agrees`
+
+Proved in #64.
+
+1. The unknown's twin is [0, ∞] with exact ends, and the frozen unknown is [0, ∞] in `ENNReal`.
+2. Two bounds are equal when their ends are (`Bound.ext`), so it's enough to compare lower end with lower end and upper with upper.
+3. The upper ends match because `xcast` sends ∞ to ∞, by definition (`xcast_top`).
+4. The lower ends take one step more: the twin's 0 is the rational 0 inside `WithTop`, and casting it through ℝ≥0 gives `ENNReal`'s 0 (`xcast_zero`).
+5. So the pilot's unknown axes are the spec's unknowns, and `verdict_sound` rejects them under any finite threshold. The mutant `bottomUnknown`, [0, 0], would pass.
