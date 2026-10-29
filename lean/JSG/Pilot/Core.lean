@@ -64,7 +64,7 @@ def θ0 : Axis → WithTop ℚ≥0 := fun _ => 0
 
 /-! ### From a raw record to a grade -/
 
-/-- What is known of a manuscript's formalization. -/
+/-- What is known of a manuscript's formalization, from its challenges' facts. -/
 inductive Formal
   /-- The full-strength Comparator accepts a challenge for its top-line claim. -/
   | accepted
@@ -76,15 +76,22 @@ inductive Formal
   | noChallenge
   deriving DecidableEq, Repr
 
+/-- One of a manuscript's challenges, as the collectors read it. -/
+structure ChallengeFacts where
+  /-- Our full-strength Comparator run's result: `some true` if it accepted, `some false` if
+      it rejected, and `none` if it hasn't run. -/
+  result : Option Bool
+  /-- The axioms its configuration permits. -/
+  permitted : List String
+  deriving DecidableEq, Repr
+
 /-- A manuscript's raw record: only facts, as the collectors read them. -/
 structure Raw where
   /-- The date of its withdrawal notice, if it has one. -/
   withdrawnOn : Option String
-  formal : Formal
-  /-- Whether its challenge permits exactly `propext`, `Quot.sound` and `Classical.choice`;
-      `none` without a challenge. -/
-  axiomsOk : Option Bool
-  /-- The named reviewer who confirmed that its challenge states its top-line claim. -/
+  /-- The challenges on its family's docs page that cover it. -/
+  challenges : List ChallengeFacts
+  /-- The named reviewer who confirmed that its challenges state its top-line claim. -/
   fidelityBy : Option String
   /-- Whether an independent review is published. -/
   reviewed : Bool
@@ -93,6 +100,26 @@ structure Raw where
   /-- Whether its dependencies have been read, so that its dependency edges are complete. -/
   depsRead : Bool
   deriving DecidableEq, Repr
+
+/-- The three axioms a challenge may permit. -/
+def threeAxioms : List String := ["propext", "Quot.sound", "Classical.choice"]
+
+/-- Whether a challenge permits exactly the three axioms. -/
+def ChallengeFacts.exact (c : ChallengeFacts) : Bool :=
+  c.permitted.all (· ∈ threeAxioms) && threeAxioms.all (· ∈ c.permitted)
+
+/-- What is known of a manuscript's formalization: no challenge; rejected if Comparator
+    rejected any of its challenges; accepted if it accepted all of them; and otherwise not
+    run. -/
+def Raw.formal (r : Raw) : Formal :=
+  if r.challenges.isEmpty then .noChallenge
+  else if r.challenges.any (·.result = some false) then .rejected
+  else if r.challenges.all (·.result = some true) then .accepted
+  else .notRun
+
+/-- Whether its challenges permit exactly the three axioms, or `none` without a challenge. -/
+def Raw.axiomsOk (r : Raw) : Option Bool :=
+  if r.challenges.isEmpty then none else some (r.challenges.all ChallengeFacts.exact)
 
 /-- A manuscript's formalization is complete when its own `formal_proof`, `axioms` and
     `statement_fidelity` are all known to be 0, so its statement has been checked. -/
