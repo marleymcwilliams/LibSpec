@@ -17,7 +17,7 @@ To check v1.0 itself, check out its tag ([REPRODUCE.md](REPRODUCE.md)).
 
 ## What is proved, and what isn't
 
-- **[The layer map](guide/MASTER_GUIDE.md#layer-map)** lists every component of the corpus. Each row has its status, its limits, and a pointer to its Lean theorem or to the reason it's out of scope.
+- **[The layer map](guide/LAYER_MAP.md)** lists every component of the corpus. Each row has its status, its limits, and a pointer to its Lean theorem or to the reason it's out of scope.
 - **The four milestone notes:** [Milestone 1](guide/MILESTONE_1.md) is the algebraic core, [Milestone 2](guide/MILESTONE_2.md) the obligations, Loader, charge and policy lattice, [Milestone 3](guide/MILESTONE_3.md) the analysis layer, and [Milestone 4](guide/MILESTONE_4.md) the executable twins. Each explains every proof in plain English, and ends with a closing note on what is now proved and what it doesn't show.
 - **[The changelog](guide/CHANGELOG.md)** records each statements version and whether it tightened or weakened the statements. So far every one has only added.
 - **[The statements review](guide/STATEMENTS_REVIEW.md)** puts each theorem beside the mutant that refutes it, and says where each mutant comes from.
@@ -39,7 +39,7 @@ CI shows that the proofs conform to the statements. Whether the statements say t
 | `lean/JSG/Harness/`, `lean/Gate.lean` | The executable gate's harness: the report, JSON, the test corpus and the executable mutants. `Gate.lean` runs it |
 | `lean/AxiomAudit.lean`, `lean/ComparatorTargets.lean` | The axiom audit, and the list of theorems Comparator checks |
 | `scripts/` | `check.sh`, Comparator's everyday and full-strength runs, the Comparator tools build, and the differential tests with SirusSC's adapter |
-| `guide/` | The master guide with its layer map, the roadmap, the milestone notes, the decision queue and log |
+| `guide/` | The guide, mapped in [guide/README.md](guide/README.md): the glossary, the layer map, the defects and sources, the roadmap, the milestone notes, the decision queue and log |
 | `archive/` | The source corpus, read-only |
 
 ## Credits

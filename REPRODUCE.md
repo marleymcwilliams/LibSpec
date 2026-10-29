@@ -131,7 +131,7 @@ The negative controls are theorems in `lean/JSG/Tests/Differential.lean`, so ste
 
 ## 6. Read off what is proved and what isn't
 
-- **[The layer map](guide/MASTER_GUIDE.md#layer-map):** every component, with its status, its limits, and a pointer to its Lean theorem or to the reason it's out of scope.
+- **[The layer map](guide/LAYER_MAP.md):** every component, with its status, its limits, and a pointer to its Lean theorem or to the reason it's out of scope.
 - **The milestone notes:** [Milestone 1](guide/MILESTONE_1.md), [Milestone 2](guide/MILESTONE_2.md), [Milestone 3](guide/MILESTONE_3.md) and [Milestone 4](guide/MILESTONE_4.md). Each has a plain-English explanation of every proof, the gate record, and a closing note on what is proved and what it doesn't show.
 - **[The changelog](guide/CHANGELOG.md):** each statements version, and whether it tightened or weakened the statements. Its `statements-v4` entry lists what v4 adds.
 

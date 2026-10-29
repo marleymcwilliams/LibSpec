@@ -4,6 +4,14 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-29
 
+### The docs cleanup (#88, a draft for Marley's review)
+- **Planned first:** the plan is in #88's description, and its first commit added only the link checker, `scripts/check-links.py`, which `scripts/check.sh` now runs. On the tree before the moves, it found 117 links, none broken.
+- **MASTER_GUIDE.md split** into GLOSSARY.md, LAYER_MAP.md, DEFECTS.md and SOURCES.md, each section moved whole. Its copy of `Defs.lean` and `Statements.lean`, about 700 lines, is replaced by links to the two files.
+- **Decided: MASTER_GUIDE.md stays, as an index,** with its purpose and reading rules. The frozen `Statements.lean`, `decisions/DECISION_BRIEF.md` and earlier LOG entries name it, and each still finds what it names.
+- **One roadmap.** MASTER_GUIDE's checklist moved into ROADMAP.md, as "The master guide's checklist": its four open items, and its seven done items, kept as they were.
+- **Added:** `guide/README.md`, a map of every file outside `archive/` with reading orders for a person and for an agent; and `guide/CONVENTIONS.md`, the repository's naming practice, written down.
+- **Links after the moves:** 178 checked, none broken. No Lean file changed, and no prose in LOG entries or the milestone notes.
+
 ### The release's import graph (#86)
 - **Read, before planning the shards, as Marley asked:** `pilot/imports.py` reads each module's imports, as text, from a checkout of the release's `.lean` files. Git checks them out and runs none of the release's code. The results are in `pilot/data/shards.json`, and the summary is in EXECUTABLE_GATE §4.
 - **It matches #83's measurements:** each challenge's closure is exactly the set of the release's modules its build compiled.
