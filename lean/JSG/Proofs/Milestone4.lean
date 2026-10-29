@@ -17,4 +17,9 @@ theorem xknown_agrees (x : WithTop ℚ≥0) : (XBound.known x).toBound = Bound.k
 theorem xunknown_agrees : XBound.unknown.toBound = Bound.unknown := by
   ext <;> simp [XBound.toBound, XBound.unknown, Bound.unknown, xcast_zero, xcast_top]
 
+theorem xverdict_agrees [Fintype ι] (θ : ι → WithTop ℚ≥0) (g : XGrade ι) :
+    xverdict θ g = verdict (xcast ∘ θ) g.toGrade := by
+  unfold xverdict verdict
+  simp only [XGrade.toGrade, XBound.toBound, Function.comp_apply, xcast_le_iff]
+
 end JSG

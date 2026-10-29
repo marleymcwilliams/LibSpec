@@ -17,4 +17,8 @@ theorem xcast_top : xcast ⊤ = ⊤ := rfl
 theorem xcast_zero : xcast 0 = 0 := by
   rw [← WithTop.coe_zero, xcast_coe, NNRat.cast_zero, ENNReal.coe_zero]
 
+/-- `xcast` preserves and reflects order. -/
+theorem xcast_le_iff {a b : WithTop ℚ≥0} : xcast a ≤ xcast b ↔ a ≤ b :=
+  WithTop.map_le_iff _ NNRat.cast_le
+
 end JSG

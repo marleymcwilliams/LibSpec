@@ -26,3 +26,13 @@ Proved in #64.
 3. The upper ends match because `xcast` sends ∞ to ∞, by definition (`xcast_top`).
 4. The lower ends take one step more: the twin's 0 is the rational 0 inside `WithTop`, and casting it through ℝ≥0 gives `ENNReal`'s 0 (`xcast_zero`).
 5. So the pilot's unknown axes are the spec's unknowns, and `verdict_sound` rejects them under any finite threshold. The mutant `bottomUnknown`, [0, 0], would pass.
+
+## `xverdict_agrees`
+
+Proved in #65.
+
+1. Both verdicts accept exactly when every axis's upper end is within its threshold. They differ only in the carrier, and in how "every axis" is decided.
+2. Unfolded, the frozen verdict compares xcast (g i).hi with xcast (θ i), and the twin compares (g i).hi with θ i.
+3. `xcast` preserves and reflects order (`xcast_le_iff`, from Mathlib's `WithTop.map_le_iff` and `NNRat.cast_le`), so the two conditions are the same proposition.
+4. With the same condition, the two `if`s agree, however each decides it: the twin by checking each of finitely many axes, the frozen verdict classically.
+5. So `verdict_sound` and `verdict_complete` hold of the executable verdict on finitely many axes. SirusSC's `Q.leq`, which skips an unknown axis, doesn't agree.
