@@ -27,6 +27,16 @@ Proved in #64.
 4. The lower ends take one step more: the twin's 0 is the rational 0 inside `WithTop`, and casting it through ℝ≥0 gives `ENNReal`'s 0 (`xcast_zero`).
 5. So the pilot's unknown axes are the spec's unknowns, and `verdict_sound` rejects them under any finite threshold. The mutant `bottomUnknown`, [0, 0], would pass.
 
+## `xcombine_agrees`
+
+Proved in #66.
+
+1. Both sides are grades, so it's enough to compare them axis by axis, and end by end.
+2. On a floor axis the twin takes the max of each end, and casting preserves max, since it preserves order (`xcast_max`).
+3. On a budget axis the twin adds each end, and casting preserves + (`xcast_add`). That's checked case by case: ∞ plus anything is ∞ in both carriers, and finite values add as rationals and as reals alike.
+4. So casting the combined twin gives the combination of the casts, on every axis.
+5. Core v2 makes `seqComp` and `parComp` both `combine`, so the twin stands for them too. SirusSC's absorbing ⊥, which discards a known lower bound, doesn't agree.
+
 ## `xverdict_agrees`
 
 Proved in #65.

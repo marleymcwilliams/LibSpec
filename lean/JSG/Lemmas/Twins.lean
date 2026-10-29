@@ -21,4 +21,15 @@ theorem xcast_zero : xcast 0 = 0 := by
 theorem xcast_le_iff {a b : WithTop ℚ≥0} : xcast a ≤ xcast b ↔ a ≤ b :=
   WithTop.map_le_iff _ NNRat.cast_le
 
+/-- `xcast` preserves max, since it preserves order. -/
+theorem xcast_max (a b : WithTop ℚ≥0) : xcast (max a b) = max (xcast a) (xcast b) := by
+  rcases le_total a b with h | h
+  · rw [max_eq_right h, max_eq_right (xcast_le_iff.2 h)]
+  · rw [max_eq_left h, max_eq_left (xcast_le_iff.2 h)]
+
+/-- `xcast` preserves +: ∞ absorbs in both carriers, and finite values add as rationals. -/
+theorem xcast_add (a b : WithTop ℚ≥0) : xcast (a + b) = xcast a + xcast b := by
+  induction a using WithTop.recTopCoe <;> induction b using WithTop.recTopCoe <;>
+    simp [xcast_top, xcast_coe, ← WithTop.coe_add, NNRat.cast_add]
+
 end JSG

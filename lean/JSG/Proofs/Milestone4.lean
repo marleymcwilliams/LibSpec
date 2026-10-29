@@ -17,6 +17,12 @@ theorem xknown_agrees (x : WithTop ℚ≥0) : (XBound.known x).toBound = Bound.k
 theorem xunknown_agrees : XBound.unknown.toBound = Bound.unknown := by
   ext <;> simp [XBound.toBound, XBound.unknown, Bound.unknown, xcast_zero, xcast_top]
 
+theorem xcombine_agrees (g h : XGrade ι) :
+    (xcombine kind g h).toGrade = combine kind g.toGrade h.toGrade := by
+  funext i
+  simp only [XGrade.toGrade, xcombine, combine]
+  cases kind i <;> ext <;> simp [xcombineAxis, combineAxis, XBound.toBound, xcast_max, xcast_add]
+
 theorem xverdict_agrees [Fintype ι] (θ : ι → WithTop ℚ≥0) (g : XGrade ι) :
     xverdict θ g = verdict (xcast ∘ θ) g.toGrade := by
   unfold xverdict verdict
