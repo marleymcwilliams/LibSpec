@@ -4,6 +4,13 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-29
 
+### Marley's answers on the plan (#87)
+- **Phase 7:** build errors and timeouts stay unknown, never evidence that fails. A challenge that can't finish in 6 hours waits, with `formal_proof` unknown, "too large to check yet", for v1.1. Families 189 and 159 are measured first, and Marley hears back if one of them matters. The pin stays at `7ef5c0c` for v1.1. The ETH (378) and local-smoothing (079) shards run right after the large-family measurements.
+- **Caches:** every untrusted job gets `cache-mode: read` or `none`, never `write`, and runs off main. A negative control shows that an untrusted job can't save a cache. #83's workflow already has both.
+- **Phase 8:** reviews go in GitHub issue forms, for named identities, timestamps and history. A read-only page can display them later.
+- **Phase 9:** the research survey is a lead list only. Each source's license, terms and access are checked against its own documentation when it's integrated. Comparator doesn't check statement fidelity, and Semantic Scholar's data license is to be read, not assumed CC0.
+- **Corrected in the plan:** "the release's other 28 packages" was unchecked. The manifest lists 42 packages, Mathlib's own dependencies among them.
+
 ### The release's import graph (#86)
 - **Read, before planning the shards, as Marley asked:** `pilot/imports.py` reads each module's imports, as text, from a checkout of the release's `.lean` files. Git checks them out and runs none of the release's code. The results are in `pilot/data/shards.json`, and the summary is in EXECUTABLE_GATE §4.
 - **It matches #83's measurements:** each challenge's closure is exactly the set of the release's modules its build compiled.

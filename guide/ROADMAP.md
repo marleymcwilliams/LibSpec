@@ -237,47 +237,60 @@ The goal is a trusted Comparator result for every challenge in the release, fold
 
 1. **Plan the shards from the import graph:** one per family, as you decided. That's 244 shards. 181 of them take under half an hour by every estimate. So a job runs one large family, or several small ones in turn, and each family's results stay its own. That keeps each job's setup, a few minutes to fetch the release and its dependencies, from dominating.
 2. **Build the two-job workflow.** For each shard:
-   - **An untrusted job** runs `lake update`, which applies the release's patches to its dependencies, and uploads their sources.
+   - **An untrusted job** runs `lake update`, which applies the release's patches to its dependencies, and uploads their sources. Like #83's job, it runs off main, with `cache-mode: read` or `none`, never `write`, so nothing it runs can save a cache that a trusted job restores.
    - **A fresh trusted job** never runs the release's lakefile outside the sandbox. It fetches the challenge and solution files itself, at the pinned commit. It checks the untrusted job's output against the pin: each dependency at its manifest revision, with exactly the release's patches applied. It fetches Mathlib's cache with our own tooling. Then it runs Comparator with nanoda and the full sandbox, capped at 5 hours a challenge.
-3. **Show that the trust boundary bites,** as #73 and #80 did for other checks. A throwaway branch's untrusted job tampers with each of these in turn, and the trusted job must refuse each:
-   - a challenge file;
-   - a dependency, outside its patch;
-   - the tools cache.
-4. **Run every shard.** Record the results in `pilot/data/comparator-results.json` as trusted, and classify each failure as a rejection, a build error or a timeout, with its log.
-5. **Regenerate the report and its proofs.** An accepted challenge makes `formal_proof` known, and a rejection is evidence that fails.
+3. **Show that the trust boundary bites,** as #73 and #80 did for other checks. On a throwaway branch:
+   - **the untrusted job tampers** with a challenge file, then with a dependency outside its patch, then with the tools it restored, and the trusted job must refuse each;
+   - **the untrusted job tries to save a cache entry,** and the cache service must refuse it.
+4. **Run the shards, in this order:**
+   - **families 189 and 159 first,** to measure them. By one estimate each may take more than 5 hours, and each has a single challenge, so neither can be split;
+   - **then the ETH and local-smoothing shards,** families 378 and 079;
+   - **then the rest.**
+
+   Record the results in `pilot/data/comparator-results.json` as trusted, and classify each failure as a rejection, a build error or a timeout, with its log.
+5. **Regenerate the report and its proofs.** An accepted challenge makes `formal_proof` known, and a rejection is evidence that fails. A build error or a timeout leaves it unknown, never failing. A challenge that can't finish in 6 hours waits: its `formal_proof` stays unknown, "too large to check yet", for v1.1.
 6. **Release v1.1.** README and REPRODUCE describe the pilot and how to rerun it, and you tag `v1.1`.
 
 **Resources:**
 - **Actions:** 47 to 128 hours of building for all 244 shards, by the two measured rates, plus the kernels and each job's setup, up to 20 jobs at once.
 - **BLT:** none.
-- **Your time:** merging the workflow, which changes `.github/` and `scripts/`; answering the failure question below; tagging.
+- **Your time:** merging the workflow, which changes `.github/` and `scripts/`; deciding, once families 189 and 159 are measured, whether either matters enough to check another way; tagging.
 
 **Risks:**
-- **A family too big for one job.** By one estimate or the other, 5 families may take more than 5 hours: 189, 266, 090, 159, 013. Families 189, 159 have a single challenge each, so they can't be split, and a challenge longer than 6 hours can't run in one job at all. So those families are measured first. If one doesn't fit, there are two ways out: a larger runner, which costs money, or a build carried across jobs, which needs its own trust argument. A family that doesn't fit in 6 hours and 104 GB is split by challenge, and modules its challenges share then build more than once.
+- **A family too big for one job.** By one estimate or the other, five families may take more than 5 hours: 189, 266, 090, 159 and 013.
+  - **266, 090 and 013 have several challenges each,** so each can be split by challenge, at the price of building their shared modules more than once.
+  - **189 and 159 have a single challenge each,** so they're measured first.
+  - **A challenge that can't finish in 6 hours waits,** as "too large to check yet". The ways to check it later would be a larger runner, which costs money, or a build carried across jobs, which needs its own trust argument.
 - **The estimate covers building only.** The kernels can take as long, as on Catalan, and the import graph doesn't predict them.
-- **Dependencies aren't in the estimate.** PrimeNumberTheoremAnd, Carleson and the release's other 28 packages build from source too. Their sources come only from the untrusted job, so the trusted job is the first to see how big they are.
+- **Dependencies aren't in the estimate.** PrimeNumberTheoremAnd, Carleson and the release's other dependencies build from source too: its manifest lists 42 packages, Mathlib's own dependencies among them. Their sources come only from the untrusted job, so the trusted job is the first to see how big they are.
 - **Checking the untrusted job's output is the weak point.** If the check misses a change, a tampered dependency could change what a challenge proves. The negative controls in step 3 are what show it doesn't.
-- **The release moves.** openai/math keeps changing, and the pilot stays pinned at `7ef5c0c`. So v1.1 grades that commit, not the release as it later stands.
-- **Build errors and timeouts aren't rejections.** They leave `formal_proof` unknown. That keeps the report honest, at the price of axes that stay unknown.
+- **The release moves.** openai/math keeps changing, and v1.1 stays pinned at `7ef5c0c`, as you decided. So v1.1 grades that commit, not the release as it later stands.
+- **Build errors and timeouts leave axes unknown.** As you decided, they're never evidence that fails. That keeps the report honest, at the price of axes that stay unknown.
+
+**Your answers, on #87:**
+- build errors and timeouts stay unknown, never evidence that fails;
+- a challenge that can't finish in 6 hours waits, with `formal_proof` unknown, "too large to check yet", for v1.1;
+- the pin stays at `7ef5c0c` for v1.1;
+- the ETH and local-smoothing shards run right after families 189 and 159;
+- every untrusted job gets `cache-mode: read` or `none`, never `write`, and runs off main, with a negative control showing it can't save a cache.
 
 **Decisions that stay yours:**
 - merging the workflow and its scripts;
-- whether a build error or a timeout is ever evidence that fails, since that changes what a report says, so it goes in the queue;
-- what to do with a challenge that can't finish in 6 hours: a larger runner, or a build carried across jobs;
-- whether to move the pin to a later commit;
+- whether family 189 or 159 matters enough to check another way, once both are measured;
 - tagging `v1.1`.
 
 **Gate**
 
 - [ ] The negative controls show that the trusted job refuses each tampered input
-- [ ] Every challenge has a trusted result, or a classified failure with its log
+- [ ] A negative control shows that an untrusted job can't save a cache
+- [ ] Every challenge has a trusted result, or a classified failure with its log: a rejection, a build error, a timeout, or too large to check yet
 - [ ] `pilot/reports/catalogue.md` is regenerated with them, and its proofs pass
 - [ ] README and REPRODUCE describe the pilot and how to rerun it
 - [ ] Tagged `v1.1`
 
 ## Phase 8: Statement review
 
-The goal is a protocol that a named reviewer follows to check that a challenge states its paper's claim, and a simple page that records what they find. That makes `statement_fidelity` known.
+The goal is a protocol that a named reviewer follows to check that a challenge states its paper's claim, and an issue form that records what they find. That makes `statement_fidelity` known.
 
 Comparator checks a proof against its challenge's statement, but not that the statement says what the paper claims. The release's `formalization.yaml` records its review as `unchecked`. Anthropic's ETH formalization says it too: "no machine checks that this file says what the paper says."
 
@@ -288,9 +301,7 @@ Comparator checks a proof against its challenge's statement, but not that the st
    - **What to check:** quantifiers, hypotheses, edge cases, and any definition that would make the statement trivial.
    - **What to record:** the reviewer's name, the date, the challenge and commit, and a verdict: it states the claim, it states a weaker or a different claim, or the reviewer can't tell. Each verdict comes with a sentence saying why.
 2. **Extend the raw record.** `Raw.fidelityBy` holds only a reviewer's name, so today a review can only show that a statement is faithful. A review that finds a mismatch must count as evidence that fails. So `Raw` gains the verdict, and its sentence goes into the report. That changes the pilot's own module, which isn't frozen.
-3. **Build the review page.** It lists the challenges awaiting review, and shows the paper's claim, the challenge's statement and its definitions side by side. Then it records a verdict, and a collector reads the verdicts into `pilot/data/`. There are two ways to host it:
-   - **an Artifact page with a shared database,** which Claude Code can build and you can share;
-   - **a GitHub issue form,** which keeps every review in the repository's history.
+3. **Record reviews in GitHub issue forms,** as you decided: one issue per review, so each carries its reviewer's identity, its timestamps and its history. The form asks for the protocol's fields, and a collector reads the issues into `pilot/data/`. A read-only page can display them later, with the paper's claim, the challenge's statement and its definitions side by side.
 4. **Pilot the protocol on six challenges:** the four Comparator accepted in #83, and the ETH and local-smoothing challenges, `SubexponentialSAT` and `LocalSmoothing`. Record how long each review takes.
 5. **Calibrate it** with a synthetic challenge whose statement is subtly weaker than its paper's claim. Its review must not count as faithful.
 
@@ -303,25 +314,28 @@ Comparator checks a proof against its challenge's statement, but not that the st
 - **Deep results take long to review.** The pilot measures how long, and the protocol may need a lighter first pass.
 - **A verdict is a human judgement.** Two reviewers can disagree, and that needs a rule.
 - **A challenge's own definitions can hide what it claims.** The protocol has to make the reviewer read them, not just the theorem.
-- **Names on a page.** Recording a reviewer's name needs their consent, and the page needs access control, so a review can't be edited by someone else.
+- **Names in public issues.** A review is filed under the reviewer's GitHub identity, which is public, so taking part needs their consent. GitHub keeps each issue's edit history, so a changed review shows.
 - **No manuscript is accepted after this phase alone.** `independent_review` and `novelty` stay unknown until a source supplies them (Phase 9).
 
 **Decisions that stay yours:**
 - who counts as a named reviewer, and how a disagreement between reviewers is settled;
 - the protocol itself;
-- where reviews live: the page or issues;
 - whether reviewers' names are published.
 
 **Gate**
 
 - [ ] The protocol is approved and in the guide
-- [ ] The page records a review, and the collector reads it into the report
+- [ ] An issue form records a review, and the collector reads it into the report
 - [ ] Six challenges are reviewed under the protocol, with the time each took
 - [ ] The synthetic weaker statement is not counted as faithful, and its reason shows in the report
 
 ## Phase 9: More sources
 
 The goal is to grade claims beyond openai/math, and to calibrate the gate on claims whose fate is already known.
+
+**These sources are leads.** They came from a research survey, which is a lead list only. Each source's license, terms and access are checked against its own documentation when it's integrated. Two points in particular:
+- **A Lean formalization doesn't establish statement fidelity,** even with a Comparator setup. Comparator checks a proof against its challenge's statement, not the statement against the paper. So each new source's challenges go through Phase 8's review.
+- **Semantic Scholar's data license** has to be read from its own terms, if its data is used, for citations or priority. It isn't to be assumed CC0.
 
 **Claims to grade:**
 - **OpenAI's October claims.**
@@ -337,7 +351,7 @@ The goal is to grade claims beyond openai/math, and to calibrate the gate on cla
 A sample of withdrawn or retracted mathematics papers then becomes a must-fail set at scale. Each must be not accepted on known axes alone, proved by the kernel, which tests the collectors' detection as much as the gate. A must-pass set from outside is harder. It needs results with a complete formalization, a checked statement and a published review, and choosing them is yours.
 
 **Steps,** for each source:
-1. Check its license and pin a commit or a snapshot.
+1. Check its license, terms and access against its own documentation, and pin a commit or a snapshot.
 2. Write a collector that reads it as data only.
 3. Map its facts to `Raw`, extending `Raw` when a source brings a new kind of fact, such as a retraction notice.
 4. Write its report and its proofs.
