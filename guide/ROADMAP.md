@@ -1,6 +1,6 @@
 # Project roadmap
 
-Seven phases, each ending at a gate you can check yourself. You move on when a gate passes, not when a date arrives, and the last phase includes permission to stop.
+Eleven phases, each ending at a gate you can check yourself. You move on when a gate passes, not when a date arrives, and Phase 6 includes permission to stop.
 
 ## At a glance
 
@@ -23,11 +23,21 @@ flowchart TB
   g6 --> c2("The compiler")
   g6 --> c3("Stop")
   g6 --> c4("The executable gate")
+  c4 --> m4["Milestone 4: Executable twins"]
+  m4 --> gm4{"lake build green, no sorry"}
+  gm4 --> p7["Phase 7: The pilot at full scale"]
+  p7 --> g7{"Tagged v1.1"}
+  g7 --> p8["Phase 8: Statement review"]
+  p8 --> g8{"Reviews recorded and reported"}
+  g8 --> p9["Phase 9: More sources"]
+  p9 --> g9{"Sources graded, calibration proved"}
+  gm4 --> p10["Phase 10: Obligation and Loader twins"]
+  p10 --> g10{"Milestone 5's gate, differential tests in CI"}
 ```
 
-*project roadmap · 7 phases, 6 gates, 4 closing options*
+*project roadmap · 11 phases and Milestone 4, 11 gates, 4 closing options*
 
-Each diamond is a gate: the checklist at the end of that phase's section. Phase 1 feeds the same gate as Phase 2, because reviewing statements takes both.
+Each diamond is a gate: the checklist at the end of that phase's section. Phase 1 feeds the same gate as Phase 2, because reviewing statements takes both. At v1.0 you chose the executable gate, and Phases 7–10 carry it to real claims.
 
 ## Ground rules
 
@@ -198,6 +208,197 @@ The goal is a tagged release that a stranger could clone and check. After it, yo
 - The cast lemmas belong in `Lemmas/`, as Milestone 3's helpers went in `Lemmas/KLFisher.lean`. One of them, truncated subtraction under the cast from ℚ≥0 to ℝ≥0, isn't in Mathlib. Done: all eight are in `Lemmas/Twins.lean` (#64–#67), that one as `nnrat_cast_tsub`.
 - The full-strength Comparator run takes every frozen theorem as a target. Once `statements-v4` is tagged, it fails until Milestone 4 is proved, and the everyday run lists the eight as not yet proved. Done: after #70, both pass on `main` with all 34.
 - README and REPRODUCE describe v1.0, with a note on what v4 adds and what is pending. The closing PR updates their status, and records a full-strength run on `main`. Done: in #71, with run 40840546350.
+
+## After Milestone 4: grading real claims
+
+Four phases take the executable gate to real claims. Their goal is a gate that grades a claim and says exactly what evidence is missing. The pilot's report on openai/math already has that shape: none of its 724 manuscripts is accepted, and each report names the axes that hold it back (`pilot/reports/catalogue.md`). Each phase fills in evidence that's missing, and ends at a gate like the earlier ones.
+
+Phases 7–9 run in order, since each needs the one before: Phase 8 reviews the challenges Phase 7 checks, and Phase 9's new sources need both. Phase 10 depends only on Milestone 4, so it can run beside them when review time allows. Both it and Phase 8 ask for your review, so they're better run one after the other.
+
+### What the phases draw on
+
+Three resources limit the work, and the scarcest is your review time.
+
+- **GitHub Actions, as measured** (#83, [EXECUTABLE_GATE.md](EXECUTABLE_GATE.md) §4). A hosted runner has 4 cores, 16 GB of memory and a 6-hour job limit. It has 104 GB of free disk once the workflow removes preinstalled tools. LibSpec is public, so its minutes cost nothing, and GitHub's free plan runs up to 20 jobs at once. Four challenges took 2 h 29 min and 22.7 GB, and Catalan alone took 85 minutes, 41 of them in the kernels.
+- **BLT, now Ubuntu 20.04, for trusted builds and data work only.** Its 144 cores and 1,500 GB of memory suit LibSpec's own builds, the collectors and calibration data. Ubuntu 20.04's glibc 2.31 runs Lean, which needs 2.26 or later. Some things need checking with BLT's admins:
+  - **Its documentation is out of date.** It still says CentOS 7.4, and gives each user 25 GB, which may still hold.
+  - **Landlock, which Comparator's sandbox needs, can't be checked from outside.** Ubuntu 20.04's original kernel, 5.4, predates it: Landlock arrived in Linux 5.13. Its hardware-enablement kernel, 5.15, builds Landlock in, but Ubuntu's change that enables it at boot went into 22.04's kernel, and there's no sign it reached 20.04's. Three commands on BLT settle it: `uname -r`; `cat /sys/kernel/security/lsm`, which lists `landlock` if it's on; and `dmesg | grep landlock`.
+  - **Even with Landlock,** BLT shouldn't run the release's code, as §4 explains, so Comparator stays on Actions.
+  - **Ubuntu 20.04 left standard support in May 2025.** That's a reason to keep BLT to trusted work.
+- **Your review time.** Each phase lists what it asks of you, and keeps that to decisions, reviews and the merges CLAUDE.md reserves for you. Claude Code decides and logs the rest. The queue holds at most three open questions, so a phase never waits on more than three of your answers.
+
+## Phase 7: The openai/math pilot at full scale
+
+The goal is a trusted Comparator result for every challenge in the release, folded into the report, and a tagged `v1.1`.
+
+**Done already:** the collectors and the report cover all 724 manuscripts (#85), and the release's import graph is read (#86, `pilot/data/shards.json`). It reproduces #83's measurements exactly: each challenge's closure is the set of the release's modules its build compiled. The challenges need 113,748 of the release's 163,096 modules, and families barely share them.
+
+**Steps:**
+
+1. **Plan the shards from the import graph:** one per family, as you decided. That's 244 shards. 181 of them take under half an hour by every estimate. So a job runs one large family, or several small ones in turn, and each family's results stay its own. That keeps each job's setup, a few minutes to fetch the release and its dependencies, from dominating.
+2. **Build the two-job workflow.** For each shard:
+   - **An untrusted job** runs `lake update`, which applies the release's patches to its dependencies, and uploads their sources.
+   - **A fresh trusted job** never runs the release's lakefile outside the sandbox. It fetches the challenge and solution files itself, at the pinned commit. It checks the untrusted job's output against the pin: each dependency at its manifest revision, with exactly the release's patches applied. It fetches Mathlib's cache with our own tooling. Then it runs Comparator with nanoda and the full sandbox, capped at 5 hours a challenge.
+3. **Show that the trust boundary bites,** as #73 and #80 did for other checks. A throwaway branch's untrusted job tampers with each of these in turn, and the trusted job must refuse each:
+   - a challenge file;
+   - a dependency, outside its patch;
+   - the tools cache.
+4. **Run every shard.** Record the results in `pilot/data/comparator-results.json` as trusted, and classify each failure as a rejection, a build error or a timeout, with its log.
+5. **Regenerate the report and its proofs.** An accepted challenge makes `formal_proof` known, and a rejection is evidence that fails.
+6. **Release v1.1.** README and REPRODUCE describe the pilot and how to rerun it, and you tag `v1.1`.
+
+**Resources:**
+- **Actions:** 47 to 128 hours of building for all 244 shards, by the two measured rates, plus the kernels and each job's setup, up to 20 jobs at once.
+- **BLT:** none.
+- **Your time:** merging the workflow, which changes `.github/` and `scripts/`; answering the failure question below; tagging.
+
+**Risks:**
+- **A family too big for one job.** By one estimate or the other, 5 families may take more than 5 hours: 189, 266, 090, 159, 013. Families 189, 159 have a single challenge each, so they can't be split, and a challenge longer than 6 hours can't run in one job at all. So those families are measured first. If one doesn't fit, there are two ways out: a larger runner, which costs money, or a build carried across jobs, which needs its own trust argument. A family that doesn't fit in 6 hours and 104 GB is split by challenge, and modules its challenges share then build more than once.
+- **The estimate covers building only.** The kernels can take as long, as on Catalan, and the import graph doesn't predict them.
+- **Dependencies aren't in the estimate.** PrimeNumberTheoremAnd, Carleson and the release's other 28 packages build from source too. Their sources come only from the untrusted job, so the trusted job is the first to see how big they are.
+- **Checking the untrusted job's output is the weak point.** If the check misses a change, a tampered dependency could change what a challenge proves. The negative controls in step 3 are what show it doesn't.
+- **The release moves.** openai/math keeps changing, and the pilot stays pinned at `7ef5c0c`. So v1.1 grades that commit, not the release as it later stands.
+- **Build errors and timeouts aren't rejections.** They leave `formal_proof` unknown. That keeps the report honest, at the price of axes that stay unknown.
+
+**Decisions that stay yours:**
+- merging the workflow and its scripts;
+- whether a build error or a timeout is ever evidence that fails, since that changes what a report says, so it goes in the queue;
+- what to do with a challenge that can't finish in 6 hours: a larger runner, or a build carried across jobs;
+- whether to move the pin to a later commit;
+- tagging `v1.1`.
+
+**Gate**
+
+- [ ] The negative controls show that the trusted job refuses each tampered input
+- [ ] Every challenge has a trusted result, or a classified failure with its log
+- [ ] `pilot/reports/catalogue.md` is regenerated with them, and its proofs pass
+- [ ] README and REPRODUCE describe the pilot and how to rerun it
+- [ ] Tagged `v1.1`
+
+## Phase 8: Statement review
+
+The goal is a protocol that a named reviewer follows to check that a challenge states its paper's claim, and a simple page that records what they find. That makes `statement_fidelity` known.
+
+Comparator checks a proof against its challenge's statement, but not that the statement says what the paper claims. The release's `formalization.yaml` records its review as `unchecked`. Anthropic's ETH formalization says it too: "no machine checks that this file says what the paper says."
+
+**Steps:**
+
+1. **Write the protocol,** `guide/REVIEW_PROTOCOL.md`.
+   - **What to read:** the paper's top-line claim, the challenge file, and every definition the challenge uses that isn't Mathlib's.
+   - **What to check:** quantifiers, hypotheses, edge cases, and any definition that would make the statement trivial.
+   - **What to record:** the reviewer's name, the date, the challenge and commit, and a verdict: it states the claim, it states a weaker or a different claim, or the reviewer can't tell. Each verdict comes with a sentence saying why.
+2. **Extend the raw record.** `Raw.fidelityBy` holds only a reviewer's name, so today a review can only show that a statement is faithful. A review that finds a mismatch must count as evidence that fails. So `Raw` gains the verdict, and its sentence goes into the report. That changes the pilot's own module, which isn't frozen.
+3. **Build the review page.** It lists the challenges awaiting review, and shows the paper's claim, the challenge's statement and its definitions side by side. Then it records a verdict, and a collector reads the verdicts into `pilot/data/`. There are two ways to host it:
+   - **an Artifact page with a shared database,** which Claude Code can build and you can share;
+   - **a GitHub issue form,** which keeps every review in the repository's history.
+4. **Pilot the protocol on six challenges:** the four Comparator accepted in #83, and the ETH and local-smoothing challenges, `SubexponentialSAT` and `LocalSmoothing`. Record how long each review takes.
+5. **Calibrate it** with a synthetic challenge whose statement is subtly weaker than its paper's claim. Its review must not count as faithful.
+
+**Resources:**
+- **Reviewers' time, above all.** Yours too, if you review. The six reviews in step 4 measure the cost before any more are asked for.
+- **Actions** for the collector.
+- **BLT:** none.
+
+**Risks:**
+- **Deep results take long to review.** The pilot measures how long, and the protocol may need a lighter first pass.
+- **A verdict is a human judgement.** Two reviewers can disagree, and that needs a rule.
+- **A challenge's own definitions can hide what it claims.** The protocol has to make the reviewer read them, not just the theorem.
+- **Names on a page.** Recording a reviewer's name needs their consent, and the page needs access control, so a review can't be edited by someone else.
+- **No manuscript is accepted after this phase alone.** `independent_review` and `novelty` stay unknown until a source supplies them (Phase 9).
+
+**Decisions that stay yours:**
+- who counts as a named reviewer, and how a disagreement between reviewers is settled;
+- the protocol itself;
+- where reviews live: the page or issues;
+- whether reviewers' names are published.
+
+**Gate**
+
+- [ ] The protocol is approved and in the guide
+- [ ] The page records a review, and the collector reads it into the report
+- [ ] Six challenges are reviewed under the protocol, with the time each took
+- [ ] The synthetic weaker statement is not counted as faithful, and its reason shows in the report
+
+## Phase 9: More sources
+
+The goal is to grade claims beyond openai/math, and to calibrate the gate on claims whose fate is already known.
+
+**Claims to grade:**
+- **OpenAI's October claims.**
+  - Two are in the release already pinned: "The Exponential Time Hypothesis is False" (family 378, challenge `SubexponentialSAT`) and "Local smoothing for the Euclidean wave equation" (family 079, `LocalSmoothing`). Phase 7 checks their formalizations. Phase 9 adds evidence from outside the repository, such as the independent review that Russell Impagliazzo, Ramamohan Paturi and Ryan Williams are organizing for the ETH claim.
+  - The Yang–Mills claim has no released proof. Its record holds only the announcement, so every axis stays unknown, and its report says so.
+- **Anthropic's 3-SAT paper,** "A 2^o(n) Time Algorithm for 3-SAT", in `anthropics/formal-math` under `eth/`, Apache-2.0. Its Lean formalization comes with a challenge file and a Comparator config. It pins Lean `v4.33.1`, not our `v4.34.1`, so Comparator's tools must be built for that toolchain too.
+- **Astra's ten,** OpenAI's results of August 2026: a manuscript and a repository of Lean proofs. Their layout and license need checking first.
+
+**Calibration sources,** whose papers are known to be withdrawn or retracted:
+- **arXiv withdrawals.** A withdrawn paper stays listed, with its metadata, and arXiv serves metadata over OAI-PMH. How a withdrawal shows in that metadata needs checking first.
+- **Crossref's Retraction Watch data.** It has been open since 2023: as a CSV updated every working day, at `gitlab.com/crossref/retraction-watch-data`, and in the update metadata of Crossref's REST API.
+
+A sample of withdrawn or retracted mathematics papers then becomes a must-fail set at scale. Each must be not accepted on known axes alone, proved by the kernel, which tests the collectors' detection as much as the gate. A must-pass set from outside is harder. It needs results with a complete formalization, a checked statement and a published review, and choosing them is yours.
+
+**Steps,** for each source:
+1. Check its license and pin a commit or a snapshot.
+2. Write a collector that reads it as data only.
+3. Map its facts to `Raw`, extending `Raw` when a source brings a new kind of fact, such as a retraction notice.
+4. Write its report and its proofs.
+5. Check its challenges on Phase 7's trusted shards.
+
+**Resources:**
+- **BLT, for the data work.** The Retraction Watch CSV and arXiv's metadata are small enough for a 25 GB quota.
+- **Actions,** for Comparator on each new source's Lean.
+- **Your time:** choosing sources, and answering what counts as a withdrawal.
+
+**Risks:**
+- **Terms of use.** arXiv's metadata and the Retraction Watch data each have terms, which must allow what we store.
+- **Matching records.** A retraction notice has to be matched to the paper, and the paper to the claim. A wrong match would make a must-fail test fail for the wrong reason.
+- **Sources move.** The ETH review will finish after any pin, so each source's records name their date and commit.
+- **Toolchains differ.** Each Lean version needs its own build of Comparator's tools.
+- **Reports about other organizations' claims are public statements.** Their wording stays "not accepted: evidence incomplete on …", and publishing them is your call.
+
+**Decisions that stay yours:**
+- which sources to add, and in what order;
+- what counts as a withdrawal: a retraction, an expression of concern or a correction. That changes what the `withdrawn` axis means, so it goes in the queue;
+- whether to publish any report on another organization's claims;
+- a real must-pass set.
+
+**Gate**
+
+- [ ] Each new source has a pinned record set, a license note and a report
+- [ ] Every withdrawn or retracted paper in the calibration sample is not accepted on known axes alone, proved by the kernel
+- [ ] Every new source's challenges have a trusted Comparator result, or a classified failure
+
+## Phase 10: The obligation and Loader twins
+
+The goal is executable twins of typed obligations and of the concrete Loader, each proved to agree with its frozen definition, once SirusSC's loader is under test. Q11 deferred them until there was an implementation to test them against.
+
+**Steps:**
+
+1. **Put SirusSC's loader under test,** as #78 did for its algebra. An adapter runs `specchain/loader/loader.py` in place from `archive/`, against a corpus of Loader runs, with a model of its known defects:
+   - with fewer inputs than guards, it skips the rest silently (IDEAS.md);
+   - its I1–I10 are different checks from SCp3's, under the same numbers;
+   - its rank vector is never updated.
+2. **Draft `statements-v5`:** twins of the obligation layer and of `LoaderStep`, their agreement theorems, a mutant and a witness for each, and a provability check, in a draft PR as for v2–v4. The concrete Loader is generic in its cryptographic primitives (Q7), so its twin needs stand-ins for them.
+3. **Milestone 5** proves them, at the milestone gate.
+4. **Test SirusSC's loader against the twins.** It must disagree exactly where its defects predict, with every new mutant as a negative control.
+
+**Resources:**
+- **Actions,** and not much of them.
+- **Your review of `statements-v5`,** the largest review these phases ask for after Phase 8's.
+
+**Risks:**
+- **SirusSC's loader is far from SCp3.** Its checks and their numbering differ, so its model may grow large.
+- **A Loader run has too many states** for vectors to cover exhaustively, as #76's corpus covered the grades.
+- **The twins could drift toward the code,** mirroring what SirusSC does rather than what the frozen definitions say. That's why they're proved to agree with the definitions, and only then tested against the code.
+
+**Decisions that stay yours:**
+- what `statements-v5` states, and its tag;
+- whether SirusSC's loader is the implementation to test;
+- any Norm-layer value a statement needs.
+
+**Gate**
+
+- [ ] The milestone gate, for Milestone 5
+- [ ] The differential test runs in CI, with SirusSC's loader disagreeing exactly where its defects predict, and every new mutant as a negative control
 
 ## One sitting with Claude Code
 
