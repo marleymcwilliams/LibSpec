@@ -223,12 +223,14 @@ def vecToJson : Vec → Json
   | .known x => Json.mkObj [("op", .str "known"), ("x", valToJson x)]
   | .unknown => Json.mkObj [("op", .str "unknown")]
   | .combine ks g h => Json.mkObj [("op", .str "combine"),
-      ("kinds", Json.arr (ks.toArray.map kindToJson)), ("g", gradeToJson g), ("h", gradeToJson h)]
+      ("kinds", Json.arr (ks.toArray.map kindToJson)), ("g", gradeToJson g),
+      ("h", gradeToJson h)]
   | .verdict θ g => Json.mkObj [("op", .str "verdict"), ("thresholds", valsToJson θ),
       ("grade", gradeToJson g)]
   | .lease θ β g => Json.mkObj [("op", .str "lease"), ("thresholds", valsToJson θ),
       ("leases", valsToJson β), ("grade", gradeToJson g)]
-  | .residual θ x => Json.mkObj [("op", .str "residual"), ("theta", valToJson θ), ("x", valToJson x)]
+  | .residual θ x => Json.mkObj [("op", .str "residual"), ("theta", valToJson θ),
+      ("x", valToJson x)]
   | .threads θ xs => Json.mkObj [("op", .str "threads"), ("theta", valToJson θ),
       ("stages", valsToJson xs)]
   | .width b => Json.mkObj [("op", .str "width"), ("bound", boundToJson b)]
