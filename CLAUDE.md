@@ -28,6 +28,8 @@
 - Never weaken a hypothesis or change a statement to make a proof go through.
 - After three failed approaches, stop. Report what you tried, what blocked you,
   and whether the statement itself might be false.
+- Keep at least 2 GB of memory free on my PC, and stop any Lean process that threatens that.
+  Move heavy local work to BLT once its kernel is checked.
 - End every session with: files changed, theorems closed, ideas added to guide/IDEAS.md.
 
 ## When to ask the human
