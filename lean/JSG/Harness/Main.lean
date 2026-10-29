@@ -1,12 +1,14 @@
-import JSG.Harness.Json
+import JSG.Harness.Corpus
 
 /-!
 The harness's commands, which `lean/Gate.lean` runs:
 
     lake env lean --run Gate.lean report FILE
+    lake env lean --run Gate.lean corpus
+    lake env lean --run Gate.lean diff CORPUS ANSWERS
 
-Each reads JSON from FILE, or from standard input when FILE is `-`, calls the proved twins,
-and writes JSON to standard output. They parse, call and print, and hold no logic of their
+Each reads JSON from its files, or from standard input for a file named `-`, calls the proved
+twins, and writes JSON to standard output. They parse, call and print, and hold no logic of their
 own (guide/EXECUTABLE_GATE.md §1).
 -/
 
@@ -15,8 +17,10 @@ namespace JSG.Harness
 open Lean
 
 def usage : String :=
-  "usage: lake env lean --run Gate.lean report FILE\n" ++
-  "  report FILE   the verdict and report on one grade under one policy"
+  "usage: lake env lean --run Gate.lean COMMAND\n" ++
+  "  report FILE           the verdict and report on one grade under one policy\n" ++
+  "  corpus                every test vector, with the oracle's answer\n" ++
+  "  diff CORPUS ANSWERS   where ANSWERS differs from the oracle; exit 1 if anywhere"
 
 /-- Reads FILE, or standard input when FILE is `-`. -/
 def readInput (path : String) : IO String :=
@@ -34,9 +38,26 @@ def runJson (path : String) (f : Json → Except String Json) : IO UInt32 := do
     IO.eprintln s!"Gate.lean: {e}"
     pure 1
 
+/-- Reads and parses a JSON file, or standard input for `-`. -/
+def readJson (path : String) : IO (Except String Json) := do
+  return Json.parse (← readInput path)
+
 def run (args : List String) : IO UInt32 := do
   match args with
   | ["report", path] => runJson path reportJson
+  | ["corpus"] =>
+    IO.println corpusJson.compress
+    pure 0
+  | ["diff", c, a] =>
+    let cj ← readJson c
+    let aj ← readJson a
+    match (do diffJson (← cj) (← aj)) with
+    | .ok (out, ok) =>
+      IO.println out.pretty
+      pure (if ok then 0 else 1)
+    | .error e =>
+      IO.eprintln s!"Gate.lean: {e}"
+      pure 2
   | _ =>
     IO.eprintln usage
     pure 2
