@@ -31,7 +31,7 @@ So `statements-v4` adds an executable twin for each definition in the first five
 
 **The prims stay abstract.** `Prims` (digest, signature check, replay, Merkle root) stays a parameter, as Q7 decided. The harness supplies real primitives, and they are tested, not proved.
 
-**The harness** would be `lean/Gate.lean`, run as `lake env lean --run Gate.lean`, the way `ComparatorTargets.lean` runs. An executable target, for `lake exe`, would need a `lean_exe` entry in `lean/lakefile.toml`. The statements check covers that file, so the entry would need a new statements version. The harness reads raw records, dependency edges and a policy (θ and β per axis) as JSON, calls the pilot's module (§3), and prints its report. It holds no logic of its own, only parsing, the call and printing.
+**The harness** is `lean/Gate.lean`, run as `lake env lean --run Gate.lean`, the way `ComparatorTargets.lean` runs. An executable target, for `lake exe`, would need a `lean_exe` entry in `lean/lakefile.toml`. The statements check covers that file, so the entry would need a new statements version. The harness reads raw records, dependency edges and a policy (θ and β per axis) as JSON, calls the pilot's module (§3), and prints its report. It holds no logic of its own, only parsing, the call and printing.
 
 **What is proved, what is tested, and what is trusted:**
 
@@ -46,6 +46,8 @@ So `statements-v4` adds an executable twin for each definition in the first five
 
 ## 2. How other implementations are tested against the spec
 
+**Built** (#72, #74–#78). The harness, the corpus and the negative controls are in `lean/JSG/Harness/` and `lean/JSG/Tests/Differential.lean`, and `scripts/differential.sh` runs the differential tests in CI ([REPRODUCE.md](../REPRODUCE.md), step 5). What follows is the design, with what each part became.
+
 The executable twins become the oracle. Any other implementation reads the same JSON test vectors and must print the same verdicts. Candidates:
 - SirusSC's Python `specchain` (`Q`, `QPrime`, the loader), read in place from `archive/`;
 - jsg-lab's checks, where they overlap;
@@ -55,6 +57,8 @@ The executable twins become the oracle. Any other implementation reads the same 
 1. **From the controls:** every witness, and every mutant's counterexample, in `Tests/Mutants.lean`. Lean already proves that each counterexample separates its mutant from the spec.
 2. **Exhaustive small vectors:** up to three axes of either kind, endpoints in {0, 1, 2, ∞}, and thresholds and leases in {0, 1, ∞}. That's a few thousand vectors, each with the oracle's answer.
 3. **Seeded random vectors**, for larger grades and runs.
+
+As built, the corpus has 3,818 vectors: 23 from the controls, 3,395 exhaustive and 400 random, with grades of three to seven axes and seed 2026.
 
 **Negative controls.** Each existing mutant gets an executable variant that runs through the same differential test, and the test must flag every one. If a mutant passes, the corpus is too weak and CI fails: mutation testing of the test suite itself. Examples of the vector that catches each:
 
@@ -69,9 +73,9 @@ The executable twins become the oracle. Any other implementation reads the same 
 | `qPrimeGate`, `widthsOnly`, `pointsOnly` | the lease mutants |
 | `afterListed`, `TRowStep`, `SirusIsoStep`, `OrStep` | the obligation and Loader mutants, once their twins exist |
 
-v4's own mutants are already executable: SirusSC's absorbing ⊥ for `combine`, its `Q.leq` for `verdict` and its `QPrime` for `leaseVerdict`, and v1's `residualFull` and `ResidualOnly` for the residual twins. They are in the `statements-v4` draft's controls.
+As built, 17 executable mutants cover every twinned definition (`JSG.Harness.Mutants`). Each has a theorem, proved by `decide +kernel`, that the exhaustive vectors of its operation catch it, so a surviving mutant fails the build. The obligation and Loader mutants wait for their twins. v4's own mutants were already executable: SirusSC's absorbing ⊥ for `combine`, its `Q.leq` for `verdict` and its `QPrime` for `leaseVerdict`, and v1's `residualFull` and `ResidualOnly` for the residual twins. They are in the `statements-v4` draft's controls.
 
-**The first real run is a control for the harness too.** SirusSC's `QPrime` never reads a width, and its `Q` absorbs ⊥ (STATEMENTS_REVIEW, v2). So the first differential run against SirusSC must disagree on exactly those vectors. If it doesn't, the harness is broken.
+**The first real run is a control for the harness too.** SirusSC's `QPrime` never reads a width, and its `Q` absorbs ⊥ (STATEMENTS_REVIEW, v2). So the first differential run against SirusSC must disagree on exactly those vectors. If it doesn't, the harness is broken. As built, `sirusModel` predicts them, and SirusSC's own code, run from `archive/` by `scripts/sirusc_adapter.py`, disagrees with the oracle on exactly the 516 vectors it predicts, out of 3,556 it answers.
 
 ## 3. The pilot: grading the openai/math release
 
@@ -183,7 +187,7 @@ You also asked that the carry-over rule and the closure be Lean, in the pilot's 
 The order of work:
 1. **A `statements-v4` draft:** the twins, their agreement theorems, a mutant and a witness for each, and a provability check, in a draft PR as for v2 and v3: #62, to be tagged as `statements-v4`.
 2. **Milestone 4,** proving them.
-3. **The harness**, `Gate.lean`, the corpus and the differential tests, with every mutant as a negative control.
+3. **The harness**, `Gate.lean`, the corpus and the differential tests, with every mutant as a negative control. Done: #72 and #74–#78.
 4. **The pilot:**
    - its module in Lean (§3): the doubts from raw facts, the carry-over rule, the closure and the report, with their properties proved, and the axiom audit and token scan extended to it;
    - the collectors for the pinned release, which supply only raw records and dependency edges;

@@ -4,6 +4,21 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-29
 
+### The harness, the corpus and the differential tests (#74–#78)
+- **Order:** one PR each, stacked on #72, which first extended the audit and the token scan:
+  - #74: the report;
+  - #75: `Gate.lean` and the JSON;
+  - #76: the corpus and `diff`;
+  - #77: the executable mutants and their negative-control theorems;
+  - #78: the differential runner, SirusSC's adapter and the CI step.
+- **Proved and tested:**
+  - **Proved:** the report is proved to list exactly the axes the lease verdict rejects on. The negative controls are proved by `decide +kernel`: the exhaustive vectors of each mutant's operation catch it, so a mutant that survived would fail the build.
+  - **Tested:** the JSON, by three golden examples and by round-tripping all 3,818 vectors.
+- **Mutants in scope:** the 17 of the twinned definitions. Those of the obligations, the Loader, the charge, the policy lattice and the analysis layer wait for twins, if any.
+- **SirusSC:** `scripts/sirusc_adapter.py` loads `q_prime.py` and `q.py` from `archive/` by path, without running the package's `__init__`, and writes no bytecode there. `archive/` is unchanged. Its code disagrees with the oracle on exactly the 516 vectors `sirusModel` predicts, out of the 3,556 it answers.
+- **Running it:** `Gate.lean` runs as `lake env lean --run`, so the frozen lakefile doesn't change. `scripts/differential.sh` takes about 1.5 minutes, nearly all of it loading Mathlib for six harness runs. CI runs it after `check.sh`, in a step with `shell: bash`.
+- **Layer map:** in the "Executable twins" row, Marley's approved wording said nothing runs the twins yet. That clause now says the harness runs them and the differential tests check another implementation against them; the pilot is still to come. README's status says the same. It's for Marley's approval.
+
 ### The audit and the token scan cover the harness (#72)
 - **Why first:** Marley asked that the axiom audit and the forbidden-token scan reach any new directory before it holds code. The harness, the corpus and the differential tests go in `lean/JSG/Harness/`, with the entry point `lean/Gate.lean` (EXECUTABLE_GATE.md §1).
 - **The audit:** it sweeps `JSG/Harness/` too, reached through a new root, `lean/JSG/Harness.lean`, which has no code yet. A harness module not imported from that root fails the audit, as for the other three directories. A harness module holds code, so unlike a proof, lemma or test module it may declare no theorem. Every theorem it declares is audited.

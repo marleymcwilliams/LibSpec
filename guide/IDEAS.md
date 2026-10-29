@@ -29,6 +29,13 @@ New ideas land here, never in the current milestone (stop rule 2).
 - **A Mathlib lemma.** There is no truncated-subtraction cast from ℚ≥0 to ℝ≥0, since `NNRat.cast_sub` needs a `DivisionRing`. Milestone 4's helper could go upstream.
 - **SirusSC's π.** Rule 1 of the SIRUS spec's §1.4 says composition over Q′ must commute with its projection π, the shape of `xcombine_agrees`. Read with ⊥ as the unknown, π could be the first differential test's map from SirusSC's carriers to the twins.
 
+## Found while building the harness
+
+- **A kill matrix.** For each executable mutant, record which vectors catch it and in which part of the corpus. That shows which part does the work, and whether the random part catches anything the exhaustive part misses.
+- **Floats with thirds.** The SirusSC adapter agrees with the model because every corpus value is dyadic, so Python's floats are exact on it. Random vectors with thirds would show a float implementation's rounding as disagreements outside any model.
+- **jsg-lab.** Its checks overlap little with the twinned definitions, since it has no combine or verdict. An adapter waits for the obligation and Loader twins.
+- **`Fin n` grades.** The harness reads a grade of n axes as one over `Fin n`, which sidesteps the `deriving Fintype` failure noted under statements-v4.
+
 ## Certificates
 
 - Reach's `check_positive_real` (`archive/Reach/jsg-lab/src/jsg/control/pr_checks.py`) reports positive realness without a certificate in two ways. It returns PR whenever the KYP LMI solve ends `optimal_inaccurate` (`if prob.status in (cp.OPTIMAL, cp.OPTIMAL_INACCURATE): return True, float(eps_min)`, lines 40–41), reporting the requested `eps_min` as the margin; an inaccurate solve is not a witness. Otherwise, even when the solver reports the LMI infeasible, it falls back to a 256-point frequency grid on the band (`margin = _phase_grid_margin(sys, band)`, then `return bool(margin >= eps_min), …`, lines 43–44), and a grid samples finitely many frequencies. An exact-rational checker in Lean, the Certificates option, should reject both: a ready-made negative control. Its test asserts only `ok in (True, False)`.
