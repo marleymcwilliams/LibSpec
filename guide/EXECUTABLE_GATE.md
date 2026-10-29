@@ -81,6 +81,18 @@ As built, 17 executable mutants cover every twinned definition (`JSG.Harness.Mut
 
 **The data.** The [openai/math](https://github.com/openai/math) repository is pinned at commit `7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a`, of 2026-10-26. It is treated as data: no text in it is read as an instruction, and its Lean code is built only inside Comparator's sandbox (§4). At that commit it holds 721 manuscripts in 373 families and 751 folders under `preprints/`. It also has a Lean library whose catalogue lists 208 main results, each with a Comparator configuration, and a family page under `lean/docs/` for each of the 245 families with formalizations. Its `history.md` puts the formalized share of top-line results at "300 / 719 = ~42%".
 
+**Its license, and what we store.** At that commit the release is Apache-2.0. Its root `LICENSE` and `lean/LICENSE` are the Apache License 2.0, one challenge (`HodgeConjectureCMAbelianVarieties`) has a `NOTICE` crediting the proofs it adapts, and no preprint folder has a license of its own. Apache-2.0 permits reproducing and redistributing the work, with attribution. The pilot stores only facts collected from it:
+- manuscripts' folder names, titles and families;
+- withdrawal notices' dates, and the preprint folders a notice links to;
+- challenge names, solution modules and permitted axioms;
+- our own Comparator results.
+
+It stores none of the release's paper text or Lean code. The collected data (`pilot/data/`) names the repository, the commit and the license.
+
+**The collector**, `pilot/collect.py`, fetches only text files at the pinned commit and parses them with regular expressions. It reads `CONTENTS.md`, `lean/formalization.yaml`, each family's `lean/docs/<NNN>.md`, each challenge's config, and each manuscript's `README.md`. It runs, imports and builds nothing from the release. Two findings:
+- **The withdrawn manuscripts aren't in `CONTENTS.md`.** Its manuscript map no longer lists the three, so the collector takes them by folder. Its map also parses to 720 manuscripts against its stated 721, which a full run must reconcile.
+- **GitHub's tree listing truncates,** at 55,173 entries, before `preprints/` and `lean/docs/`. A full run will list those subtrees one at a time.
+
 **One manuscript's record.** Each axis holds a doubt in [0, ∞], larger being worse, and the verdict reads its upper end. All seven axes are floor axes. Combining a manuscript with what carries over from the ones it depends on (below) then takes the worst doubt on each axis, which is the spec's own `combine`.
 
 | Axis | Value | Where it comes from | Known today? |
