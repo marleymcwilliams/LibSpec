@@ -32,4 +32,22 @@ theorem xcast_add (a b : WithTop ℚ≥0) : xcast (a + b) = xcast a + xcast b :=
   induction a using WithTop.recTopCoe <;> induction b using WithTop.recTopCoe <;>
     simp [xcast_top, xcast_coe, ← WithTop.coe_add, NNRat.cast_add]
 
+/-- Truncated subtraction commutes with the cast from ℚ≥0 to ℝ≥0. Mathlib's
+    `NNRat.cast_sub` needs a `DivisionRing`, which ℝ≥0 isn't. -/
+theorem nnrat_cast_tsub (p q : ℚ≥0) : ((p - q : ℚ≥0) : NNReal) = (p : NNReal) - (q : NNReal) := by
+  rcases le_total q p with h | h
+  · obtain ⟨d, rfl⟩ := exists_add_of_le h
+    simp [NNRat.cast_add]
+  · rw [tsub_eq_zero_of_le h, tsub_eq_zero_of_le (NNRat.cast_le.2 h), NNRat.cast_zero]
+
+/-- `xcast` preserves truncated subtraction, ∞ − ∞ = 0 included. -/
+theorem xcast_sub (a b : WithTop ℚ≥0) : xcast (a - b) = xcast a - xcast b := by
+  induction b using WithTop.recTopCoe with
+  | top => simp [WithTop.sub_top, xcast_top, xcast_zero]
+  | coe q =>
+    induction a using WithTop.recTopCoe with
+    | top => simp [xcast_top, xcast_coe]
+    | coe p =>
+      rw [← WithTop.coe_sub, xcast_coe, xcast_coe, xcast_coe, nnrat_cast_tsub, ENNReal.coe_sub]
+
 end JSG

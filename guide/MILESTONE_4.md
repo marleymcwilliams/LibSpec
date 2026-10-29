@@ -46,3 +46,13 @@ Proved in #65.
 3. `xcast` preserves and reflects order (`xcast_le_iff`, from Mathlib's `WithTop.map_le_iff` and `NNRat.cast_le`), so the two conditions are the same proposition.
 4. With the same condition, the two `if`s agree, however each decides it: the twin by checking each of finitely many axes, the frozen verdict classically.
 5. So `verdict_sound` and `verdict_complete` hold of the executable verdict on finitely many axes. SirusSC's `Q.leq`, which skips an unknown axis, doesn't agree.
+
+## `xresidual_agrees`
+
+Proved in #67.
+
+1. The twin's residual θ − x is truncated subtraction in `WithTop ℚ≥0`, and the frozen one is truncated subtraction in `ENNReal`. The claim is that the cast commutes with it (`xcast_sub`).
+2. If x is ∞, both sides are 0, since subtracting ∞ leaves 0 in both carriers, ∞ − ∞ included.
+3. If θ is ∞ and x is finite, both sides are ∞.
+4. If both are finite, it comes down to the cast from ℚ≥0 to ℝ≥0, for which Mathlib has no truncated-subtraction lemma. A helper proves it: if x ≤ θ, write θ = x + d, and both sides are d; otherwise both are 0 (`nnrat_cast_tsub`).
+5. So the twin leaves exactly the budget the spec does after each stage. v1's `residualFull`, which leaves θ, doesn't agree.
