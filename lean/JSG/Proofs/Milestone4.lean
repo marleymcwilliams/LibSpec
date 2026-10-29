@@ -31,4 +31,6 @@ theorem xverdict_agrees [Fintype ι] (θ : ι → WithTop ℚ≥0) (g : XGrade �
 theorem xresidual_agrees (θ x : WithTop ℚ≥0) :
     xcast (xresidual θ x) = residual (xcast θ) (xcast x) := xcast_sub θ x
 
+theorem xwidth_agrees (b : XBound) : xcast b.width = b.toBound.width := xcast_sub b.hi b.lo
+
 end JSG

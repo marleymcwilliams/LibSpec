@@ -56,3 +56,13 @@ Proved in #67.
 3. If θ is ∞ and x is finite, both sides are ∞.
 4. If both are finite, it comes down to the cast from ℚ≥0 to ℝ≥0, for which Mathlib has no truncated-subtraction lemma. A helper proves it: if x ≤ θ, write θ = x + d, and both sides are d; otherwise both are 0 (`nnrat_cast_tsub`).
 5. So the twin leaves exactly the budget the spec does after each stage. v1's `residualFull`, which leaves θ, doesn't agree.
+
+## `xwidth_agrees`
+
+Proved in #68.
+
+1. A twin's width is hi − lo, and the frozen width is the same subtraction in `ENNReal`.
+2. So it is `xcast_sub` applied to the twin's two ends, the lemma behind `xresidual_agrees`.
+3. Since lo ≤ hi, nothing truncates, but ∞ needs care: a known ∞, [∞, ∞], has width ∞ − ∞, which is 0 in both carriers.
+4. That case matters to the pilot. A withdrawn manuscript's `withdrawn` axis is [∞, ∞], a point, not an interval of infinite width.
+5. A floating-point gate gets it wrong, since ∞ − ∞ is NaN there. The mutant `floatWidth` gives ∞, and doesn't agree.
