@@ -6,22 +6,19 @@ LibSpec takes the JSG/SIRUS governance corpus, a set of papers and specs on grad
 
 ## Status
 
-**As of v1.0** (the tag `v1.0`, at `0c36127`), **all 26 frozen theorems are proved.**
+**All 34 frozen theorems are proved.**
 - **Comparator** checks each proof against its frozen statement, and allows only `propext`, `Classical.choice` and `Quot.sound`.
 - **Controls:** each theorem has a mutant, a plausible wrong version proved to fail it, and a witness, an instance proved to satisfy it.
-- **Frozen versions:** the statements were frozen in three versions, `statements-v1` to `statements-v3`, each before its proofs were written. No statement was changed to make a proof go through.
+- **Frozen versions:** the statements were frozen in four versions, `statements-v1` to `statements-v4`, each before its proofs were written. No statement was changed to make a proof go through.
 
-**Since v1.0,** `statements-v4` adds eight frozen theorems. They are executable twins of the core's graded values, combine, verdict, residual threading, widths and leases, each with a theorem that it agrees with its frozen definition ([the executable gate](guide/EXECUTABLE_GATE.md), [the changelog](guide/CHANGELOG.md)). So `main` holds 34 frozen theorems, of which 26 are proved. Until Milestone 4 proves the other eight:
-- Comparator's everyday run lists them as not yet proved, and still passes;
-- the full-strength run fails, since it requires every frozen theorem to be proved;
-- the twins run and their controls pass, but nothing yet proves that they agree with the frozen definitions.
+**v1.0** (the tag `v1.0`, at `0c36127`) had the first 26, frozen in `statements-v1` to `statements-v3`. Since then, `statements-v4` has added eight more. They are executable twins of the core's graded values, combine, verdict, residual threading, widths and leases, each with a theorem that it agrees with its frozen definition ([the executable gate](guide/EXECUTABLE_GATE.md), [the changelog](guide/CHANGELOG.md)). Milestone 4 proved them, and the full-strength Comparator run passes on `main` with all 34. Nothing runs the twins yet: the harness, the differential tests and the pilot are still to come.
 
 To check v1.0 itself, check out its tag ([REPRODUCE.md](REPRODUCE.md)).
 
 ## What is proved, and what isn't
 
 - **[The layer map](guide/MASTER_GUIDE.md#layer-map)** lists every component of the corpus. Each row has its status, its limits, and a pointer to its Lean theorem or to the reason it's out of scope.
-- **The three milestone notes:** [Milestone 1](guide/MILESTONE_1.md) is the algebraic core, [Milestone 2](guide/MILESTONE_2.md) the obligations, Loader, charge and policy lattice, and [Milestone 3](guide/MILESTONE_3.md) the analysis layer. Each explains every proof in plain English, and ends with a closing note on what is now proved and what it doesn't show.
+- **The four milestone notes:** [Milestone 1](guide/MILESTONE_1.md) is the algebraic core, [Milestone 2](guide/MILESTONE_2.md) the obligations, Loader, charge and policy lattice, [Milestone 3](guide/MILESTONE_3.md) the analysis layer, and [Milestone 4](guide/MILESTONE_4.md) the executable twins. Each explains every proof in plain English, and ends with a closing note on what is now proved and what it doesn't show.
 - **[The changelog](guide/CHANGELOG.md)** records each statements version and whether it tightened or weakened the statements. So far every one has only added.
 - **[The statements review](guide/STATEMENTS_REVIEW.md)** puts each theorem beside the mutant that refutes it, and says where each mutant comes from.
 

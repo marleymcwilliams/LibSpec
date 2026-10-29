@@ -2,6 +2,18 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-10-29
+
+### Milestone 4 merged and its gate recorded (#71)
+- **Branches:** with #62 merged and `statements-v4` tagged at `f06c26a`, the `statements/v4-proposal` branch was deleted.
+- **Proof order:** easiest first, one theorem per PR: `xknown_agrees`, `xunknown_agrees`, `xverdict_agrees`, `xcombine_agrees`, `xresidual_agrees`, `xwidth_agrees`, `xleaseVerdict_agrees` and `xthreads_agrees` (#63–#70). The proofs are those of the `statements-v4` provability check. In the proof file they sit in statement order.
+- **Merges:** the stack went in in order, #63–#70. Each PR after the first was retargeted to `main` before the branch under it was deleted, and the last branch was deleted after the final merge. The worktree's `.lake/packages` junction was removed before the worktree.
+- **Checks:** before anything was pushed, the full proof file and its lemmas were built locally, and a scratch check confirmed by `rfl` that each restated theorem has its frozen statement's type. Every PR's CI was green, and on #70 Comparator listed none as not yet proved.
+- **Helper lemmas:** the eight cast lemmas are in `lean/JSG/Lemmas/Twins.lean`, added by the PR that first needs each. `nnrat_cast_tsub` is the truncated-subtraction cast from ℚ≥0 to ℝ≥0, which Mathlib lacks.
+- **Full-strength run:** I started run 40840546350 on `main` with `gh workflow run`, after #70's merge. It passed with all 34 frozen theorems, and REPRODUCE records it.
+- **Gate:** `guide/MILESTONE_4.md` records how each gate item is met, citing `main`'s CI run 40840441621 and the full-strength run, and carries Marley's closing note verbatim. MASTER_GUIDE's "Executable twins" row uses Marley's approved wording, and "Lean milestone 4" is ticked. ROADMAP's Milestone 4 notes are marked done. README and REPRODUCE now say 34 frozen theorems, all proved, with v1.0's 26 told apart.
+- **Held:** the pilot module, the harness and the collectors wait until Milestone 4 closes, at Marley's request.
+
 ## 2026-10-28
 
 ### Q14 and Q15 answered; the pilot's logic in Lean; v1.0 and v4 told apart (#62)

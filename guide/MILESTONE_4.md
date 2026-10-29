@@ -86,3 +86,43 @@ Proved in #69.
 3. `xcast_le_iff` turns each cast comparison into the twin's own, so the two conditions are the same proposition.
 4. As with `xverdict_agrees`, the two `if`s then agree, however each decides it.
 5. So `lease_sound` and `lease_complete` hold of the executable lease verdict on finitely many axes. SirusSC's `QPrime`, which never reads a width, doesn't agree: it accepts [0, 5] leased 1 under θ = 10.
+
+## Gate
+
+How each item of ROADMAP's "Gate for every milestone" is met. The evidence for the first five is `main`'s CI run on the merge of #70, [run 40840441621](https://github.com/marleymcwilliams/LibSpec/actions/runs/40840441621), and the full-strength Comparator run on the same commit, `6a8a77c`, [run 40840546350](https://github.com/marleymcwilliams/LibSpec/actions/runs/40840546350).
+
+- **`lake build` is green, with no `sorry` in the milestone's proof file.** The build and leanchecker passed, and `check.sh`'s forbidden-token scan of `Proofs/`, `Lemmas/` and `Tests/` printed "ok".
+- **`#print axioms` on each theorem lists only `propext`, `Classical.choice` and `Quot.sound`.** The axiom audit's sweep (334 theorems in 10 modules) printed each of the eight with exactly those three: `xknown_agrees`, `xunknown_agrees`, `xcombine_agrees`, `xverdict_agrees`, `xresidual_agrees`, `xthreads_agrees`, `xwidth_agrees` and `xleaseVerdict_agrees`. So did the eight cast lemmas in `Lemmas/Twins.lean`: `xcast_coe`, `xcast_top`, `xcast_zero`, `xcast_le_iff`, `xcast_max`, `xcast_add`, `nnrat_cast_tsub` and `xcast_sub`.
+- **The statements check confirms the frozen files are unchanged.** It printed "ok (statements-v4): lean/JSG/Statements.lean lean/JSG/Defs.lean lean/lean-toolchain lean/lake-manifest.json lean/lakefile.toml".
+- **Comparator confirms each proof against its frozen statement.**
+  - **CI's run** accepted `JSG.Solution` against `JSG.Statements` with only the three permitted axioms ("Your solution is okay!"). Its not-yet-proved list is empty: all 34 frozen theorems are proved.
+  - **The full-strength run** checked all 34 again, with Lean's kernel and nanoda, inside the full sandbox. Both wrapper probes passed, and the mutant fixture was rejected for its statement. It ended "comparator-full.sh: passed (34 theorems, Lean kernel and nanoda, full sandbox)".
+- **Each theorem's named mutant is proved to violate it, and every must-pass control is accepted.**
+  - **Mutants**, in `Tests/Mutants.lean`, from `statements-v4`:
+    - `xknown_agrees_mutant`: a point read as [0, x];
+    - `xunknown_agrees_mutant`: the unknown at the bottom of the order, [0, 0];
+    - `xcombine_agrees_mutant`: SirusSC's absorbing ⊥;
+    - `xverdict_agrees_mutant`: SirusSC's `Q.leq`;
+    - `xresidual_agrees_mutant`: v1's `residualFull`;
+    - `xthreads_agrees_mutant`: v1's residual check alone;
+    - `xwidth_agrees_mutant`: floating point's ∞ − ∞;
+    - `xleaseVerdict_agrees_mutant`: SirusSC's `QPrime`.
+  - **Must-pass:** each theorem's witness, `xknown_agrees_witness` to `xleaseVerdict_agrees_witness`. Each proves the statement for one instance, several of them their mutant's own counterexample. Milestone 1's controls in `Tests/Calibration.lean` still pass.
+  - All sixteen build in that run, and the audit swept them, each within the three axioms.
+- **Layer-map rows are set to Proved, and the guide's text names the Lean theorem.** In #71, MASTER_GUIDE's "Executable twins" row uses your approved wording, which names its eight theorems and notes the row's limits.
+- **A short note, in your words.** It follows.
+
+## Closing note
+
+All eight Milestone 4 theorems are proved. Comparator accepts each one against `statements-v4`, and neither they nor the cast lemmas in `Lemmas/Twins.lean` use an axiom beyond `propext`, `Classical.choice` and `Quot.sound`. Each has a mutant proved to break it. With this milestone, all 34 frozen theorems are proved, and the full-strength run passes on `main` with both kernels.
+
+**What is now proved**
+- Each executable twin, computing exactly in `WithTop ℚ≥0`, agrees with its frozen definition: known and unknown values, `combine` (and so `seqComp` and `parComp`), `verdict`, `residual`, `Threads`, widths and `leaseVerdict`.
+- So the earlier theorems about those definitions hold of the twins too. The twin verdict is sound and complete, and the twin lease verdict rejects any axis over its threshold or wider than its lease.
+
+**What it does not show**
+- Infinitely many axes. The twin verdicts are stated for finitely many.
+- The obligations and the Loader. Their twins aren't stated yet (Q11), so `pass_sound` and the Loader theorems don't yet cover what the harness will compute.
+- That the code which runs the twins is correct. The theorems are about the Lean definitions; the compiler that turns them into a program is trusted, not proved. The pilot's fixed verdicts will be checked by the kernel with `decide +kernel`, which doesn't rely on it.
+- That anything runs yet. The harness, the differential tests and the pilot are still to come.
+- That the statements say what I mean. CI shows the proofs conform to them; whether they're the right statements is my judgment, not Lean's.

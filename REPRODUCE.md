@@ -2,7 +2,7 @@
 
 This takes a fresh machine through building everything, running the checks, and reading off what is proved and what isn't. Each step says what you should see.
 
-**Which version.** It describes v1.0, the tag `v1.0`: 26 frozen theorems, all proved. `main` has moved on since. `statements-v4` adds eight more, which Milestone 4 will prove ([the executable gate](guide/EXECUTABLE_GATE.md)). Where `main` differs from v1.0, the step says so.
+**Which version.** It describes `main`: 34 frozen theorems, all proved. v1.0, the tag `v1.0`, had the first 26. `statements-v4` added eight more, which Milestone 4 proved ([the executable gate](guide/EXECUTABLE_GATE.md)). Where v1.0 differs, the step says so.
 
 ## What you need
 
@@ -54,7 +54,7 @@ It runs four steps and ends with `check.sh: passed`:
 | Build | `lake build` again, which is quick once step 2 has run | no errors |
 | Forbidden tokens | no `sorry`, `admit`, `axiom` or native evaluation in `Proofs/`, `Lemmas/` or `Tests/` | `ok` |
 | Axiom audit | `#print axioms` on every theorem in `Proofs/`, `Lemmas/` and `Tests/` (`lean/AxiomAudit.lean`) | each theorem lists only `propext`, `Classical.choice` and `Quot.sound`, then `ok` |
-| Statements unchanged | `Defs.lean`, `Statements.lean`, their imports, the toolchain, the Mathlib pin and the lakefile, against the latest `statements-v*` tag | `ok (statements-v3): …` at v1.0, `ok (statements-v4): …` on `main` |
+| Statements unchanged | `Defs.lean`, `Statements.lean`, their imports, the toolchain, the Mathlib pin and the lakefile, against the latest `statements-v*` tag | `ok (statements-v4): …`, or `ok (statements-v3): …` at v1.0 |
 
 To replay every module through Lean's kernel as well, as CI does:
 
@@ -76,7 +76,7 @@ bash scripts/build-comparator-tools.sh ~/comparator-tools
 PATH="$HOME/comparator-tools/bin:$PATH" bash scripts/comparator.sh
 ```
 
-It runs a self-test, in which a correct fixture must pass and a mutant must be rejected. Then it checks every proof, and lists the frozen theorems not yet proved. At v1.0 you should see "Your solution is okay!", and "none" under "Frozen theorems not yet proved". On `main`, the eight `statements-v4` theorems are listed there until Milestone 4 proves them, and the run still passes.
+It runs a self-test, in which a correct fixture must pass and a mutant must be rejected. Then it checks every proof, and lists the frozen theorems not yet proved. You should see "Your solution is okay!", and "none" under "Frozen theorems not yet proved", on `main` and at v1.0 alike.
 
 **The full-strength run** is the gold-standard check that the Lean reference's ["Validating Proofs"](https://lean-lang.org/doc/reference/latest/ValidatingProofs/) chapter describes. It adds three things to the everyday run:
 - **A second kernel:** nanoda checks the solution as well as Lean's own kernel.
@@ -94,7 +94,7 @@ There are two ways to run it:
   PATH="$HOME/comparator-full-tools/bin:$PATH" bash scripts/comparator-full.sh
   ```
 
-  At v1.0 it ends with `comparator-full.sh: passed (26 theorems, Lean kernel and nanoda, full sandbox)`. On `main` it fails until Milestone 4 proves the eight `statements-v4` theorems, since it requires every frozen theorem to be proved. Don't run step 2 first: Comparator's guarantee assumes the proofs were never built outside its sandbox, and the script stops if they were.
+  On `main` it ends with `comparator-full.sh: passed (34 theorems, Lean kernel and nanoda, full sandbox)`, and at v1.0 with the same line for 26 theorems. Don't run step 2 first: Comparator's guarantee assumes the proofs were never built outside its sandbox, and the script stops if they were.
 
   `lake exe cache get` itself is allowed: it downloads Mathlib, not the proofs. On WSL, enable systemd first (`systemd=true` under `[boot]` in `/etc/wsl.conf`, then `wsl --shutdown`). landrun also needs a kernel with Landlock; if WSL's kernel lacks it, the self-test fails before anything is checked.
 
@@ -103,15 +103,16 @@ The script differs from the README's command in two ways, both for running unatt
 ## 5. Read off what is proved and what isn't
 
 - **[The layer map](guide/MASTER_GUIDE.md#layer-map):** every component, with its status, its limits, and a pointer to its Lean theorem or to the reason it's out of scope.
-- **The milestone notes:** [Milestone 1](guide/MILESTONE_1.md), [Milestone 2](guide/MILESTONE_2.md) and [Milestone 3](guide/MILESTONE_3.md). Each has a plain-English explanation of every proof, the gate record, and a closing note on what is proved and what it doesn't show.
+- **The milestone notes:** [Milestone 1](guide/MILESTONE_1.md), [Milestone 2](guide/MILESTONE_2.md), [Milestone 3](guide/MILESTONE_3.md) and [Milestone 4](guide/MILESTONE_4.md). Each has a plain-English explanation of every proof, the gate record, and a closing note on what is proved and what it doesn't show.
 - **[The changelog](guide/CHANGELOG.md):** each statements version, and whether it tightened or weakened the statements. Its `statements-v4` entry lists what v4 adds.
 
 ## Full-strength runs
 
-Every run so far checked v1.0's 26 theorems. The first run on `main` was started by hand at `d568ed1`, after #56, #57 and #58 were merged. The four before it came from #56, which added the workflow, before it was merged. Each of those checked `main`'s proofs, since #56 changes no Lean file. Each later run started by hand on `main` gets a row here too. The three earliest ran before the step had `shell: bash`, when a failing script could still have shown green. Their logs show they passed: each ends with the script's own pass line, which it prints only if every step succeeded.
+The latest run checked all 34 frozen theorems, on `main` at `6a8a77c`, after Milestone 4. Every run before it checked v1.0's 26. The first run on `main` was started by hand at `d568ed1`, after #56, #57 and #58 were merged. The four before it came from #56, which added the workflow, before it was merged. Each of those checked `main`'s proofs, since #56 changes no Lean file. Each later run started by hand on `main` gets a row here too. The three earliest ran before the step had `shell: bash`, when a failing script could still have shown green. Their logs show they passed: each ends with the script's own pass line, which it prints only if every step succeeded.
 
 | Date | Run | Commit | Result |
 | --- | --- | --- | --- |
+| 2026-10-29 | [40840546350](https://github.com/marleymcwilliams/LibSpec/actions/runs/40840546350) | `main` at `6a8a77c`, after Milestone 4, started with `gh workflow run` | **Passed** with all 34 frozen theorems. Both probes passed, the self-test passed, the mutant was rejected for its statement, and the Lean kernel and nanoda each accept the solution. Linux 7.0.0-1017-azure, systemd 255, Lean 4.34.1, 5 min |
 | 2026-10-28 | [40781130345](https://github.com/marleymcwilliams/LibSpec/actions/runs/40781130345) | `main` at `d568ed1`, started by hand | **Passed**, the first run on `main`. Both probes passed, the self-test passed, the mutant was rejected for its statement, and the Lean kernel and nanoda each accept all 26 frozen theorems. Linux 7.0.0-1017-azure, systemd 255, Lean 4.34.1, 6 min |
 | 2026-10-28 | [40761806692](https://github.com/marleymcwilliams/LibSpec/actions/runs/40761806692) | #56's head `104874b`, on `main` at `2e6cbf7` | **Passed**, the first run whose step has `shell: bash`, so a failing script turns it red: the same checks as the row below, 5 min |
 | 2026-10-28 | [40757821081](https://github.com/marleymcwilliams/LibSpec/actions/runs/40757821081) | #56's head `8e25f5b`, on `main` at `2e6cbf7` | **Passed.** Both probes passed: AF_UNIX opens outside the wrapper and is refused inside, and `sudo` gains nothing inside. The self-test passed, the mutant was rejected for its statement, and the Lean kernel and nanoda each accept all 26 frozen theorems. Linux 7.0.0-1017-azure, systemd 255, 4.5 min |
