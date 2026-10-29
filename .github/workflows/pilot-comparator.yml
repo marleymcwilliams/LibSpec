@@ -3,8 +3,14 @@ name: Pilot Comparator runs
 # The pilot's Comparator runs on openai/math's challenges (guide/EXECUTABLE_GATE.md §3, §4):
 # full strength, on a fresh runner, measuring time and disk. The release's lakefile runs
 # outside Comparator's sandbox while its dependencies are fetched, so this job holds no
-# secrets, keeps no credentials in the checkout, and only restores caches: the release's
-# code can't write a cache that another workflow would later trust.
+# secrets and keeps no credentials in the checkout. Its cache access is read-only: it restores
+# caches, and the cache service refuses its saves, so the release's code can't write a cache
+# that another workflow would later trust. It never runs on main. Dispatch it from another
+# branch, such as pilot/runs, so that whatever it writes stays out of main's cache scope:
+#
+#     gh workflow run pilot-comparator.yml --ref pilot/runs -f challenges="Catalan"
+
+cache-mode: read
 
 on:
   workflow_dispatch:
@@ -22,6 +28,7 @@ permissions:
 
 jobs:
   pilot-comparator:
+    if: github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 355
     steps:
