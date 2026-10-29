@@ -36,6 +36,12 @@ New ideas land here, never in the current milestone (stop rule 2).
 - **jsg-lab.** Its checks overlap little with the twinned definitions, since it has no combine or verdict. An adapter waits for the obligation and Loader twins.
 - **`Fin n` grades.** The harness reads a grade of n axes as one over `Fin n`, which sidesteps the `deriving Fintype` failure noted under statements-v4.
 
+## Found while running the pilot
+
+- **A golden check for the report.** `Gate.lean pilot` generates `pilot/reports/first-sample.md`, but nothing checks that the committed file still matches the Lean. CI could regenerate it and diff, as the differential step does for the corpus.
+- **The import graph before scaling.** The estimate in EXECUTABLE_GATE §4 assumes every module of the release is needed. Reading each module's `import` lines, as data, would give each challenge's real closure, so shards could be planned from module counts rather than by family.
+- **Reruns without rebuilding.** Almost all of a Comparator run is building the release from source. A build cache made inside the sandbox from the untrusted job's sources would make reruns cheap. But Comparator's README allows a prebuilt `.lake` only if it was obtained "without compromising your checking environment", so the cache would need its own trusted path.
+
 ## Certificates
 
 - Reach's `check_positive_real` (`archive/Reach/jsg-lab/src/jsg/control/pr_checks.py`) reports positive realness without a certificate in two ways. It returns PR whenever the KYP LMI solve ends `optimal_inaccurate` (`if prob.status in (cp.OPTIMAL, cp.OPTIMAL_INACCURATE): return True, float(eps_min)`, lines 40–41), reporting the requested `eps_min` as the margin; an inaccurate solve is not a witness. Otherwise, even when the solver reports the LMI infeasible, it falls back to a 256-point frequency grid on the band (`margin = _phase_grid_margin(sys, band)`, then `return bool(margin >= eps_min), …`, lines 43–44), and a grid samples finitely many frequencies. An exact-rational checker in Lean, the Certificates option, should reject both: a ready-made negative control. Its test asserts only `ok in (True, False)`.
