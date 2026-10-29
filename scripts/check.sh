@@ -12,11 +12,13 @@ step() { printf '\n== %s\n' "$1"; }
 step "Build"
 (cd "$lean_dir" && lake build)
 
-step "Forbidden tokens in Proofs, Lemmas and Tests"
+step "Forbidden tokens in Proofs, Lemmas, Tests and Harness, and Gate.lean"
 dirs=()
-for d in Proofs Lemmas Tests; do
+for d in Proofs Lemmas Tests Harness; do
   if [ -d "$lean_dir/JSG/$d" ]; then dirs+=("$lean_dir/JSG/$d"); fi
 done
+# The harness's entry point sits beside the checks in lean/, outside those directories.
+if [ -f "$lean_dir/Gate.lean" ]; then dirs+=("$lean_dir/Gate.lean"); fi
 pattern='\bsorry\b|\badmit\b|native_decide|decide \+native|^[[:space:]]*axiom[[:space:]]'
 if grep -rnE --include='*.lean' "$pattern" "${dirs[@]}"; then
   echo "FAIL: forbidden token found"

@@ -52,8 +52,8 @@ It runs four steps and ends with `check.sh: passed`:
 | Step | What it checks | What you should see |
 | --- | --- | --- |
 | Build | `lake build` again, which is quick once step 2 has run | no errors |
-| Forbidden tokens | no `sorry`, `admit`, `axiom` or native evaluation in `Proofs/`, `Lemmas/` or `Tests/` | `ok` |
-| Axiom audit | `#print axioms` on every theorem in `Proofs/`, `Lemmas/` and `Tests/` (`lean/AxiomAudit.lean`) | each theorem lists only `propext`, `Classical.choice` and `Quot.sound`, then `ok` |
+| Forbidden tokens | no `sorry`, `admit`, `axiom` or native evaluation in `Proofs/`, `Lemmas/`, `Tests/` or `Harness/`, or in `lean/Gate.lean` | `ok` |
+| Axiom audit | `#print axioms` on every theorem in `Proofs/`, `Lemmas/`, `Tests/` and `Harness/` (`lean/AxiomAudit.lean`) | each theorem lists only `propext`, `Classical.choice` and `Quot.sound`, then `ok` |
 | Statements unchanged | `Defs.lean`, `Statements.lean`, their imports, the toolchain, the Mathlib pin and the lakefile, against the latest `statements-v*` tag | `ok (statements-v4): …`, or `ok (statements-v3): …` at v1.0 |
 
 To replay every module through Lean's kernel as well, as CI does:
