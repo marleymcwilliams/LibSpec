@@ -1,0 +1,181 @@
+{
+ "challenges": [
+  {
+   "comparator": "notRun",
+   "family": "009",
+   "name": "BogomolovPopInjectivity",
+   "permittedAxioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "solutionModule": "OAI.Algebra.BogomolovPop.Injectivity",
+   "theorems": [
+    "OAI.BogomolovPop.main_graph_injective"
+   ]
+  },
+  {
+   "comparator": "notRun",
+   "family": "005",
+   "name": "Catalan",
+   "permittedAxioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "solutionModule": "OAI.NumberTheory.Catalan.Main",
+   "theorems": [
+    "OAI.InternalCatalan.catalan_irrational"
+   ]
+  },
+  {
+   "comparator": "notRun",
+   "family": "008",
+   "name": "DeligneDrinfeld",
+   "permittedAxioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "solutionModule": "OAI.Algebra.Drinfeld.Completion",
+   "theorems": [
+    "OAI.DeligneDrinfeld.main"
+   ]
+  },
+  {
+   "comparator": "notRun",
+   "family": "012",
+   "name": "JointDickman",
+   "permittedAxioms": [
+    "propext",
+    "Quot.sound",
+    "Classical.choice"
+   ],
+   "solutionModule": "OAI.NumberTheory.JointDickman.PaperMain",
+   "theorems": [
+    "OAI.JointDickmanPaper.joint_law",
+    "OAI.JointDickmanPaper.increasing_order",
+    "OAI.JointDickmanPaper.decreasing_order"
+   ]
+  }
+ ],
+ "manuscripts": [
+  {
+   "challenges": [],
+   "family": null,
+   "folder": "Algebraicity-of-Kuga-Satake-Correspondences-for-K3-Surfaces-October-3-2026",
+   "noticeLinks": [
+    "Algebraicity-of-Weil-classes-on-split-abelian-eightfolds-September-18-2026"
+   ],
+   "title": "Algebraicity of Kuga-Satake Correspondences for K3 Surfaces",
+   "withdrawnOn": "October 6, 2026"
+  },
+  {
+   "challenges": [],
+   "family": null,
+   "folder": "Algebraicity-of-Weil-classes-on-split-abelian-eightfolds-September-18-2026",
+   "noticeLinks": [],
+   "title": "Algebraicity of Weil classes on split abelian eightfolds",
+   "withdrawnOn": "October 6, 2026"
+  },
+  {
+   "challenges": [
+    "Catalan"
+   ],
+   "family": "005",
+   "folder": "Catalans-constant-is-irrational-September-24-2026",
+   "noticeLinks": [],
+   "title": "Catalan's constant is irrational",
+   "withdrawnOn": null
+  },
+  {
+   "challenges": [],
+   "family": "009",
+   "folder": "Reconstruction-from-Milnor-K-theory-modulo-the-characteristic-October-5-2026",
+   "noticeLinks": [],
+   "title": "Reconstruction from Milnor K-theory modulo the characteristic",
+   "withdrawnOn": null
+  },
+  {
+   "challenges": [],
+   "family": "009",
+   "folder": "Reconstruction-of-Function-Fields-from-Mod-ell-Milnor-K-Theory-October-5-2026",
+   "noticeLinks": [],
+   "title": "Reconstruction of Function Fields from Mod-ℓ Milnor K-Theory",
+   "withdrawnOn": null
+  },
+  {
+   "challenges": [
+    "BogomolovPopInjectivity"
+   ],
+   "family": "009",
+   "folder": "The-Bogomolov-Pop-reconstruction-theorem-September-23-2026",
+   "noticeLinks": [],
+   "title": "The Bogomolov-Pop reconstruction theorem",
+   "withdrawnOn": null
+  },
+  {
+   "challenges": [
+    "DeligneDrinfeld"
+   ],
+   "family": "008",
+   "folder": "The-Deligne-Drinfeld-conjecture-September-23-2026",
+   "noticeLinks": [],
+   "title": "The Deligne-Drinfeld conjecture",
+   "withdrawnOn": null
+  },
+  {
+   "challenges": [
+    "JointDickman"
+   ],
+   "family": "012",
+   "folder": "The-joint-Dickman-law-for-consecutive-integers-September-24-2026",
+   "noticeLinks": [],
+   "title": "The joint Dickman law for consecutive integers",
+   "withdrawnOn": null
+  },
+  {
+   "challenges": [],
+   "family": null,
+   "folder": "The-rational-Hodge-conjecture-for-products-of-K3-surfaces-October-4-2026",
+   "noticeLinks": [
+    "Algebraicity-of-Weil-classes-on-split-abelian-eightfolds-September-18-2026"
+   ],
+   "title": "The rational Hodge conjecture for products of K3 surfaces",
+   "withdrawnOn": "October 6, 2026"
+  }
+ ],
+ "notCollected": {
+  "dependencies": "bibliographies are in the PDFs, which aren't read; only withdrawal notices' links are",
+  "independentReview": "outside the repository",
+  "novelty": "outside the repository",
+  "statementFidelity": "no named reviewer has confirmed any challenge's statement"
+ },
+ "source": {
+  "commit": "7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a",
+  "formalizationReview": "unchecked",
+  "license": "Apache-2.0",
+  "read": [
+   "CONTENTS.md",
+   "lean/ComparatorChallenges/BogomolovPopInjectivity.json",
+   "lean/ComparatorChallenges/Catalan.json",
+   "lean/ComparatorChallenges/DeligneDrinfeld.json",
+   "lean/ComparatorChallenges/JointDickman.json",
+   "lean/docs/005.md",
+   "lean/docs/008.md",
+   "lean/docs/009.md",
+   "lean/docs/012.md",
+   "lean/formalization.yaml",
+   "preprints/Algebraicity-of-Kuga-Satake-Correspondences-for-K3-Surfaces-October-3-2026/README.md",
+   "preprints/Algebraicity-of-Weil-classes-on-split-abelian-eightfolds-September-18-2026/README.md",
+   "preprints/Catalans-constant-is-irrational-September-24-2026/README.md",
+   "preprints/Reconstruction-from-Milnor-K-theory-modulo-the-characteristic-October-5-2026/README.md",
+   "preprints/Reconstruction-of-Function-Fields-from-Mod-ell-Milnor-K-Theory-October-5-2026/README.md",
+   "preprints/The-Bogomolov-Pop-reconstruction-theorem-September-23-2026/README.md",
+   "preprints/The-Deligne-Drinfeld-conjecture-September-23-2026/README.md",
+   "preprints/The-joint-Dickman-law-for-consecutive-integers-September-24-2026/README.md",
+   "preprints/The-rational-Hodge-conjecture-for-products-of-K3-surfaces-October-4-2026/README.md"
+  ],
+  "repository": "https://github.com/openai/math"
+ }
+}

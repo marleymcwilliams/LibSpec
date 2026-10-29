@@ -4,6 +4,13 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-29
 
+### The pilot's collector and its first sample (#82)
+- **The collector:** `pilot/collect.py` fetches text files from openai/math at `7ef5c0c` and parses them with regular expressions. It runs nothing from the release. It writes only facts: no paper text and no Lean code. Turning those facts into grades is in Lean (#81), and so is deriving `formal_proof` and `axioms` from each challenge's facts.
+- **Where it lives:** in a new top-level `pilot/`, which holds the collector and its data. It isn't a check, so it isn't under `scripts/`. Its data is committed so that the Lean data module is generated from a fixed snapshot.
+- **The license:** Apache-2.0 at the pinned commit, checked in its root `LICENSE`, `lean/LICENSE` and the one challenge `NOTICE`. EXECUTABLE_GATE §3 says what we store.
+- **The sample:** families 005, 008, 009 and 012, and the three withdrawn manuscripts by folder: nine manuscripts and four challenges. All four challenges permit exactly the three axioms, and none has run yet (step 4).
+- **Findings:** the withdrawn manuscripts aren't in `CONTENTS.md`, which parses to 720 manuscripts against its stated 721. GitHub's recursive tree listing truncates at 55,173 entries.
+
 ### The audit and the token scan cover the pilot (#79)
 - **Why first:** Marley asked that the pilot start as the harness did: the axiom audit and the forbidden-token scan reach `lean/JSG/Pilot/` before it holds code.
 - **The audit:** it sweeps `JSG/Pilot/` through a new root, `lean/JSG/Pilot.lean`, which has no code yet. A pilot module that root doesn't import fails the audit. Like a harness module, a pilot module may declare no theorem, since some will hold only data. Every theorem it declares is audited.
