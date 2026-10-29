@@ -42,6 +42,13 @@ New ideas land here, never in the current milestone (stop rule 2).
 - **The import graph before scaling.** The estimate in EXECUTABLE_GATE §4 assumes every module of the release is needed. Reading each module's `import` lines, as data, would give each challenge's real closure, so shards could be planned from module counts rather than by family.
 - **Reruns without rebuilding.** Almost all of a Comparator run is building the release from source. A build cache made inside the sandbox from the untrusted job's sources would make reruns cheap. But Comparator's README allows a prebuilt `.lake` only if it was obtained "without compromising your checking environment", so the cache would need its own trusted path.
 
+## Found while scaling the pilot
+
+- **Faster lookups for the kernel.** The generated data are lists, so looking up a manuscript walks the list to it, and looking up all 724 took 29 s of kernel time. `CatalogueCalibration` avoids that by checking each list once. A balanced tree would keep a proof about each manuscript cheap at ten times the size too.
+- **The dependencies' import graphs.** The shard estimate leaves out PrimeNumberTheoremAnd and the release's other packages. Their imports, read from the untrusted job's sources, would complete it.
+- **A build-cost model that fits.** For family 189 the estimates by source size and by module count differ by a factor of 30 to 100. Timing the five largest families, then fitting build time to both measures, would replace the ranges with a single estimate.
+- **Two claims of one result.** OpenAI's "The Exponential Time Hypothesis is False" and Anthropic's 3-SAT paper claim the same refutation, both found on October 16. The gate grades each on its own. Whether `novelty` should see the other is a question for when that axis has a source.
+
 ## Certificates
 
 - Reach's `check_positive_real` (`archive/Reach/jsg-lab/src/jsg/control/pr_checks.py`) reports positive realness without a certificate in two ways. It returns PR whenever the KYP LMI solve ends `optimal_inaccurate` (`if prob.status in (cp.OPTIMAL, cp.OPTIMAL_INACCURATE): return True, float(eps_min)`, lines 40–41), reporting the requested `eps_min` as the margin; an inaccurate solve is not a witness. Otherwise, even when the solver reports the LMI infeasible, it falls back to a 256-point frequency grid on the band (`margin = _phase_grid_margin(sys, band)`, then `return bool(margin >= eps_min), …`, lines 43–44), and a grid samples finitely many frequencies. An exact-rational checker in Lean, the Certificates option, should reject both: a ready-made negative control. Its test asserts only `ok in (True, False)`.
