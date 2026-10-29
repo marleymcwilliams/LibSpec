@@ -1,4 +1,7 @@
 import JSG.Pilot.Core
+import JSG.Pilot.Sample
+import JSG.Pilot.Calibration
+import JSG.Pilot.Words
 
 /-!
 Root of the executable gate's pilot (guide/EXECUTABLE_GATE.md §3), for the axiom audit

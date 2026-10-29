@@ -4,6 +4,15 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-29
 
+### The pilot's first report (#84)
+- **The data:** `pilot/to_lean.py` writes `lean/JSG/Pilot/Sample.lean` from the collector's facts. It translates and decides nothing, and it fails if a dependency edge leaves the sample.
+- **The proofs** are in `JSG.Pilot.Calibration`, by `decide +kernel`:
+  - the sample's closure is settled, and none of its nine manuscripts is accepted;
+  - the three withdrawn ones are not accepted on known axes alone, in the best case, `Release.bestCase`, which resolves every unknown in a manuscript's favour and keeps every known fact;
+  - the synthetic must-pass records are accepted and the must-fail ones aren't, and both the sample and the synthetic sets are `Calibrated`, in the frozen definition's sense.
+- **The words:** `JSG.Pilot.Words` writes "not accepted: evidence incomplete on …", naming the date for a withdrawal, "through" the dependency for carried doubt, and the reason for each unknown. `Gate.lean pilot` prints the report.
+- **Stopped** at the first report, as Marley asked, before scaling to all 721.
+
 ### The pilot's collector and its first sample (#82)
 - **The collector:** `pilot/collect.py` fetches text files from openai/math at `7ef5c0c` and parses them with regular expressions. It runs nothing from the release. It writes only facts: no paper text and no Lean code. Turning those facts into grades is in Lean (#81), and so is deriving `formal_proof` and `axioms` from each challenge's facts.
 - **Where it lives:** in a new top-level `pilot/`, which holds the collector and its data. It isn't a check, so it isn't under `scripts/`. Its data is committed so that the Lean data module is generated from a fixed snapshot.

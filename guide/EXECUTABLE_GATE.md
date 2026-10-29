@@ -206,4 +206,11 @@ The order of work:
    - the Comparator runs on GitHub Actions;
    - the must-pass and must-fail verdicts, proved by `decide`.
 
+   **The first report** is in `pilot/reports/first-sample.md`, and `lake env lean --run Gate.lean pilot` prints it. It covers the three withdrawn manuscripts, families 005, 008, 009 and 012, and the synthetic must-pass and must-fail records. Its proofs, in `JSG.Pilot.Calibration`, are all by `decide +kernel`:
+   - the sample's closure is settled, and no real manuscript in it is accepted;
+   - the withdrawn three are not accepted on known axes alone;
+   - the synthetic sets are `Calibrated`.
+
+   It stops there, before scaling to all 721.
+
 **Not proposed:** building the release's library outside a sandbox, grading the release's mathematics directly, or acting on anything its text says.
