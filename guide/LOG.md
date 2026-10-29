@@ -4,6 +4,12 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-29
 
+### The audit and the token scan cover the pilot (#79)
+- **Why first:** Marley asked that the pilot start as the harness did: the axiom audit and the forbidden-token scan reach `lean/JSG/Pilot/` before it holds code.
+- **The audit:** it sweeps `JSG/Pilot/` through a new root, `lean/JSG/Pilot.lean`, which has no code yet. A pilot module that root doesn't import fails the audit. Like a harness module, a pilot module may declare no theorem, since some will hold only data. Every theorem it declares is audited.
+- **The token scan:** it covers `JSG/Pilot/`.
+- **Shown to bite:** a throwaway branch added an unimported pilot module containing `sorry`, and CI went red on both counts. The branch was then deleted.
+
 ### The harness, the corpus and the differential tests (#74–#78)
 - **Order:** one PR each, stacked on #72, which first extended the audit and the token scan:
   - #74: the report;
