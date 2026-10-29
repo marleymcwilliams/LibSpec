@@ -11,7 +11,7 @@ LibSpec takes the JSG/SIRUS governance corpus, a set of papers and specs on grad
 - **Controls:** each theorem has a mutant, a plausible wrong version proved to fail it, and a witness, an instance proved to satisfy it.
 - **Frozen versions:** the statements were frozen in four versions, `statements-v1` to `statements-v4`, each before its proofs were written. No statement was changed to make a proof go through.
 
-**v1.0** (the tag `v1.0`, at `0c36127`) had the first 26, frozen in `statements-v1` to `statements-v3`. Since then, `statements-v4` has added eight more. They are executable twins of the core's graded values, combine, verdict, residual threading, widths and leases, each with a theorem that it agrees with its frozen definition ([the executable gate](guide/EXECUTABLE_GATE.md), [the changelog](guide/CHANGELOG.md)). Milestone 4 proved them, and the full-strength Comparator run passes on `main` with all 34. Nothing runs the twins yet: the harness, the differential tests and the pilot are still to come.
+**v1.0** (the tag `v1.0`, at `0c36127`) had the first 26, frozen in `statements-v1` to `statements-v3`. Since then, `statements-v4` has added eight more. They are executable twins of the core's graded values, combine, verdict, residual threading, widths and leases, each with a theorem that it agrees with its frozen definition ([the executable gate](guide/EXECUTABLE_GATE.md), [the changelog](guide/CHANGELOG.md)). Milestone 4 proved them, and the full-strength Comparator run passes on `main` with all 34. The harness now runs the twins, and differential tests check another implementation against them, with every twinned mutant as a negative control ([REPRODUCE.md](REPRODUCE.md), step 5). The pilot is still to come.
 
 To check v1.0 itself, check out its tag ([REPRODUCE.md](REPRODUCE.md)).
 
@@ -35,9 +35,10 @@ CI shows that the proofs conform to the statements. Whether the statements say t
 | `lean/JSG/Defs.lean`, `lean/JSG/Statements.lean` | The frozen definitions and statements. CI fails if either differs from the latest `statements-v*` tag |
 | `lean/JSG/Proofs/` | One proof file per milestone. Each restates its frozen theorems under the same names, and `Solution.lean` imports them all |
 | `lean/JSG/Lemmas/` | Helper lemmas, used by the proofs |
-| `lean/JSG/Tests/` | Mutants, witnesses and calibration controls, the concrete Loader, and the Comparator self-test fixtures |
+| `lean/JSG/Tests/` | Mutants, witnesses and calibration controls, the concrete Loader, the differential tests' negative controls, and the Comparator self-test fixtures |
+| `lean/JSG/Harness/`, `lean/Gate.lean` | The executable gate's harness: the report, JSON, the test corpus and the executable mutants. `Gate.lean` runs it |
 | `lean/AxiomAudit.lean`, `lean/ComparatorTargets.lean` | The axiom audit, and the list of theorems Comparator checks |
-| `scripts/` | `check.sh`, Comparator's everyday and full-strength runs, and the Comparator tools build |
+| `scripts/` | `check.sh`, Comparator's everyday and full-strength runs, the Comparator tools build, and the differential tests with SirusSC's adapter |
 | `guide/` | The master guide with its layer map, the roadmap, the milestone notes, the decision queue and log |
 | `archive/` | The source corpus, read-only |
 

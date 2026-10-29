@@ -65,6 +65,13 @@ jobs:
       - name: Forbidden tokens, axiom audit, statements check
         run: bash scripts/check.sh
 
+      # The executable gate's harness (guide/EXECUTABLE_GATE.md §2): the golden examples,
+      # the corpus's JSON round trip, and SirusSC's code against its predicted disagreements.
+      # The negative controls are theorems, so the build above already checked them.
+      - name: Differential tests
+        shell: bash
+        run: bash scripts/differential.sh
+
       # Comparator runs in this job so the required `build` check covers it.
       # Its tools are small and cached; the cache key changes with the pins.
       - name: Restore Comparator tools

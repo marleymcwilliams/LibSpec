@@ -15,6 +15,7 @@ This takes a fresh machine through building everything, running the checks, and 
   - **Each project's Lean server** took about 2 GB more, even with no file loaded.
 
   So close other Lean tabs before you build.
+- **For the differential tests:** Python 3.
 - **For Comparator only:** Linux, with Go, Python 3 and, for the full-strength run, Rust and a systemd user manager. On Windows, use WSL or the GitHub Actions workflow below.
 
 ## 1. Clone
@@ -100,7 +101,34 @@ There are two ways to run it:
 
 The script differs from the README's command in two ways, both for running unattended. It uses `--pipe --wait` in place of `--pty`, since CI has no terminal; the sandbox is the same. And it adds `NoNewPrivileges=yes`, so nothing inside the sandbox can gain privileges.
 
-## 5. Read off what is proved and what isn't
+## 5. The harness and the differential tests
+
+The executable gate's harness runs the proved twins ([EXECUTABLE_GATE.md](guide/EXECUTABLE_GATE.md)). After step 2, from `lean/`:
+
+```bash
+lake env lean --run Gate.lean report JSG/Harness/examples/withdrawn.json
+```
+
+That prints the verdict and the report: "not accepted: evidence incomplete on withdrawn (above its threshold), novelty (unknown)". Each run takes about 15 s, most of it loading Mathlib. `lake env lean --run Gate.lean` with no command lists the others.
+
+The differential tests run from the repository root:
+
+```bash
+bash scripts/differential.sh              # on Windows: PYTHON=python bash scripts/differential.sh
+```
+
+It ends with `differential.sh: passed`:
+
+| Step | What it checks | What you should see |
+| --- | --- | --- |
+| Golden examples | the `report` command on each input in `lean/JSG/Harness/examples/` | `ok` for each |
+| Corpus | `Gate.lean corpus` writes every test vector, with the oracle's answer | `3818 vectors` |
+| The corpus against its own answers | every vector and answer round-trips through the JSON, and matches the twins | `"disagreementCount":0` |
+| SirusSC | its code, run in place from `archive/` by `scripts/sirusc_adapter.py`, disagrees with the oracle exactly where its known defects predict | `"asExpected":true`, with 516 disagreements |
+
+The negative controls are theorems in `lean/JSG/Tests/Differential.lean`, so step 2's `lake build` has already checked that the corpus catches each of the 17 executable mutants.
+
+## 6. Read off what is proved and what isn't
 
 - **[The layer map](guide/MASTER_GUIDE.md#layer-map):** every component, with its status, its limits, and a pointer to its Lean theorem or to the reason it's out of scope.
 - **The milestone notes:** [Milestone 1](guide/MILESTONE_1.md), [Milestone 2](guide/MILESTONE_2.md), [Milestone 3](guide/MILESTONE_3.md) and [Milestone 4](guide/MILESTONE_4.md). Each has a plain-English explanation of every proof, the gate record, and a closing note on what is proved and what it doesn't show.
