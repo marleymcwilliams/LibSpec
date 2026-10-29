@@ -194,10 +194,10 @@ The goal is a tagged release that a stranger could clone and check. After it, yo
 
 **Milestone 4 notes**, for the milestone's closing note:
 
-- The twins cover finitely many axes (`Fintype`), and only the definitions Q11 chose. The obligation and Loader twins, and with them `pass_sound` for what the harness computes, wait for a later version.
-- The cast lemmas belong in `Lemmas/`, as Milestone 3's helpers went in `Lemmas/KLFisher.lean`. One of them, truncated subtraction under the cast from ℚ≥0 to ℝ≥0, isn't in Mathlib.
-- The full-strength Comparator run takes every frozen theorem as a target. Once `statements-v4` is tagged, it fails until Milestone 4 is proved, and the everyday run lists the eight as not yet proved.
-- README and REPRODUCE describe v1.0, with a note on what v4 adds and what is pending. The closing PR updates their status, and records a full-strength run on `main`.
+- The twins cover finitely many axes (`Fintype`), and only the definitions Q11 chose. The obligation and Loader twins, and with them `pass_sound` for what the harness computes, wait for a later version. Done: the closing note in `MILESTONE_4.md` says both.
+- The cast lemmas belong in `Lemmas/`, as Milestone 3's helpers went in `Lemmas/KLFisher.lean`. One of them, truncated subtraction under the cast from ℚ≥0 to ℝ≥0, isn't in Mathlib. Done: all eight are in `Lemmas/Twins.lean` (#64–#67), that one as `nnrat_cast_tsub`.
+- The full-strength Comparator run takes every frozen theorem as a target. Once `statements-v4` is tagged, it fails until Milestone 4 is proved, and the everyday run lists the eight as not yet proved. Done: after #70, both pass on `main` with all 34.
+- README and REPRODUCE describe v1.0, with a note on what v4 adds and what is pending. The closing PR updates their status, and records a full-strength run on `main`. Done: in #71, with run 40840546350.
 
 ## One sitting with Claude Code
 
