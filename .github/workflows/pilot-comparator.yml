@@ -1,0 +1,117 @@
+name: Pilot Comparator runs
+
+# The pilot's Comparator runs on openai/math's challenges (guide/EXECUTABLE_GATE.md §3, §4):
+# full strength, on a fresh runner, measuring time and disk. The release's lakefile runs
+# outside Comparator's sandbox while its dependencies are fetched, so this job holds no
+# secrets, keeps no credentials in the checkout, and only restores caches: the release's
+# code can't write a cache that another workflow would later trust.
+
+on:
+  workflow_dispatch:
+    inputs:
+      challenges:
+        description: Challenge names, separated by spaces
+        default: Catalan DeligneDrinfeld BogomolovPopInjectivity JointDickman
+  pull_request:
+    paths:
+      - .github/workflows/pilot-comparator.yml
+      - scripts/pilot-comparator.sh
+
+permissions:
+  contents: read
+
+jobs:
+  pilot-comparator:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Free disk space
+        run: |
+          echo "before: $(df -h --output=avail / | tail -n 1) free"
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          echo "after: $(df -h --output=avail / | tail -n 1) free"
+
+      - name: Restore the Lean toolchain (restore only)
+        id: elan-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ runner.os }}-${{ hashFiles('lean/lean-toolchain') }}
+
+      - name: Install the Lean toolchain
+        if: steps.elan-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -sSf --retry 5 -o "$RUNNER_TEMP/elan-init.sh" \
+            https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh
+          sh "$RUNNER_TEMP/elan-init.sh" -y --default-toolchain none
+
+      - name: Put elan on PATH
+        run: echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Restore Comparator tools, with nanoda (restore only)
+        id: tools
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/comparator-full-tools
+          key: comparator-full-tools-${{ runner.os }}-${{ hashFiles('scripts/build-comparator-tools.sh', 'lean/lean-toolchain') }}
+
+      - uses: actions/setup-go@v5
+        if: steps.tools.outputs.cache-hit != 'true'
+        with:
+          go-version: stable
+          cache: false
+
+      - name: Build Comparator tools, with nanoda
+        if: steps.tools.outputs.cache-hit != 'true'
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          bash scripts/build-comparator-tools.sh "$HOME/comparator-full-tools" --with-nanoda
+
+      - name: Start a systemd user manager for the runner
+        run: |
+          sudo loginctl enable-linger "$USER"
+          uid="$(id -u)"
+          for i in $(seq 1 60); do [ -S "/run/user/$uid/bus" ] && break; sleep 1; done
+          echo "XDG_RUNTIME_DIR=/run/user/$uid" >> "$GITHUB_ENV"
+          echo "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus" >> "$GITHUB_ENV"
+          XDG_RUNTIME_DIR="/run/user/$uid" systemctl --user is-system-running --wait || true
+
+      - name: Comparator on the release's challenges
+        shell: bash
+        env:
+          CHALLENGES: ${{ github.event.inputs.challenges || 'Catalan DeligneDrinfeld BogomolovPopInjectivity JointDickman' }}
+        run: |
+          export PATH="$HOME/comparator-full-tools/bin:$PATH"
+          export PILOT_WORK="$RUNNER_TEMP/pilot"
+          mkdir -p "$PILOT_WORK"
+          # shellcheck disable=SC2086
+          bash scripts/pilot-comparator.sh "$RUNNER_TEMP/pilot-comparator.json" $CHALLENGES 2>&1 |
+            tee "$RUNNER_TEMP/pilot-comparator.log"
+
+      - name: Keep the results and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pilot-comparator
+          path: |
+            ${{ runner.temp }}/pilot-comparator.json
+            ${{ runner.temp }}/pilot-comparator.log
+            ${{ runner.temp }}/pilot/*.log
+            ${{ runner.temp }}/pilot/*.tsv
+          if-no-files-found: warn
+
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo '### Pilot Comparator runs'
+            echo '```'
+            grep -E '^(kernel|challenges|toolchain|size|packages|measure|result):|^ok:|^FAIL|pilot-comparator.sh: done' \
+              "$RUNNER_TEMP/pilot-comparator.log" || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
