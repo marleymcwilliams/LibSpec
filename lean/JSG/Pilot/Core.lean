@@ -167,6 +167,16 @@ def mask (keep : Axis → Bool) (g : XGrade Axis) : XGrade Axis := fun a =>
     formalization is complete. -/
 def carry (complete : Bool) (d : XGrade Axis) : XGrade Axis := mask (carries complete) (passOn d)
 
+/-- The `m`-th entry of a list of length `n`. Generated data uses it to index its lists. -/
+def nth {α : Type} (l : List α) {n : ℕ} (h : l.length = n) (m : Fin n) : α :=
+  l[m.val]'(h ▸ m.isLt)
+
+/-- So what holds of every entry of the list holds of each `nth` one, which lets a proof
+    check a long list once instead of indexing it at every `m`. -/
+theorem nth_mem {α : Type} (l : List α) {n : ℕ} (h : l.length = n) (m : Fin n) :
+    nth l h m ∈ l :=
+  List.getElem_mem _
+
 /-! ### The dependency closure -/
 
 /-- A release: n manuscripts, each with its raw record and the manuscripts it rests on. -/
@@ -274,6 +284,29 @@ theorem xcombine_floors_zero (g : XGrade Axis) :
 theorem carry_complete (d : XGrade Axis) : carry true d = fun _ => XBound.known 0 := by
   funext a
   cases a <;> rfl
+
+/-- A manuscript that rests on nothing keeps its own grade in every round. -/
+theorem step_nil {n : ℕ} (R : Release n) (G : Fin n → XGrade Axis) (m : Fin n)
+    (h : R.deps m = []) : R.step G m = R.own m := by
+  unfold Release.step
+  rw [h]
+  rfl
+
+/-- The closure settles once a second round changes nothing, so a release need only check
+    that round, not all `n`. -/
+theorem settled_of_stable {n : ℕ} (R : Release n)
+    (h : ∀ m, R.step (R.step R.own) m = R.step R.own m) : R.Settled := by
+  have hs : R.step (R.step R.own) = R.step R.own := funext h
+  have hk : ∀ k, R.step^[k + 1] R.own = R.step R.own := by
+    intro k
+    induction k with
+    | zero => rfl
+    | succ k ih => rw [Function.iterate_succ_apply', ih, hs]
+  unfold Release.Settled Release.closure
+  intro m
+  cases n with
+  | zero => exact m.elim0
+  | succ k => rw [hk k, hs]
 
 /-- So a complete formalization's round is its own grade. -/
 theorem step_of_complete {n : ℕ} (R : Release n) (G : Fin n → XGrade Axis) (m : Fin n)
