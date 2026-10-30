@@ -76,7 +76,8 @@ jobs:
       - name: "THROWAWAY control 2: change a dependency outside its patch"
         run: |
           pkg="$RUNNER_TEMP/release/lean/.lake/packages/PrimeNumberTheoremAnd"
-          f="$(find "$pkg" -name '*.lean' -not -path '*/.lake/*' -not -path '*/.git/*' | sort | head -n 1)"
+          f="$(find "$pkg" -name '*.lean' -not -path "$pkg/.lake/*" -not -path "$pkg/.git/*" | sort | sed -n 1p)"
+          [ -n "$f" ] || { echo "no file to change"; exit 1; }
           printf '\n-- changed outside its patch\n' >> "$f"
           echo "tampered: $f"
 
