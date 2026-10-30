@@ -9,6 +9,7 @@ Decisions Claude Code made without asking, because they are reversible and don't
   - **The fix:** each frozen output is bind-mounted read-only outside `.lake`. The exports' `LEAN_PATH` starts with the toolchain's `lib/lean` and those mounts.
   - **The check:** Lean's own resolution must find every trusted root in its trusted copy, before the first challenge and after each one.
 - **The self-test shows both attacks fail:** from inside landrun, a planted `Mathlib/` and `Init/`, and a renamed frozen Mathlib with a substitute. The old path would have resolved the planted copies, and the new one resolves the trusted ones.
+  - **Its first run failed,** since the attack used `mkdir` and `mv`, which Comparator's landrun flags don't let a build run: nothing was planted. The attack is now Lean code, run by the toolchain's `lean`, as a build's own code would be.
 - **nanoda alone failing,** while Lean's kernel accepts, is now `kernelsDisagree`: unknown, flagged on the run, and reported to Marley. A nanoda killed by SIGKILL, exit 137, as the memory limit kills, stays a build error.
 
 ### The trusted shards, round 2 (#92, Marley's review)

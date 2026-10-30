@@ -151,22 +151,31 @@ else
 fi
 
 echo "== A planted Mathlib and a renamed frozen package can't stand in for the trusted copies"
-# From inside landrun, with the flags Comparator gives a build, as a build could.
+# From inside landrun, with the flags Comparator gives a build, as a build could: those flags let
+# it run only the toolchain and git, so the attack is Lean code, as a build's own code would be.
 prefix="$(cd "$lean" && lean --print-prefix)"
+cat > "$t/attack.lean" <<'LEAN'
+def main : IO Unit := do
+  let b : System.FilePath := ".lake/build/lib/lean"
+  IO.FS.createDirAll (b / "Mathlib")
+  IO.FS.createDirAll (b / "Init")
+  IO.FS.writeFile (b / "Mathlib.olean") "planted"
+  IO.FS.writeFile (b / "Mathlib" / "Basic.olean") "planted"
+  IO.FS.writeFile (b / "Init" / "Prelude.olean") "planted"
+  IO.println "planted"
+  IO.FS.rename ".lake/packages/mathlib" ".lake/packages/mathlib.moved"
+  let m : System.FilePath := ".lake/packages/mathlib/.lake/build/lib/lean"
+  IO.FS.createDirAll (m / "Mathlib")
+  IO.FS.writeFile (m / "Mathlib" / "Basic.olean") "planted"
+  IO.println "renamed"
+LEAN
 in_wrapper landrun --best-effort --ro / --rw /dev -ldd -add-exec --env PATH --env HOME \
-  --ro "$lean" --rwx "$lean/.lake" --rox "$prefix" --rox "$(command -v git)" -- /bin/sh -c '
-    set -e
-    b=.lake/build/lib/lean
-    mkdir -p "$b/Mathlib" "$b/Init"
-    echo planted > "$b/Mathlib.olean"
-    echo planted > "$b/Mathlib/Basic.olean"
-    echo planted > "$b/Init/Prelude.olean"
-    mv .lake/packages/mathlib .lake/packages/mathlib.moved
-    mkdir -p .lake/packages/mathlib/.lake/build/lib/lean/Mathlib
-    echo planted > .lake/packages/mathlib/.lake/build/lib/lean/Mathlib/Basic.olean
-    echo "planted and renamed"' > "$t/attack.log" 2>&1 || true
-check "inside landrun, a build can plant Mathlib/ and Init/ and rename a frozen package" \
-  "$(grep -c 'planted and renamed' "$t/attack.log")" 1
+  --ro "$lean" --rwx "$lean/.lake" --rox "$prefix" --rox "$(command -v git)" -- \
+  "$prefix/bin/lean" --run "$t/attack.lean" > "$t/attack.log" 2>&1 || cat "$t/attack.log"
+check "inside landrun, a build can plant Mathlib/ and Init/ in the release's build directory" \
+  "$(grep -cx planted "$t/attack.log" || true)" 1
+check "inside landrun, a build can rename a frozen package and put a substitute in its place" \
+  "$(grep -cx renamed "$t/attack.log" || true)" 1
 toolchain_lib="$prefix/lib/lean"
 exports="$(python3 "$root/scripts/pilot_shard.py" leanpath "$lean" "$t/trusted" "$toolchain_lib")"
 where() { LEAN_PATH="$1" lean --run "$root/scripts/pilot_resolve.lean" "$2" | sed -n 's/^resolves: [^ ]* //p'; }

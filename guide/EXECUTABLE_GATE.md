@@ -272,7 +272,7 @@ The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and
   - every result above;
   - that forged result lines and workflow commands appear only marked;
   - that the sandbox check fails when landrun sandboxes nothing, and when a directory listed as frozen can be written;
-  - the two attacks on resolution. From inside landrun it plants `Mathlib/` and `Init/` in the release's build directory, and renames the frozen Mathlib package to put a substitute in its place. The old `LEAN_PATH` would then resolve the planted copies, and the exports' `LEAN_PATH` still resolves Mathlib and Init to the trusted ones.
+  - the two attacks on resolution. From inside landrun, with Comparator's flags, it plants `Mathlib/` and `Init/` in the release's build directory, and renames the frozen Mathlib package to put a substitute in its place. Those flags let a build run only the toolchain and git, so the attack is Lean code, run by the toolchain's `lean`, as a build's own code would be. The old `LEAN_PATH` would then resolve the planted copies, and the exports' `LEAN_PATH` still resolves Mathlib and Init to the trusted ones.
 
 **Shown to bite.** #92's own run, [41015650912](https://github.com/marleymcwilliams/LibSpec/actions/runs/41015650912), is the positive control: the two trees matched, all 194,331 entries, and Comparator accepted the control shard in 224 s. Then four throwaway pull requests each added one step to the untrusted job:
 
