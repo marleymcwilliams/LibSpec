@@ -10,7 +10,7 @@ Decisions Claude Code made without asking, because they are reversible and don't
   - **The check:** Lean's own resolution must find every trusted root in its trusted copy, before the first challenge and after each one.
 - **The self-test shows both attacks fail:** from inside landrun, a planted `Mathlib/` and `Init/`, and a renamed frozen Mathlib with a substitute. The old path would have resolved the planted copies, and the new one resolves the trusted ones.
   - **Its first run failed,** since the attack used `mkdir` and `mv`, which Comparator's landrun flags don't let a build run: nothing was planted. The attack is now Lean code, run by the toolchain's `lean`, as a build's own code would be.
-  - **Its second run failed too,** on the old path's side: through that path the resolver's own `import Lean` loaded the planted Init, so it printed nothing. The resolver now takes `--path`, which puts a path where `LEAN_PATH` goes, and the self-test resolves the old path that way. It also checks that Lean itself, started with the old path, can't get as far as resolving.
+  - **Its second run failed too,** on the old path's side: through that path the resolver's own `import Lean` resolved Init to the planted directory and failed there, so it printed nothing. The resolver now takes `--path`, which puts a path where `LEAN_PATH` goes, and the self-test resolves the old path that way. It also checks that Lean itself, started with the old path, can't get as far as resolving.
 - **nanoda alone failing,** while Lean's kernel accepts, is now `kernelsDisagree`: unknown, flagged on the run, and reported to Marley. A nanoda killed by SIGKILL, exit 137, as the memory limit kills, stays a build error.
 
 ### The trusted shards, round 2 (#92, Marley's review)
