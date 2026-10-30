@@ -87,6 +87,39 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
+      - name: "THROWAWAY control 4: a file to save"
+        run: |
+          mkdir -p "$RUNNER_TEMP/poison/bin"
+          echo poisoned > "$RUNNER_TEMP/poison/bin/comparator"
+          echo "ACTIONS_CACHE_MODE=${ACTIONS_CACHE_MODE:-unset}"
+
+      - name: "THROWAWAY control 4: try to save under the trusted job's tools key"
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/poison
+          key: comparator-full-tools-${{ runner.os }}-${{ hashFiles('scripts/build-comparator-tools.sh', 'lean/lean-toolchain') }}
+
+      - name: "THROWAWAY control 4: try to save under a fresh key"
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}/poison
+          key: pilot-throwaway-poison-${{ github.run_id }}
+
+      - name: "THROWAWAY control 4: neither save may have happened"
+        id: lookup
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}/lookup
+          key: pilot-throwaway-poison-${{ github.run_id }}
+          lookup-only: true
+
+      - name: "THROWAWAY control 4: refused?"
+        env:
+          HIT: ${{ steps.lookup.outputs.cache-hit }}
+        run: |
+          if [ "$HIT" = true ]; then echo "FAIL: the cache saved the entry"; exit 1; fi
+          echo "ok: the fresh key has no entry, so the cache service refused the save"
+
   shard:
     name: Shard ${{ matrix.shard }} (trusted)
     needs: fetch
