@@ -179,15 +179,25 @@ check "inside landrun, a build can rename a frozen package and put a substitute 
 toolchain_lib="$prefix/lib/lean"
 exports="$(python3 "$root/scripts/pilot_shard.py" leanpath "$lean" "$t/trusted" "$toolchain_lib")"
 where() { LEAN_PATH="$1" lean --run "$root/scripts/pilot_resolve.lean" "$2" | sed -n 's/^resolves: [^ ]* //p'; }
+# Through the old path, the resolver's own `import Lean` would load the planted Init, so it takes
+# that path with --path instead, where lean4export puts LEAN_PATH.
+where_old() {
+  env -u LEAN_PATH lean --run "$root/scripts/pilot_resolve.lean" --path "$1" "$2" | sed -n 's/^resolves: [^ ]* //p'
+}
 check "the exports resolve Mathlib.Basic to the trusted copy" \
   "$(where "$exports" Mathlib.Basic)" "$t/trusted/mathlib/lib/lean/Mathlib/Basic.olean"
 check "the exports resolve Init.Prelude to the toolchain's" \
   "$(where "$exports" Init.Prelude)" "$toolchain_lib/Init/Prelude.olean"
 old="$lean/.lake/build/lib/lean:$lean/.lake/packages/mathlib/.lake/build/lib/lean"
 check "the old LEAN_PATH would have resolved the planted Mathlib" \
-  "$(where "$old" Mathlib.Basic)" "$lean/.lake/build/lib/lean/Mathlib/Basic.olean"
+  "$(where_old "$old" Mathlib.Basic)" "$lean/.lake/build/lib/lean/Mathlib/Basic.olean"
 check "the old LEAN_PATH would have resolved the planted Init" \
-  "$(where "$old" Init.Prelude)" "$lean/.lake/build/lib/lean/Init/Prelude.olean"
+  "$(where_old "$old" Init.Prelude)" "$lean/.lake/build/lib/lean/Init/Prelude.olean"
+# Lean itself, started with the old path, loads the planted Init and can't start.
+started="$(LEAN_PATH="$old" lean --run "$root/scripts/pilot_resolve.lean" Init.Prelude 2>&1 || true)"
+echo "info: Lean started with the old LEAN_PATH said: $(printf '%s' "$started" | head -n 3 | tr '\n' ' ')"
+check "Lean itself, started with the old LEAN_PATH, doesn't get as far as resolving" \
+  "$(printf '%s\n' "$started" | grep -c '^resolves:' || true)" 0
 if LEAN_PATH="$exports" python3 "$root/scripts/pilot_shard.py" resolution "$t/trusted" "$toolchain_lib" \
     "$root/scripts/pilot_resolve.lean" > "$t/resolution.log" 2>&1; then
   check "the job's own resolution check still passes after the attack" ok ok
