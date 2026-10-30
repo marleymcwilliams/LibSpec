@@ -73,6 +73,12 @@ jobs:
       - name: Its dependencies (untrusted, the release's lakefile runs here)
         run: bash scripts/pilot-fetch.sh "$RUNNER_TEMP/release"
 
+      - name: "THROWAWAY control 1: tamper with a challenge file"
+        run: |
+          f="$RUNNER_TEMP/release/lean/ComparatorChallenges/BogomolovPopInjectivity.lean"
+          printf '\n-- tampered by the untrusted job\n' >> "$f"
+          echo "tampered: $f"
+
       - name: Pack the tree it leaves
         run: |
           mkdir -p "$RUNNER_TEMP/out"
