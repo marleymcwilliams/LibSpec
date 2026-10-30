@@ -215,6 +215,27 @@ What that means for scaling:
 
 The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and the others, since their sources come only from `lake update`. It also leaves out the kernels, which took 41 minutes on Catalan and 1 to 3 minutes elsewhere.
 
+**The shard plan** (`pilot/plan_shards.py`, `pilot/data/shard-plan.json`, #91). Each shard is one trusted job. Each estimate is the larger end of the import graph's two ranges.
+
+| Phase | Shards |
+| --- | --- |
+| 1. Measure | `f189` and `f159`, one job each |
+| 2. ETH and local smoothing | `f378` and `f079`, one job each |
+| 3. The rest | 29 jobs: 2 large challenges in jobs of their own, and 27 shared jobs of up to 3.5 estimated hours each |
+
+- **Large families.** Any family whose estimate is over 5.0 hours and that has several challenges is split, a challenge per unit: 266, 090 and 013. A unit over 3.5 hours gets a job of its own, and smaller ones share jobs.
+- **The control shard,** `control`, is `BogomolovPopInjectivity` alone, about a minute of building. The workflow runs it on its own pull requests, and the negative controls run it too.
+- **Every challenge is in exactly one shard,** apart from the control. The script checks this.
+
+| Shard | Families | Challenges | Estimate |
+| --- | --- | --- | --- |
+| `f189` | 189 | `CycleCliqueRamsey` | 19.4 h |
+| `f159` | 159 | `ErdosReciprocal` | 5.1 h |
+| `f378` | 378 | `SubexponentialSAT` | 2.4 h |
+| `f079` | 079 | `LocalSmoothing` | 1.6 h |
+| `c-MUBSix` | 266 | `MUBSix` | 17.89 h |
+| `c-PlanarPacking` | 090 | `PlanarPacking` | 12.35 h |
+
 **Lewis & Clark's BLT cluster, for heavy builds, if its OS can run current Lean.**
 - **As documented, it can't.** Its documentation ([About the cluster](https://watzek.github.io/BLTdocs/about-the-cluster.html)) says: "The cluster runs the CentOS Linux operating system, version 7.4". It has 144 cores and 1,500 GB of memory across one login node and three workers, uses Sun Grid Engine, and gives each user a 25 GB quota.
 - **Lean:** CentOS 7 ships glibc 2.17, and Lean's x86-64 Linux releases need glibc 2.26 or later (Lean reference, [Supported platforms](https://lean-lang.org/doc/reference/4.33.1/platforms/)).

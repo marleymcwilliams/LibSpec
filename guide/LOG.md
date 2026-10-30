@@ -4,6 +4,11 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-30
 
+### The shard plan (#91)
+- **Made,** from `pilot/data/shards.json`, by `pilot/plan_shards.py`: 33 shards in Marley's order. Families 189 and 159 come first, then 378 and 079, each in a job of its own, then 29 more.
+- **Decided: the packing.** Each estimate is the larger end of the two ranges. Families over 5 hours with several challenges are split by challenge. A unit over 3.5 hours gets a job of its own, and smaller units share jobs, first fit and largest first, up to 3.5 estimated hours each. That leaves room in a 6-hour job for the kernels and the setup.
+- **Decided: a control shard,** `BogomolovPopInjectivity` alone, for the workflow's pull-request runs and the negative controls.
+
 ### Phase 6's gate ticked, and the twins row brought up to date
 - **Phase 6's gate,** in ROADMAP.md: all four items were done, each now ticked with its pointer: README and REPRODUCE (#58, #71), the layer map's pointers (#57), the full-strength runs (#56, #61, #71), and `v1.0` at `0c36127`.
 - **LAYER_MAP's twins row** said the pilot was still to come. It now says the pilot grades all 724 manuscripts with the twins, and links the report.
