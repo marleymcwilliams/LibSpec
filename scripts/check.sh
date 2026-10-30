@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build, forbidden-token scan, axiom audit, and statements-unchanged check.
+# Build, forbidden-token scan, axiom audit, statements-unchanged check, and links.
 # Runs locally (Git Bash on Windows) and in CI. Exits non-zero on any failure.
 set -euo pipefail
 
@@ -104,6 +104,9 @@ statements_check() {
 step "Statements unchanged since the latest statements-v* tag"
 mapfile -t covered < <(statement_files)
 statements_check || fail=1
+
+step "Links in the Markdown, outside archive/ (scripts/check-links.py)"
+"${PYTHON:-python3}" "$root/scripts/check-links.py" "$root" || fail=1
 
 echo
 if [ "$fail" -ne 0 ]; then echo "check.sh: FAILED"; else echo "check.sh: passed"; fi

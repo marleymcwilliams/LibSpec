@@ -4,6 +4,14 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-29
 
+### The docs cleanup (#88, a draft for Marley's review)
+- **Planned first:** the plan is in #88's description, and its first commit added only the link checker, `scripts/check-links.py`, which `scripts/check.sh` now runs. On the tree before the moves, it found 117 links, none broken.
+- **MASTER_GUIDE.md split** into GLOSSARY.md, LAYER_MAP.md, DEFECTS.md and SOURCES.md, each section moved whole. Its copy of `Defs.lean` and `Statements.lean`, about 700 lines, is replaced by links to the two files.
+- **Decided: MASTER_GUIDE.md stays, as an index,** with its purpose and reading rules. The frozen `Statements.lean`, `decisions/DECISION_BRIEF.md` and earlier LOG entries name it, and each still finds what it names.
+- **One roadmap.** MASTER_GUIDE's checklist moved into ROADMAP.md, as "The master guide's checklist": its four open items, and its seven done items, kept as they were.
+- **Added:** `guide/README.md`, a map of every file outside `archive/` with reading orders for a person and for an agent; and `guide/CONVENTIONS.md`, the repository's naming practice, written down.
+- **Links after the moves:** 178 checked, none broken. No Lean file changed, and no prose in LOG entries or the milestone notes.
+
 ### Marley's answers on the plan (#87)
 - **Phase 7:** build errors and timeouts stay unknown, never evidence that fails. A challenge that can't finish in 6 hours waits, with `formal_proof` unknown, "too large to check yet", for v1.1. Families 189 and 159 are measured first, and Marley hears back if one of them matters. The pin stays at `7ef5c0c` for v1.1. The ETH (378) and local-smoothing (079) shards run right after the large-family measurements.
 - **Caches:** every untrusted job gets `cache-mode: read` or `none`, never `write`, and runs off main. A negative control shows that an untrusted job can't save a cache. #83's workflow already has both.

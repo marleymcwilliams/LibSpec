@@ -414,6 +414,22 @@ The goal is executable twins of typed obligations and of the concrete Loader, ea
 - [ ] The milestone gate, for Milestone 5
 - [ ] The differential test runs in CI, with SirusSC's loader disagreeing exactly where its defects predict, and every new mutant as a negative control
 
+## The master guide's checklist
+
+MASTER_GUIDE.md kept a checklist of its own, merged here so that there is one roadmap. Its four open items are still open, and no phase above holds them yet. Its done items are this roadmap's gates too: the decisions are Phase 2's, recorded in [decisions/RAILS.md](decisions/RAILS.md), and the milestones are Phases 3–5 and Milestone 4.
+
+- [ ] Freeze the glossary and run one rename pass: 𝒰 for Ω, proof\_surface, Amber, invariant prefixes, combine for join
+- [ ] CI: fail the build on any `b3:…` placeholder, on any must-fail removed without a signed weakening, and on any theorem without a mutant
+- [ ] Recover the SIRUS\_game runtime note and remove the SIRUS-algorithm sections from MDmaster
+- [ ] Move the Navier–Stokes spine to a research notebook, outside the guide's dependency graph
+- [x] Decide sequential composition: resolved in core v2 (the same ⊕; rates are floors, spends are budgets)
+- [x] Decide whether the normative rails are must-fails inside the gates or a declared layer outside them: declared Norm-layer values that no v1 gate enforces ([decisions/RAILS.md](decisions/RAILS.md))
+- [x] Decide how persistent weakenings are handled: not yet. The choice between refill rate ρ, a cap on each weakening's cumulative duration and renewal cost escalating by a factor γ moves to the milestone that states the token bucket ([decisions/RAILS.md](decisions/RAILS.md))
+- [x] Lean milestone 1: graded values, verdict and completeness, residuals, noninterference, calibration, fold vacuity ([MILESTONE_1.md](MILESTONE_1.md))
+- [x] Lean milestone 2: typed obligations, Loader safety and progress, frontier charge, policy lattice, the must-fail gate ([MILESTONE_2.md](MILESTONE_2.md))
+- [x] Lean milestone 3 (analysis): CVaR tail-to-level, the corrected dwell bound, the local KL–Fisher bound and the DRO envelope identity ([MILESTONE_3.md](MILESTONE_3.md))
+- [x] Lean milestone 4 (executable twins): graded values, combine, verdict, residual threading, widths and leases, each proved to agree with its frozen definition ([MILESTONE_4.md](MILESTONE_4.md))
+
 ## One sitting with Claude Code
 
 One sitting, one target. The same six steps every time keep sessions small enough to review. Claude Code settles reversible choices itself and logs them in `guide/LOG.md`. Anything that changes a statement's meaning, a Norm-layer value or anything frozen, or that weakens a check, waits in `guide/QUEUE.md` (CLAUDE.md, "When to ask the human").
