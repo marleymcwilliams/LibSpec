@@ -3,7 +3,7 @@
 #SBATCH --job-name=libspec-build
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G
-#SBATCH --output=lean/.lake/%x-%j.log
+#SBATCH --output=%x-%j.log
 #
 # Submit it from LibSpec's root on BLT's login node: `sbatch scripts/blt-build.sbatch`.
 # The login node only submits; the build runs on the compute node SLURM picks.
@@ -12,7 +12,11 @@
 #
 # --mem is the job's memory on its node, and SLURM stops the job past it. Raise it along with
 # --cpus-per-task, since more threads build more modules at once. There's no --time: BLT has no
-# time limit for now. The log goes in lean/.lake/, which git ignores.
+# time limit for now.
+#
+# The log, libspec-build-<job id>.log, goes in the directory the job is submitted from, which
+# SLURM can always open: it doesn't create directories, and a fresh clone has no lean/.lake/.
+# .gitignore ignores it there; keep its pattern in step with --job-name.
 set -euo pipefail
 
 [ -n "${SLURM_JOB_ID:-}" ] || { echo "submit this with sbatch; it doesn't run on the login node"; exit 1; }

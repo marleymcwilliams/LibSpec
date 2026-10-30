@@ -75,7 +75,7 @@ Some of it is the human's alone. The milestone notes' closing notes are in the h
 | --- | --- |
 | [README.md](../README.md), [REPRODUCE.md](../REPRODUCE.md) | What is proved, and how to check it yourself |
 | [CLAUDE.md](../CLAUDE.md) | The working rules for Claude Code |
-| `.gitattributes`, `.gitignore` | LF line endings everywhere, the archive kept byte for byte; build output ignored |
+| `.gitattributes`, `.gitignore` | LF line endings everywhere, the archive kept byte for byte; build output and BLT's job logs ignored |
 | `.github/workflows/ci.yml` | CI: the build with leanchecker, `scripts/check.sh`, the differential tests and Comparator |
 | `.github/workflows/comparator-full.yml` | The full-strength Comparator run, by hand: nanoda and the full sandbox |
 | `.github/workflows/pilot-comparator.yml` | Comparator on the release's challenges |
