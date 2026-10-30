@@ -41,6 +41,8 @@ on:
       - scripts/pilot_shard.py
       - scripts/sandbox-check.sh
       - scripts/test-pilot-shard.sh
+      - scripts/pilot-trusted-lib.sh
+      - scripts/pilot_resolve.lean
       - pilot/data/shard-plan.json
 
 permissions:
@@ -252,6 +254,11 @@ jobs:
           while IFS= read -r d; do sudo chattr -R +i "$d"; done < "$RUNNER_TEMP/frozen.txt"
           echo "frozen: $(wc -l < "$RUNNER_TEMP/frozen.txt") build directories"
 
+      # The exports reach the frozen outputs only through these read-only mounts outside .lake,
+      # since a build can rename the directories above the frozen ones inside .lake.
+      - name: Mount the frozen outputs read-only, outside .lake
+        run: bash scripts/pilot-trusted-lib.sh mount "$RUNNER_TEMP/frozen.txt" "$RUNNER_TEMP/trusted-lib"
+
       - name: Start a systemd user manager for the runner
         run: |
           sudo loginctl enable-linger "$USER"
@@ -267,6 +274,7 @@ jobs:
           SHARD: ${{ matrix.shard }}
         run: |
           export PILOT_FROZEN="$RUNNER_TEMP/frozen.txt"
+          export PILOT_TRUSTED_LIB="$RUNNER_TEMP/trusted-lib"
           toolchain_bin="$(dirname "$(cd lean && elan which lean)")"
           export PATH="$HOME/comparator-full-tools/bin:$toolchain_bin:$PATH"
           mkdir -p "$RUNNER_TEMP/results"
@@ -292,6 +300,7 @@ jobs:
       - name: Unfreeze the build outputs
         if: always()
         run: |
+          bash scripts/pilot-trusted-lib.sh unmount "$RUNNER_TEMP/trusted-lib"
           if [ -f "$RUNNER_TEMP/frozen.txt" ]; then
             while IFS= read -r d; do sudo chattr -R -i "$d"; done < "$RUNNER_TEMP/frozen.txt"
           fi

@@ -9,6 +9,13 @@
 # `lake build` in the release. Comparator builds both modules inside its landrun sandbox,
 # inside the systemd-run wrapper, and LEAN_PATH comes from the directories.
 #
+# The exports' LEAN_PATH starts with the trusted copies: the toolchain's library, then each
+# frozen package's outputs through its read-only mount outside .lake (PILOT_TRUSTED_LIB, made by
+# scripts/pilot-trusted-lib.sh). Lean resolves a module through the first entry holding its
+# top-level directory, so nothing a build plants in .lake can stand in for Mathlib or Init.
+# Before the first challenge, and after each one before its result is printed, Lean's own
+# resolution must still find every trusted root in its trusted copy (scripts/pilot_resolve.lean).
+#
 # Before the first challenge it proves that the wrapper's memory limit and Comparator's
 # sandbox are in force (scripts/sandbox-check.sh), and stops otherwise.
 #
@@ -24,7 +31,8 @@
 # usage: bash scripts/pilot-shard.sh SHARD RELEASE_DIR OUT_DIR
 # Needs JOB_START (the job's start, in seconds since the epoch), Linux with a systemd user
 # manager, and comparator, lean4export, landrun and nanoda_bin on PATH. PILOT_FROZEN names a
-# file listing the frozen build directories, one per line. Tests may set PILOT_PLAN,
+# file listing the frozen build directories, one per line, and PILOT_TRUSTED_LIB the directory
+# of their read-only mounts. Tests may set PILOT_PLAN,
 # PILOT_FULL_CAP, PILOT_BUDGET, PILOT_MIN_START and PILOT_MEMORY_MAX
 # (scripts/test-pilot-shard.sh).
 set -euo pipefail
@@ -59,10 +67,16 @@ echo "lean: $(command -v lean)"
 names="$(helper challenges "$plan" "$shard")"
 mapfile -t challenges <<< "$names"
 echo "shard: $shard (${#challenges[@]} challenges)"
-LEAN_PATH="$(helper leanpath "$lean_dir")"
+trusted="${PILOT_TRUSTED_LIB:?the read-only mounts of the frozen outputs are needed}"
+[ -d "$trusted" ] || { echo "FAIL: no directory of trusted mounts: $trusted"; exit 1; }
+toolchain_lib="$(lean --print-prefix)/lib/lean"
+LEAN_PATH="$(helper leanpath "$lean_dir" "$trusted" "$toolchain_lib")"
 export LEAN_PATH
 frozen=()
 if [ -n "${PILOT_FROZEN:-}" ]; then mapfile -t frozen < "$PILOT_FROZEN"; fi
+for m in "$trusted"/*; do [ -d "$m" ] && frozen+=("$m"); done
+# resolved: Lean's resolution of every trusted root, as the exports resolve them.
+resolved() { helper resolution "$trusted" "$toolchain_lib" "$root/scripts/pilot_resolve.lean"; }
 
 # in_wrapper <command>...: a command inside the systemd-run wrapper, in the release's lean/.
 # MAX_SECONDS caps how long it may run, and MEMORY how much memory it may use.
@@ -103,6 +117,9 @@ echo "ok: a memory limit on the wrapper's unit is enforced (each challenge gets 
 step "The sandbox is in force"
 in_wrapper bash "$root/scripts/sandbox-check.sh" "$lean_dir" ${frozen[@]+"${frozen[@]}"}
 
+step "The exports resolve the trusted copies"
+resolved
+
 i=0
 for c in "${challenges[@]}"; do
   step "Challenge $c"
@@ -132,8 +149,13 @@ for c in "${challenges[@]}"; do
   detail="${res#*$'\t'}"
   # The release's output, marked on every line, so no line of it can pass for ours.
   if [ -f "$log" ]; then tail -n 20 "$log" | tr '\r' ' ' | sed 's/^/    comparator| /'; fi
+  # The exports ran during that challenge. They must have resolved the trusted copies.
+  resolved || { echo "FAIL: after $c, the exports no longer resolve the trusted copies"; exit 1; }
   printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$c" "$status" "$((t1 - t0))" "$cap" "$(free_mb)" "$detail" >> "$tsv"
   echo "result: $c: $status in $((t1 - t0)) s (cap $cap s), $(free_mb) MB free; $detail"
+  if [ "$status" = kernelsDisagree ]; then
+    echo "::warning title=Kernels disagree::$c: nanoda failed while Lean's kernel accepted ($detail)"
+  fi
   helper results "$tsv" "$shard" "$out/results.json"
 done
 

@@ -4,7 +4,8 @@ printed with repr, so it can't pass for a result line or a GitHub workflow comma
 
 usage: python3 scripts/pilot_shard.py challenges PLAN SHARD
        python3 scripts/pilot_shard.py config RELEASE_LEAN_DIR CHALLENGE OUT.json
-       python3 scripts/pilot_shard.py leanpath RELEASE_LEAN_DIR
+       python3 scripts/pilot_shard.py leanpath RELEASE_LEAN_DIR TRUSTED_DIR TOOLCHAIN_LIB
+       python3 scripts/pilot_shard.py resolution TRUSTED_DIR TOOLCHAIN_LIB RESOLVER
        python3 scripts/pilot_shard.py classify LOG EXIT_FILE ELAPSED CAP FULL_CAP FIRST
        python3 scripts/pilot_shard.py results RESULTS.tsv SHARD OUT.json
 
@@ -13,8 +14,10 @@ a job of its own. A result is one of:
 - accepted: Comparator exited 0, after its success line;
 - rejected: Comparator exited 1 on one of its own rejections, a mismatched statement or
   constant, a disallowed axiom, or the refusal of Lean's kernel;
-- buildError: anything else that stopped it, such as a failed build or export, a crash, a
-  kill by a signal or by the memory limit, or nanoda failing while Lean's kernel accepted;
+- kernelsDisagree: nanoda failed while Lean's kernel accepted, and nanoda wasn't killed by
+  SIGKILL. It stays unknown, and is flagged;
+- buildError: anything else that stopped it, such as a failed build or export, a crash, or a
+  kill by a signal or by the memory limit, nanoda's included;
 - tooLarge: it timed out as the first challenge in its job, or with the full 5-hour cap
   ("too large to check yet");
 - cutOff: it timed out with less than the full cap, after other challenges in its job, so it
@@ -23,8 +26,8 @@ a job of its own. A result is one of:
 Only a rejection is evidence that fails. Build errors and timeouts stay unknown.
 
 nanoda reports a refusal by panicking, as it does an internal error, so its exit code can't
-tell the two apart. A failure of nanoda alone is therefore a build error, with its exit code
-in the detail, and a refusal counts only when Lean's kernel refuses too.
+tell the two apart, and a refusal counts only when Lean's kernel refuses too. Exit 137 is
+128 + SIGKILL, as Lean's wait reports a signal: the memory limit's kill, a build error.
 """
 import json
 import os
@@ -47,6 +50,8 @@ REJECTIONS = (
 LEAN_KERNEL = "Running Lean default kernel on solution."
 LEAN_REFUSALS = ("Lean default kernel rejects the solution",
                  "Quotient post-check rejects the solution")
+LEAN_ACCEPTS = "Lean default kernel accepts the solution"
+CORE = ("Init", "Std", "Lean", "Lake")
 
 
 def challenges(plan, shard):
@@ -81,14 +86,67 @@ def config(lean_dir, name, out):
     print(cfg["solution_module"])  # checked against the pattern above
 
 
-def leanpath(lean_dir):
-    """What `lake env` would put on LEAN_PATH, found from the directories instead, so that the
-    release's lakefile isn't run outside the sandbox."""
-    dirs = [os.path.join(lean_dir, ".lake", "build", "lib", "lean")]
+def leanpath(lean_dir, trusted, toolchain_lib):
+    """The exports' LEAN_PATH, which stands in for `lake env`, so that the release's lakefile isn't
+    run outside the sandbox. Lean resolves a module through the first entry that holds its
+    top-level directory, and lean4export appends the toolchain's library after LEAN_PATH. So the
+    path starts with the trusted copies: the toolchain's library, then each frozen package's
+    outputs through its read-only mount outside .lake. Only then come the release's own outputs
+    and the other packages', which a build in the sandbox can write."""
+    mounted = sorted(os.listdir(trusted)) if os.path.isdir(trusted) else []
+    dirs = [toolchain_lib] + [os.path.join(trusted, p, "lib", "lean") for p in mounted]
+    dirs.append(os.path.join(lean_dir, ".lake", "build", "lib", "lean"))
     pkgs = os.path.join(lean_dir, ".lake", "packages")
     for p in sorted(os.listdir(pkgs)):
-        dirs.append(os.path.join(pkgs, p, ".lake", "build", "lib", "lean"))
+        if p not in mounted:
+            dirs.append(os.path.join(pkgs, p, ".lake", "build", "lib", "lean"))
     print(":".join(dirs))
+
+
+def roots(base):
+    """A module for each top-level root under base: the root module itself where it has one,
+    otherwise the first module under its directory."""
+    out = {}
+    for e in sorted(os.listdir(base)):
+        full = os.path.join(base, e)
+        if e.endswith(".olean") and os.path.isfile(full):
+            out.setdefault(e[:-len(".olean")], e[:-len(".olean")])
+        elif os.path.isdir(full):
+            for d, dirs, files in sorted(os.walk(full)):
+                dirs.sort()
+                ol = sorted(f for f in files if f.endswith(".olean"))
+                if ol:
+                    rel = os.path.relpath(os.path.join(d, ol[0]), base)[:-len(".olean")]
+                    out.setdefault(e, rel.replace(os.sep, "."))
+                    break
+    return out
+
+
+def resolution(trusted, toolchain_lib, resolver):
+    """Checks, with Lean's own resolution, that every root of the trusted packages resolves into
+    its read-only mount, and Lean's core into the toolchain. Exits 1 otherwise."""
+    import subprocess
+    want = {}
+    for root, mod in roots(toolchain_lib).items():
+        if root in CORE:
+            want[mod] = toolchain_lib
+    for p in sorted(os.listdir(trusted)):
+        base = os.path.join(trusted, p, "lib", "lean")
+        if os.path.isdir(base):
+            for mod in roots(base).values():
+                want.setdefault(mod, base)
+    r = subprocess.run(["lean", "--run", resolver] + sorted(want), capture_output=True, text=True)
+    if r.returncode != 0:
+        sys.exit(f"FAIL: the resolver failed: {r.stderr.strip()!r}")
+    got = dict(l.split(" ", 2)[1:] for l in r.stdout.splitlines() if l.startswith("resolves: "))
+    bad = [m for m in want if not got.get(m, "").startswith(want[m] + os.sep)]
+    if bad:
+        for m in bad:
+            print(f"FAIL: {m} resolves to {got.get(m)!r}, not under {want[m]}")
+        sys.exit(1)
+    print(f"ok: the exports resolve all {len(want)} trusted roots to the trusted copies, "
+          f"Mathlib and Init among them" if any(m.startswith("Mathlib") for m in want) else
+          f"ok: the exports resolve all {len(want)} trusted roots to the trusted copies")
 
 
 def classify(log, exit_file, elapsed, cap, full_cap, first):
@@ -119,7 +177,11 @@ def classify(log, exit_file, elapsed, cap, full_cap, first):
         return "rejected", "Lean's kernel refused the solution"
     m = re.match(r"nanoda exited with (-?\d+)\s*$", message)
     if m:
-        return "buildError", f"nanoda exited with {m.group(1)} while Lean's kernel accepted"
+        if m.group(1) == "137":
+            return "buildError", "nanoda was killed by SIGKILL, as the memory limit kills"
+        if j >= 0 and LEAN_ACCEPTS in text[j:]:
+            return "kernelsDisagree", f"nanoda exited with {m.group(1)} while Lean's kernel accepted"
+        return "buildError", f"nanoda exited with {m.group(1)}, and Lean's kernel didn't accept"
     if message.startswith("Child exited with"):
         return "buildError", "a sandboxed build or export failed"
     return "buildError", "Comparator stopped before comparing"
@@ -146,12 +208,14 @@ def main():
         config(*args)
     elif cmd == "leanpath":
         leanpath(*args)
+    elif cmd == "resolution":
+        resolution(*args)
     elif cmd == "classify":
         print("\t".join(classify(*args)))
     elif cmd == "results":
         results(*args)
     else:
-        sys.exit(f"usage: {sys.argv[0]} challenges|config|leanpath|classify|results ...")
+        sys.exit(f"usage: {sys.argv[0]} challenges|config|leanpath|resolution|classify|results ...")
 
 
 if __name__ == "__main__":

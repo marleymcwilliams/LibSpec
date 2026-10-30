@@ -4,6 +4,13 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-30
 
+### The trusted shards, round 3 (#92, Marley's review)
+- **A way around the freeze, closed.** Lean resolves a module through the first search-path entry holding its top-level directory, and lean4export appends the toolchain's library after `LEAN_PATH`. A build could plant a substitute `Mathlib/` or `Init/` in a writable entry ahead of the frozen copies. It could also rename the directories above a frozen one inside `.lake`.
+  - **The fix:** each frozen output is bind-mounted read-only outside `.lake`. The exports' `LEAN_PATH` starts with the toolchain's `lib/lean` and those mounts.
+  - **The check:** Lean's own resolution must find every trusted root in its trusted copy, before the first challenge and after each one.
+- **The self-test shows both attacks fail:** from inside landrun, a planted `Mathlib/` and `Init/`, and a renamed frozen Mathlib with a substitute. The old path would have resolved the planted copies, and the new one resolves the trusted ones.
+- **nanoda alone failing,** while Lean's kernel accepts, is now `kernelsDisagree`: unknown, flagged on the run, and reported to Marley. A nanoda killed by SIGKILL, exit 137, as the memory limit kills, stays a build error.
+
 ### The trusted shards, round 2 (#92, Marley's review)
 - **The sandbox is proved on, in every job.** Comparator passes `--best-effort` to landrun, which succeeds silently without Landlock. So `scripts/sandbox-check.sh` runs landrun inside the wrapper with Comparator's build flags, and stops the job unless a write inside `.lake` works and writes outside it fail. `scripts/comparator-full.sh` runs it too.
 - **Frozen outputs.** The build outputs of the nine packages that came through LibSpec's tooling, Mathlib's among them, are set immutable as root before Comparator runs, and cleared at the end. The sandbox check requires writes into them to fail.

@@ -29,8 +29,8 @@ REPO = "marleymcwilliams/LibSpec"
 COMMIT = "7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a"
 JOB = re.compile(r"^Shard ([A-Za-z0-9_-]+) \(trusted\)$")
 STEP = "Comparator on the shard"
-RESULT = re.compile(r"^result: ([A-Za-z0-9_]+): (accepted|rejected|buildError|tooLarge|cutOff|"
-                    r"notStarted)(?: in (\d+) s \(cap (\d+) s\))?")
+RESULT = re.compile(r"^result: ([A-Za-z0-9_]+): (accepted|rejected|kernelsDisagree|buildError|"
+                    r"tooLarge|cutOff|notStarted)(?: in (\d+) s \(cap (\d+) s\))?")
 TIMESTAMP = re.compile(r"^\d{4}-\d\d-\d\dT[0-9:.]+Z ")
 RERUN = {"cutOff", "notStarted"}
 
@@ -87,6 +87,8 @@ def main():
         "why": "each result is an unmarked line of a trusted shard job's own log (EXECUTABLE_GATE §4)",
         "runs": runs,
         "results": {n: e["status"] for n, e in sorted(found.items())},
+        # Each a case for Marley: nanoda failed while Lean's kernel accepted.
+        "kernelsDisagree": sorted(n for n, e in found.items() if e["status"] == "kernelsDisagree"),
         "challenges": [found[n] for n in sorted(found)],
     }
     json.dump(out, sys.stdout, indent=1, ensure_ascii=False)

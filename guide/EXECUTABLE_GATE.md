@@ -248,6 +248,10 @@ The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and
      - **The sandbox** (`scripts/sandbox-check.sh`): landrun, run inside the wrapper with the flags Comparator gives a build, must let a write inside `.lake` through. It must refuse a write outside it, in `lean/` or `$HOME`, and a write into the frozen outputs.
      - **The memory limit:** a unit with a 256 MB limit must be able to allocate 64 MB, and must be killed when it tries 512 MB. Each challenge's unit gets 13 GB, below the runner's 16 GB, so that only the challenge is killed.
      - **The same sandbox check** now runs in `scripts/comparator-full.sh` too, whose full sandbox rests on it.
+     - **The exports resolve the trusted copies.** Lean resolves a module through the first search-path entry that holds its top-level directory, and lean4export appends the toolchain's library after `LEAN_PATH`. A build can write all of `.lake`, so it could plant a substitute `Mathlib/` or `Init/` in any writable entry ahead of the trusted ones. It could also rename the directories above a frozen one and put a substitute in its place. So:
+       - **each frozen output is bind-mounted read-only** at a path outside `.lake` (`scripts/pilot-trusted-lib.sh`), which a rename inside `.lake` can't move;
+       - **the exports' `LEAN_PATH` starts with the trusted copies:** the toolchain's `lib/lean`, then those mounts. Only then come the release's outputs and the other packages';
+       - **Lean's own resolution checks it,** using `initSearchPath (← findSysroot)` and `findOLean`, as lean4export resolves (`scripts/pilot_resolve.lean`). Every root of the trusted packages must resolve into its mount, and Lean's core into the toolchain. It runs before the first challenge, and after each one before its result is printed.
   7. **It runs Comparator on each challenge** (`scripts/pilot-shard.sh`), with nanoda, inside Comparator's landrun sandbox inside the systemd-run wrapper. `LEAN_PATH` comes from the directories, so `lake env` never runs the release's lakefile outside the sandbox. The config comes from the release's, keeping only the modules, theorems, definitions and permitted axioms, so a command such as an external kernel can't come in through it.
 - **What the trusted job takes from the untrusted one:** only the artifact, which it checks and never builds from. There are no job outputs, and no expression holds anything of the untrusted job.
 - **The evidence is the trusted job's log,** which only that job writes:
@@ -257,7 +261,8 @@ The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and
 - **Each challenge's result** is one of these. Comparator's exit status is recorded by the shell around it, outside the sandbox:
   - **accepted:** Comparator exited 0, after its success line.
   - **rejected:** Comparator exited 1 on one of its own rejections: a mismatched statement or constant, a disallowed axiom, or a refusal by Lean's kernel. nanoda reports a refusal by panicking, and an internal error the same way, so a failure of nanoda alone doesn't count as one.
-  - **buildError:** anything else that stopped it. That covers a failed build or export, a crash, a kill by a signal or by the memory limit, and nanoda failing while Lean's kernel accepts. Its detail says which.
+  - **kernelsDisagree:** nanoda failed while Lean's kernel accepted, and it wasn't killed by SIGKILL. It stays unknown, is flagged as a warning on the run, and every case goes to Marley.
+  - **buildError:** anything else that stopped it. That covers a failed build or export, a crash, and a kill by a signal or by the memory limit, nanoda's included: exit 137 is 128 plus SIGKILL, as Lean's `wait` reports a signal. Its detail says which.
   - **tooLarge:** it timed out as the first challenge in its job, whatever its cap, or later with the full 5-hour cap. It's too large to check yet.
   - **cutOff:** it timed out after other challenges, with less than the full cap, because its shared job was running out of time.
   - **notStarted:** its job ran out before it began.
@@ -266,7 +271,8 @@ The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and
 - **`selftest`, a third job,** runs `scripts/test-pilot-shard.sh` before any shard. It drives `scripts/pilot-shard.sh` through the real wrapper, landrun, caps and memory limit, with a fake comparator acting out each outcome. It checks:
   - every result above;
   - that forged result lines and workflow commands appear only marked;
-  - that the sandbox check fails when landrun sandboxes nothing, and when a directory listed as frozen can be written.
+  - that the sandbox check fails when landrun sandboxes nothing, and when a directory listed as frozen can be written;
+  - the two attacks on resolution. From inside landrun it plants `Mathlib/` and `Init/` in the release's build directory, and renames the frozen Mathlib package to put a substitute in its place. The old `LEAN_PATH` would then resolve the planted copies, and the exports' `LEAN_PATH` still resolves Mathlib and Init to the trusted ones.
 
 **Shown to bite.** #92's own run, [41015650912](https://github.com/marleymcwilliams/LibSpec/actions/runs/41015650912), is the positive control: the two trees matched, all 194,331 entries, and Comparator accepted the control shard in 224 s. Then four throwaway pull requests each added one step to the untrusted job:
 
@@ -289,7 +295,7 @@ In the three refusals, the trusted job stopped before any build. Both jobs' logs
 
   Nothing else in it does IO. A new pin would need it read again.
 - **The dependencies' lakefiles,** which Lake elaborates for each of the 42 packages. They haven't been read.
-- **Every module in each challenge's import closure:** the challenge file, its helpers, and every module of a dependency it imports. Mathlib's and its dependencies' outputs come frozen from LibSpec's tooling.
+- **Every module in each challenge's import closure:** the challenge file, its helpers, and every module of a dependency it imports. Mathlib's and its dependencies' outputs come frozen from LibSpec's tooling, and the exports reach them, and Lean's core, only through read-only paths. Lake's own view inside `.lake` during the builds can still be subverted, but the exports read Mathlib and core from the trusted copies.
 - **The solutions built earlier in the same job** (assumption 2). A shared job's earlier solutions could write into the build outputs a later challenge imports, outside the frozen ones. A challenge alone in its job, such as a solo rerun, has no such earlier solutions.
 
 Reading the release's lakefile, freezing what came through LibSpec's tooling, and proving the sandbox is on all narrow this. None of them closes it.
