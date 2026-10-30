@@ -1,0 +1,9297 @@
+{
+ "source": {
+  "repository": "https://github.com/openai/math",
+  "commit": "7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a",
+  "read": "the import headers of every .lean file under lean/"
+ },
+ "release": {
+  "modules": 163096,
+  "bytes": 1784881038
+ },
+ "needed": {
+  "modules": 113748,
+  "bytes": 1431618354,
+  "buildHours": {
+   "byBytes": [
+    63.3,
+    124.8
+   ],
+   "byModules": [
+    45.5,
+    82.5
+   ]
+  }
+ },
+ "byFamily": {
+  "families": 244,
+  "modules": 117544,
+  "bytes": 1472592511,
+  "buildHours": {
+   "byBytes": [
+    65.1,
+    128.4
+   ],
+   "byModules": [
+    47.0,
+    85.2
+   ]
+  },
+  "largestByBytes": [
+   "189",
+   "266",
+   "090",
+   "159",
+   "102"
+  ]
+ },
+ "calibration": {
+  "Catalan": {
+   "measuredBuilt": 988,
+   "measuredMinutes": 43,
+   "closureOAIModules": 988,
+   "closureOAIBytes": 16216483,
+   "secondsPerMB": 159.1,
+   "secondsPerModule": 2.61
+  },
+  "JointDickman": {
+   "measuredBuilt": 1792,
+   "measuredMinutes": 43,
+   "closureOAIModules": 1792,
+   "closureOAIBytes": 8217992,
+   "secondsPerMB": 313.9,
+   "secondsPerModule": 1.44
+  }
+ },
+ "families": [
+  {
+   "family": "003",
+   "challenges": [
+    "DirichletSevenEighths",
+    "HeckeSevenEighths",
+    "QuasiRiemannHypothesis",
+    "SiegelZeros"
+   ],
+   "modules": 3236,
+   "bytes": 28084965,
+   "buildHours": {
+    "byBytes": [
+     1.2,
+     2.4
+    ],
+    "byModules": [
+     1.3,
+     2.3
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "RellichKondrachov"
+   ]
+  },
+  {
+   "family": "005",
+   "challenges": [
+    "Catalan"
+   ],
+   "modules": 989,
+   "bytes": 16216692,
+   "buildHours": {
+    "byBytes": [
+     0.7,
+     1.4
+    ],
+    "byModules": [
+     0.4,
+     0.7
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "PrimeNumberTheoremAnd"
+   ]
+  },
+  {
+   "family": "007",
+   "challenges": [
+    "OrdinaryElliott",
+    "OrdinaryTwoPointCorrelations"
+   ],
+   "modules": 2169,
+   "bytes": 10120172,
+   "buildHours": {
+    "byBytes": [
+     0.4,
+     0.9
+    ],
+    "byModules": [
+     0.9,
+     1.6
+    ]
+   },
+   "packages": [
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "StrongPNT"
+   ]
+  },
+  {
+   "family": "008",
+   "challenges": [
+    "DeligneDrinfeld"
+   ],
+   "modules": 22,
+   "bytes": 1365256,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "009",
+   "challenges": [
+    "BogomolovPopInjectivity"
+   ],
+   "modules": 6,
+   "bytes": 161087,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "012",
+   "challenges": [
+    "JointDickman"
+   ],
+   "modules": 1793,
+   "bytes": 8220085,
+   "buildHours": {
+    "byBytes": [
+     0.4,
+     0.7
+    ],
+    "byModules": [
+     0.7,
+     1.3
+    ]
+   },
+   "packages": [
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "StrongPNT"
+   ]
+  },
+  {
+   "family": "013",
+   "challenges": [
+    "OstmannComplete",
+    "OstmannPrimes"
+   ],
+   "modules": 7520,
+   "bytes": 30688721,
+   "buildHours": {
+    "byBytes": [
+     1.4,
+     2.7
+    ],
+    "byModules": [
+     3.0,
+     5.5
+    ]
+   },
+   "packages": [
+    "BernoulliRegular",
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "StrongPNT"
+   ]
+  },
+  {
+   "family": "015",
+   "challenges": [
+    "DukePrimeDegree"
+   ],
+   "modules": 878,
+   "bytes": 5923014,
+   "buildHours": {
+    "byBytes": [
+     0.3,
+     0.5
+    ],
+    "byModules": [
+     0.4,
+     0.6
+    ]
+   },
+   "packages": [
+    "ClassFieldTheory",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "017",
+   "challenges": [
+    "PiExponent"
+   ],
+   "modules": 870,
+   "bytes": 4321890,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.4
+    ],
+    "byModules": [
+     0.3,
+     0.6
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "020",
+   "challenges": [
+    "PowerFreeValues"
+   ],
+   "modules": 64,
+   "bytes": 1139677,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "021",
+   "challenges": [
+    "Jacobsthal",
+    "JacobsthalImproved"
+   ],
+   "modules": 821,
+   "bytes": 7051987,
+   "buildHours": {
+    "byBytes": [
+     0.3,
+     0.6
+    ],
+    "byModules": [
+     0.3,
+     0.6
+    ]
+   },
+   "packages": [
+    "AbsorptionCutoff",
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "StrongPNT"
+   ]
+  },
+  {
+   "family": "023",
+   "challenges": [
+    "PattersonFirstMoment"
+   ],
+   "modules": 3595,
+   "bytes": 14688837,
+   "buildHours": {
+    "byBytes": [
+     0.6,
+     1.3
+    ],
+    "byModules": [
+     1.4,
+     2.6
+    ]
+   },
+   "packages": [
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "RellichKondrachov",
+    "StrongPNT"
+   ]
+  },
+  {
+   "family": "024",
+   "challenges": [
+    "TotientAsymptotic",
+    "TotientCompanionZero"
+   ],
+   "modules": 813,
+   "bytes": 3289796,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.3,
+     0.6
+    ]
+   },
+   "packages": [
+    "Mathlib",
+    "PrimeNumberTheoremAnd"
+   ]
+  },
+  {
+   "family": "025",
+   "challenges": [
+    "EgyptianFractions",
+    "ShortEgyptianFractions"
+   ],
+   "modules": 350,
+   "bytes": 2013295,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.1,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "026",
+   "challenges": [
+    "PrimeGaps"
+   ],
+   "modules": 57,
+   "bytes": 1087547,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "027",
+   "challenges": [
+    "CharacterVarietiesAllSeamsSupport"
+   ],
+   "modules": 80,
+   "bytes": 1344583,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "028",
+   "challenges": [
+    "GaussianMoat"
+   ],
+   "modules": 42,
+   "bytes": 599356,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "033",
+   "challenges": [
+    "LogKodairaFiberNegative"
+   ],
+   "modules": 15,
+   "bytes": 187281,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "039",
+   "challenges": [
+    "MaximalSeshadriConstants",
+    "Nagata"
+   ],
+   "modules": 540,
+   "bytes": 4138828,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.4
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "047",
+   "challenges": [
+    "ComplexCancellation"
+   ],
+   "modules": 56,
+   "bytes": 243302,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "049",
+   "challenges": [
+    "AbhyankarSathaye",
+    "CommutingDerivations",
+    "StableCoordinateFour"
+   ],
+   "modules": 148,
+   "bytes": 762582,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "050",
+   "challenges": [
+    "QuadricBundles"
+   ],
+   "modules": 35,
+   "bytes": 612891,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "052",
+   "challenges": [
+    "KahlerSplitting",
+    "SplitTangentIntegrability"
+   ],
+   "modules": 63,
+   "bytes": 1543247,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "058",
+   "challenges": [
+    "SymmetricDomains"
+   ],
+   "modules": 336,
+   "bytes": 2117644,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "066",
+   "challenges": [
+    "CartierChartCompactnessSupport"
+   ],
+   "modules": 14,
+   "bytes": 69473,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "071",
+   "challenges": [
+    "KoebeCircleDomains"
+   ],
+   "modules": 2791,
+   "bytes": 12504086,
+   "buildHours": {
+    "byBytes": [
+     0.6,
+     1.1
+    ],
+    "byModules": [
+     1.1,
+     2.0
+    ]
+   },
+   "packages": [
+    "Mathlib",
+    "Schoenflies"
+   ]
+  },
+  {
+   "family": "072",
+   "challenges": [
+    "Brennan",
+    "BrennanSharp",
+    "StrictMeans"
+   ],
+   "modules": 144,
+   "bytes": 1434315,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "073",
+   "challenges": [
+    "FalconerAllDimensions",
+    "PlanarFalconer"
+   ],
+   "modules": 2388,
+   "bytes": 8967992,
+   "buildHours": {
+    "byBytes": [
+     0.4,
+     0.8
+    ],
+    "byModules": [
+     1.0,
+     1.7
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "075",
+   "challenges": [
+    "FourierLLogL"
+   ],
+   "modules": 157,
+   "bytes": 1267097,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "076",
+   "challenges": [
+    "AsymptoticallyMinimalLittlewood",
+    "LittlewoodFiniteFlatness"
+   ],
+   "modules": 30,
+   "bytes": 451482,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "079",
+   "challenges": [
+    "LocalSmoothing"
+   ],
+   "modules": 2262,
+   "bytes": 10646161,
+   "buildHours": {
+    "byBytes": [
+     0.5,
+     0.9
+    ],
+    "byModules": [
+     0.9,
+     1.6
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "081",
+   "challenges": [
+    "RieszQuantitative"
+   ],
+   "modules": 825,
+   "bytes": 3070144,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.3,
+     0.6
+    ]
+   },
+   "packages": [
+    "FixedPointTheorems",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "082",
+   "challenges": [
+    "TriangularHilbert"
+   ],
+   "modules": 106,
+   "bytes": 501124,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "083",
+   "challenges": [
+    "LipschitzHilbert"
+   ],
+   "modules": 1911,
+   "bytes": 9266492,
+   "buildHours": {
+    "byBytes": [
+     0.4,
+     0.8
+    ],
+    "byModules": [
+     0.8,
+     1.4
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "084",
+   "challenges": [
+    "DyadicAvoidance"
+   ],
+   "modules": 76,
+   "bytes": 369707,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "085",
+   "challenges": [
+    "DiskMaximal",
+    "SignedFiniteBand"
+   ],
+   "modules": 71,
+   "bytes": 1816304,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "087",
+   "challenges": [
+    "GeneralMahler",
+    "MahlerConjecture",
+    "SymmetricMahlerEquality",
+    "SymmetricPolar"
+   ],
+   "modules": 589,
+   "bytes": 4021456,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.4
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "088",
+   "challenges": [
+    "PettyProjectionVolume",
+    "ProjectionCounterexample",
+    "ProjectionVolume"
+   ],
+   "modules": 106,
+   "bytes": 928286,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "089",
+   "challenges": [
+    "BoundedTreewidthL1",
+    "PlanarL1"
+   ],
+   "modules": 98,
+   "bytes": 2279132,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "090",
+   "challenges": [
+    "AtomicGaussian",
+    "PlanarPacking",
+    "TriangularEnergy",
+    "TriangularGaussian"
+   ],
+   "modules": 795,
+   "bytes": 150301031,
+   "buildHours": {
+    "byBytes": [
+     6.6,
+     13.1
+    ],
+    "byModules": [
+     0.3,
+     0.6
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "091",
+   "challenges": [
+    "LogBrunnMinkowski"
+   ],
+   "modules": 2,
+   "bytes": 1229869,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "092",
+   "challenges": [
+    "CoveringDensity",
+    "SingleLatticeCovering"
+   ],
+   "modules": 145,
+   "bytes": 1766005,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "094",
+   "challenges": [
+    "SubpolynomialLp"
+   ],
+   "modules": 45,
+   "bytes": 370986,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "095",
+   "challenges": [
+    "HyperbolicCones"
+   ],
+   "modules": 87,
+   "bytes": 220595,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "096",
+   "challenges": [
+    "GaussianPropeller"
+   ],
+   "modules": 48,
+   "bytes": 584889,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "097",
+   "challenges": [
+    "SteinitzBergstrom"
+   ],
+   "modules": 30,
+   "bytes": 717192,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "098",
+   "challenges": [
+    "CompactBanach",
+    "DoublingHilbert"
+   ],
+   "modules": 30,
+   "bytes": 209421,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "099",
+   "challenges": [
+    "BinaryEditLower",
+    "EditDistance",
+    "FiniteCircle",
+    "TreeEdit"
+   ],
+   "modules": 189,
+   "bytes": 2844922,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "100",
+   "challenges": [
+    "CylinderCovering",
+    "RuledCovering",
+    "TriangularCovering"
+   ],
+   "modules": 644,
+   "bytes": 3044551,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.3,
+     0.5
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "102",
+   "challenges": [
+    "DirectedFeedback",
+    "MinUncut",
+    "OptimalMaxCut",
+    "UniqueGamesTheorem",
+    "VertexCover"
+   ],
+   "modules": 1805,
+   "bytes": 34373152,
+   "buildHours": {
+    "byBytes": [
+     1.5,
+     3.0
+    ],
+    "byModules": [
+     0.7,
+     1.3
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "Std"
+   ]
+  },
+  {
+   "family": "103",
+   "challenges": [
+    "LogspaceEquality"
+   ],
+   "modules": 40,
+   "bytes": 1851192,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "104",
+   "challenges": [
+    "RandomizedMeanPayoff",
+    "TruffetCounterexample"
+   ],
+   "modules": 93,
+   "bytes": 1320746,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "105",
+   "challenges": [
+    "PerfectCompleteness"
+   ],
+   "modules": 864,
+   "bytes": 12359292,
+   "buildHours": {
+    "byBytes": [
+     0.5,
+     1.1
+    ],
+    "byModules": [
+     0.3,
+     0.6
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "Std"
+   ]
+  },
+  {
+   "family": "106",
+   "challenges": [
+    "IndependentSets"
+   ],
+   "modules": 455,
+   "bytes": 4481570,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.4
+    ],
+    "byModules": [
+     0.2,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "107",
+   "challenges": [
+    "MatrixFields",
+    "MatrixMultiplication"
+   ],
+   "modules": 860,
+   "bytes": 16624186,
+   "buildHours": {
+    "byBytes": [
+     0.7,
+     1.4
+    ],
+    "byModules": [
+     0.3,
+     0.6
+    ]
+   },
+   "packages": [
+    "FixedPointTheorems",
+    "Lean",
+    "Mathlib",
+    "Std"
+   ]
+  },
+  {
+   "family": "108",
+   "challenges": [
+    "PermanentCubic",
+    "SmoothInitialForm"
+   ],
+   "modules": 53,
+   "bytes": 919699,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "110",
+   "challenges": [
+    "KServer",
+    "UniformKServer"
+   ],
+   "modules": 449,
+   "bytes": 3988272,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.3
+    ],
+    "byModules": [
+     0.2,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "111",
+   "challenges": [
+    "MatroidProphet",
+    "MatroidSecretary"
+   ],
+   "modules": 245,
+   "bytes": 1188168,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "112",
+   "challenges": [
+    "DepthThree"
+   ],
+   "modules": 176,
+   "bytes": 1031047,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "113",
+   "challenges": [
+    "BinaryMatching",
+    "MatchingEntropy",
+    "MatchingEntropyBounds",
+    "MatchingFPRAS",
+    "SingletonLoopMatching",
+    "TriangleFace"
+   ],
+   "modules": 598,
+   "bytes": 4192599,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.4
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "114",
+   "challenges": [
+    "CommonBasesFPRAS"
+   ],
+   "modules": 2,
+   "bytes": 1340857,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "115",
+   "challenges": [
+    "ContingencyTables"
+   ],
+   "modules": 1298,
+   "bytes": 9108153,
+   "buildHours": {
+    "byBytes": [
+     0.4,
+     0.8
+    ],
+    "byModules": [
+     0.5,
+     0.9
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "116",
+   "challenges": [
+    "FormulaHitting",
+    "RationalHitting"
+   ],
+   "modules": 79,
+   "bytes": 830620,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "117",
+   "challenges": [
+    "UniformSparsestCut"
+   ],
+   "modules": 56,
+   "bytes": 489980,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "118",
+   "challenges": [
+    "BinPackingGap"
+   ],
+   "modules": 285,
+   "bytes": 7569564,
+   "buildHours": {
+    "byBytes": [
+     0.3,
+     0.7
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "Std"
+   ]
+  },
+  {
+   "family": "119",
+   "challenges": [
+    "CourtadeKumar",
+    "SoftChannel204"
+   ],
+   "modules": 73,
+   "bytes": 504777,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "121",
+   "challenges": [
+    "EditApproximation"
+   ],
+   "modules": 1025,
+   "bytes": 9018316,
+   "buildHours": {
+    "byBytes": [
+     0.4,
+     0.8
+    ],
+    "byModules": [
+     0.4,
+     0.7
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "122",
+   "challenges": [
+    "TraceReconstruction"
+   ],
+   "modules": 32,
+   "bytes": 1636394,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "124",
+   "challenges": [
+    "ThreeMachine"
+   ],
+   "modules": 54,
+   "bytes": 855511,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "125",
+   "challenges": [
+    "KMedianRecovery",
+    "KMedianRefinedRecovery",
+    "KMedianThreshold",
+    "MetricKMedian"
+   ],
+   "modules": 1281,
+   "bytes": 7002617,
+   "buildHours": {
+    "byBytes": [
+     0.3,
+     0.6
+    ],
+    "byModules": [
+     0.5,
+     0.9
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "126",
+   "challenges": [
+    "MatchingAffineLift",
+    "MatchingPSD"
+   ],
+   "modules": 68,
+   "bytes": 325097,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "127",
+   "challenges": [
+    "GotsmanLinial"
+   ],
+   "modules": 23,
+   "bytes": 173688,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "128",
+   "challenges": [
+    "Superstring"
+   ],
+   "modules": 52,
+   "bytes": 942467,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "129",
+   "challenges": [
+    "OneWayLiveness",
+    "TwoWayComplementation",
+    "TwoWayDeterminization"
+   ],
+   "modules": 44,
+   "bytes": 387357,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "130",
+   "challenges": [
+    "ExactFourier",
+    "UniformFourier"
+   ],
+   "modules": 141,
+   "bytes": 1459772,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "131",
+   "challenges": [
+    "SwitchChain"
+   ],
+   "modules": 166,
+   "bytes": 927531,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "132",
+   "challenges": [
+    "SensitivitySeparation"
+   ],
+   "modules": 43,
+   "bytes": 160908,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "133",
+   "challenges": [
+    "ParityLifts",
+    "VariableWL",
+    "WLIdentification",
+    "WeisfeilerLeman"
+   ],
+   "modules": 197,
+   "bytes": 3073912,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "134",
+   "challenges": [
+    "GeneralizedStarHeight"
+   ],
+   "modules": 38,
+   "bytes": 523994,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "135",
+   "challenges": [
+    "DepthFive"
+   ],
+   "modules": 165,
+   "bytes": 885234,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "137",
+   "challenges": [
+    "OneTapeSpace"
+   ],
+   "modules": 50,
+   "bytes": 321854,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "139",
+   "challenges": [
+    "LogConcaveQuery"
+   ],
+   "modules": 327,
+   "bytes": 3004616,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "140",
+   "challenges": [
+    "GaussianFiniteEntropy",
+    "GaussianInformation",
+    "GaussianReplacement",
+    "MemoryPrecision",
+    "NoiselessRegression",
+    "PosteriorReplicas",
+    "ProjectionMoments",
+    "SubsphereCurrent"
+   ],
+   "modules": 423,
+   "bytes": 3859075,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.3
+    ],
+    "byModules": [
+     0.2,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "143",
+   "challenges": [
+    "QuinticLienard"
+   ],
+   "modules": 147,
+   "bytes": 817436,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "144",
+   "challenges": [
+    "ThreeTorus"
+   ],
+   "modules": 38,
+   "bytes": 1723322,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "145",
+   "challenges": [
+    "Rokhlin"
+   ],
+   "modules": 14,
+   "bytes": 1408639,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "146",
+   "challenges": [
+    "StandardMapComponents",
+    "StandardMapEntropy",
+    "StandardMapLyapunov"
+   ],
+   "modules": 277,
+   "bytes": 2897703,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "148",
+   "challenges": [
+    "SelfSimilar",
+    "SelfSimilarCorollaries"
+   ],
+   "modules": 66,
+   "bytes": 564453,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "149",
+   "challenges": [
+    "MassAction"
+   ],
+   "modules": 72,
+   "bytes": 330707,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "150",
+   "challenges": [
+    "IrrationalTriangleBilliard"
+   ],
+   "modules": 40,
+   "bytes": 599122,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "151",
+   "challenges": [
+    "C1EntropyCounterexample"
+   ],
+   "modules": 202,
+   "bytes": 967893,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "152",
+   "challenges": [
+    "SmoothObstruction"
+   ],
+   "modules": 54,
+   "bytes": 1544837,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "155",
+   "challenges": [
+    "PeriodicTilingThree"
+   ],
+   "modules": 123,
+   "bytes": 663545,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "156",
+   "challenges": [
+    "BorsukNine"
+   ],
+   "modules": 270,
+   "bytes": 3526060,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.3
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "157",
+   "challenges": [
+    "HadwigerCounterexample",
+    "ListHadwiger"
+   ],
+   "modules": 341,
+   "bytes": 2566471,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "158",
+   "challenges": [
+    "EuclideanFiveColor",
+    "PlaneColoring"
+   ],
+   "modules": 81,
+   "bytes": 1566986,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "159",
+   "challenges": [
+    "ErdosReciprocal"
+   ],
+   "modules": 4775,
+   "bytes": 58000646,
+   "buildHours": {
+    "byBytes": [
+     2.6,
+     5.1
+    ],
+    "byModules": [
+     1.9,
+     3.5
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "160",
+   "challenges": [
+    "QuantitativeVanDerWaerden"
+   ],
+   "modules": 116,
+   "bytes": 644249,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "161",
+   "challenges": [
+    "SidorenkoCounterexample"
+   ],
+   "modules": 36,
+   "bytes": 1218532,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "162",
+   "challenges": [
+    "BalancedRyser",
+    "RyserCovering",
+    "RyserOddExtensions"
+   ],
+   "modules": 921,
+   "bytes": 5045444,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.4
+    ],
+    "byModules": [
+     0.4,
+     0.7
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "165",
+   "challenges": [
+    "BipartiteCrossing",
+    "CompleteCrossing"
+   ],
+   "modules": 387,
+   "bytes": 1704968,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.2,
+     0.3
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "167",
+   "challenges": [
+    "PinnedDistances",
+    "PlanarUnitDistances"
+   ],
+   "modules": 89,
+   "bytes": 2085941,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "168",
+   "challenges": [
+    "KLInvariance"
+   ],
+   "modules": 35,
+   "bytes": 1835113,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "169",
+   "challenges": [
+    "ElementaryPositivity"
+   ],
+   "modules": 550,
+   "bytes": 3476363,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.3
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "170",
+   "challenges": [
+    "RamseyFive",
+    "SharpLogRamsey"
+   ],
+   "modules": 860,
+   "bytes": 5921177,
+   "buildHours": {
+    "byBytes": [
+     0.3,
+     0.5
+    ],
+    "byModules": [
+     0.3,
+     0.6
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "172",
+   "challenges": [
+    "EuclideanRamsey",
+    "EuclideanRamseyCircle",
+    "EuclideanRamseyNine",
+    "EuclideanRamseyQuadratic",
+    "EuclideanRamseySpherical",
+    "EuclideanRamseyTransitive",
+    "GrahamSpherical"
+   ],
+   "modules": 72,
+   "bytes": 417595,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "173",
+   "challenges": [
+    "SeymourSecondNeighborhood"
+   ],
+   "modules": 44,
+   "bytes": 191714,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "174",
+   "challenges": [
+    "AlgorithmicThinTrees",
+    "StrongThinTree"
+   ],
+   "modules": 738,
+   "bytes": 4564753,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.4
+    ],
+    "byModules": [
+     0.3,
+     0.5
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "175",
+   "challenges": [
+    "TalagrandDiscreteConvexity",
+    "TalagrandExpectationThreshold"
+   ],
+   "modules": 85,
+   "bytes": 370407,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "176",
+   "challenges": [
+    "SecondKahnKalai"
+   ],
+   "modules": 38,
+   "bytes": 291080,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "177",
+   "challenges": [
+    "CoboundaryExpanders"
+   ],
+   "modules": 37,
+   "bytes": 1462632,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "179",
+   "challenges": [
+    "CirculantHadamard",
+    "EvenBarker"
+   ],
+   "modules": 75,
+   "bytes": 411740,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "180",
+   "challenges": [
+    "BarnetteHamiltonian"
+   ],
+   "modules": 32,
+   "bytes": 381406,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "181",
+   "challenges": [
+    "CycleDecomposition"
+   ],
+   "modules": 35,
+   "bytes": 999218,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "182",
+   "challenges": [
+    "SquareDifference"
+   ],
+   "modules": 82,
+   "bytes": 1103394,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "183",
+   "challenges": [
+    "HalvingLines"
+   ],
+   "modules": 48,
+   "bytes": 889175,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "184",
+   "challenges": [
+    "CliqueFreeLog"
+   ],
+   "modules": 32,
+   "bytes": 230051,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "185",
+   "challenges": [
+    "InfiniteMatroid",
+    "InfiniteMatroidCorollaries"
+   ],
+   "modules": 35,
+   "bytes": 199890,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "186",
+   "challenges": [
+    "SharpThreshold"
+   ],
+   "modules": 79,
+   "bytes": 315887,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "187",
+   "challenges": [
+    "SnakyCertificate",
+    "SnakyConditional",
+    "SnakyTwentyOne"
+   ],
+   "modules": 357,
+   "bytes": 13701232,
+   "buildHours": {
+    "byBytes": [
+     0.6,
+     1.2
+    ],
+    "byModules": [
+     0.1,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "188",
+   "challenges": [
+    "TriangleRemoval"
+   ],
+   "modules": 288,
+   "bytes": 1470828,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "189",
+   "challenges": [
+    "CycleCliqueRamsey"
+   ],
+   "modules": 444,
+   "bytes": 222603029,
+   "buildHours": {
+    "byBytes": [
+     9.8,
+     19.4
+    ],
+    "byModules": [
+     0.2,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "190",
+   "challenges": [
+    "MatrixRemoval"
+   ],
+   "modules": 62,
+   "bytes": 324677,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "191",
+   "challenges": [
+    "HeilbronnTriangle"
+   ],
+   "modules": 196,
+   "bytes": 1017458,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "192",
+   "challenges": [
+    "SquareRootDegree"
+   ],
+   "modules": 22,
+   "bytes": 160576,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "194",
+   "challenges": [
+    "DuttaDomain"
+   ],
+   "modules": 279,
+   "bytes": 2412161,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "195",
+   "challenges": [
+    "SurfaceConeCandidateSupport"
+   ],
+   "modules": 12,
+   "bytes": 368270,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "196",
+   "challenges": [
+    "TorsionFreeZeroDivisors"
+   ],
+   "modules": 124,
+   "bytes": 2065967,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "197",
+   "challenges": [
+    "GroupRingDeterminant",
+    "KaplanskyDirectFiniteness",
+    "KaplanskyFinitelyPresented",
+    "OddKaplansky"
+   ],
+   "modules": 250,
+   "bytes": 1294813,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "198",
+   "challenges": [
+    "FinitisticAsymmetry",
+    "LittleFinitistic"
+   ],
+   "modules": 590,
+   "bytes": 2253198,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "199",
+   "challenges": [
+    "AuslanderReiten",
+    "Tachikawa"
+   ],
+   "modules": 765,
+   "bytes": 3618117,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.3
+    ],
+    "byModules": [
+     0.3,
+     0.6
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "205",
+   "challenges": [
+    "Saxl",
+    "UniversalTensorSquares"
+   ],
+   "modules": 575,
+   "bytes": 13234050,
+   "buildHours": {
+    "byBytes": [
+     0.6,
+     1.2
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "206",
+   "challenges": [
+    "FiniteCongruenceGraph"
+   ],
+   "modules": 3,
+   "bytes": 25636,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "207",
+   "challenges": [
+    "BassTorsionFree",
+    "BassTrace"
+   ],
+   "modules": 75,
+   "bytes": 1057936,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "210",
+   "challenges": [
+    "FoulkesHowe"
+   ],
+   "modules": 64,
+   "bytes": 199016,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "211",
+   "challenges": [
+    "FKCRT"
+   ],
+   "modules": 62,
+   "bytes": 1887511,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "212",
+   "challenges": [
+    "GammaPassage",
+    "PlanarFirstPassage"
+   ],
+   "modules": 378,
+   "bytes": 1719940,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.2,
+     0.3
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "213",
+   "challenges": [
+    "CriticalPercolation",
+    "CriticalZ3"
+   ],
+   "modules": 663,
+   "bytes": 3377310,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.3,
+     0.5
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "214",
+   "challenges": [
+    "BenjaminiSchramm",
+    "CayleyPercolation"
+   ],
+   "modules": 992,
+   "bytes": 6988000,
+   "buildHours": {
+    "byBytes": [
+     0.3,
+     0.6
+    ],
+    "byModules": [
+     0.4,
+     0.7
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "215",
+   "challenges": [
+    "ClassicalON"
+   ],
+   "modules": 118,
+   "bytes": 584772,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "218",
+   "challenges": [
+    "BufferedIsing"
+   ],
+   "modules": 16,
+   "bytes": 141590,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "220",
+   "challenges": [
+    "DirectionalBallisticity",
+    "DirectionalWalk",
+    "VelocityHemisphere"
+   ],
+   "modules": 588,
+   "bytes": 5985618,
+   "buildHours": {
+    "byBytes": [
+     0.3,
+     0.5
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "221",
+   "challenges": [
+    "DilutedSpin"
+   ],
+   "modules": 406,
+   "bytes": 2767562,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.2,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "222",
+   "challenges": [
+    "IsingFiniteness",
+    "PerceptronFreeEnergy",
+    "SphericalField"
+   ],
+   "modules": 601,
+   "bytes": 6637468,
+   "buildHours": {
+    "byBytes": [
+     0.3,
+     0.6
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "227",
+   "challenges": [
+    "CriticalSK",
+    "CriticalSKMixing",
+    "SKBarriers",
+    "SKHighTemperature",
+    "SKRatio"
+   ],
+   "modules": 1432,
+   "bytes": 10314455,
+   "buildHours": {
+    "byBytes": [
+     0.5,
+     0.9
+    ],
+    "byModules": [
+     0.6,
+     1.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "228",
+   "challenges": [
+    "ContinuumTransition",
+    "RadialDensityInterval",
+    "RadialTransition"
+   ],
+   "modules": 268,
+   "bytes": 1403221,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "229",
+   "challenges": [
+    "ThreeStateSupercritical",
+    "ThreeStateTreeClauses"
+   ],
+   "modules": 60,
+   "bytes": 773999,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "230",
+   "challenges": [
+    "SLELowerPositivity"
+   ],
+   "modules": 66,
+   "bytes": 2267787,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "231",
+   "challenges": [
+    "FreeUniformSpanningForest",
+    "StronglyRayleighDPP"
+   ],
+   "modules": 333,
+   "bytes": 1593795,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "234",
+   "challenges": [
+    "InvariantIsing"
+   ],
+   "modules": 2124,
+   "bytes": 10562730,
+   "buildHours": {
+    "byBytes": [
+     0.5,
+     0.9
+    ],
+    "byModules": [
+     0.8,
+     1.5
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "235",
+   "challenges": [
+    "FixedClauseThreshold",
+    "SATComputability",
+    "SATSharpness",
+    "SATVariance"
+   ],
+   "modules": 631,
+   "bytes": 4495415,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.4
+    ],
+    "byModules": [
+     0.3,
+     0.5
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "236",
+   "challenges": [
+    "FreeIsing"
+   ],
+   "modules": 892,
+   "bytes": 5533626,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.5
+    ],
+    "byModules": [
+     0.4,
+     0.6
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "237",
+   "challenges": [
+    "CriticalStripMass",
+    "HoneycombBridgeFiniteness",
+    "HoneycombBridgeMassSupport",
+    "HoneycombFreeEnergy"
+   ],
+   "modules": 276,
+   "bytes": 11044178,
+   "buildHours": {
+    "byBytes": [
+     0.5,
+     1.0
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "238",
+   "challenges": [
+    "BinarySweep",
+    "CoordinateSweeps",
+    "CoordinateTrace",
+    "FourRowPermanent",
+    "OccupiedOverlap",
+    "PartialPermutation",
+    "SignedSweepMoment",
+    "SpinAngle",
+    "ThorpFirstReciprocal",
+    "ThorpRemaining",
+    "ThorpRouting",
+    "ThorpWeightedCompatibility",
+    "WeightedSweepMoments"
+   ],
+   "modules": 819,
+   "bytes": 12466862,
+   "buildHours": {
+    "byBytes": [
+     0.6,
+     1.1
+    ],
+    "byModules": [
+     0.3,
+     0.6
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "240",
+   "challenges": [
+    "CHObstruction"
+   ],
+   "modules": 16,
+   "bytes": 203559,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "241",
+   "challenges": [
+    "DegreeRigidity"
+   ],
+   "modules": 975,
+   "bytes": 3923981,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.3
+    ],
+    "byModules": [
+     0.4,
+     0.7
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "242",
+   "challenges": [
+    "SingleFold"
+   ],
+   "modules": 29,
+   "bytes": 338071,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "243",
+   "challenges": [
+    "ChoicelessPolynomialTime",
+    "WitnessedChoice"
+   ],
+   "modules": 55,
+   "bytes": 1959095,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "244",
+   "challenges": [
+    "PartitionConsistency",
+    "PartitionPrinciple"
+   ],
+   "modules": 1020,
+   "bytes": 14369359,
+   "buildHours": {
+    "byBytes": [
+     0.6,
+     1.3
+    ],
+    "byModules": [
+     0.4,
+     0.7
+    ]
+   },
+   "packages": [
+    "Init",
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "245",
+   "challenges": [
+    "TypeSystemNormalization"
+   ],
+   "modules": 34,
+   "bytes": 1584257,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "246",
+   "challenges": [
+    "CannonGeometricAction"
+   ],
+   "modules": 300,
+   "bytes": 2908089,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "247",
+   "challenges": [
+    "PeriodicGroup"
+   ],
+   "modules": 64,
+   "bytes": 1798795,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "248",
+   "challenges": [
+    "ThompsonNonamenability"
+   ],
+   "modules": 69,
+   "bytes": 375524,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "249",
+   "challenges": [
+    "EilenbergGanea"
+   ],
+   "modules": 41,
+   "bytes": 1723255,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "250",
+   "challenges": [
+    "BooneHigman",
+    "SimpleOvergroups",
+    "UniversalFInfinity"
+   ],
+   "modules": 293,
+   "bytes": 4930384,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.4
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "251",
+   "challenges": [
+    "Dixmier",
+    "DixmierAllDiscrete"
+   ],
+   "modules": 41,
+   "bytes": 185378,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "252",
+   "challenges": [
+    "TorsionFreeHyperbolic"
+   ],
+   "modules": 30,
+   "bytes": 483784,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "253",
+   "challenges": [
+    "SimpleAmenable"
+   ],
+   "modules": 551,
+   "bytes": 3944222,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.3
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "254",
+   "challenges": [
+    "ArtinCAT0",
+    "ArtinParabolicIntersections",
+    "HarmonicArtin"
+   ],
+   "modules": 904,
+   "bytes": 4120123,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.4
+    ],
+    "byModules": [
+     0.4,
+     0.7
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "255",
+   "challenges": [
+    "PolycyclicRecognition"
+   ],
+   "modules": 2680,
+   "bytes": 10711449,
+   "buildHours": {
+    "byBytes": [
+     0.5,
+     0.9
+    ],
+    "byModules": [
+     1.1,
+     1.9
+    ]
+   },
+   "packages": [
+    "Gromov",
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "256",
+   "challenges": [
+    "Kervaire"
+   ],
+   "modules": 48,
+   "bytes": 509563,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "257",
+   "challenges": [
+    "HyperbolicObstruction"
+   ],
+   "modules": 418,
+   "bytes": 2436832,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.2,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "260",
+   "challenges": [
+    "CKSBondiPenrose"
+   ],
+   "modules": 337,
+   "bytes": 3022244,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "261",
+   "challenges": [
+    "PlanarAndersonSpectrum"
+   ],
+   "modules": 2,
+   "bytes": 36123,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "262",
+   "challenges": [
+    "LiebThirring"
+   ],
+   "modules": 39,
+   "bytes": 658318,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "263",
+   "challenges": [
+    "CoulombIonization",
+    "CoulombRadii"
+   ],
+   "modules": 1037,
+   "bytes": 8479719,
+   "buildHours": {
+    "byBytes": [
+     0.4,
+     0.7
+    ],
+    "byModules": [
+     0.4,
+     0.8
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "266",
+   "challenges": [
+    "HadamardCubeFiber",
+    "MUBSix"
+   ],
+   "modules": 3389,
+   "bytes": 205226737,
+   "buildHours": {
+    "byBytes": [
+     9.1,
+     17.9
+    ],
+    "byModules": [
+     1.4,
+     2.5
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "267",
+   "challenges": [
+    "HardSphere"
+   ],
+   "modules": 467,
+   "bytes": 3492311,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.3
+    ],
+    "byModules": [
+     0.2,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "269",
+   "challenges": [
+    "Laughlin",
+    "LaughlinFock",
+    "LaughlinGap",
+    "LaughlinPlanar"
+   ],
+   "modules": 1679,
+   "bytes": 13823964,
+   "buildHours": {
+    "byBytes": [
+     0.6,
+     1.2
+    ],
+    "byModules": [
+     0.7,
+     1.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "271",
+   "challenges": [
+    "Heisenberg"
+   ],
+   "modules": 129,
+   "bytes": 1118820,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "272",
+   "challenges": [
+    "DimensionTenChannel",
+    "DimensionTenPair"
+   ],
+   "modules": 150,
+   "bytes": 3081360,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "273",
+   "challenges": [
+    "EntropyPhotonNumber"
+   ],
+   "modules": 27,
+   "bytes": 1405904,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "274",
+   "challenges": [
+    "QACParity",
+    "RegularParity"
+   ],
+   "modules": 24,
+   "bytes": 159677,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "275",
+   "challenges": [
+    "ContinuumCoulombHardness"
+   ],
+   "modules": 2087,
+   "bytes": 10386604,
+   "buildHours": {
+    "byBytes": [
+     0.5,
+     0.9
+    ],
+    "byModules": [
+     0.8,
+     1.5
+    ]
+   },
+   "packages": [
+    "Mathlib",
+    "RellichKondrachov"
+   ]
+  },
+  {
+   "family": "276",
+   "challenges": [
+    "AmplitudeDamping"
+   ],
+   "modules": 36,
+   "bytes": 288318,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "277",
+   "challenges": [
+    "EntangledGames"
+   ],
+   "modules": 31,
+   "bytes": 357532,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "279",
+   "challenges": [
+    "ExactQuantumFactoring"
+   ],
+   "modules": 547,
+   "bytes": 2426651,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "280",
+   "challenges": [
+    "VertexAlgebraNet"
+   ],
+   "modules": 78,
+   "bytes": 1460900,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "281",
+   "challenges": [
+    "SKFullSupport",
+    "SKValue"
+   ],
+   "modules": 349,
+   "bytes": 2489864,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.1,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "287",
+   "challenges": [
+    "InterpolatedFactors"
+   ],
+   "modules": 78,
+   "bytes": 1257904,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "288",
+   "challenges": [
+    "KadisonSimilarity",
+    "UniformCommutator"
+   ],
+   "modules": 1474,
+   "bytes": 8439642,
+   "buildHours": {
+    "byBytes": [
+     0.4,
+     0.7
+    ],
+    "byModules": [
+     0.6,
+     1.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "289",
+   "challenges": [
+    "StrongKadisonKastler"
+   ],
+   "modules": 2653,
+   "bytes": 14569015,
+   "buildHours": {
+    "byBytes": [
+     0.6,
+     1.3
+    ],
+    "byModules": [
+     1.1,
+     1.9
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "290",
+   "challenges": [
+    "BoundedRecovery"
+   ],
+   "modules": 28,
+   "bytes": 372691,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "291",
+   "challenges": [
+    "UniformGamma"
+   ],
+   "modules": 52,
+   "bytes": 761654,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "292",
+   "challenges": [
+    "NuclearUltrapower"
+   ],
+   "modules": 40,
+   "bytes": 1835716,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "293",
+   "challenges": [
+    "BackwardIntertwiners",
+    "ContinuousCircleWeight",
+    "FiniteFactor",
+    "HyperinvariantSubspaces",
+    "IrrationalRotation",
+    "ProductBrown"
+   ],
+   "modules": 1114,
+   "bytes": 6103956,
+   "buildHours": {
+    "byBytes": [
+     0.3,
+     0.5
+    ],
+    "byModules": [
+     0.4,
+     0.8
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "294",
+   "challenges": [
+    "KaplanskyQuasitrace",
+    "KaplanskyStableFiniteness"
+   ],
+   "modules": 183,
+   "bytes": 1750097,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "295",
+   "challenges": [
+    "KadisonRingrose"
+   ],
+   "modules": 373,
+   "bytes": 2795254,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.1,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "296",
+   "challenges": [
+    "FactorGeneration",
+    "RelativeGeneration"
+   ],
+   "modules": 104,
+   "bytes": 1730235,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "297",
+   "challenges": [
+    "Naimark"
+   ],
+   "modules": 17,
+   "bytes": 1211222,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "298",
+   "challenges": [
+    "FiniteEntropySeparation"
+   ],
+   "modules": 154,
+   "bytes": 791551,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "299",
+   "challenges": [
+    "CharacterCriterion"
+   ],
+   "modules": 63,
+   "bytes": 1282649,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "301",
+   "challenges": [
+    "TraceIdealTransportSupport"
+   ],
+   "modules": 4,
+   "bytes": 60518,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "303",
+   "challenges": [
+    "ExactInfiniteness",
+    "IndividualStrongInfiniteness"
+   ],
+   "modules": 1014,
+   "bytes": 6746233,
+   "buildHours": {
+    "byBytes": [
+     0.3,
+     0.6
+    ],
+    "byModules": [
+     0.4,
+     0.7
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "307",
+   "challenges": [
+    "CoarseAssembly"
+   ],
+   "modules": 348,
+   "bytes": 3288532,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.1,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "312",
+   "challenges": [
+    "GrothendieckElementaryExpansion"
+   ],
+   "modules": 59,
+   "bytes": 599037,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "317",
+   "challenges": [
+    "ThomasonModelStructures"
+   ],
+   "modules": 86,
+   "bytes": 3011492,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "322",
+   "challenges": [
+    "TingleySphereIsometry"
+   ],
+   "modules": 68,
+   "bytes": 383711,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "323",
+   "challenges": [
+    "SeparableQuotientNegative"
+   ],
+   "modules": 52,
+   "bytes": 670195,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "324",
+   "challenges": [
+    "C0Absorption",
+    "LipschitzEquivalence"
+   ],
+   "modules": 96,
+   "bytes": 844280,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "325",
+   "challenges": [
+    "CompleteCrouzeix",
+    "CrouzeixHilbert",
+    "DirectCrouzeix",
+    "HilbertCrouzeix",
+    "StructuralCrouzeix"
+   ],
+   "modules": 204,
+   "bytes": 1796272,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "326",
+   "challenges": [
+    "Cotype"
+   ],
+   "modules": 126,
+   "bytes": 505674,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "327",
+   "challenges": [
+    "MarkovType"
+   ],
+   "modules": 208,
+   "bytes": 1100825,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Init",
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "328",
+   "challenges": [
+    "ReflexiveFixedPoints"
+   ],
+   "modules": 87,
+   "bytes": 481835,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "329",
+   "challenges": [
+    "MetricEntropyDuality"
+   ],
+   "modules": 53,
+   "bytes": 269737,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "330",
+   "challenges": [
+    "DiscreteLipschitzFree",
+    "RealL1Renorming"
+   ],
+   "modules": 36,
+   "bytes": 191764,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "331",
+   "challenges": [
+    "BoundedTreePotentials",
+    "DaugavetModuli",
+    "DiamondDistortion",
+    "ForestSpace",
+    "IndependentProducts",
+    "MidpointLenses",
+    "RecursivePotentials"
+   ],
+   "modules": 178,
+   "bytes": 2326989,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "333",
+   "challenges": [
+    "SurfaceImmersion"
+   ],
+   "modules": 1884,
+   "bytes": 8169676,
+   "buildHours": {
+    "byBytes": [
+     0.4,
+     0.7
+    ],
+    "byModules": [
+     0.8,
+     1.4
+    ]
+   },
+   "packages": [
+    "Mathlib",
+    "SphereEversion"
+   ]
+  },
+  {
+   "family": "334",
+   "challenges": [
+    "IsometricImmersion"
+   ],
+   "modules": 447,
+   "bytes": 2826597,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.2,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "337",
+   "challenges": [
+    "FillingCoefficient",
+    "SharpCAT0Filling"
+   ],
+   "modules": 444,
+   "bytes": 3036834,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.2,
+     0.3
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "342",
+   "challenges": [
+    "TamingCompatibility"
+   ],
+   "modules": 583,
+   "bytes": 4121556,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.4
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "343",
+   "challenges": [
+    "BallPacking",
+    "BallPackingNecessity"
+   ],
+   "modules": 209,
+   "bytes": 5440054,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.5
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "347",
+   "challenges": [
+    "ArnoldCounterexample"
+   ],
+   "modules": 37,
+   "bytes": 270580,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "348",
+   "challenges": [
+    "EinsteinFour"
+   ],
+   "modules": 403,
+   "bytes": 9585544,
+   "buildHours": {
+    "byBytes": [
+     0.4,
+     0.8
+    ],
+    "byModules": [
+     0.2,
+     0.3
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "RellichKondrachov"
+   ]
+  },
+  {
+   "family": "350",
+   "challenges": [
+    "NodalLength",
+    "SmoothYau",
+    "YauCounterexample"
+   ],
+   "modules": 1566,
+   "bytes": 9703755,
+   "buildHours": {
+    "byBytes": [
+     0.4,
+     0.8
+    ],
+    "byModules": [
+     0.6,
+     1.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "353",
+   "challenges": [
+    "AffineBernstein"
+   ],
+   "modules": 323,
+   "bytes": 2002209,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "354",
+   "challenges": [
+    "CubicTorus"
+   ],
+   "modules": 163,
+   "bytes": 6996592,
+   "buildHours": {
+    "byBytes": [
+     0.3,
+     0.6
+    ],
+    "byModules": [
+     0.1,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "356",
+   "challenges": [
+    "WeakHessian"
+   ],
+   "modules": 543,
+   "bytes": 3146804,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.3
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "358",
+   "challenges": [
+    "ConjugatePoints"
+   ],
+   "modules": 20,
+   "bytes": 1283732,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "359",
+   "challenges": [
+    "PinchedKahler"
+   ],
+   "modules": 120,
+   "bytes": 928792,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "360",
+   "challenges": [
+    "BiholderTransport",
+    "WeakMTWGlobalSupport"
+   ],
+   "modules": 857,
+   "bytes": 4114238,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.4
+    ],
+    "byModules": [
+     0.3,
+     0.6
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "361",
+   "challenges": [
+    "HarmonicGrowth"
+   ],
+   "modules": 37,
+   "bytes": 1688039,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "362",
+   "challenges": [
+    "VlasovMaxwell"
+   ],
+   "modules": 208,
+   "bytes": 4845662,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.4
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "363",
+   "challenges": [
+    "BoltzmannNonuniqueness"
+   ],
+   "modules": 526,
+   "bytes": 7340515,
+   "buildHours": {
+    "byBytes": [
+     0.3,
+     0.6
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "365",
+   "challenges": [
+    "Conductivity"
+   ],
+   "modules": 596,
+   "bytes": 3621750,
+   "buildHours": {
+    "byBytes": [
+     0.2,
+     0.3
+    ],
+    "byModules": [
+     0.2,
+     0.4
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "367",
+   "challenges": [
+    "BernoulliNonflatInSeven"
+   ],
+   "modules": 92,
+   "bytes": 643737,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "369",
+   "challenges": [
+    "HotSpots"
+   ],
+   "modules": 32,
+   "bytes": 1384169,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "370",
+   "challenges": [
+    "HenonEmden"
+   ],
+   "modules": 97,
+   "bytes": 646831,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "371",
+   "challenges": [
+    "DefocusingNLS"
+   ],
+   "modules": 2416,
+   "bytes": 8979743,
+   "buildHours": {
+    "byBytes": [
+     0.4,
+     0.8
+    ],
+    "byModules": [
+     1.0,
+     1.8
+    ]
+   },
+   "packages": [
+    "FixedPointTheorems",
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "372",
+   "challenges": [
+    "ElasticityUniqueness"
+   ],
+   "modules": 43,
+   "bytes": 1611920,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.0
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "373",
+   "challenges": [
+    "CoulombCounterexample"
+   ],
+   "modules": 98,
+   "bytes": 470788,
+   "buildHours": {
+    "byBytes": [
+     0.0,
+     0.0
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "374",
+   "challenges": [
+    "Brenier"
+   ],
+   "modules": 90,
+   "bytes": 1537449,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.1
+    ],
+    "byModules": [
+     0.0,
+     0.1
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "376",
+   "challenges": [
+    "BalancedBoxRouting",
+    "BalancedThreeStack",
+    "ForcedNavierStokesComputation",
+    "NavierStokesAlternating",
+    "NavierStokesVelocity",
+    "SolenoidalSheetPrograms"
+   ],
+   "modules": 292,
+   "bytes": 2455407,
+   "buildHours": {
+    "byBytes": [
+     0.1,
+     0.2
+    ],
+    "byModules": [
+     0.1,
+     0.2
+    ]
+   },
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "family": "378",
+   "challenges": [
+    "SubexponentialSAT"
+   ],
+   "modules": 3092,
+   "bytes": 27311076,
+   "buildHours": {
+    "byBytes": [
+     1.2,
+     2.4
+    ],
+    "byModules": [
+     1.2,
+     2.2
+    ]
+   },
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  }
+ ],
+ "challenges": [
+  {
+   "name": "AbhyankarSathaye",
+   "family": "049",
+   "modules": 16,
+   "bytes": 56548,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "AffineBernstein",
+   "family": "353",
+   "modules": 323,
+   "bytes": 2002209,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "AlgorithmicThinTrees",
+   "family": "174",
+   "modules": 737,
+   "bytes": 4563395,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "AmplitudeDamping",
+   "family": "276",
+   "modules": 36,
+   "bytes": 288318,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ArnoldCounterexample",
+   "family": "347",
+   "modules": 37,
+   "bytes": 270580,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ArtinCAT0",
+   "family": "254",
+   "modules": 21,
+   "bytes": 417734,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ArtinParabolicIntersections",
+   "family": "254",
+   "modules": 783,
+   "bytes": 3305939,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "AsymptoticallyMinimalLittlewood",
+   "family": "076",
+   "modules": 25,
+   "bytes": 433245,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "AtomicGaussian",
+   "family": "090",
+   "modules": 216,
+   "bytes": 8536466,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "AuslanderReiten",
+   "family": "199",
+   "modules": 733,
+   "bytes": 2352614,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BackwardIntertwiners",
+   "family": "293",
+   "modules": 24,
+   "bytes": 264245,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BalancedBoxRouting",
+   "family": "376",
+   "modules": 8,
+   "bytes": 168692,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BalancedRyser",
+   "family": "162",
+   "modules": 699,
+   "bytes": 3898305,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BalancedThreeStack",
+   "family": "376",
+   "modules": 61,
+   "bytes": 504677,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BallPacking",
+   "family": "343",
+   "modules": 170,
+   "bytes": 4531367,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BallPackingNecessity",
+   "family": "343",
+   "modules": 66,
+   "bytes": 1675250,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BarnetteHamiltonian",
+   "family": "180",
+   "modules": 32,
+   "bytes": 381406,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BassTorsionFree",
+   "family": "207",
+   "modules": 74,
+   "bytes": 1035056,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BassTrace",
+   "family": "207",
+   "modules": 70,
+   "bytes": 1020449,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BenjaminiSchramm",
+   "family": "214",
+   "modules": 971,
+   "bytes": 6843588,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BernoulliNonflatInSeven",
+   "family": "367",
+   "modules": 92,
+   "bytes": 643737,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BiholderTransport",
+   "family": "360",
+   "modules": 646,
+   "bytes": 3207972,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BinPackingGap",
+   "family": "118",
+   "modules": 285,
+   "bytes": 7569564,
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "Std"
+   ]
+  },
+  {
+   "name": "BinaryEditLower",
+   "family": "099",
+   "modules": 85,
+   "bytes": 467147,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BinaryMatching",
+   "family": "113",
+   "modules": 113,
+   "bytes": 619962,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BinarySweep",
+   "family": "238",
+   "modules": 193,
+   "bytes": 1155388,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BipartiteCrossing",
+   "family": "165",
+   "modules": 340,
+   "bytes": 896361,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BogomolovPopInjectivity",
+   "family": "009",
+   "modules": 6,
+   "bytes": 161087,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BoltzmannNonuniqueness",
+   "family": "363",
+   "modules": 526,
+   "bytes": 7340515,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BooneHigman",
+   "family": "250",
+   "modules": 48,
+   "bytes": 1688548,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BorsukNine",
+   "family": "156",
+   "modules": 270,
+   "bytes": 3526060,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BoundedRecovery",
+   "family": "290",
+   "modules": 28,
+   "bytes": 372691,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BoundedTreePotentials",
+   "family": "331",
+   "modules": 47,
+   "bytes": 610575,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BoundedTreewidthL1",
+   "family": "089",
+   "modules": 34,
+   "bytes": 709777,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Brenier",
+   "family": "374",
+   "modules": 90,
+   "bytes": 1537449,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Brennan",
+   "family": "072",
+   "modules": 39,
+   "bytes": 694695,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BrennanSharp",
+   "family": "072",
+   "modules": 48,
+   "bytes": 712373,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "BufferedIsing",
+   "family": "218",
+   "modules": 16,
+   "bytes": 141590,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "C0Absorption",
+   "family": "324",
+   "modules": 35,
+   "bytes": 367218,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "C1EntropyCounterexample",
+   "family": "151",
+   "modules": 202,
+   "bytes": 967893,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CHObstruction",
+   "family": "240",
+   "modules": 16,
+   "bytes": 203559,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CKSBondiPenrose",
+   "family": "260",
+   "modules": 337,
+   "bytes": 3022244,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CannonGeometricAction",
+   "family": "246",
+   "modules": 300,
+   "bytes": 2908089,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CartierChartCompactnessSupport",
+   "family": "066",
+   "modules": 14,
+   "bytes": 69473,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Catalan",
+   "family": "005",
+   "modules": 989,
+   "bytes": 16216692,
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "PrimeNumberTheoremAnd"
+   ]
+  },
+  {
+   "name": "CayleyPercolation",
+   "family": "214",
+   "modules": 79,
+   "bytes": 2647298,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CharacterCriterion",
+   "family": "299",
+   "modules": 63,
+   "bytes": 1282649,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CharacterVarietiesAllSeamsSupport",
+   "family": "027",
+   "modules": 80,
+   "bytes": 1344583,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ChoicelessPolynomialTime",
+   "family": "243",
+   "modules": 27,
+   "bytes": 823143,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CirculantHadamard",
+   "family": "179",
+   "modules": 69,
+   "bytes": 401608,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ClassicalON",
+   "family": "215",
+   "modules": 118,
+   "bytes": 584772,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CliqueFreeLog",
+   "family": "184",
+   "modules": 32,
+   "bytes": 230051,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CoarseAssembly",
+   "family": "307",
+   "modules": 348,
+   "bytes": 3288532,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CoboundaryExpanders",
+   "family": "177",
+   "modules": 37,
+   "bytes": 1462632,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CommonBasesFPRAS",
+   "family": "114",
+   "modules": 2,
+   "bytes": 1340857,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CommutingDerivations",
+   "family": "049",
+   "modules": 33,
+   "bytes": 137604,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CompactBanach",
+   "family": "098",
+   "modules": 29,
+   "bytes": 208418,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CompleteCrossing",
+   "family": "165",
+   "modules": 301,
+   "bytes": 1467853,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CompleteCrouzeix",
+   "family": "325",
+   "modules": 49,
+   "bytes": 653454,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ComplexCancellation",
+   "family": "047",
+   "modules": 56,
+   "bytes": 243302,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Conductivity",
+   "family": "365",
+   "modules": 596,
+   "bytes": 3621750,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ConjugatePoints",
+   "family": "358",
+   "modules": 20,
+   "bytes": 1283732,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ContingencyTables",
+   "family": "115",
+   "modules": 1298,
+   "bytes": 9108153,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ContinuousCircleWeight",
+   "family": "293",
+   "modules": 52,
+   "bytes": 910227,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ContinuumCoulombHardness",
+   "family": "275",
+   "modules": 2087,
+   "bytes": 10386604,
+   "packages": [
+    "Mathlib",
+    "RellichKondrachov"
+   ]
+  },
+  {
+   "name": "ContinuumTransition",
+   "family": "228",
+   "modules": 162,
+   "bytes": 699989,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CoordinateSweeps",
+   "family": "238",
+   "modules": 35,
+   "bytes": 1097097,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CoordinateTrace",
+   "family": "238",
+   "modules": 29,
+   "bytes": 988476,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Cotype",
+   "family": "326",
+   "modules": 126,
+   "bytes": 505674,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CoulombCounterexample",
+   "family": "373",
+   "modules": 98,
+   "bytes": 470788,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CoulombIonization",
+   "family": "263",
+   "modules": 608,
+   "bytes": 4617163,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CoulombRadii",
+   "family": "263",
+   "modules": 429,
+   "bytes": 3862556,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CourtadeKumar",
+   "family": "119",
+   "modules": 44,
+   "bytes": 330148,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CoveringDensity",
+   "family": "092",
+   "modules": 144,
+   "bytes": 1765131,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CriticalPercolation",
+   "family": "213",
+   "modules": 628,
+   "bytes": 2913286,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CriticalSK",
+   "family": "227",
+   "modules": 36,
+   "bytes": 896876,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CriticalSKMixing",
+   "family": "227",
+   "modules": 594,
+   "bytes": 5602907,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CriticalStripMass",
+   "family": "237",
+   "modules": 131,
+   "bytes": 2799422,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CriticalZ3",
+   "family": "213",
+   "modules": 35,
+   "bytes": 464024,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CrouzeixHilbert",
+   "family": "325",
+   "modules": 91,
+   "bytes": 730197,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CubicTorus",
+   "family": "354",
+   "modules": 163,
+   "bytes": 6996592,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CycleCliqueRamsey",
+   "family": "189",
+   "modules": 444,
+   "bytes": 222603029,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CycleDecomposition",
+   "family": "181",
+   "modules": 35,
+   "bytes": 999218,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "CylinderCovering",
+   "family": "100",
+   "modules": 642,
+   "bytes": 3032649,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DaugavetModuli",
+   "family": "331",
+   "modules": 29,
+   "bytes": 206192,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DefocusingNLS",
+   "family": "371",
+   "modules": 2416,
+   "bytes": 8979743,
+   "packages": [
+    "FixedPointTheorems",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DegreeRigidity",
+   "family": "241",
+   "modules": 975,
+   "bytes": 3923981,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DeligneDrinfeld",
+   "family": "008",
+   "modules": 22,
+   "bytes": 1365256,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DepthFive",
+   "family": "135",
+   "modules": 165,
+   "bytes": 885234,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DepthThree",
+   "family": "112",
+   "modules": 176,
+   "bytes": 1031047,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DiamondDistortion",
+   "family": "331",
+   "modules": 33,
+   "bytes": 485389,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DilutedSpin",
+   "family": "221",
+   "modules": 406,
+   "bytes": 2767562,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DimensionTenChannel",
+   "family": "272",
+   "modules": 149,
+   "bytes": 3076654,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DimensionTenPair",
+   "family": "272",
+   "modules": 130,
+   "bytes": 2418701,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DirectCrouzeix",
+   "family": "325",
+   "modules": 43,
+   "bytes": 315378,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DirectedFeedback",
+   "family": "102",
+   "modules": 225,
+   "bytes": 8510402,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DirectionalBallisticity",
+   "family": "220",
+   "modules": 514,
+   "bytes": 5016349,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DirectionalWalk",
+   "family": "220",
+   "modules": 70,
+   "bytes": 955006,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DirichletSevenEighths",
+   "family": "003",
+   "modules": 2925,
+   "bytes": 25009580,
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "RellichKondrachov"
+   ]
+  },
+  {
+   "name": "DiscreteLipschitzFree",
+   "family": "330",
+   "modules": 33,
+   "bytes": 179503,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DiskMaximal",
+   "family": "085",
+   "modules": 31,
+   "bytes": 972739,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Dixmier",
+   "family": "251",
+   "modules": 33,
+   "bytes": 160904,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DixmierAllDiscrete",
+   "family": "251",
+   "modules": 40,
+   "bytes": 183393,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DoublingHilbert",
+   "family": "098",
+   "modules": 13,
+   "bytes": 158725,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DukePrimeDegree",
+   "family": "015",
+   "modules": 878,
+   "bytes": 5923014,
+   "packages": [
+    "ClassFieldTheory",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DuttaDomain",
+   "family": "194",
+   "modules": 279,
+   "bytes": 2412161,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "DyadicAvoidance",
+   "family": "084",
+   "modules": 76,
+   "bytes": 369707,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EditApproximation",
+   "family": "121",
+   "modules": 1025,
+   "bytes": 9018316,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EditDistance",
+   "family": "099",
+   "modules": 47,
+   "bytes": 1689009,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EgyptianFractions",
+   "family": "025",
+   "modules": 291,
+   "bytes": 1629041,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EilenbergGanea",
+   "family": "249",
+   "modules": 41,
+   "bytes": 1723255,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EinsteinFour",
+   "family": "348",
+   "modules": 403,
+   "bytes": 9585544,
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "RellichKondrachov"
+   ]
+  },
+  {
+   "name": "ElasticityUniqueness",
+   "family": "372",
+   "modules": 43,
+   "bytes": 1611920,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ElementaryPositivity",
+   "family": "169",
+   "modules": 550,
+   "bytes": 3476363,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EntangledGames",
+   "family": "277",
+   "modules": 31,
+   "bytes": 357532,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EntropyPhotonNumber",
+   "family": "273",
+   "modules": 27,
+   "bytes": 1405904,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ErdosReciprocal",
+   "family": "159",
+   "modules": 4775,
+   "bytes": 58000646,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EuclideanFiveColor",
+   "family": "158",
+   "modules": 71,
+   "bytes": 1548819,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EuclideanRamsey",
+   "family": "172",
+   "modules": 29,
+   "bytes": 290162,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EuclideanRamseyCircle",
+   "family": "172",
+   "modules": 36,
+   "bytes": 319594,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EuclideanRamseyNine",
+   "family": "172",
+   "modules": 17,
+   "bytes": 78279,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EuclideanRamseyQuadratic",
+   "family": "172",
+   "modules": 30,
+   "bytes": 300946,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EuclideanRamseySpherical",
+   "family": "172",
+   "modules": 32,
+   "bytes": 295637,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EuclideanRamseyTransitive",
+   "family": "172",
+   "modules": 30,
+   "bytes": 295425,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "EvenBarker",
+   "family": "179",
+   "modules": 74,
+   "bytes": 411003,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ExactFourier",
+   "family": "130",
+   "modules": 52,
+   "bytes": 850420,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ExactInfiniteness",
+   "family": "303",
+   "modules": 1013,
+   "bytes": 6731558,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ExactQuantumFactoring",
+   "family": "279",
+   "modules": 547,
+   "bytes": 2426651,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FKCRT",
+   "family": "211",
+   "modules": 62,
+   "bytes": 1887511,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FactorGeneration",
+   "family": "296",
+   "modules": 94,
+   "bytes": 1681397,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FalconerAllDimensions",
+   "family": "073",
+   "modules": 2385,
+   "bytes": 8958355,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FillingCoefficient",
+   "family": "337",
+   "modules": 113,
+   "bytes": 701901,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FiniteCircle",
+   "family": "099",
+   "modules": 37,
+   "bytes": 468551,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FiniteCongruenceGraph",
+   "family": "206",
+   "modules": 3,
+   "bytes": 25636,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FiniteEntropySeparation",
+   "family": "298",
+   "modules": 154,
+   "bytes": 791551,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FiniteFactor",
+   "family": "293",
+   "modules": 272,
+   "bytes": 1115483,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FinitisticAsymmetry",
+   "family": "198",
+   "modules": 589,
+   "bytes": 2252250,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FixedClauseThreshold",
+   "family": "235",
+   "modules": 16,
+   "bytes": 217689,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ForcedNavierStokesComputation",
+   "family": "376",
+   "modules": 61,
+   "bytes": 504687,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ForestSpace",
+   "family": "331",
+   "modules": 21,
+   "bytes": 215000,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FormulaHitting",
+   "family": "116",
+   "modules": 25,
+   "bytes": 125796,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FoulkesHowe",
+   "family": "210",
+   "modules": 64,
+   "bytes": 199016,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FourRowPermanent",
+   "family": "238",
+   "modules": 6,
+   "bytes": 25907,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FourierLLogL",
+   "family": "075",
+   "modules": 157,
+   "bytes": 1267097,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FreeIsing",
+   "family": "236",
+   "modules": 892,
+   "bytes": 5533626,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "FreeUniformSpanningForest",
+   "family": "231",
+   "modules": 225,
+   "bytes": 1074055,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "GammaPassage",
+   "family": "212",
+   "modules": 204,
+   "bytes": 951235,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "GaussianFiniteEntropy",
+   "family": "140",
+   "modules": 16,
+   "bytes": 126059,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "GaussianInformation",
+   "family": "140",
+   "modules": 112,
+   "bytes": 792047,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "GaussianMoat",
+   "family": "028",
+   "modules": 42,
+   "bytes": 599356,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "GaussianPropeller",
+   "family": "096",
+   "modules": 48,
+   "bytes": 584889,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "GaussianReplacement",
+   "family": "140",
+   "modules": 36,
+   "bytes": 786209,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "GeneralMahler",
+   "family": "087",
+   "modules": 303,
+   "bytes": 2143810,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "GeneralizedStarHeight",
+   "family": "134",
+   "modules": 38,
+   "bytes": 523994,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "GotsmanLinial",
+   "family": "127",
+   "modules": 23,
+   "bytes": 173688,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "GrahamSpherical",
+   "family": "172",
+   "modules": 19,
+   "bytes": 40177,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "GrothendieckElementaryExpansion",
+   "family": "312",
+   "modules": 59,
+   "bytes": 599037,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "GroupRingDeterminant",
+   "family": "197",
+   "modules": 156,
+   "bytes": 683041,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HadamardCubeFiber",
+   "family": "266",
+   "modules": 7,
+   "bytes": 40635,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HadwigerCounterexample",
+   "family": "157",
+   "modules": 289,
+   "bytes": 1678944,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HalvingLines",
+   "family": "183",
+   "modules": 48,
+   "bytes": 889175,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HardSphere",
+   "family": "267",
+   "modules": 467,
+   "bytes": 3492311,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HarmonicArtin",
+   "family": "254",
+   "modules": 661,
+   "bytes": 2803523,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HarmonicGrowth",
+   "family": "361",
+   "modules": 37,
+   "bytes": 1688039,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HeckeSevenEighths",
+   "family": "003",
+   "modules": 2926,
+   "bytes": 25020474,
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "RellichKondrachov"
+   ]
+  },
+  {
+   "name": "HeilbronnTriangle",
+   "family": "191",
+   "modules": 196,
+   "bytes": 1017458,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Heisenberg",
+   "family": "271",
+   "modules": 129,
+   "bytes": 1118820,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HenonEmden",
+   "family": "370",
+   "modules": 97,
+   "bytes": 646831,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HilbertCrouzeix",
+   "family": "325",
+   "modules": 8,
+   "bytes": 42761,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HoneycombBridgeFiniteness",
+   "family": "237",
+   "modules": 44,
+   "bytes": 325162,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HoneycombBridgeMassSupport",
+   "family": "237",
+   "modules": 99,
+   "bytes": 7875841,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HoneycombFreeEnergy",
+   "family": "237",
+   "modules": 2,
+   "bytes": 43753,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HotSpots",
+   "family": "369",
+   "modules": 32,
+   "bytes": 1384169,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HyperbolicCones",
+   "family": "095",
+   "modules": 87,
+   "bytes": 220595,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HyperbolicObstruction",
+   "family": "257",
+   "modules": 418,
+   "bytes": 2436832,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "HyperinvariantSubspaces",
+   "family": "293",
+   "modules": 278,
+   "bytes": 1130349,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "IndependentProducts",
+   "family": "331",
+   "modules": 23,
+   "bytes": 182873,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "IndependentSets",
+   "family": "106",
+   "modules": 455,
+   "bytes": 4481570,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "IndividualStrongInfiniteness",
+   "family": "303",
+   "modules": 26,
+   "bytes": 297705,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "InfiniteMatroid",
+   "family": "185",
+   "modules": 26,
+   "bytes": 175567,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "InfiniteMatroidCorollaries",
+   "family": "185",
+   "modules": 34,
+   "bytes": 198823,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "InterpolatedFactors",
+   "family": "287",
+   "modules": 78,
+   "bytes": 1257904,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "InvariantIsing",
+   "family": "234",
+   "modules": 2124,
+   "bytes": 10562730,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "IrrationalRotation",
+   "family": "293",
+   "modules": 736,
+   "bytes": 3678702,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "IrrationalTriangleBilliard",
+   "family": "150",
+   "modules": 40,
+   "bytes": 599122,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "IsingFiniteness",
+   "family": "222",
+   "modules": 46,
+   "bytes": 1497330,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "IsometricImmersion",
+   "family": "334",
+   "modules": 447,
+   "bytes": 2826597,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Jacobsthal",
+   "family": "021",
+   "modules": 820,
+   "bytes": 7051334,
+   "packages": [
+    "AbsorptionCutoff",
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "StrongPNT"
+   ]
+  },
+  {
+   "name": "JacobsthalImproved",
+   "family": "021",
+   "modules": 820,
+   "bytes": 7051357,
+   "packages": [
+    "AbsorptionCutoff",
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "StrongPNT"
+   ]
+  },
+  {
+   "name": "JointDickman",
+   "family": "012",
+   "modules": 1793,
+   "bytes": 8220085,
+   "packages": [
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "StrongPNT"
+   ]
+  },
+  {
+   "name": "KLInvariance",
+   "family": "168",
+   "modules": 35,
+   "bytes": 1835113,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "KMedianRecovery",
+   "family": "125",
+   "modules": 507,
+   "bytes": 3725044,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "KMedianRefinedRecovery",
+   "family": "125",
+   "modules": 587,
+   "bytes": 2586530,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "KMedianThreshold",
+   "family": "125",
+   "modules": 766,
+   "bytes": 3240853,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "KServer",
+   "family": "110",
+   "modules": 38,
+   "bytes": 1785536,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "KadisonRingrose",
+   "family": "295",
+   "modules": 373,
+   "bytes": 2795254,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "KadisonSimilarity",
+   "family": "288",
+   "modules": 817,
+   "bytes": 5796077,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "KahlerSplitting",
+   "family": "052",
+   "modules": 47,
+   "bytes": 733056,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "KaplanskyDirectFiniteness",
+   "family": "197",
+   "modules": 122,
+   "bytes": 544646,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "KaplanskyFinitelyPresented",
+   "family": "197",
+   "modules": 127,
+   "bytes": 556716,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "KaplanskyQuasitrace",
+   "family": "294",
+   "modules": 124,
+   "bytes": 1503449,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "KaplanskyStableFiniteness",
+   "family": "294",
+   "modules": 182,
+   "bytes": 1748260,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Kervaire",
+   "family": "256",
+   "modules": 48,
+   "bytes": 509563,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "KoebeCircleDomains",
+   "family": "071",
+   "modules": 2791,
+   "bytes": 12504086,
+   "packages": [
+    "Mathlib",
+    "Schoenflies"
+   ]
+  },
+  {
+   "name": "Laughlin",
+   "family": "269",
+   "modules": 1259,
+   "bytes": 2973805,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "LaughlinFock",
+   "family": "269",
+   "modules": 294,
+   "bytes": 8421301,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "LaughlinGap",
+   "family": "269",
+   "modules": 107,
+   "bytes": 2342154,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "LaughlinPlanar",
+   "family": "269",
+   "modules": 1280,
+   "bytes": 3063322,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "LiebThirring",
+   "family": "262",
+   "modules": 39,
+   "bytes": 658318,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "LipschitzEquivalence",
+   "family": "324",
+   "modules": 61,
+   "bytes": 477062,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "LipschitzHilbert",
+   "family": "083",
+   "modules": 1911,
+   "bytes": 9266492,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ListHadwiger",
+   "family": "157",
+   "modules": 54,
+   "bytes": 903872,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "LittleFinitistic",
+   "family": "198",
+   "modules": 547,
+   "bytes": 2051004,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "LittlewoodFiniteFlatness",
+   "family": "076",
+   "modules": 29,
+   "bytes": 450857,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "LocalSmoothing",
+   "family": "079",
+   "modules": 2262,
+   "bytes": 10646161,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "LogBrunnMinkowski",
+   "family": "091",
+   "modules": 2,
+   "bytes": 1229869,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "LogConcaveQuery",
+   "family": "139",
+   "modules": 327,
+   "bytes": 3004616,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "LogKodairaFiberNegative",
+   "family": "033",
+   "modules": 15,
+   "bytes": 187281,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "LogspaceEquality",
+   "family": "103",
+   "modules": 40,
+   "bytes": 1851192,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MUBSix",
+   "family": "266",
+   "modules": 3382,
+   "bytes": 205186102,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MahlerConjecture",
+   "family": "087",
+   "modules": 230,
+   "bytes": 996472,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MarkovType",
+   "family": "327",
+   "modules": 208,
+   "bytes": 1100825,
+   "packages": [
+    "Init",
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MassAction",
+   "family": "149",
+   "modules": 72,
+   "bytes": 330707,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MatchingAffineLift",
+   "family": "126",
+   "modules": 67,
+   "bytes": 323266,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MatchingEntropy",
+   "family": "113",
+   "modules": 19,
+   "bytes": 158955,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MatchingEntropyBounds",
+   "family": "113",
+   "modules": 36,
+   "bytes": 348413,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MatchingFPRAS",
+   "family": "113",
+   "modules": 416,
+   "bytes": 3096312,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MatchingPSD",
+   "family": "126",
+   "modules": 54,
+   "bytes": 298326,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MatrixFields",
+   "family": "107",
+   "modules": 355,
+   "bytes": 12956099,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MatrixMultiplication",
+   "family": "107",
+   "modules": 505,
+   "bytes": 3668087,
+   "packages": [
+    "FixedPointTheorems",
+    "Lean",
+    "Mathlib",
+    "Std"
+   ]
+  },
+  {
+   "name": "MatrixRemoval",
+   "family": "190",
+   "modules": 62,
+   "bytes": 324677,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MatroidProphet",
+   "family": "111",
+   "modules": 126,
+   "bytes": 670447,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MatroidSecretary",
+   "family": "111",
+   "modules": 244,
+   "bytes": 1184165,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MaximalSeshadriConstants",
+   "family": "039",
+   "modules": 422,
+   "bytes": 2513211,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MemoryPrecision",
+   "family": "140",
+   "modules": 89,
+   "bytes": 822777,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MetricEntropyDuality",
+   "family": "329",
+   "modules": 53,
+   "bytes": 269737,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MetricKMedian",
+   "family": "125",
+   "modules": 570,
+   "bytes": 2482667,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MidpointLenses",
+   "family": "331",
+   "modules": 12,
+   "bytes": 143444,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "MinUncut",
+   "family": "102",
+   "modules": 376,
+   "bytes": 6000458,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Nagata",
+   "family": "039",
+   "modules": 118,
+   "bytes": 1625617,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Naimark",
+   "family": "297",
+   "modules": 17,
+   "bytes": 1211222,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "NavierStokesAlternating",
+   "family": "376",
+   "modules": 42,
+   "bytes": 395095,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "NavierStokesVelocity",
+   "family": "376",
+   "modules": 153,
+   "bytes": 1075693,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "NodalLength",
+   "family": "350",
+   "modules": 60,
+   "bytes": 1486463,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "NoiselessRegression",
+   "family": "140",
+   "modules": 23,
+   "bytes": 205513,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "NuclearUltrapower",
+   "family": "292",
+   "modules": 40,
+   "bytes": 1835716,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "OccupiedOverlap",
+   "family": "238",
+   "modules": 57,
+   "bytes": 1147841,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "OddKaplansky",
+   "family": "197",
+   "modules": 139,
+   "bytes": 833187,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "OneTapeSpace",
+   "family": "137",
+   "modules": 50,
+   "bytes": 321854,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "OneWayLiveness",
+   "family": "129",
+   "modules": 17,
+   "bytes": 176709,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "OptimalMaxCut",
+   "family": "102",
+   "modules": 373,
+   "bytes": 8868602,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "OrdinaryElliott",
+   "family": "007",
+   "modules": 629,
+   "bytes": 3069841,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "OrdinaryTwoPointCorrelations",
+   "family": "007",
+   "modules": 1540,
+   "bytes": 7050331,
+   "packages": [
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "StrongPNT"
+   ]
+  },
+  {
+   "name": "OstmannComplete",
+   "family": "013",
+   "modules": 3208,
+   "bytes": 14190496,
+   "packages": [
+    "BernoulliRegular",
+    "Mathlib",
+    "PrimeNumberTheoremAnd"
+   ]
+  },
+  {
+   "name": "OstmannPrimes",
+   "family": "013",
+   "modules": 4359,
+   "bytes": 17481938,
+   "packages": [
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "StrongPNT"
+   ]
+  },
+  {
+   "name": "ParityLifts",
+   "family": "133",
+   "modules": 23,
+   "bytes": 189192,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PartialPermutation",
+   "family": "238",
+   "modules": 63,
+   "bytes": 249807,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PartitionConsistency",
+   "family": "244",
+   "modules": 76,
+   "bytes": 1516077,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PartitionPrinciple",
+   "family": "244",
+   "modules": 944,
+   "bytes": 12853282,
+   "packages": [
+    "Init",
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PattersonFirstMoment",
+   "family": "023",
+   "modules": 3595,
+   "bytes": 14688837,
+   "packages": [
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "RellichKondrachov",
+    "StrongPNT"
+   ]
+  },
+  {
+   "name": "PerceptronFreeEnergy",
+   "family": "222",
+   "modules": 412,
+   "bytes": 3861042,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PerfectCompleteness",
+   "family": "105",
+   "modules": 864,
+   "bytes": 12359292,
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "Std"
+   ]
+  },
+  {
+   "name": "PeriodicGroup",
+   "family": "247",
+   "modules": 64,
+   "bytes": 1798795,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PeriodicTilingThree",
+   "family": "155",
+   "modules": 123,
+   "bytes": 663545,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PermanentCubic",
+   "family": "108",
+   "modules": 52,
+   "bytes": 917451,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PettyProjectionVolume",
+   "family": "088",
+   "modules": 34,
+   "bytes": 664077,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PiExponent",
+   "family": "017",
+   "modules": 870,
+   "bytes": 4321890,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PinchedKahler",
+   "family": "359",
+   "modules": 120,
+   "bytes": 928792,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PinnedDistances",
+   "family": "167",
+   "modules": 48,
+   "bytes": 740510,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PlanarAndersonSpectrum",
+   "family": "261",
+   "modules": 2,
+   "bytes": 36123,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PlanarFalconer",
+   "family": "073",
+   "modules": 720,
+   "bytes": 2640973,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PlanarFirstPassage",
+   "family": "212",
+   "modules": 196,
+   "bytes": 858205,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PlanarL1",
+   "family": "089",
+   "modules": 64,
+   "bytes": 1569355,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PlanarPacking",
+   "family": "090",
+   "modules": 564,
+   "bytes": 141689483,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PlanarUnitDistances",
+   "family": "167",
+   "modules": 41,
+   "bytes": 1345431,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PlaneColoring",
+   "family": "158",
+   "modules": 10,
+   "bytes": 18167,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PolycyclicRecognition",
+   "family": "255",
+   "modules": 2680,
+   "bytes": 10711449,
+   "packages": [
+    "Gromov",
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PosteriorReplicas",
+   "family": "140",
+   "modules": 137,
+   "bytes": 735487,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PowerFreeValues",
+   "family": "020",
+   "modules": 64,
+   "bytes": 1139677,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "PrimeGaps",
+   "family": "026",
+   "modules": 57,
+   "bytes": 1087547,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ProductBrown",
+   "family": "293",
+   "modules": 293,
+   "bytes": 1231556,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ProjectionCounterexample",
+   "family": "088",
+   "modules": 42,
+   "bytes": 133271,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ProjectionMoments",
+   "family": "140",
+   "modules": 47,
+   "bytes": 544859,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ProjectionVolume",
+   "family": "088",
+   "modules": 30,
+   "bytes": 130938,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "QACParity",
+   "family": "274",
+   "modules": 22,
+   "bytes": 155306,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "QuadricBundles",
+   "family": "050",
+   "modules": 35,
+   "bytes": 612891,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "QuantitativeVanDerWaerden",
+   "family": "160",
+   "modules": 116,
+   "bytes": 644249,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "QuasiRiemannHypothesis",
+   "family": "003",
+   "modules": 2925,
+   "bytes": 25009370,
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "PrimeNumberTheoremAnd",
+    "RellichKondrachov"
+   ]
+  },
+  {
+   "name": "QuinticLienard",
+   "family": "143",
+   "modules": 147,
+   "bytes": 817436,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "RadialDensityInterval",
+   "family": "228",
+   "modules": 105,
+   "bytes": 700926,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "RadialTransition",
+   "family": "228",
+   "modules": 104,
+   "bytes": 695376,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "RamseyFive",
+   "family": "170",
+   "modules": 483,
+   "bytes": 3635639,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "RandomizedMeanPayoff",
+   "family": "104",
+   "modules": 90,
+   "bytes": 1305149,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "RationalHitting",
+   "family": "116",
+   "modules": 54,
+   "bytes": 704824,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "RealL1Renorming",
+   "family": "330",
+   "modules": 34,
+   "bytes": 181621,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "RecursivePotentials",
+   "family": "331",
+   "modules": 13,
+   "bytes": 483516,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ReflexiveFixedPoints",
+   "family": "328",
+   "modules": 87,
+   "bytes": 481835,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "RegularParity",
+   "family": "274",
+   "modules": 23,
+   "bytes": 156957,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "RelativeGeneration",
+   "family": "296",
+   "modules": 103,
+   "bytes": 1728497,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "RieszQuantitative",
+   "family": "081",
+   "modules": 825,
+   "bytes": 3070144,
+   "packages": [
+    "FixedPointTheorems",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Rokhlin",
+   "family": "145",
+   "modules": 14,
+   "bytes": 1408639,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "RuledCovering",
+   "family": "100",
+   "modules": 31,
+   "bytes": 205645,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "RyserCovering",
+   "family": "162",
+   "modules": 218,
+   "bytes": 1130773,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "RyserOddExtensions",
+   "family": "162",
+   "modules": 220,
+   "bytes": 1143295,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SATComputability",
+   "family": "235",
+   "modules": 593,
+   "bytes": 4188526,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SATSharpness",
+   "family": "235",
+   "modules": 27,
+   "bytes": 240168,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SATVariance",
+   "family": "235",
+   "modules": 36,
+   "bytes": 302044,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SKBarriers",
+   "family": "227",
+   "modules": 575,
+   "bytes": 2612976,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SKFullSupport",
+   "family": "281",
+   "modules": 136,
+   "bytes": 993788,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SKHighTemperature",
+   "family": "227",
+   "modules": 557,
+   "bytes": 4705120,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SKRatio",
+   "family": "227",
+   "modules": 261,
+   "bytes": 2089675,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SKValue",
+   "family": "281",
+   "modules": 213,
+   "bytes": 1496076,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SLELowerPositivity",
+   "family": "230",
+   "modules": 66,
+   "bytes": 2267787,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Saxl",
+   "family": "205",
+   "modules": 39,
+   "bytes": 325640,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SecondKahnKalai",
+   "family": "176",
+   "modules": 38,
+   "bytes": 291080,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SelfSimilar",
+   "family": "148",
+   "modules": 58,
+   "bytes": 526237,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SelfSimilarCorollaries",
+   "family": "148",
+   "modules": 65,
+   "bytes": 562200,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SensitivitySeparation",
+   "family": "132",
+   "modules": 43,
+   "bytes": 160908,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SeparableQuotientNegative",
+   "family": "323",
+   "modules": 52,
+   "bytes": 670195,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SeymourSecondNeighborhood",
+   "family": "173",
+   "modules": 44,
+   "bytes": 191714,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SharpCAT0Filling",
+   "family": "337",
+   "modules": 331,
+   "bytes": 2334933,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SharpLogRamsey",
+   "family": "170",
+   "modules": 409,
+   "bytes": 2903907,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SharpThreshold",
+   "family": "186",
+   "modules": 79,
+   "bytes": 315887,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ShortEgyptianFractions",
+   "family": "025",
+   "modules": 59,
+   "bytes": 384254,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SidorenkoCounterexample",
+   "family": "161",
+   "modules": 36,
+   "bytes": 1218532,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SiegelZeros",
+   "family": "003",
+   "modules": 307,
+   "bytes": 3062696,
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "PrimeNumberTheoremAnd"
+   ]
+  },
+  {
+   "name": "SignedFiniteBand",
+   "family": "085",
+   "modules": 40,
+   "bytes": 843565,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SignedSweepMoment",
+   "family": "238",
+   "modules": 175,
+   "bytes": 1205907,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SimpleAmenable",
+   "family": "253",
+   "modules": 551,
+   "bytes": 3944222,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SimpleOvergroups",
+   "family": "250",
+   "modules": 239,
+   "bytes": 4014845,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SingleFold",
+   "family": "242",
+   "modules": 29,
+   "bytes": 338071,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SingleLatticeCovering",
+   "family": "092",
+   "modules": 42,
+   "bytes": 1146833,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SingletonLoopMatching",
+   "family": "113",
+   "modules": 137,
+   "bytes": 723351,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SmoothInitialForm",
+   "family": "108",
+   "modules": 18,
+   "bytes": 292973,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SmoothObstruction",
+   "family": "152",
+   "modules": 54,
+   "bytes": 1544837,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SmoothYau",
+   "family": "350",
+   "modules": 437,
+   "bytes": 4550483,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SnakyCertificate",
+   "family": "187",
+   "modules": 52,
+   "bytes": 1175321,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SnakyConditional",
+   "family": "187",
+   "modules": 210,
+   "bytes": 7281696,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SnakyTwentyOne",
+   "family": "187",
+   "modules": 95,
+   "bytes": 5244215,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SoftChannel204",
+   "family": "119",
+   "modules": 71,
+   "bytes": 500165,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SolenoidalSheetPrograms",
+   "family": "376",
+   "modules": 27,
+   "bytes": 302546,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SphericalField",
+   "family": "222",
+   "modules": 143,
+   "bytes": 1279096,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SpinAngle",
+   "family": "238",
+   "modules": 4,
+   "bytes": 252881,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SplitTangentIntegrability",
+   "family": "052",
+   "modules": 16,
+   "bytes": 810191,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SquareDifference",
+   "family": "182",
+   "modules": 82,
+   "bytes": 1103394,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SquareRootDegree",
+   "family": "192",
+   "modules": 22,
+   "bytes": 160576,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "StableCoordinateFour",
+   "family": "049",
+   "modules": 110,
+   "bytes": 608328,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "StandardMapComponents",
+   "family": "146",
+   "modules": 275,
+   "bytes": 2891364,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "StandardMapEntropy",
+   "family": "146",
+   "modules": 206,
+   "bytes": 1322381,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "StandardMapLyapunov",
+   "family": "146",
+   "modules": 212,
+   "bytes": 1388137,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SteinitzBergstrom",
+   "family": "097",
+   "modules": 30,
+   "bytes": 717192,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "StrictMeans",
+   "family": "072",
+   "modules": 95,
+   "bytes": 720227,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "StrongKadisonKastler",
+   "family": "289",
+   "modules": 2653,
+   "bytes": 14569015,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "StrongThinTree",
+   "family": "174",
+   "modules": 73,
+   "bytes": 776622,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "StronglyRayleighDPP",
+   "family": "231",
+   "modules": 108,
+   "bytes": 519740,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "StructuralCrouzeix",
+   "family": "325",
+   "modules": 61,
+   "bytes": 706620,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SubexponentialSAT",
+   "family": "378",
+   "modules": 3092,
+   "bytes": 27311076,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SubpolynomialLp",
+   "family": "094",
+   "modules": 45,
+   "bytes": 370986,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SubsphereCurrent",
+   "family": "140",
+   "modules": 26,
+   "bytes": 495817,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Superstring",
+   "family": "128",
+   "modules": 52,
+   "bytes": 942467,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SurfaceConeCandidateSupport",
+   "family": "195",
+   "modules": 12,
+   "bytes": 368270,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SurfaceImmersion",
+   "family": "333",
+   "modules": 1884,
+   "bytes": 8169676,
+   "packages": [
+    "Mathlib",
+    "SphereEversion"
+   ]
+  },
+  {
+   "name": "SwitchChain",
+   "family": "131",
+   "modules": 166,
+   "bytes": 927531,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SymmetricDomains",
+   "family": "058",
+   "modules": 336,
+   "bytes": 2117644,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SymmetricMahlerEquality",
+   "family": "087",
+   "modules": 238,
+   "bytes": 1332080,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "SymmetricPolar",
+   "family": "087",
+   "modules": 47,
+   "bytes": 544981,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "Tachikawa",
+   "family": "199",
+   "modules": 32,
+   "bytes": 1265503,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TalagrandDiscreteConvexity",
+   "family": "175",
+   "modules": 37,
+   "bytes": 176206,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TalagrandExpectationThreshold",
+   "family": "175",
+   "modules": 48,
+   "bytes": 194201,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TamingCompatibility",
+   "family": "342",
+   "modules": 583,
+   "bytes": 4121556,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ThomasonModelStructures",
+   "family": "317",
+   "modules": 86,
+   "bytes": 3011492,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ThompsonNonamenability",
+   "family": "248",
+   "modules": 69,
+   "bytes": 375524,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ThorpFirstReciprocal",
+   "family": "238",
+   "modules": 52,
+   "bytes": 375542,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ThorpRemaining",
+   "family": "238",
+   "modules": 93,
+   "bytes": 1400075,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ThorpRouting",
+   "family": "238",
+   "modules": 171,
+   "bytes": 6679520,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ThorpWeightedCompatibility",
+   "family": "238",
+   "modules": 35,
+   "bytes": 137431,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ThreeMachine",
+   "family": "124",
+   "modules": 54,
+   "bytes": 855511,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ThreeStateSupercritical",
+   "family": "229",
+   "modules": 28,
+   "bytes": 386247,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ThreeStateTreeClauses",
+   "family": "229",
+   "modules": 32,
+   "bytes": 387752,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "ThreeTorus",
+   "family": "144",
+   "modules": 38,
+   "bytes": 1723322,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TingleySphereIsometry",
+   "family": "322",
+   "modules": 68,
+   "bytes": 383711,
+   "packages": [
+    "Lean",
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TorsionFreeHyperbolic",
+   "family": "252",
+   "modules": 30,
+   "bytes": 483784,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TorsionFreeZeroDivisors",
+   "family": "196",
+   "modules": 124,
+   "bytes": 2065967,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TotientAsymptotic",
+   "family": "024",
+   "modules": 810,
+   "bytes": 3272287,
+   "packages": [
+    "Mathlib",
+    "PrimeNumberTheoremAnd"
+   ]
+  },
+  {
+   "name": "TotientCompanionZero",
+   "family": "024",
+   "modules": 812,
+   "bytes": 3284362,
+   "packages": [
+    "Mathlib",
+    "PrimeNumberTheoremAnd"
+   ]
+  },
+  {
+   "name": "TraceIdealTransportSupport",
+   "family": "301",
+   "modules": 4,
+   "bytes": 60518,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TraceReconstruction",
+   "family": "122",
+   "modules": 32,
+   "bytes": 1636394,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TreeEdit",
+   "family": "099",
+   "modules": 23,
+   "bytes": 245072,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TriangleFace",
+   "family": "113",
+   "modules": 38,
+   "bytes": 332571,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TriangleRemoval",
+   "family": "188",
+   "modules": 288,
+   "bytes": 1470828,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TriangularCovering",
+   "family": "100",
+   "modules": 10,
+   "bytes": 98254,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TriangularEnergy",
+   "family": "090",
+   "modules": 228,
+   "bytes": 8592867,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TriangularGaussian",
+   "family": "090",
+   "modules": 217,
+   "bytes": 8541262,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TriangularHilbert",
+   "family": "082",
+   "modules": 106,
+   "bytes": 501124,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TruffetCounterexample",
+   "family": "104",
+   "modules": 3,
+   "bytes": 15597,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TwoWayComplementation",
+   "family": "129",
+   "modules": 20,
+   "bytes": 194371,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TwoWayDeterminization",
+   "family": "129",
+   "modules": 42,
+   "bytes": 381715,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "TypeSystemNormalization",
+   "family": "245",
+   "modules": 34,
+   "bytes": 1584257,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "UniformCommutator",
+   "family": "288",
+   "modules": 657,
+   "bytes": 2643565,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "UniformFourier",
+   "family": "130",
+   "modules": 90,
+   "bytes": 611100,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "UniformGamma",
+   "family": "291",
+   "modules": 52,
+   "bytes": 761654,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "UniformKServer",
+   "family": "110",
+   "modules": 411,
+   "bytes": 2202736,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "UniformSparsestCut",
+   "family": "117",
+   "modules": 56,
+   "bytes": 489980,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "UniqueGamesTheorem",
+   "family": "102",
+   "modules": 479,
+   "bytes": 8713109,
+   "packages": [
+    "Lean",
+    "Mathlib",
+    "Std"
+   ]
+  },
+  {
+   "name": "UniversalFInfinity",
+   "family": "250",
+   "modules": 51,
+   "bytes": 884823,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "UniversalTensorSquares",
+   "family": "205",
+   "modules": 574,
+   "bytes": 13229600,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "VariableWL",
+   "family": "133",
+   "modules": 62,
+   "bytes": 1186775,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "VelocityHemisphere",
+   "family": "220",
+   "modules": 586,
+   "bytes": 5978284,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "VertexAlgebraNet",
+   "family": "280",
+   "modules": 78,
+   "bytes": 1460900,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "VertexCover",
+   "family": "102",
+   "modules": 352,
+   "bytes": 2280581,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "VlasovMaxwell",
+   "family": "362",
+   "modules": 208,
+   "bytes": 4845662,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "WLIdentification",
+   "family": "133",
+   "modules": 68,
+   "bytes": 770858,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "WeakHessian",
+   "family": "356",
+   "modules": 543,
+   "bytes": 3146804,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "WeakMTWGlobalSupport",
+   "family": "360",
+   "modules": 211,
+   "bytes": 906266,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "WeightedSweepMoments",
+   "family": "238",
+   "modules": 41,
+   "bytes": 826523,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "WeisfeilerLeman",
+   "family": "133",
+   "modules": 44,
+   "bytes": 927087,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "WitnessedChoice",
+   "family": "243",
+   "modules": 28,
+   "bytes": 1135952,
+   "packages": [
+    "Mathlib"
+   ]
+  },
+  {
+   "name": "YauCounterexample",
+   "family": "350",
+   "modules": 1069,
+   "bytes": 3666809,
+   "packages": [
+    "Mathlib"
+   ]
+  }
+ ]
+}

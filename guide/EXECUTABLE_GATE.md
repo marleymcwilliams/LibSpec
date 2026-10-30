@@ -176,7 +176,7 @@ Real manuscripts join it once their unknown axes are resolved, the first candida
 **GitHub Actions: Comparator, and anything that builds the release's Lean code.**
 - `comparator-full.yml` has shown that the full sandbox works there: Linux 7.0, a systemd user manager and Landlock, on a fresh VM for every run.
 - The pilot would run Comparator on each release challenge the same way. Their toolchain is `leanprover/lean4:v4.34.1`, the same as ours, so the same tools apply.
-- A hosted runner has 4 cores, 16 GB of memory and a 6-hour job limit. It had 86 GB of free disk, and 104 GB once the pilot's workflow removed preinstalled toolchains. The release's library is more than 54,000 files, where GitHub's tree listing stops, with several large dependencies (PrimeNumberTheoremAnd, Carleson and others). Some challenges may exceed those limits, so the pilot should measure them on a few before scaling.
+- A hosted runner has 4 cores, 16 GB of memory and a 6-hour job limit. It had 86 GB of free disk, and 104 GB once the pilot's workflow removed preinstalled toolchains. The release's library is 163,096 Lean modules, with several large dependencies (PrimeNumberTheoremAnd, Carleson and others). Some challenges may exceed those limits, so the pilot should measure them on a few before scaling.
 
 **Measured on four challenges** ([run 40916190535](https://github.com/marleymcwilliams/LibSpec/actions/runs/40916190535), #83). Comparator accepted all four, with both nanoda and Lean's kernel, but the run isn't trusted (below), so these are measurements:
 
@@ -192,10 +192,28 @@ Real manuscripts join it once their unknown axes are resolved, the first candida
 
 What that means for scaling:
 - **Each challenge builds its part of the release from source.** Mathlib's cache covers only Mathlib, and the release has none of its own. The modules built averaged about 3.9 GB per thousand, and 1.4 to 2.6 seconds each on 4 cores.
-- **The whole release is far bigger:** 419 challenge configs, and more than 52,000 Lean modules. If every module is needed, that's at least 20 to 40 hours of building, before the kernel checks, and about 200 GB of disk. That doesn't fit one runner's 104 GB or 6 hours, so a full run must be split into jobs, by family for instance.
+- **The whole release is far bigger:** 418 challenges, and 163,096 Lean modules, of which the challenges need 113,748 (the import graph, below). At the measured 3.9 MB of build output a module, that's about 444 GB in all, and 29 GB for the family with the most modules, 013. So a full run must be split into jobs, and a family's shard fits one runner's disk.
 - **The kernels can be as slow as the build.** nanoda took 41 minutes on `Catalan`, and 1 to 3 on the others.
 - **The 100-minute cap per challenge is too tight.** `Catalan` alone took 85 minutes.
 - **Trust:** fetching the dependencies runs the release's lakefile, which applies 24 patches outside Comparator's sandbox, on the same VM as the checker. So no result counts as evidence until the fetch and the check run in separate jobs, the check on a fresh VM that never runs the release's code outside the sandbox. That's proposed in #83, for your decision.
+
+**The import graph** (`pilot/imports.py`, #86). It reads the header of each of the release's 163,096 Lean modules, 1.8 GB of source, as text, and finds what each challenge builds: the release's own modules that its challenge file and its solution import, transitively. Results are in `pilot/data/shards.json`.
+- **It matches the measurements exactly.** Catalan's closure is the 988 modules of the release that its build compiled in #83's run, JointDickman's the 1,792 of its build, DeligneDrinfeld's 21 and BogomolovPopInjectivity's 5.
+- **The challenges need 113,748 of the 163,096 modules,** 1.4 GB of source. Families barely share modules: shards by family build 117,544 in all, about 3% more.
+- **Time, as a range.** The two measured builds give different rates: by source size, 159 s/MB for Catalan and 314 s/MB for JointDickman; by module count, 1.44 s and 2.61 s a module. So the 244 family shards would take 47 to 128 hours of building, before the kernels and each shard's setup.
+- **Most shards are small.** 181 of the 244 families take under half an hour by every estimate.
+- **Five families may take more than 5 hours,** the cap on one challenge, by one estimate or the other: 189, 266, 090, 159, 013. The estimates differ most where modules are large, as in the first three, so these should be measured before the rest.
+
+| Family | Challenges | Modules | Source | By size | By count |
+| --- | --- | --- | --- | --- | --- |
+| 189 | 1 | 444 | 223 MB | 9.8–19 h | 0.2–0.3 h |
+| 266 | 2 | 3,389 | 205 MB | 9.1–18 h | 1.4–2.5 h |
+| 090 | 4 | 795 | 150 MB | 6.6–13 h | 0.3–0.6 h |
+| 159 | 1 | 4,775 | 58 MB | 2.6–5.1 h | 1.9–3.5 h |
+| 102 | 5 | 1,805 | 34 MB | 1.5–3.0 h | 0.7–1.3 h |
+| 013 | 2 | 7,520 | 31 MB | 1.4–2.7 h | 3.0–5.5 h |
+
+The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and the others, since their sources come only from `lake update`. It also leaves out the kernels, which took 41 minutes on Catalan and 1 to 3 minutes elsewhere.
 
 **Lewis & Clark's BLT cluster, for heavy builds, if its OS can run current Lean.**
 - **As documented, it can't.** Its documentation ([About the cluster](https://watzek.github.io/BLTdocs/about-the-cluster.html)) says: "The cluster runs the CentOS Linux operating system, version 7.4". It has 144 cores and 1,500 GB of memory across one login node and three workers, uses Sun Grid Engine, and gives each user a 25 GB quota.

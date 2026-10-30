@@ -4,6 +4,13 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-29
 
+### The release's import graph (#86)
+- **Read, before planning the shards, as Marley asked:** `pilot/imports.py` reads each module's imports, as text, from a checkout of the release's `.lean` files. Git checks them out and runs none of the release's code. The results are in `pilot/data/shards.json`, and the summary is in EXECUTABLE_GATE §4.
+- **It matches #83's measurements:** each challenge's closure is exactly the set of the release's modules its build compiled.
+- **The release has 163,096 modules,** not the 52,875 that GitHub's truncated listing showed. The challenges need 113,748, and shards by family would take 47 to 128 hours of building.
+- **Decided: estimates are ranges.** The two measured builds give rates two to one apart, so every estimate gives both rates, by source size and by module count, rather than one number.
+- **Decided: the full checkout isn't stored.** `pilot/data/shards.json` keeps each challenge's and family's counts, not the graph's 163,096 nodes; `pilot/imports.py` rebuilds the graph from a checkout.
+
 ### The pilot on the whole release (#85)
 - **Scaled, as Marley asked:** `pilot/collect.py --all` collects every manuscript, reading data only, and `pilot/reports/catalogue.md` reports on all of them, with its verdicts proved by the kernel.
 - **Corrected:** EXECUTABLE_GATE §3 and the entry for #82 said `CONTENTS.md` parses to 720 manuscripts against its stated 721. It lists all 721. The collector's pattern stopped at the parentheses in `Sharp-integral-fillings-in-CAT(0)-spaces-September-23-2026`, and now runs to the next `/`.
