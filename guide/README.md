@@ -80,6 +80,7 @@ Some of it is the human's alone. The milestone notes' closing notes are in the h
 | `.github/workflows/comparator-full.yml` | The full-strength Comparator run, by hand: nanoda and the full sandbox |
 | `.github/workflows/pilot-comparator.yml` | Comparator on the release's challenges |
 | `scripts/check.sh` | The build, the forbidden-token scan, the axiom audit and the statements check |
+| `scripts/blt-build.sbatch` | A sample SLURM job for BLT: LibSpec's own `lake build` on a compute node |
 | `scripts/comparator.sh`, `scripts/comparator-full.sh`, `scripts/build-comparator-tools.sh` | Comparator, everyday and full-strength, and the tools it needs |
 | `scripts/differential.sh`, `scripts/sirusc_adapter.py` | The differential tests, and the adapter that runs SirusSC's code from `archive/` |
 | `scripts/pilot-comparator.sh` | The pilot's Comparator runs, with their measurements |

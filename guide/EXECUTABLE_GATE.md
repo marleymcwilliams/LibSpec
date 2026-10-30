@@ -237,12 +237,17 @@ The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and
 | `c-PlanarPacking` | 090 | `PlanarPacking` | 12.35 h |
 
 **Lewis & Clark's BLT cluster, for heavy builds, if its OS can run current Lean.**
-- **As documented, it can't.** Its documentation ([About the cluster](https://watzek.github.io/BLTdocs/about-the-cluster.html)) says: "The cluster runs the CentOS Linux operating system, version 7.4". It has 144 cores and 1,500 GB of memory across one login node and three workers, uses Sun Grid Engine, and gives each user a 25 GB quota.
-- **Lean:** CentOS 7 ships glibc 2.17, and Lean's x86-64 Linux releases need glibc 2.26 or later (Lean reference, [Supported platforms](https://lean-lang.org/doc/reference/4.33.1/platforms/)).
-- **Comparator's sandbox:** CentOS 7's 3.10 kernel predates Landlock, which landrun needs, so the sandbox can't run there either.
-- **If the documentation is out of date,** which is likely since CentOS 7 reached end of life in June 2024, or if BLT offers a container runtime such as Apptainer with a newer userland, BLT could take heavy trusted builds: LibSpec's own, or Mathlib-scale experiments.
+- **It can.** It runs Ubuntu 20.04 and SLURM, as you've confirmed. Its documentation ([About the cluster](https://watzek.github.io/BLTdocs/about-the-cluster.html)) is out of date: it still says "The cluster runs the CentOS Linux operating system, version 7.4", with Sun Grid Engine and a 25 GB quota per user. It has 144 cores and 1,500 GB of memory across one login node and three workers.
+- **Lean:** Ubuntu 20.04 ships glibc 2.31, and Lean's x86-64 Linux releases need glibc 2.26 or later (Lean reference, [Supported platforms](https://lean-lang.org/doc/reference/4.33.1/platforms/)).
+- **Access:** SSH needs MFA, so Claude Code doesn't use BLT until you have a login it can use without MFA.
+- **Jobs** go through SLURM to the compute nodes, never the login node. `scripts/blt-build.sbatch` is a sample: it asks for cores with `--cpus-per-task` and memory with `--mem`, sets `LEAN_NUM_THREADS` to `$SLURM_CPUS_PER_TASK`, and runs `lake exe cache get` and `lake build` in LibSpec's `lean/`.
+  - **Lean** goes in your home directory on Mayo.
+  - **The compute nodes reach the internet,** so Mathlib's cache downloads there.
+  - **Space is plentiful,** and there's no time limit for now.
+- **What it takes:** heavy trusted builds, LibSpec's own or Mathlib-scale experiments, and the data work.
+- **Comparator's sandbox:** Ubuntu 20.04's original 5.4 kernel predates Landlock, which landrun needs, and whether BLT's kernel has it is unknown. [ROADMAP.md](ROADMAP.md)'s "What the phases draw on" lists the three commands that settle it.
 
-Even then, it shouldn't build the release's Lean code outside a sandbox, for two reasons:
+Even with Landlock, it shouldn't build the release's Lean code, for two reasons:
 - **It would run untrusted code.** Building a Lean library runs that library's code: its macros, elaborators and `initialize` blocks. That would be untrusted code on a shared machine.
 - **It wouldn't help Comparator.** Comparator's README allows a prebuilt `.lake` only if it was "obtained through other means and without compromising your checking environment". A `.lake` built on BLT would need a trusted way back to the checker.
 

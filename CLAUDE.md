@@ -31,11 +31,13 @@
 - Keep at least 2 GB of memory free on my PC. Run Lean locally only with about 8 GB free;
   otherwise let CI build. Stop any Lean process of yours that threatens the 2 GB. If mine
   are what's holding the memory, pause and tell me instead.
-- Run heavy trusted work on BLT once I've set up SSH to it from this PC: plain `lake build`
-  and proof work on LibSpec, which need no Landlock (only Comparator's sandbox does).
-  - Submit builds through Grid Engine to the compute nodes, never on the login node.
-  - Keep one shared Mathlib checkout, within the 25 GB quota or on the cluster's shared
-    storage.
+- Don't try to use BLT until I have a login you can use without MFA; its SSH needs MFA.
+  After that, run heavy trusted work there: plain `lake build` and proof work on LibSpec,
+  which need no Landlock (only Comparator's sandbox does).
+  - BLT runs Ubuntu 20.04 and SLURM. Submit builds with `sbatch` to the compute nodes, never
+    on the login node. `scripts/blt-build.sbatch` is a sample job.
+  - Lean goes in my home directory on Mayo. Keep one shared Mathlib checkout.
+  - The compute nodes reach the internet. Space is plentiful, and there's no time limit for now.
   - Never build openai/math or any other untrusted code on BLT.
 - End every session with: files changed, theorems closed, ideas added to guide/IDEAS.md.
 

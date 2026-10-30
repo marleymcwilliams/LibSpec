@@ -220,8 +220,10 @@ Phases 7–9 run in order, since each needs the one before: Phase 8 reviews the 
 Three resources limit the work, and the scarcest is your review time.
 
 - **GitHub Actions, as measured** (#83, [EXECUTABLE_GATE.md](EXECUTABLE_GATE.md) §4). A hosted runner has 4 cores, 16 GB of memory and a 6-hour job limit. It has 104 GB of free disk once the workflow removes preinstalled tools. LibSpec is public, so its minutes cost nothing, and GitHub's free plan runs up to 20 jobs at once. Four challenges took 2 h 29 min and 22.7 GB, and Catalan alone took 85 minutes, 41 of them in the kernels.
-- **BLT, now Ubuntu 20.04, for trusted builds and data work only.** Its 144 cores and 1,500 GB of memory suit LibSpec's own builds, the collectors and calibration data. Ubuntu 20.04's glibc 2.31 runs Lean, which needs 2.26 or later. Some things need checking with BLT's admins:
-  - **Its documentation is out of date.** It still says CentOS 7.4, and gives each user 25 GB, which may still hold.
+- **BLT, for trusted builds and data work only, once Claude Code has a login without MFA.** It runs Ubuntu 20.04 and SLURM. Its 144 cores and 1,500 GB of memory suit LibSpec's own builds, the collectors and calibration data. Ubuntu 20.04's glibc 2.31 runs Lean, which needs 2.26 or later.
+  - **Access:** SSH needs MFA, so Claude Code doesn't use BLT until you have a login it can use without MFA.
+  - **Jobs** go through SLURM to the compute nodes, never the login node; `scripts/blt-build.sbatch` is a sample. Lean goes in your home directory on Mayo. The compute nodes reach the internet, space is plentiful, and there's no time limit for now.
+  - **Its documentation is out of date.** It still says CentOS 7.4, Sun Grid Engine and a 25 GB quota per user.
   - **Landlock, which Comparator's sandbox needs, can't be checked from outside.** Ubuntu 20.04's original kernel, 5.4, predates it: Landlock arrived in Linux 5.13. Its hardware-enablement kernel, 5.15, builds Landlock in, but Ubuntu's change that enables it at boot went into 22.04's kernel, and there's no sign it reached 20.04's. Three commands on BLT settle it: `uname -r`; `cat /sys/kernel/security/lsm`, which lists `landlock` if it's on; and `dmesg | grep landlock`.
   - **Even with Landlock,** BLT shouldn't run the release's code, as §4 explains, so Comparator stays on Actions.
   - **Ubuntu 20.04 left standard support in May 2025.** That's a reason to keep BLT to trusted work.
@@ -358,7 +360,7 @@ A sample of withdrawn or retracted mathematics papers then becomes a must-fail s
 5. Check its challenges on Phase 7's trusted shards.
 
 **Resources:**
-- **BLT, for the data work.** The Retraction Watch CSV and arXiv's metadata are small enough for a 25 GB quota.
+- **BLT, for the data work.** It has plenty of space for the Retraction Watch CSV and arXiv's metadata.
 - **Actions,** for Comparator on each new source's Lean.
 - **Your time:** choosing sources, and answering what counts as a withdrawal.
 
