@@ -182,10 +182,10 @@ The goal is a tagged release that a stranger could clone and check. After it, yo
 
 **Gate**
 
-- [ ] `README.md` and `REPRODUCE.md` explain how to build and check everything
-- [ ] Every layer-map row has a status and points to its Lean theorem or its reason for being out of scope
-- [ ] One full-strength Comparator run, the gold-standard check the [Lean reference](https://lean-lang.org/doc/reference/latest/ValidatingProofs/) describes: the nanoda kernel enabled and the full sandbox (landrun with the `systemd-run` wrapper from Comparator's README). CI's best-effort run, without nanoda or the wrapper, is the everyday check, not this one
-- [ ] Tagged `v1.0`
+- [x] `README.md` and `REPRODUCE.md` explain how to build and check everything: #58, brought up to date in #71
+- [x] Every layer-map row has a status and points to its Lean theorem or its reason for being out of scope: #57
+- [x] One full-strength Comparator run, the gold-standard check the [Lean reference](https://lean-lang.org/doc/reference/latest/ValidatingProofs/) describes: the nanoda kernel enabled and the full sandbox (landrun with the `systemd-run` wrapper from Comparator's README). CI's best-effort run, without nanoda or the wrapper, is the everyday check, not this one: #56's workflow, first run on `main` as [40781130345](https://github.com/marleymcwilliams/LibSpec/actions/runs/40781130345) (#61), and with all 34 frozen theorems as [40840546350](https://github.com/marleymcwilliams/LibSpec/actions/runs/40840546350) (#71)
+- [x] Tagged `v1.0`, at `0c36127`
 
 **Then pick one:**
 

@@ -2,6 +2,12 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-10-30
+
+### Phase 6's gate ticked, and the twins row brought up to date
+- **Phase 6's gate,** in ROADMAP.md: all four items were done, each now ticked with its pointer: README and REPRODUCE (#58, #71), the layer map's pointers (#57), the full-strength runs (#56, #61, #71), and `v1.0` at `0c36127`.
+- **LAYER_MAP's twins row** said the pilot was still to come. It now says the pilot grades all 724 manuscripts with the twins, and links the report.
+
 ## 2026-10-29
 
 ### The docs cleanup (#88, a draft for Marley's review)
