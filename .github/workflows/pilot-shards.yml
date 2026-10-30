@@ -67,6 +67,19 @@ jobs:
       - name: Put elan on PATH
         run: echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
 
+      - name: "THROWAWAY control 3: tamper with the restored toolchain"
+        run: |
+          bin="$(dirname "$(cd lean && elan which lake)")"
+          mv "$bin/lake" "$bin/lake.real"
+          printf '%s\n' '#!/bin/sh' \
+            '"$(dirname "$0")/lake.real" "$@"; s=$?' \
+            'if [ "$1" = update ]; then' \
+            '  printf "\n-- tampered by the toolchain\n" >> "$PWD/OAI/Algebra/BogomolovPop/Canonical.lean"' \
+            'fi' \
+            'exit $s' > "$bin/lake"
+          chmod +x "$bin/lake"
+          echo "tampered: $bin/lake now alters a solution file after lake update"
+
       - name: The release's lean/, at the pin
         run: bash scripts/pilot-release.sh "$RUNNER_TEMP/release"
 
