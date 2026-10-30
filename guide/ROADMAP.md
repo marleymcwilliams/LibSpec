@@ -248,8 +248,8 @@ The goal is a trusted Comparator result for every challenge in the release, fold
    - **then the rest.**
 
    Record the results in `pilot/data/comparator-results.json` as trusted, and classify each failure as a rejection, a build error or a timeout, with its log.
-5. **Regenerate the report and its proofs.** An accepted challenge makes `formal_proof` known, and a rejection is evidence that fails. A build error or a timeout leaves it unknown, never failing. A challenge that hits the 5-hour cap waits: its `formal_proof` stays unknown, "too large to check yet", for v1.1. One that was cut off only because its shared job ran out of time gets one rerun in a job of its own first.
-6. **Release v1.1.** README and REPRODUCE describe the pilot and how to rerun it, and you tag `v1.1`.
+5. **Regenerate the report and its proofs.** An accepted challenge makes `formal_proof` known, and a rejection is evidence that fails. A build error or a timeout leaves it unknown, never failing. A challenge that times out as the first in its job, or with the full 5-hour cap, waits: its `formal_proof` stays unknown, "too large to check yet", for v1.1. One that timed out after others, cut off only because its shared job ran out of time, gets one rerun in a job of its own first.
+6. **Release v1.1.** README and REPRODUCE describe the pilot and how to rerun it, and you tag `v1.1`. GitHub keeps a public repository's logs for 90 days at most, and the trusted logs are the evidence. So each one is kept as an asset of the v1.1 release, its SHA-256 recorded in `pilot/data/comparator-results.json`.
 
 **Resources:**
 - **Actions:** 47 to 128 hours of building for all 244 shards, by the two measured rates, plus the kernels and each job's setup, up to 20 jobs at once.
@@ -286,6 +286,7 @@ The goal is a trusted Comparator result for every challenge in the release, fold
 - [ ] Every challenge has a trusted result, or a classified failure with its log: a rejection, a build error, a timeout, or too large to check yet
 - [ ] `pilot/reports/catalogue.md` is regenerated with them, and its proofs pass
 - [ ] README and REPRODUCE describe the pilot and how to rerun it
+- [ ] Every trusted log is kept as an asset of the v1.1 release, matching its recorded SHA-256
 - [ ] Tagged `v1.1`
 
 ## Phase 8: Statement review

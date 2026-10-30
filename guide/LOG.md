@@ -4,6 +4,17 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-30
 
+### The trusted shards, round 2 (#92, Marley's review)
+- **The sandbox is proved on, in every job.** Comparator passes `--best-effort` to landrun, which succeeds silently without Landlock. So `scripts/sandbox-check.sh` runs landrun inside the wrapper with Comparator's build flags, and stops the job unless a write inside `.lake` works and writes outside it fail. `scripts/comparator-full.sh` runs it too.
+- **Frozen outputs.** The build outputs of the nine packages that came through LibSpec's tooling, Mathlib's among them, are set immutable as root before Comparator runs, and cleared at the end. The sandbox check requires writes into them to fail.
+- **Nothing of the release's unmarked.** Comparator's output is prefixed line by line, and the release's names are printed with repr. Results come only from unmarked lines of the trusted jobs' step "Comparator on the shard" (`pilot/shard_results.py`).
+- **Rejections only on Comparator's own.** A mismatch, a disallowed axiom, or Lean's kernel refusing. Crashes, signals, out-of-memory kills and a failure of nanoda alone are build errors. nanoda refuses by panicking, as it errs, so its exit code can't tell the two apart. Each challenge's unit gets a 13 GB memory limit, and a probe shows the limit is enforced.
+- **The first in its job is tooLarge** on any timeout, whatever its cap. Only a later one with less than the full cap is cutOff.
+- **A self-test job,** `scripts/test-pilot-shard.sh`, drives every outcome through the real wrapper with a fake comparator, and shows the sandbox check fails without a sandbox. The shards wait for it.
+- **What this still trusts,** in EXECUTABLE_GATE §4: the release's lakefile, the dependencies' lakefiles, every module in each challenge's import closure, and the solutions built earlier in the same job. Also, what an acceptance shows: the exported statement proved by both kernels.
+- **The logs are kept:** each trusted log, with its SHA-256, as an asset of the v1.1 release. It's in Phase 7's gate.
+- **The negative controls weren't rerun.** The verification's logic didn't change, only its messages, which now print names with repr.
+
 ### The trusted shards (#92)
 - **Built, as Phase 7 and Marley's answers on #87 set out:** `.github/workflows/pilot-shards.yml`, with an untrusted `fetch` job and a trusted `shard` job per shard. The design is in EXECUTABLE_GATE §4.
 - **Decided: the trusted job rebuilds rather than unpacks.** It rebuilds the release's dependencies from the pin with git alone, and compares the untrusted artifact with its rebuild, byte for byte. It never builds from the artifact, so the artifact's only role is to show that the release's own lakefile produces the same tree.

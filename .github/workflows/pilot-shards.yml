@@ -7,7 +7,11 @@ name: Pilot shards
 # - shard, trusted, one per shard, each on a fresh runner: fetches the release at the pin
 #   itself, rebuilds its dependencies from the pin with git alone, and refuses to go on unless
 #   the artifact matches that rebuild byte for byte. It builds only from its own rebuild, and
-#   runs Comparator with nanoda inside the full sandbox, never `lake env`.
+#   runs Comparator with nanoda inside the full sandbox, never `lake env`. Before the first
+#   challenge it proves the wrapper's memory limit and Comparator's sandbox are in force, with
+#   the build outputs that came through LibSpec's tooling frozen.
+# - selftest: runs scripts/pilot-shard.sh with a fake comparator through every outcome, and
+#   the sandbox check with no sandbox. The shards wait for it.
 # The trusted job takes nothing from the untrusted one but that artifact: no job outputs, and
 # nothing of it in any expression. Both have read-only cache access and a read-only token,
 # and neither runs on main. Dispatch it from another branch, such as pilot/runs:
@@ -15,7 +19,8 @@ name: Pilot shards
 #     gh workflow run pilot-shards.yml --ref pilot/runs -f shards='["f189","f159"]'
 #
 # A pull request that changes this workflow or its scripts runs the control shard. Read each
-# shard's results from its job's log, which only that job writes.
+# shard's results from the unmarked lines of its job's log, which only that job writes
+# (pilot/shard_results.py).
 
 cache-mode: read
 
@@ -34,6 +39,8 @@ on:
       - scripts/pilot_tree.py
       - scripts/pilot_deps.py
       - scripts/pilot_shard.py
+      - scripts/sandbox-check.sh
+      - scripts/test-pilot-shard.sh
       - pilot/data/shard-plan.json
 
 permissions:
@@ -87,9 +94,73 @@ jobs:
           retention-days: 7
           if-no-files-found: error
 
+  selftest:
+    name: Self-test of the shard runs (trusted, no release)
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Restore the Lean toolchain (restore only)
+        id: elan-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ runner.os }}-${{ hashFiles('lean/lean-toolchain') }}
+
+      - name: Install the Lean toolchain
+        if: steps.elan-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -sSf --retry 5 -o "$RUNNER_TEMP/elan-init.sh" \
+            https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh
+          sh "$RUNNER_TEMP/elan-init.sh" -y --default-toolchain none
+
+      - name: Put elan on PATH
+        run: echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Restore Comparator tools, with nanoda (restore only)
+        id: tools
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/comparator-full-tools
+          key: comparator-full-tools-${{ runner.os }}-${{ hashFiles('scripts/build-comparator-tools.sh', 'lean/lean-toolchain') }}
+
+      - uses: actions/setup-go@v5
+        if: steps.tools.outputs.cache-hit != 'true'
+        with:
+          go-version: stable
+          cache: false
+
+      - name: Build Comparator tools, with nanoda
+        if: steps.tools.outputs.cache-hit != 'true'
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          bash scripts/build-comparator-tools.sh "$HOME/comparator-full-tools" --with-nanoda
+
+      - name: Start a systemd user manager for the runner
+        run: |
+          sudo loginctl enable-linger "$USER"
+          uid="$(id -u)"
+          for i in $(seq 1 60); do [ -S "/run/user/$uid/bus" ] && break; sleep 1; done
+          echo "XDG_RUNTIME_DIR=/run/user/$uid" >> "$GITHUB_ENV"
+          echo "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus" >> "$GITHUB_ENV"
+          XDG_RUNTIME_DIR="/run/user/$uid" systemctl --user is-system-running --wait || true
+
+      - name: Every outcome, with a fake comparator
+        shell: bash
+        run: |
+          (cd lean && lean --version)
+          toolchain_bin="$(dirname "$(cd lean && elan which lean)")"
+          export PATH="$HOME/comparator-full-tools/bin:$toolchain_bin:$PATH"
+          bash scripts/test-pilot-shard.sh
+
   shard:
     name: Shard ${{ matrix.shard }} (trusted)
-    needs: fetch
+    needs: [fetch, selftest]
     if: github.ref != 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 355
@@ -157,7 +228,7 @@ jobs:
         run: bash scripts/pilot-release.sh "$RUNNER_TEMP/release"
 
       - name: Its dependencies, rebuilt from the pin with git alone
-        run: python3 scripts/pilot_deps.py "$RUNNER_TEMP/release/lean" lean
+        run: python3 scripts/pilot_deps.py "$RUNNER_TEMP/release/lean" lean "$RUNNER_TEMP/frozen.txt"
 
       - name: The untrusted job's tree
         uses: actions/download-artifact@v4
@@ -167,6 +238,14 @@ jobs:
 
       - name: Refuse unless that tree matches the rebuild
         run: python3 scripts/pilot_tree.py verify "$RUNNER_TEMP/untrusted" "$RUNNER_TEMP/release"
+
+      # Comparator lets the build write all of .lake, and its README accepts a downloaded Mathlib
+      # only if it isn't modified. So the build outputs that came through LibSpec's tooling are
+      # made immutable, as root, which nothing in the sandbox can undo.
+      - name: Freeze the build outputs that came through LibSpec's tooling
+        run: |
+          while IFS= read -r d; do sudo chattr -R +i "$d"; done < "$RUNNER_TEMP/frozen.txt"
+          echo "frozen: $(wc -l < "$RUNNER_TEMP/frozen.txt") build directories"
 
       - name: Start a systemd user manager for the runner
         run: |
@@ -182,6 +261,7 @@ jobs:
         env:
           SHARD: ${{ matrix.shard }}
         run: |
+          export PILOT_FROZEN="$RUNNER_TEMP/frozen.txt"
           toolchain_bin="$(dirname "$(cd lean && elan which lean)")"
           export PATH="$HOME/comparator-full-tools/bin:$toolchain_bin:$PATH"
           mkdir -p "$RUNNER_TEMP/results"
@@ -195,6 +275,13 @@ jobs:
           name: results-${{ matrix.shard }}
           path: ${{ runner.temp }}/results
           if-no-files-found: warn
+
+      - name: Unfreeze the build outputs
+        if: always()
+        run: |
+          if [ -f "$RUNNER_TEMP/frozen.txt" ]; then
+            while IFS= read -r d; do sudo chattr -R -i "$d"; done < "$RUNNER_TEMP/frozen.txt"
+          fi
 
       - name: Summary
         if: always()

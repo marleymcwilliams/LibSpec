@@ -11,7 +11,9 @@ The tree is every file and symbolic link under RELEASE_DIR/lean, except:
 
 `pack` writes the tree as a tar. `verify` refuses, exiting 1, unless DOWNLOAD_DIR holds exactly
 one file, release-tree.tar, whose entries are exactly RELEASE_DIR's tree, byte for byte. It reads
-the tar as a stream and extracts nothing, so nothing in it lands on disk. The trusted job builds
+the tar as a stream and extracts nothing, so nothing in it lands on disk. Every name from the
+tar is printed with repr, so none can pass for a result line or a GitHub workflow command.
+The trusted job builds
 only from its own RELEASE_DIR, so a tar that passes changes nothing it uses. A tar that fails
 stops the job before any build.
 """
@@ -113,21 +115,21 @@ def verify(download, root):
     found = sorted(os.listdir(download))
     if found != [NAME] or not os.path.isfile(os.path.join(download, NAME)) or \
             os.path.islink(os.path.join(download, NAME)):
-        print(f"REFUSED: the artifact should hold exactly {NAME}; it holds {found}")
+        print(f"REFUSED: the artifact should hold exactly {NAME}; it holds {found!r}")
         sys.exit(1)
     theirs, bad = tar_entries(os.path.join(download, NAME))
     ours = entries(root)
     problems = list(bad)
     for rel in sorted(set(theirs) | set(ours)):
         if rel not in ours:
-            problems.append(f"not in the pin's tree: {rel}")
+            problems.append(f"not in the pin's tree: {rel!r}")
         elif rel not in theirs:
-            problems.append(f"missing from the untrusted tree: {rel}")
+            problems.append(f"missing from the untrusted tree: {rel!r}")
         elif theirs[rel] != ours[rel]:
             if rel == "lean/lake-manifest.json":
                 problems.append("lean/lake-manifest.json differs; comparing its contents")
                 continue
-            problems.append(f"differs from the pin: {rel}")
+            problems.append(f"differs from the pin: {rel!r}")
     if any(p.startswith("lean/lake-manifest.json differs") for p in problems):
         problems.remove("lean/lake-manifest.json differs; comparing its contents")
         mine = open(os.path.join(root, "lean", "lake-manifest.json"), "rb").read()

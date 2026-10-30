@@ -87,7 +87,9 @@ Some of it is the human's alone. The milestone notes' closing notes are in the h
 | `scripts/pilot-release.sh`, `scripts/pilot-fetch.sh` | The release at the pin, and its `lake update`, in the untrusted job |
 | `scripts/pilot_deps.py`, `scripts/pilot_tree.py` | The trusted job's rebuild of the release's dependencies, and the comparison with the untrusted tree |
 | `scripts/pilot-shard.sh`, `scripts/pilot_shard.py` | The trusted job's Comparator runs on a shard, and their results |
-| `pilot/collect.py`, `pilot/to_lean.py`, `pilot/imports.py`, `pilot/plan_shards.py` | The pilot's collector, its Lean generator, the import-graph reader, and the shard plan |
+| `scripts/sandbox-check.sh` | Proves Comparator's landrun sandbox is in force, and the frozen build outputs unwritable |
+| `scripts/test-pilot-shard.sh` | The self-test of the shard runs: every outcome, with a fake comparator |
+| `pilot/collect.py`, `pilot/to_lean.py`, `pilot/imports.py`, `pilot/plan_shards.py`, `pilot/shard_results.py` | The pilot's collector, its Lean generator, the import-graph reader, the shard plan, and the collector of the trusted results |
 | `pilot/data/` | Collected facts: `sample.json`, `catalogue.json`, `comparator-results.json`, `shards.json`, `shard-plan.json` |
 | `pilot/reports/` | The generated reports: `first-sample.md`, `catalogue.md` |
 | `archive/` | **Read-only.** The original corpus, committed once. [SOURCES.md](SOURCES.md) says what each part is |

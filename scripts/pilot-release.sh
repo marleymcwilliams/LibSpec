@@ -19,8 +19,9 @@ git -C "$release" -c advice.detachedHead=false checkout -q FETCH_HEAD
 [ "$(git -C "$release" rev-parse HEAD)" = "$COMMIT" ] || { echo "FAIL: not at $COMMIT"; exit 1; }
 
 # The release must name LibSpec's own toolchain, so elan installs nothing the release chose.
+# Nothing of the release's is printed: on a mismatch, only that it differs.
 if ! cmp -s "$release/lean/lean-toolchain" "$root/lean/lean-toolchain"; then
-  echo "FAIL: the release's lean-toolchain isn't LibSpec's: $(cat "$release/lean/lean-toolchain")"
+  echo "FAIL: the release's lean-toolchain isn't LibSpec's"
   exit 1
 fi
-echo "release: $COMMIT, toolchain $(cat "$release/lean/lean-toolchain")"
+echo "release: $COMMIT, toolchain $(cat "$root/lean/lean-toolchain"), the same as LibSpec's"

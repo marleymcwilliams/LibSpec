@@ -1,7 +1,7 @@
 """The trusted job's rebuild of the release's dependencies, from the pin, with git alone
 (guide/EXECUTABLE_GATE.md §4). It runs none of the release's code.
 
-usage: python3 scripts/pilot_deps.py RELEASE_LEAN_DIR LIBSPEC_LEAN_DIR
+usage: python3 scripts/pilot_deps.py RELEASE_LEAN_DIR LIBSPEC_LEAN_DIR FROZEN_LIST
 
 For each package in the release's lake-manifest.json:
 - if LibSpec's own manifest pins it at the same commit, as it does Mathlib and its own
@@ -13,6 +13,12 @@ Each gets the manifest's URL as its origin, which the release's lakefile checks.
 Then every patch in the release's patches/ directory is applied to its package, as the release's
 lakefile does: patches/<name>-lean4341.patch to .lake/packages/<name>. Every check is on the
 release's data: names, URLs and commits must be plain, and a patch must belong to a package.
+Anything of the release's that this prints, it prints with repr.
+
+FROZEN_LIST gets the build directory of each package that came through LibSpec's tooling,
+one per line, so that the job can make them unwritable before Comparator runs. A package
+with no build outputs gets an empty build directory, so that nothing can be built into it
+either.
 """
 import json
 import os
@@ -33,7 +39,7 @@ def git(*args, cwd=None):
     r = subprocess.run(GIT + list(args), cwd=cwd, capture_output=True, text=True,
                        env=dict(os.environ, GIT_TERMINAL_PROMPT="0"))
     if r.returncode != 0:
-        sys.exit(f"FAIL: git {' '.join(args)}\n{r.stderr}")
+        sys.exit(f"FAIL: git {list(args)!r}: {r.stderr!r}")
     return r.stdout.strip()
 
 
@@ -47,7 +53,7 @@ def packages(lean_dir):
             name = name[1:-1]
         if p.get("type") != "git" or not NAME.match(name) or name.startswith(".") or \
                 not REV.match(rev) or not URL.match(url) or p.get("subDir"):
-            sys.exit(f"FAIL: a manifest entry isn't a plain pinned Git package: {p}")
+            sys.exit(f"FAIL: a manifest entry isn't a plain pinned Git package: {p!r}")
         if name in out:
             sys.exit(f"FAIL: two manifest entries for {name}")
         out[name] = (url, rev)
@@ -56,6 +62,7 @@ def packages(lean_dir):
 
 def main():
     release, libspec = (os.path.abspath(x) for x in sys.argv[1:3])
+    frozen = []
     theirs, ours = packages(release), packages(libspec)
     dest = os.path.join(release, ".lake", "packages")
     if os.path.exists(dest):
@@ -67,6 +74,9 @@ def main():
         if name in ours and ours[name][1] == rev and os.path.isdir(mine):
             shutil.move(mine, target)
             how = "LibSpec's own"
+            build = os.path.join(target, ".lake", "build")
+            os.makedirs(build, exist_ok=True)
+            frozen.append(build)
         else:
             git("clone", "--quiet", "--no-checkout", url, target)
             git("checkout", "--quiet", "--detach", rev, cwd=target)
@@ -82,12 +92,15 @@ def main():
             continue
         name = f[:-len(SUFFIX)] if f.endswith(SUFFIX) else None
         if name not in theirs:
-            sys.exit(f"FAIL: patches/{f} belongs to no package in the manifest")
+            sys.exit(f"FAIL: patches/{f!r} belongs to no package in the manifest")
         target = os.path.join(dest, name)
         git("apply", os.path.join(patches, f), cwd=target)
         git("apply", "--check", "--reverse", os.path.join(patches, f), cwd=target)
-        print(f"{name}: patched with {f}")
-    print(f"ok: {len(theirs)} packages at their manifest commits")
+        print(f"{name}: patched with {f!r}")
+    with open(sys.argv[3], "w", encoding="utf-8", newline="\n") as out:
+        out.write("".join(d + "\n" for d in frozen))
+    print(f"ok: {len(theirs)} packages at their manifest commits, {len(frozen)} of them "
+          "through LibSpec's tooling")
 
 
 if __name__ == "__main__":

@@ -243,17 +243,30 @@ The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and
   2. **It fetches Mathlib's cache** with LibSpec's own lakefile. LibSpec pins the release's Mathlib commit.
   3. **It rebuilds the release's dependencies with git alone** (`scripts/pilot_deps.py`). The nine packages LibSpec shares come from LibSpec's checkout, and the other 33 are cloned at their commits. Each of the 23 patches is applied to its package, as the lakefile does: `patches/<name>-lean4341.patch` to `.lake/packages/<name>`.
   4. **It compares the untrusted artifact with that rebuild,** byte for byte, and refuses on any difference (`scripts/pilot_tree.py verify`). It reads the artifact as a stream and extracts nothing.
-  5. **It runs Comparator on each challenge** (`scripts/pilot-shard.sh`), with nanoda, inside Comparator's landrun sandbox inside the systemd-run wrapper. `LEAN_PATH` comes from the directories, so `lake env` never runs the release's lakefile outside the sandbox. The config comes from the release's, keeping only the modules, theorems, definitions and permitted axioms, so a command such as an external kernel can't come in through it.
-- **What the trusted job takes from the untrusted one:** only the artifact, which it checks and never builds from. There are no job outputs, and no expression holds anything of the untrusted job. Results are read from each trusted job's log, which only that job writes. The untrusted job could upload an artifact under a trusted job's name, but it can't write another job's log.
-- **Each challenge's result** is one of:
-  - **accepted:** Comparator printed its success line;
-  - **rejected:** both modules exported, and the comparison or a kernel refused;
-  - **buildError:** a build or an export failed;
-  - **tooLarge:** it hit the 5-hour cap, so it's too large to check yet;
-  - **cutOff:** its shared job ran out of time first;
-  - **notStarted:** the job ran out before it began.
+  5. **It freezes the build outputs that came through LibSpec's tooling.** These are the nine packages' `.lake/build` directories, Mathlib's among them, and they're set immutable as root. Comparator lets a build write all of `.lake`, and its README accepts a downloaded Mathlib only if it isn't modified. The freeze is cleared at the end of the job.
+  6. **It proves the wrapper's limits and the sandbox are in force,** before the first challenge, and stops otherwise. Comparator always passes `--best-effort` to landrun, and go-landlock's best-effort mode "will succeed without error even when Landlock is not available at all".
+     - **The sandbox** (`scripts/sandbox-check.sh`): landrun, run inside the wrapper with the flags Comparator gives a build, must let a write inside `.lake` through. It must refuse a write outside it, in `lean/` or `$HOME`, and a write into the frozen outputs.
+     - **The memory limit:** a unit with a 256 MB limit must be able to allocate 64 MB, and must be killed when it tries 512 MB. Each challenge's unit gets 13 GB, below the runner's 16 GB, so that only the challenge is killed.
+     - **The same sandbox check** now runs in `scripts/comparator-full.sh` too, whose full sandbox rests on it.
+  7. **It runs Comparator on each challenge** (`scripts/pilot-shard.sh`), with nanoda, inside Comparator's landrun sandbox inside the systemd-run wrapper. `LEAN_PATH` comes from the directories, so `lake env` never runs the release's lakefile outside the sandbox. The config comes from the release's, keeping only the modules, theorems, definitions and permitted axioms, so a command such as an external kernel can't come in through it.
+- **What the trusted job takes from the untrusted one:** only the artifact, which it checks and never builds from. There are no job outputs, and no expression holds anything of the untrusted job.
+- **The evidence is the trusted job's log,** which only that job writes:
+  - **Results are its unmarked `result:` lines,** in the step "Comparator on the shard" of a job named "Shard … (trusted)" (`pilot/shard_results.py`). The untrusted job could upload an artifact under a trusted job's name, so artifacts aren't read.
+  - **Nothing of the release's is printed unmarked.** Every line of Comparator's output is prefixed with `comparator|`, with carriage returns turned to spaces. Names from the release's config and tar are printed with repr. So no line the release controls can pass for a result line or a GitHub workflow command.
+  - **The logs are kept beyond GitHub's 90 days.** That's GitHub's most for a public repository. `pilot/shard_results.py --logs` saves each trusted log, with its SHA-256 recorded in `pilot/data/comparator-results.json`, so the logs can be attached to the v1.1 release and checked against it.
+- **Each challenge's result** is one of these. Comparator's exit status is recorded by the shell around it, outside the sandbox:
+  - **accepted:** Comparator exited 0, after its success line.
+  - **rejected:** Comparator exited 1 on one of its own rejections: a mismatched statement or constant, a disallowed axiom, or a refusal by Lean's kernel. nanoda reports a refusal by panicking, and an internal error the same way, so a failure of nanoda alone doesn't count as one.
+  - **buildError:** anything else that stopped it. That covers a failed build or export, a crash, a kill by a signal or by the memory limit, and nanoda failing while Lean's kernel accepts. Its detail says which.
+  - **tooLarge:** it timed out as the first challenge in its job, whatever its cap, or later with the full 5-hour cap. It's too large to check yet.
+  - **cutOff:** it timed out after other challenges, with less than the full cap, because its shared job was running out of time.
+  - **notStarted:** its job ran out before it began.
 
-  A cut-off or unstarted challenge gets one rerun in a job of its own, `solo-<challenge>`. Only a rejection is evidence that fails.
+  A cut-off or unstarted challenge gets one rerun in a job of its own, `solo-<challenge>`. Only a rejection is evidence that fails, and build errors and timeouts stay unknown.
+- **`selftest`, a third job,** runs `scripts/test-pilot-shard.sh` before any shard. It drives `scripts/pilot-shard.sh` through the real wrapper, landrun, caps and memory limit, with a fake comparator acting out each outcome. It checks:
+  - every result above;
+  - that forged result lines and workflow commands appear only marked;
+  - that the sandbox check fails when landrun sandboxes nothing, and when a directory listed as frozen can be written.
 
 **Shown to bite.** #92's own run, [41015650912](https://github.com/marleymcwilliams/LibSpec/actions/runs/41015650912), is the positive control: the two trees matched, all 194,331 entries, and Comparator accepted the control shard in 224 s. Then four throwaway pull requests each added one step to the untrusted job:
 
@@ -266,14 +279,20 @@ The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and
 
 In the three refusals, the trusted job stopped before any build. Both jobs' logs show "Cache mode: read". GitHub's documentation says the effective mode is also in `ACTIONS_CACHE_MODE`, but a `run` step saw it unset. #94's first run, [41017266866](https://github.com/marleymcwilliams/LibSpec/actions/runs/41017266866), failed in its own tampering step, which found no file to change. Its rerun is the one above.
 
-**What this still trusts.** Comparator's README assumes that the lakefile and the import closure of each challenge are "controlled by you or trustworthy". Here neither is LibSpec's:
-- **The release's lakefile** still runs during Comparator's two builds, inside the sandbox. There it can read everything, and write only `.lake`, which is where the challenge's compiled statement lands before Comparator exports it. The trusted job uses it byte for byte as at the pin, and at the pin all 362 lines of it have been read. Besides declaring 30 packages, each pinned to a commit, and its libraries, it has:
+**What an acceptance shows.** The statement Comparator exported for the challenge is proved by both kernels, with the permitted axioms. Whether that statement says what the paper claims is Phase 8's question, and its reviewers check that statement and the release's definitions it uses.
+
+**What this still trusts.** Comparator's README assumes that the lakefile and the import closure of each challenge are "controlled by you or trustworthy" (its assumption 1). It also assumes nothing adversarial was built before the challenge (its assumption 2). Here none of that is LibSpec's. Each of the following runs during Comparator's builds, inside the sandbox, where it can read everything and write all of `.lake` except the frozen outputs. That's also where the challenge's compiled statement lands before Comparator exports it:
+- **The release's lakefile.** The trusted job uses it byte for byte as at the pin, and at the pin all 362 lines of it have been read. Besides declaring 30 packages, each pinned to a commit, and its libraries, it has:
   - a library facet that lists ComparatorChallenges' modules;
   - code that checks each patched package's commit and origin, and clones and patches any that are missing;
   - a hook that applies the release's patches after `lake update`.
 
   Nothing else in it does IO. A new pin would need it read again.
-- **The challenge files,** which import Mathlib and helpers of their own, also run during the challenge's build. What they state is what Phase 8's reviewers check. So the protocol should have them read the statement Comparator exports, not only the source.
+- **The dependencies' lakefiles,** which Lake elaborates for each of the 42 packages. They haven't been read.
+- **Every module in each challenge's import closure:** the challenge file, its helpers, and every module of a dependency it imports. Mathlib's and its dependencies' outputs come frozen from LibSpec's tooling.
+- **The solutions built earlier in the same job** (assumption 2). A shared job's earlier solutions could write into the build outputs a later challenge imports, outside the frozen ones. A challenge alone in its job, such as a solo rerun, has no such earlier solutions.
+
+Reading the release's lakefile, freezing what came through LibSpec's tooling, and proving the sandbox is on all narrow this. None of them closes it.
 
 **Lewis & Clark's BLT cluster, for heavy builds, if its OS can run current Lean.**
 - **As documented, it can't.** Its documentation ([About the cluster](https://watzek.github.io/BLTdocs/about-the-cluster.html)) says: "The cluster runs the CentOS Linux operating system, version 7.4". It has 144 cores and 1,500 GB of memory across one login node and three workers, uses Sun Grid Engine, and gives each user a 25 GB quota.

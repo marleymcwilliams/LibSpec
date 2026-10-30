@@ -83,6 +83,11 @@ if in_wrapper sudo -n true 2> /dev/null; then
 fi
 echo "ok: sudo gains no privileges inside the wrapper"
 
+# Comparator passes --best-effort to landrun, which succeeds without error even when Landlock
+# isn't there. The full sandbox rests on it, so prove it is in force.
+step "The sandbox is in force"
+in_wrapper bash "$root/scripts/sandbox-check.sh" "$lean_dir"
+
 step "The challenge's theorems (JSG.Statements, built outside the sandbox: it is trusted)"
 (cd "$lean_dir" && lake build JSG.Statements)
 mapfile -t frozen < <(targets JSG.Statements JSG.Statements)
