@@ -255,6 +255,17 @@ The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and
 
   A cut-off or unstarted challenge gets one rerun in a job of its own, `solo-<challenge>`. Only a rejection is evidence that fails.
 
+**Shown to bite.** #92's own run, [41015650912](https://github.com/marleymcwilliams/LibSpec/actions/runs/41015650912), is the positive control: the two trees matched, all 194,331 entries, and Comparator accepted the control shard in 224 s. Then four throwaway pull requests each added one step to the untrusted job:
+
+| Control | Run | What happened |
+| --- | --- | --- |
+| #93: a challenge file tampered with | [41017253244](https://github.com/marleymcwilliams/LibSpec/actions/runs/41017253244) | Refused at verification: "differs from the pin: lean/ComparatorChallenges/BogomolovPopInjectivity.lean" |
+| #94: a dependency changed outside its patch | [41018764359](https://github.com/marleymcwilliams/LibSpec/actions/runs/41018764359) | Refused: "differs from the pin: lean/.lake/packages/PrimeNumberTheoremAnd/PrimeNumberTheoremAnd.lean" |
+| #95: the restored toolchain tampered with, its `lake` altering a solution file after `lake update` | [41017268730](https://github.com/marleymcwilliams/LibSpec/actions/runs/41017268730) | Refused: "differs from the pin: lean/OAI/Algebra/BogomolovPop/Canonical.lean" |
+| #96: a cache save, under the trusted job's tools key and under a fresh key | [41017271496](https://github.com/marleymcwilliams/LibSpec/actions/runs/41017271496) | Refused by the cache service: "Unable to reserve cache" for both. The cache API has no entry for either key in #96's scope, and the trusted job then accepted the control shard |
+
+In the three refusals, the trusted job stopped before any build. Both jobs' logs show "Cache mode: read". GitHub's documentation says the effective mode is also in `ACTIONS_CACHE_MODE`, but a `run` step saw it unset. #94's first run, [41017266866](https://github.com/marleymcwilliams/LibSpec/actions/runs/41017266866), failed in its own tampering step, which found no file to change. Its rerun is the one above.
+
 **What this still trusts.** Comparator's README assumes that the lakefile and the import closure of each challenge are "controlled by you or trustworthy". Here neither is LibSpec's:
 - **The release's lakefile** still runs during Comparator's two builds, inside the sandbox. There it can read everything, and write only `.lake`, which is where the challenge's compiled statement lands before Comparator exports it. The trusted job uses it byte for byte as at the pin, and at the pin all 362 lines of it have been read. Besides declaring 30 packages, each pinned to a commit, and its libraries, it has:
   - a library facet that lists ComparatorChallenges' modules;

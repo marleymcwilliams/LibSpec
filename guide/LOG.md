@@ -13,6 +13,11 @@ Decisions Claude Code made without asking, because they are reversible and don't
 - **The gap Marley found, closed:** hitting the 5-hour cap is "too large to check yet". A challenge cut off only because its shared job ran out of time gets one rerun in a job of its own first. ROADMAP's Phase 7 says so too.
 - **Read, before trusting Comparator's assumption 1:** all of the release's lakefile at the pin. Besides declaring packages and libraries, its code only checks, clones and patches dependencies. EXECUTABLE_GATE §4 says what that leaves trusted.
 - **CLAUDE.md:** never run openai/math's lakefile, `lake update` or `lake build` on this PC or on BLT.
+- **Shown to bite,** before any real shard runs:
+  - #92's own run accepted the control shard, with the trees matching;
+  - the three tampering controls were refused at verification: a challenge file (#93), a dependency outside its patch (#94) and the restored toolchain (#95);
+  - the cache service refused #96's two saves.
+  The throwaways are closed and their branches deleted. The table is in EXECUTABLE_GATE §4.
 
 ### The shard plan (#91)
 - **Made,** from `pilot/data/shards.json`, by `pilot/plan_shards.py`: 33 shards in Marley's order. Families 189 and 159 come first, then 378 and 079, each in a job of its own, then 29 more.
