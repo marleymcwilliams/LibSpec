@@ -1,0 +1,210 @@
+name: Pilot shards
+
+# Phase 7's trusted Comparator runs on the openai/math release (guide/ROADMAP.md, Phase 7;
+# guide/EXECUTABLE_GATE.md §4), in two jobs:
+# - fetch, untrusted: runs the release's own lakefile, through `lake update`, and uploads the
+#   tree it leaves as one artifact.
+# - shard, trusted, one per shard, each on a fresh runner: fetches the release at the pin
+#   itself, rebuilds its dependencies from the pin with git alone, and refuses to go on unless
+#   the artifact matches that rebuild byte for byte. It builds only from its own rebuild, and
+#   runs Comparator with nanoda inside the full sandbox, never `lake env`.
+# The trusted job takes nothing from the untrusted one but that artifact: no job outputs, and
+# nothing of it in any expression. Both have read-only cache access and a read-only token,
+# and neither runs on main. Dispatch it from another branch, such as pilot/runs:
+#
+#     gh workflow run pilot-shards.yml --ref pilot/runs -f shards='["f189","f159"]'
+#
+# A pull request that changes this workflow or its scripts runs the control shard. Read each
+# shard's results from its job's log, which only that job writes.
+
+cache-mode: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      shards:
+        description: 'Shards, as a JSON array: names from pilot/data/shard-plan.json, or solo-<Challenge>'
+        default: '["control"]'
+  pull_request:
+    paths:
+      - .github/workflows/pilot-shards.yml
+      - scripts/pilot-release.sh
+      - scripts/pilot-fetch.sh
+      - scripts/pilot-shard.sh
+      - scripts/pilot_tree.py
+      - scripts/pilot_deps.py
+      - scripts/pilot_shard.py
+      - pilot/data/shard-plan.json
+
+permissions:
+  contents: read
+
+jobs:
+  fetch:
+    name: Fetch the release (untrusted)
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Restore the Lean toolchain (restore only)
+        id: elan-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ runner.os }}-${{ hashFiles('lean/lean-toolchain') }}
+
+      - name: Install the Lean toolchain
+        if: steps.elan-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -sSf --retry 5 -o "$RUNNER_TEMP/elan-init.sh" \
+            https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh
+          sh "$RUNNER_TEMP/elan-init.sh" -y --default-toolchain none
+
+      - name: Put elan on PATH
+        run: echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: The release's lean/, at the pin
+        run: bash scripts/pilot-release.sh "$RUNNER_TEMP/release"
+
+      - name: Its dependencies (untrusted, the release's lakefile runs here)
+        run: bash scripts/pilot-fetch.sh "$RUNNER_TEMP/release"
+
+      - name: Pack the tree it leaves
+        run: |
+          mkdir -p "$RUNNER_TEMP/out"
+          python3 scripts/pilot_tree.py pack "$RUNNER_TEMP/release" \
+            "$RUNNER_TEMP/out/release-tree.tar"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-tree
+          path: ${{ runner.temp }}/out/release-tree.tar
+          compression-level: 1
+          retention-days: 7
+          if-no-files-found: error
+
+  shard:
+    name: Shard ${{ matrix.shard }} (trusted)
+    needs: fetch
+    if: github.ref != 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        shard: ${{ fromJSON(github.event.inputs.shards || '["control"]') }}
+    steps:
+      - name: Start the job's clock
+        run: echo "JOB_START=$(date +%s)" >> "$GITHUB_ENV"
+
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Free disk space
+        run: |
+          echo "before: $(df -h --output=avail / | tail -n 1) free"
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          echo "after: $(df -h --output=avail / | tail -n 1) free"
+
+      - name: Restore the Lean toolchain (restore only)
+        id: elan-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.elan
+          key: elan-${{ runner.os }}-${{ hashFiles('lean/lean-toolchain') }}
+
+      - name: Install the Lean toolchain
+        if: steps.elan-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -sSf --retry 5 -o "$RUNNER_TEMP/elan-init.sh" \
+            https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh
+          sh "$RUNNER_TEMP/elan-init.sh" -y --default-toolchain none
+
+      - name: Put elan on PATH
+        run: echo "$HOME/.elan/bin" >> "$GITHUB_PATH"
+
+      - name: Restore Comparator tools, with nanoda (restore only)
+        id: tools
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/comparator-full-tools
+          key: comparator-full-tools-${{ runner.os }}-${{ hashFiles('scripts/build-comparator-tools.sh', 'lean/lean-toolchain') }}
+
+      - uses: actions/setup-go@v5
+        if: steps.tools.outputs.cache-hit != 'true'
+        with:
+          go-version: stable
+          cache: false
+
+      - name: Build Comparator tools, with nanoda
+        if: steps.tools.outputs.cache-hit != 'true'
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup default stable
+          bash scripts/build-comparator-tools.sh "$HOME/comparator-full-tools" --with-nanoda
+
+      - name: LibSpec's own Mathlib, with its cache (our tooling, at the release's commit)
+        working-directory: lean
+        run: lake exe cache get
+
+      - name: The release's lean/, at the pin, fetched here
+        run: bash scripts/pilot-release.sh "$RUNNER_TEMP/release"
+
+      - name: Its dependencies, rebuilt from the pin with git alone
+        run: python3 scripts/pilot_deps.py "$RUNNER_TEMP/release/lean" lean
+
+      - name: The untrusted job's tree
+        uses: actions/download-artifact@v4
+        with:
+          name: release-tree
+          path: ${{ runner.temp }}/untrusted
+
+      - name: Refuse unless that tree matches the rebuild
+        run: python3 scripts/pilot_tree.py verify "$RUNNER_TEMP/untrusted" "$RUNNER_TEMP/release"
+
+      - name: Start a systemd user manager for the runner
+        run: |
+          sudo loginctl enable-linger "$USER"
+          uid="$(id -u)"
+          for i in $(seq 1 60); do [ -S "/run/user/$uid/bus" ] && break; sleep 1; done
+          echo "XDG_RUNTIME_DIR=/run/user/$uid" >> "$GITHUB_ENV"
+          echo "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus" >> "$GITHUB_ENV"
+          XDG_RUNTIME_DIR="/run/user/$uid" systemctl --user is-system-running --wait || true
+
+      - name: Comparator on the shard
+        shell: bash
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          toolchain_bin="$(dirname "$(cd lean && elan which lean)")"
+          export PATH="$HOME/comparator-full-tools/bin:$toolchain_bin:$PATH"
+          mkdir -p "$RUNNER_TEMP/results"
+          bash scripts/pilot-shard.sh "$SHARD" "$RUNNER_TEMP/release" "$RUNNER_TEMP/results" 2>&1 |
+            tee "$RUNNER_TEMP/results/shard.log"
+
+      - name: Keep the results and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: results-${{ matrix.shard }}
+          path: ${{ runner.temp }}/results
+          if-no-files-found: warn
+
+      - name: Summary
+        if: always()
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          {
+            echo "### Shard $SHARD"
+            echo '```'
+            grep -E '^(shard|kernel|result|ok|FAIL|REFUSED|note):|pilot-shard.sh: done' \
+              "$RUNNER_TEMP/results/shard.log" || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
