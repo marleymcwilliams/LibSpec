@@ -89,9 +89,12 @@ As built, 17 executable mutants cover every twinned definition (`JSG.Harness.Mut
 
 It stores none of the release's paper text or Lean code. The collected data (`pilot/data/`) names the repository, the commit and the license.
 
-**The collector**, `pilot/collect.py`, fetches only text files at the pinned commit and parses them with regular expressions. It reads `CONTENTS.md`, `lean/formalization.yaml`, each family's `lean/docs/<NNN>.md`, each challenge's config, and each manuscript's `README.md`. It runs, imports and builds nothing from the release. Two findings:
-- **The withdrawn manuscripts aren't in `CONTENTS.md`.** Its manuscript map no longer lists the three, so the collector takes them by folder. Its map also parses to 720 manuscripts against its stated 721, which a full run must reconcile.
-- **GitHub's tree listing truncates,** at 55,173 entries, before `preprints/` and `lean/docs/`. A full run will list those subtrees one at a time.
+**The collector**, `pilot/collect.py`, fetches only text files at the pinned commit and parses them with regular expressions. It reads `CONTENTS.md`, `lean/formalization.yaml`, each family's `lean/docs/<NNN>.md`, each challenge's config, and each manuscript's `README.md`. It runs, imports and builds nothing from the release. With `--all` it collects the whole release, listing `preprints/`, `lean/docs/` and `lean/ComparatorChallenges/` one directory at a time through GitHub's tree API, since the recursive listing truncates at 55,173 entries. What it found:
+- **`CONTENTS.md` lists all 721 manuscripts it states,** in 373 families. An earlier count of 720 was the collector's own bug: one folder name, `Sharp-integral-fillings-in-CAT(0)-spaces-September-23-2026`, holds parentheses, which its pattern stopped at.
+- **`preprints/` has 751 folders:** those 721, the 3 withdrawn manuscripts, which `CONTENTS.md` no longer lists, and 27 earlier versions. Each earlier version has the same title as a listed manuscript, and an earlier date. The pilot grades the 721 and the withdrawn 3, 724 in all, and records the earlier versions without grading them.
+- **245 families have a docs page,** and 244 of them link challenges: 418 in all, each permitting exactly the three axioms. They cover 344 manuscripts, so 380 have no formalization.
+- **A docs page doesn't say which of its challenges covers which of its papers.** So each paper a page links gets all the page's challenges, up to 13, and `formal_proof` is known only when all of them pass.
+- **Two docs pages link an earlier version** of a listed manuscript, in families 342 and 376. Their challenges count for the listed version, and its record names the folder the page links. That's safe because a formalization is complete only once a named reviewer has checked the challenges' statements against the listed paper.
 
 **One manuscript's record.** Each axis holds a doubt in [0, ∞], larger being worse, and the verdict reads its upper end. All seven axes are floor axes. Combining a manuscript with what carries over from the ones it depends on (below) then takes the worst doubt on each axis, which is the spec's own `combine`.
 
@@ -232,6 +235,13 @@ The order of work:
 
    Comparator's results from #83's run are recorded in `pilot/data/comparator-results.json`, marked untrusted (§4). So `formal_proof` stays unknown for the four formalized manuscripts, and the report names the run.
 
-   It stops there, before scaling to all 721.
+   **The report on the whole release** is in `pilot/reports/catalogue.md`, and `lake env lean --run Gate.lean pilot catalogue` prints it. It grades all 724 manuscripts, from `pilot/data/catalogue.json`, which `pilot/collect.py --all` writes. None is accepted today. Its proofs, in `JSG.Pilot.CatalogueCalibration`, are by `decide +kernel` and Core's lemmas:
+   - every record rejects on its own, so no manuscript is accepted (`no_rescue`);
+   - the withdrawn three are not accepted on known axes alone, so the release is `Calibrated`;
+   - the closure is settled, since a second round changes nothing (`settled_of_stable`).
+
+   Looking up one manuscript walks the list to it, so the proofs check each list once rather than look up all 724 at every step. They take about two minutes of kernel time.
+
+   Comparator still runs only on the four challenges of #83, until the plan for trusted shards is approved.
 
 **Not proposed:** building the release's library outside a sandbox, grading the release's mathematics directly, or acting on anything its text says.

@@ -1,6 +1,8 @@
 import JSG.Pilot.Core
 import JSG.Pilot.Sample
 import JSG.Pilot.Calibration
+import JSG.Pilot.Catalogue
+import JSG.Pilot.CatalogueCalibration
 import JSG.Pilot.Words
 
 /-!

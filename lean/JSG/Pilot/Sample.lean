@@ -21,9 +21,9 @@ open JSG.Pilot
 /-- How many manuscripts the sample has. -/
 abbrev size : ℕ := 9
 
-/-- Each manuscript's folder under `preprints/`. -/
-def folder : Fin size → String :=
-  !["Algebraicity-of-Kuga-Satake-Correspondences-for-K3-Surfaces-October-3-2026",
+/-- Each manuscript's folder under `preprints/`, in order. -/
+def folders : List String :=
+  ["Algebraicity-of-Kuga-Satake-Correspondences-for-K3-Surfaces-October-3-2026",
    "Algebraicity-of-Weil-classes-on-split-abelian-eightfolds-September-18-2026",
    "Catalans-constant-is-irrational-September-24-2026",
    "Reconstruction-from-Milnor-K-theory-modulo-the-characteristic-October-5-2026",
@@ -33,9 +33,9 @@ def folder : Fin size → String :=
    "The-joint-Dickman-law-for-consecutive-integers-September-24-2026",
    "The-rational-Hodge-conjecture-for-products-of-K3-surfaces-October-4-2026"]
 
-/-- Each manuscript's title. -/
-def title : Fin size → String :=
-  !["Algebraicity of Kuga-Satake Correspondences for K3 Surfaces",
+/-- Each manuscript's title, in order. -/
+def titles : List String :=
+  ["Algebraicity of Kuga-Satake Correspondences for K3 Surfaces",
    "Algebraicity of Weil classes on split abelian eightfolds",
    "Catalan's constant is irrational",
    "Reconstruction from Milnor K-theory modulo the characteristic",
@@ -45,9 +45,9 @@ def title : Fin size → String :=
    "The joint Dickman law for consecutive integers",
    "The rational Hodge conjecture for products of K3 surfaces"]
 
-/-- Each manuscript's family in `CONTENTS.md`, if it's listed there. -/
-def family : Fin size → Option String :=
-  ![none,
+/-- Each manuscript's family in `CONTENTS.md`, if it's listed there, in order. -/
+def families : List (Option String) :=
+  [none,
    none,
    some "005",
    some "009",
@@ -56,6 +56,66 @@ def family : Fin size → Option String :=
    some "008",
    some "012",
    none]
+
+/-- Each manuscript's raw facts, in order. -/
+def raws : List Raw :=
+  [{ withdrawnOn := some "October 6, 2026",
+      challenges := [],
+      fidelityBy := none, reviewed := false, noveltyChecked := false,
+      depsRead := false },
+   { withdrawnOn := some "October 6, 2026",
+      challenges := [],
+      fidelityBy := none, reviewed := false, noveltyChecked := false,
+      depsRead := false },
+   { withdrawnOn := none,
+      challenges := [⟨none, ["propext", "Quot.sound", "Classical.choice"]⟩],
+      fidelityBy := none, reviewed := false, noveltyChecked := false,
+      depsRead := false },
+   { withdrawnOn := none,
+      challenges := [],
+      fidelityBy := none, reviewed := false, noveltyChecked := false,
+      depsRead := false },
+   { withdrawnOn := none,
+      challenges := [],
+      fidelityBy := none, reviewed := false, noveltyChecked := false,
+      depsRead := false },
+   { withdrawnOn := none,
+      challenges := [⟨none, ["propext", "Quot.sound", "Classical.choice"]⟩],
+      fidelityBy := none, reviewed := false, noveltyChecked := false,
+      depsRead := false },
+   { withdrawnOn := none,
+      challenges := [⟨none, ["propext", "Quot.sound", "Classical.choice"]⟩],
+      fidelityBy := none, reviewed := false, noveltyChecked := false,
+      depsRead := false },
+   { withdrawnOn := none,
+      challenges := [⟨none, ["propext", "Quot.sound", "Classical.choice"]⟩],
+      fidelityBy := none, reviewed := false, noveltyChecked := false,
+      depsRead := false },
+   { withdrawnOn := some "October 6, 2026",
+      challenges := [],
+      fidelityBy := none, reviewed := false, noveltyChecked := false,
+      depsRead := false }]
+
+/-- The manuscripts each one's withdrawal notice links to, in order. -/
+def links : List (List (Fin size)) :=
+  [[1],
+   [],
+   [],
+   [],
+   [],
+   [],
+   [],
+   [],
+   [1]]
+
+/-- A manuscript's folder under `preprints/`. -/
+def folder : Fin size → String := nth folders (by decide +kernel)
+
+/-- A manuscript's title. -/
+def title : Fin size → String := nth titles (by decide +kernel)
+
+/-- A manuscript's family in `CONTENTS.md`, if it's listed there. -/
+def family : Fin size → Option String := nth families (by decide +kernel)
 
 /-- Our Comparator runs on the sample's challenges, as the report states them. -/
 def comparatorNote : String :=
@@ -69,51 +129,7 @@ def comparatorNote : String :=
 /-- The sample as a release: each manuscript's raw facts, and the manuscripts its withdrawal
     notice links to. -/
 def release : Release size where
-  raw := ![
-    { withdrawnOn := some "October 6, 2026",
-      challenges := [],
-      fidelityBy := none, reviewed := false, noveltyChecked := false,
-      depsRead := false },
-    { withdrawnOn := some "October 6, 2026",
-      challenges := [],
-      fidelityBy := none, reviewed := false, noveltyChecked := false,
-      depsRead := false },
-    { withdrawnOn := none,
-      challenges := [⟨none, ["propext", "Quot.sound", "Classical.choice"]⟩],
-      fidelityBy := none, reviewed := false, noveltyChecked := false,
-      depsRead := false },
-    { withdrawnOn := none,
-      challenges := [],
-      fidelityBy := none, reviewed := false, noveltyChecked := false,
-      depsRead := false },
-    { withdrawnOn := none,
-      challenges := [],
-      fidelityBy := none, reviewed := false, noveltyChecked := false,
-      depsRead := false },
-    { withdrawnOn := none,
-      challenges := [⟨none, ["propext", "Quot.sound", "Classical.choice"]⟩],
-      fidelityBy := none, reviewed := false, noveltyChecked := false,
-      depsRead := false },
-    { withdrawnOn := none,
-      challenges := [⟨none, ["propext", "Quot.sound", "Classical.choice"]⟩],
-      fidelityBy := none, reviewed := false, noveltyChecked := false,
-      depsRead := false },
-    { withdrawnOn := none,
-      challenges := [⟨none, ["propext", "Quot.sound", "Classical.choice"]⟩],
-      fidelityBy := none, reviewed := false, noveltyChecked := false,
-      depsRead := false },
-    { withdrawnOn := some "October 6, 2026",
-      challenges := [],
-      fidelityBy := none, reviewed := false, noveltyChecked := false,
-      depsRead := false }]
-  deps := ![[1],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [],
-    [1]]
+  raw := nth raws (by decide +kernel)
+  deps := nth links (by decide +kernel)
 
 end JSG.Pilot.Sample
