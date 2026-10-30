@@ -1,0 +1,967 @@
+{
+ "source": {
+  "repository": "https://github.com/openai/math",
+  "commit": "7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a",
+  "read": "the import headers of every .lean file under lean/"
+ },
+ "from": "pilot/data/shards.json",
+ "binHours": 3.5,
+ "challengeCapHours": 5.0,
+ "phases": [
+  {
+   "name": "measure",
+   "shards": [
+    "f189",
+    "f159"
+   ]
+  },
+  {
+   "name": "eth-and-local-smoothing",
+   "shards": [
+    "f378",
+    "f079"
+   ]
+  },
+  {
+   "name": "rest",
+   "shards": [
+    "c-MUBSix",
+    "c-PlanarPacking",
+    "b01",
+    "b02",
+    "b03",
+    "b04",
+    "b05",
+    "b06",
+    "b07",
+    "b08",
+    "b09",
+    "b10",
+    "b11",
+    "b12",
+    "b13",
+    "b14",
+    "b15",
+    "b16",
+    "b17",
+    "b18",
+    "b19",
+    "b20",
+    "b21",
+    "b22",
+    "b23",
+    "b24",
+    "b25",
+    "b26",
+    "b27"
+   ]
+  }
+ ],
+ "shards": {
+  "control": {
+   "families": [
+    "009"
+   ],
+   "challenges": [
+    "BogomolovPopInjectivity"
+   ],
+   "estimateHours": 0.01
+  },
+  "f189": {
+   "families": [
+    "189"
+   ],
+   "challenges": [
+    "CycleCliqueRamsey"
+   ],
+   "estimateHours": 19.4
+  },
+  "f159": {
+   "families": [
+    "159"
+   ],
+   "challenges": [
+    "ErdosReciprocal"
+   ],
+   "estimateHours": 5.1
+  },
+  "f378": {
+   "families": [
+    "378"
+   ],
+   "challenges": [
+    "SubexponentialSAT"
+   ],
+   "estimateHours": 2.4
+  },
+  "f079": {
+   "families": [
+    "079"
+   ],
+   "challenges": [
+    "LocalSmoothing"
+   ],
+   "estimateHours": 1.6
+  },
+  "c-MUBSix": {
+   "families": [
+    "266"
+   ],
+   "challenges": [
+    "MUBSix"
+   ],
+   "estimateHours": 17.89
+  },
+  "c-PlanarPacking": {
+   "families": [
+    "090"
+   ],
+   "challenges": [
+    "PlanarPacking"
+   ],
+   "estimateHours": 12.35
+  },
+  "b01": {
+   "families": [
+    "009",
+    "013",
+    "025",
+    "033",
+    "047",
+    "066",
+    "076",
+    "094",
+    "098",
+    "117",
+    "126",
+    "127",
+    "129",
+    "132",
+    "134",
+    "137",
+    "148",
+    "173",
+    "176",
+    "180",
+    "184",
+    "185",
+    "190",
+    "192",
+    "195",
+    "206",
+    "210",
+    "218",
+    "240",
+    "242",
+    "251",
+    "252",
+    "256",
+    "261",
+    "266",
+    "274",
+    "276",
+    "277",
+    "290",
+    "301",
+    "322",
+    "329",
+    "330",
+    "347"
+   ],
+   "challenges": [
+    "AmplitudeDamping",
+    "ArnoldCounterexample",
+    "AsymptoticallyMinimalLittlewood",
+    "BarnetteHamiltonian",
+    "BogomolovPopInjectivity",
+    "BoundedRecovery",
+    "BufferedIsing",
+    "CHObstruction",
+    "CartierChartCompactnessSupport",
+    "CliqueFreeLog",
+    "CompactBanach",
+    "ComplexCancellation",
+    "DiscreteLipschitzFree",
+    "Dixmier",
+    "DixmierAllDiscrete",
+    "DoublingHilbert",
+    "EgyptianFractions",
+    "EntangledGames",
+    "FiniteCongruenceGraph",
+    "FoulkesHowe",
+    "GeneralizedStarHeight",
+    "GotsmanLinial",
+    "HadamardCubeFiber",
+    "InfiniteMatroid",
+    "InfiniteMatroidCorollaries",
+    "Kervaire",
+    "LittlewoodFiniteFlatness",
+    "LogKodairaFiberNegative",
+    "MatchingAffineLift",
+    "MatchingPSD",
+    "MatrixRemoval",
+    "MetricEntropyDuality",
+    "OneTapeSpace",
+    "OneWayLiveness",
+    "OstmannPrimes",
+    "PlanarAndersonSpectrum",
+    "QACParity",
+    "RealL1Renorming",
+    "RegularParity",
+    "SecondKahnKalai",
+    "SelfSimilar",
+    "SelfSimilarCorollaries",
+    "SensitivitySeparation",
+    "SeymourSecondNeighborhood",
+    "ShortEgyptianFractions",
+    "SingleFold",
+    "SquareRootDegree",
+    "SubpolynomialLp",
+    "SurfaceConeCandidateSupport",
+    "TingleySphereIsometry",
+    "TorsionFreeHyperbolic",
+    "TraceIdealTransportSupport",
+    "TwoWayComplementation",
+    "TwoWayDeterminization",
+    "UniformSparsestCut"
+   ],
+   "estimateHours": 3.47
+  },
+  "b02": {
+   "families": [
+    "100",
+    "102"
+   ],
+   "challenges": [
+    "CylinderCovering",
+    "DirectedFeedback",
+    "MinUncut",
+    "OptimalMaxCut",
+    "RuledCovering",
+    "TriangularCovering",
+    "UniqueGamesTheorem",
+    "VertexCover"
+   ],
+   "estimateHours": 3.5
+  },
+  "b03": {
+   "families": [
+    "023",
+    "115"
+   ],
+   "challenges": [
+    "ContingencyTables",
+    "PattersonFirstMoment"
+   ],
+   "estimateHours": 3.5
+  },
+  "b04": {
+   "families": [
+    "003",
+    "105"
+   ],
+   "challenges": [
+    "DirichletSevenEighths",
+    "HeckeSevenEighths",
+    "PerfectCompleteness",
+    "QuasiRiemannHypothesis",
+    "SiegelZeros"
+   ],
+   "estimateHours": 3.5
+  },
+  "b05": {
+   "families": [
+    "013",
+    "238"
+   ],
+   "challenges": [
+    "BinarySweep",
+    "CoordinateSweeps",
+    "CoordinateTrace",
+    "FourRowPermanent",
+    "OccupiedOverlap",
+    "OstmannComplete",
+    "PartialPermutation",
+    "SignedSweepMoment",
+    "SpinAngle",
+    "ThorpFirstReciprocal",
+    "ThorpRemaining",
+    "ThorpRouting",
+    "ThorpWeightedCompatibility",
+    "WeightedSweepMoments"
+   ],
+   "estimateHours": 3.43
+  },
+  "b06": {
+   "families": [
+    "071",
+    "234"
+   ],
+   "challenges": [
+    "InvariantIsing",
+    "KoebeCircleDomains"
+   ],
+   "estimateHours": 3.5
+  },
+  "b07": {
+   "families": [
+    "007",
+    "255"
+   ],
+   "challenges": [
+    "OrdinaryElliott",
+    "OrdinaryTwoPointCorrelations",
+    "PolycyclicRecognition"
+   ],
+   "estimateHours": 3.5
+  },
+  "b08": {
+   "families": [
+    "008",
+    "275",
+    "289"
+   ],
+   "challenges": [
+    "ContinuumCoulombHardness",
+    "DeligneDrinfeld",
+    "StrongKadisonKastler"
+   ],
+   "estimateHours": 3.5
+  },
+  "b09": {
+   "families": [
+    "073",
+    "371"
+   ],
+   "challenges": [
+    "DefocusingNLS",
+    "FalconerAllDimensions",
+    "PlanarFalconer"
+   ],
+   "estimateHours": 3.5
+  },
+  "b10": {
+   "families": [
+    "005",
+    "083",
+    "118"
+   ],
+   "challenges": [
+    "BinPackingGap",
+    "Catalan",
+    "LipschitzHilbert"
+   ],
+   "estimateHours": 3.5
+  },
+  "b11": {
+   "families": [
+    "107",
+    "162",
+    "333"
+   ],
+   "challenges": [
+    "BalancedRyser",
+    "MatrixFields",
+    "MatrixMultiplication",
+    "RyserCovering",
+    "RyserOddExtensions",
+    "SurfaceImmersion"
+   ],
+   "estimateHours": 3.5
+  },
+  "b12": {
+   "families": [
+    "012",
+    "125",
+    "244"
+   ],
+   "challenges": [
+    "JointDickman",
+    "KMedianRecovery",
+    "KMedianRefinedRecovery",
+    "KMedianThreshold",
+    "MetricKMedian",
+    "PartitionConsistency",
+    "PartitionPrinciple"
+   ],
+   "estimateHours": 3.5
+  },
+  "b13": {
+   "families": [
+    "187",
+    "205",
+    "288"
+   ],
+   "challenges": [
+    "KadisonSimilarity",
+    "Saxl",
+    "SnakyCertificate",
+    "SnakyConditional",
+    "SnakyTwentyOne",
+    "UniformCommutator",
+    "UniversalTensorSquares"
+   ],
+   "estimateHours": 3.5
+  },
+  "b14": {
+   "families": [
+    "058",
+    "227",
+    "269",
+    "350"
+   ],
+   "challenges": [
+    "CriticalSK",
+    "CriticalSKMixing",
+    "Laughlin",
+    "LaughlinFock",
+    "LaughlinGap",
+    "LaughlinPlanar",
+    "NodalLength",
+    "SKBarriers",
+    "SKHighTemperature",
+    "SKRatio",
+    "SmoothYau",
+    "SymmetricDomains",
+    "YauCounterexample"
+   ],
+   "estimateHours": 3.5
+  },
+  "b15": {
+   "families": [
+    "121",
+    "237",
+    "263",
+    "293"
+   ],
+   "challenges": [
+    "BackwardIntertwiners",
+    "ContinuousCircleWeight",
+    "CoulombIonization",
+    "CoulombRadii",
+    "CriticalStripMass",
+    "EditApproximation",
+    "FiniteFactor",
+    "HoneycombBridgeFiniteness",
+    "HoneycombBridgeMassSupport",
+    "HoneycombFreeEnergy",
+    "HyperinvariantSubspaces",
+    "IrrationalRotation",
+    "ProductBrown"
+   ],
+   "estimateHours": 3.4
+  },
+  "b16": {
+   "families": [
+    "039",
+    "090",
+    "348"
+   ],
+   "challenges": [
+    "AtomicGaussian",
+    "EinsteinFour",
+    "MaximalSeshadriConstants",
+    "Nagata",
+    "TriangularEnergy",
+    "TriangularGaussian"
+   ],
+   "estimateHours": 3.44
+  },
+  "b17": {
+   "families": [
+    "015",
+    "020",
+    "214",
+    "241",
+    "254",
+    "303"
+   ],
+   "challenges": [
+    "ArtinCAT0",
+    "ArtinParabolicIntersections",
+    "BenjaminiSchramm",
+    "CayleyPercolation",
+    "DegreeRigidity",
+    "DukePrimeDegree",
+    "ExactInfiniteness",
+    "HarmonicArtin",
+    "IndividualStrongInfiniteness",
+    "PowerFreeValues"
+   ],
+   "estimateHours": 3.5
+  },
+  "b18": {
+   "families": [
+    "017",
+    "021",
+    "024",
+    "081",
+    "170",
+    "174"
+   ],
+   "challenges": [
+    "AlgorithmicThinTrees",
+    "Jacobsthal",
+    "JacobsthalImproved",
+    "PiExponent",
+    "RamseyFive",
+    "RieszQuantitative",
+    "SharpLogRamsey",
+    "StrongThinTree",
+    "TotientAsymptotic",
+    "TotientCompanionZero"
+   ],
+   "estimateHours": 3.5
+  },
+  "b19": {
+   "families": [
+    "199",
+    "213",
+    "222",
+    "236",
+    "354",
+    "360"
+   ],
+   "challenges": [
+    "AuslanderReiten",
+    "BiholderTransport",
+    "CriticalPercolation",
+    "CriticalZ3",
+    "CubicTorus",
+    "FreeIsing",
+    "IsingFiniteness",
+    "PerceptronFreeEnergy",
+    "SphericalField",
+    "Tachikawa",
+    "WeakMTWGlobalSupport"
+   ],
+   "estimateHours": 3.5
+  },
+  "b20": {
+   "families": [
+    "085",
+    "087",
+    "106",
+    "113",
+    "220",
+    "235",
+    "343",
+    "363"
+   ],
+   "challenges": [
+    "BallPacking",
+    "BallPackingNecessity",
+    "BinaryMatching",
+    "BoltzmannNonuniqueness",
+    "DirectionalBallisticity",
+    "DirectionalWalk",
+    "DiskMaximal",
+    "FixedClauseThreshold",
+    "GeneralMahler",
+    "IndependentSets",
+    "MahlerConjecture",
+    "MatchingEntropy",
+    "MatchingEntropyBounds",
+    "MatchingFPRAS",
+    "SATComputability",
+    "SATSharpness",
+    "SATVariance",
+    "SignedFiniteBand",
+    "SingletonLoopMatching",
+    "SymmetricMahlerEquality",
+    "SymmetricPolar",
+    "TriangleFace",
+    "VelocityHemisphere"
+   ],
+   "estimateHours": 3.5
+  },
+  "b21": {
+   "families": [
+    "110",
+    "169",
+    "198",
+    "250",
+    "253",
+    "279",
+    "342",
+    "356",
+    "362"
+   ],
+   "challenges": [
+    "BooneHigman",
+    "ElementaryPositivity",
+    "ExactQuantumFactoring",
+    "FinitisticAsymmetry",
+    "KServer",
+    "LittleFinitistic",
+    "SimpleAmenable",
+    "SimpleOvergroups",
+    "TamingCompatibility",
+    "UniformKServer",
+    "UniversalFInfinity",
+    "VlasovMaxwell",
+    "WeakHessian"
+   ],
+   "estimateHours": 3.5
+  },
+  "b22": {
+   "families": [
+    "026",
+    "133",
+    "139",
+    "140",
+    "146",
+    "156",
+    "165",
+    "212",
+    "221",
+    "246",
+    "257",
+    "365"
+   ],
+   "challenges": [
+    "BipartiteCrossing",
+    "BorsukNine",
+    "CannonGeometricAction",
+    "CompleteCrossing",
+    "Conductivity",
+    "DilutedSpin",
+    "GammaPassage",
+    "GaussianFiniteEntropy",
+    "GaussianInformation",
+    "GaussianReplacement",
+    "HyperbolicObstruction",
+    "LogConcaveQuery",
+    "MemoryPrecision",
+    "NoiselessRegression",
+    "ParityLifts",
+    "PlanarFirstPassage",
+    "PosteriorReplicas",
+    "PrimeGaps",
+    "ProjectionMoments",
+    "StandardMapComponents",
+    "StandardMapEntropy",
+    "StandardMapLyapunov",
+    "SubsphereCurrent",
+    "VariableWL",
+    "WLIdentification",
+    "WeisfeilerLeman"
+   ],
+   "estimateHours": 3.5
+  },
+  "b23": {
+   "families": [
+    "027",
+    "089",
+    "092",
+    "099",
+    "260",
+    "267",
+    "272",
+    "281",
+    "295",
+    "307",
+    "317",
+    "334",
+    "337"
+   ],
+   "challenges": [
+    "BinaryEditLower",
+    "BoundedTreewidthL1",
+    "CKSBondiPenrose",
+    "CharacterVarietiesAllSeamsSupport",
+    "CoarseAssembly",
+    "CoveringDensity",
+    "DimensionTenChannel",
+    "DimensionTenPair",
+    "EditDistance",
+    "FillingCoefficient",
+    "FiniteCircle",
+    "HardSphere",
+    "IsometricImmersion",
+    "KadisonRingrose",
+    "PlanarL1",
+    "SKFullSupport",
+    "SKValue",
+    "SharpCAT0Filling",
+    "SingleLatticeCovering",
+    "ThomasonModelStructures",
+    "TreeEdit"
+   ],
+   "estimateHours": 3.4
+  },
+  "b24": {
+   "families": [
+    "103",
+    "111",
+    "144",
+    "157",
+    "167",
+    "168",
+    "188",
+    "194",
+    "196",
+    "197",
+    "211",
+    "228",
+    "230",
+    "231",
+    "243",
+    "247",
+    "249"
+   ],
+   "challenges": [
+    "ChoicelessPolynomialTime",
+    "ContinuumTransition",
+    "DuttaDomain",
+    "EilenbergGanea",
+    "FKCRT",
+    "FreeUniformSpanningForest",
+    "GroupRingDeterminant",
+    "HadwigerCounterexample",
+    "KLInvariance",
+    "KaplanskyDirectFiniteness",
+    "KaplanskyFinitelyPresented",
+    "ListHadwiger",
+    "LogspaceEquality",
+    "MatroidProphet",
+    "MatroidSecretary",
+    "OddKaplansky",
+    "PeriodicGroup",
+    "PinnedDistances",
+    "PlanarUnitDistances",
+    "RadialDensityInterval",
+    "RadialTransition",
+    "SLELowerPositivity",
+    "StronglyRayleighDPP",
+    "ThreeTorus",
+    "TorsionFreeZeroDivisors",
+    "TriangleRemoval",
+    "WitnessedChoice"
+   ],
+   "estimateHours": 3.4
+  },
+  "b25": {
+   "families": [
+    "028",
+    "049",
+    "050",
+    "052",
+    "072",
+    "075",
+    "082",
+    "084",
+    "088",
+    "091",
+    "095",
+    "096",
+    "097",
+    "104",
+    "108",
+    "112",
+    "114",
+    "116",
+    "292",
+    "294",
+    "296",
+    "325",
+    "327",
+    "331",
+    "353",
+    "376"
+   ],
+   "challenges": [
+    "AbhyankarSathaye",
+    "AffineBernstein",
+    "BalancedBoxRouting",
+    "BalancedThreeStack",
+    "BoundedTreePotentials",
+    "Brennan",
+    "BrennanSharp",
+    "CommonBasesFPRAS",
+    "CommutingDerivations",
+    "CompleteCrouzeix",
+    "CrouzeixHilbert",
+    "DaugavetModuli",
+    "DepthThree",
+    "DiamondDistortion",
+    "DirectCrouzeix",
+    "DyadicAvoidance",
+    "FactorGeneration",
+    "ForcedNavierStokesComputation",
+    "ForestSpace",
+    "FormulaHitting",
+    "FourierLLogL",
+    "GaussianMoat",
+    "GaussianPropeller",
+    "HilbertCrouzeix",
+    "HyperbolicCones",
+    "IndependentProducts",
+    "KahlerSplitting",
+    "KaplanskyQuasitrace",
+    "KaplanskyStableFiniteness",
+    "LogBrunnMinkowski",
+    "MarkovType",
+    "MidpointLenses",
+    "NavierStokesAlternating",
+    "NavierStokesVelocity",
+    "NuclearUltrapower",
+    "PermanentCubic",
+    "PettyProjectionVolume",
+    "ProjectionCounterexample",
+    "ProjectionVolume",
+    "QuadricBundles",
+    "RandomizedMeanPayoff",
+    "RationalHitting",
+    "RecursivePotentials",
+    "RelativeGeneration",
+    "SmoothInitialForm",
+    "SolenoidalSheetPrograms",
+    "SplitTangentIntegrability",
+    "StableCoordinateFour",
+    "SteinitzBergstrom",
+    "StrictMeans",
+    "StructuralCrouzeix",
+    "TriangularHilbert",
+    "TruffetCounterexample"
+   ],
+   "estimateHours": 3.4
+  },
+  "b26": {
+   "families": [
+    "119",
+    "122",
+    "124",
+    "128",
+    "130",
+    "131",
+    "135",
+    "143",
+    "145",
+    "149",
+    "150",
+    "151",
+    "152",
+    "155",
+    "158",
+    "160",
+    "161",
+    "172",
+    "175",
+    "177",
+    "179",
+    "181",
+    "182",
+    "183",
+    "186",
+    "191",
+    "207",
+    "215",
+    "229",
+    "245",
+    "248",
+    "262",
+    "271",
+    "273"
+   ],
+   "challenges": [
+    "BassTorsionFree",
+    "BassTrace",
+    "C1EntropyCounterexample",
+    "CirculantHadamard",
+    "ClassicalON",
+    "CoboundaryExpanders",
+    "CourtadeKumar",
+    "CycleDecomposition",
+    "DepthFive",
+    "EntropyPhotonNumber",
+    "EuclideanFiveColor",
+    "EuclideanRamsey",
+    "EuclideanRamseyCircle",
+    "EuclideanRamseyNine",
+    "EuclideanRamseyQuadratic",
+    "EuclideanRamseySpherical",
+    "EuclideanRamseyTransitive",
+    "EvenBarker",
+    "ExactFourier",
+    "GrahamSpherical",
+    "HalvingLines",
+    "HeilbronnTriangle",
+    "Heisenberg",
+    "IrrationalTriangleBilliard",
+    "LiebThirring",
+    "MassAction",
+    "PeriodicTilingThree",
+    "PlaneColoring",
+    "QuantitativeVanDerWaerden",
+    "QuinticLienard",
+    "Rokhlin",
+    "SharpThreshold",
+    "SidorenkoCounterexample",
+    "SmoothObstruction",
+    "SoftChannel204",
+    "SquareDifference",
+    "Superstring",
+    "SwitchChain",
+    "TalagrandDiscreteConvexity",
+    "TalagrandExpectationThreshold",
+    "ThompsonNonamenability",
+    "ThreeMachine",
+    "ThreeStateSupercritical",
+    "ThreeStateTreeClauses",
+    "TraceReconstruction",
+    "TypeSystemNormalization",
+    "UniformFourier"
+   ],
+   "estimateHours": 3.4
+  },
+  "b27": {
+   "families": [
+    "280",
+    "287",
+    "291",
+    "297",
+    "298",
+    "299",
+    "312",
+    "323",
+    "324",
+    "326",
+    "328",
+    "358",
+    "359",
+    "361",
+    "367",
+    "369",
+    "370",
+    "372",
+    "373",
+    "374"
+   ],
+   "challenges": [
+    "BernoulliNonflatInSeven",
+    "Brenier",
+    "C0Absorption",
+    "CharacterCriterion",
+    "ConjugatePoints",
+    "Cotype",
+    "CoulombCounterexample",
+    "ElasticityUniqueness",
+    "FiniteEntropySeparation",
+    "GrothendieckElementaryExpansion",
+    "HarmonicGrowth",
+    "HenonEmden",
+    "HotSpots",
+    "InterpolatedFactors",
+    "LipschitzEquivalence",
+    "Naimark",
+    "PinchedKahler",
+    "ReflexiveFixedPoints",
+    "SeparableQuotientNegative",
+    "UniformGamma",
+    "VertexAlgebraNet"
+   ],
+   "estimateHours": 2.0
+  }
+ }
+}
