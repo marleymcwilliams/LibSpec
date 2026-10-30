@@ -6,7 +6,9 @@ usage: python3 scripts/pilot_deps.py RELEASE_LEAN_DIR LIBSPEC_LEAN_DIR FROZEN_LI
 For each package in the release's lake-manifest.json:
 - if LibSpec's own manifest pins it at the same commit, as it does Mathlib and its own
   dependencies, LibSpec's checkout of it moves over, with the build outputs that
-  `lake exe cache get` fetched for it;
+  `lake exe cache get` and `lake build Mathlib` gave it. Anything else that build wrote
+  outside .lake, such as a trace file, is removed, so its tree is the git checkout at the
+  commit, as `lake update` leaves it;
 - otherwise it is cloned from its URL and checked out at its commit, as Lake would.
 Each gets the manifest's URL as its origin, which the release's lakefile checks.
 
@@ -74,6 +76,14 @@ def main():
         if name in ours and ours[name][1] == rev and os.path.isdir(mine):
             shutil.move(mine, target)
             how = "LibSpec's own"
+            for rel in git("ls-files", "--others", "--directory", "-z", cwd=target).split("\0"):
+                if rel and not rel.startswith(".lake/") and rel != ".lake":
+                    path = os.path.join(target, rel)
+                    if os.path.isdir(path) and not os.path.islink(path):
+                        shutil.rmtree(path)
+                    else:
+                        os.remove(path)
+                    print(f"{name}: removed {rel!r}, which LibSpec's build wrote outside .lake")
             build = os.path.join(target, ".lake", "build")
             os.makedirs(build, exist_ok=True)
             frozen.append(build)
