@@ -4,6 +4,41 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-30
 
+### The trusted shards, round 3 (#92, Marley's review)
+- **A way around the freeze, closed.** Lean resolves a module through the first search-path entry holding its top-level directory, and lean4export appends the toolchain's library after `LEAN_PATH`. A build could plant a substitute `Mathlib/` or `Init/` in a writable entry ahead of the frozen copies. It could also rename the directories above a frozen one inside `.lake`.
+  - **The fix:** each frozen output is bind-mounted read-only outside `.lake`. The exports' `LEAN_PATH` starts with the toolchain's `lib/lean` and those mounts.
+  - **The check:** Lean's own resolution must find every trusted root in its trusted copy, before the first challenge and after each one.
+- **The self-test shows both attacks fail:** from inside landrun, a planted `Mathlib/` and `Init/`, and a renamed frozen Mathlib with a substitute. The old path would have resolved the planted copies, and the new one resolves the trusted ones.
+  - **Its first run failed,** since the attack used `mkdir` and `mv`, which Comparator's landrun flags don't let a build run: nothing was planted. The attack is now Lean code, run by the toolchain's `lean`, as a build's own code would be.
+  - **Its second run failed too,** on the old path's side: through that path the resolver's own `import Lean` resolved Init to the planted directory and failed there, so it printed nothing. The resolver now takes `--path`, which puts a path where `LEAN_PATH` goes, and the self-test resolves the old path that way. It also checks that Lean itself, started with the old path, can't get as far as resolving.
+- **nanoda alone failing,** while Lean's kernel accepts, is now `kernelsDisagree`: unknown, flagged on the run, and reported to Marley. A nanoda killed by SIGKILL, exit 137, as the memory limit kills, stays a build error.
+
+### The trusted shards, round 2 (#92, Marley's review)
+- **The sandbox is proved on, in every job.** Comparator passes `--best-effort` to landrun, which succeeds silently without Landlock. So `scripts/sandbox-check.sh` runs landrun inside the wrapper with Comparator's build flags, and stops the job unless a write inside `.lake` works and writes outside it fail. `scripts/comparator-full.sh` runs it too.
+- **Frozen outputs.** The build outputs of the nine packages that came through LibSpec's tooling, Mathlib's among them, are set immutable as root before Comparator runs, and cleared at the end. The sandbox check requires writes into them to fail.
+- **Nothing of the release's unmarked.** Comparator's output is prefixed line by line, and the release's names are printed with repr. Results come only from unmarked lines of the trusted jobs' step "Comparator on the shard" (`pilot/shard_results.py`).
+- **Rejections only on Comparator's own.** A mismatch, a disallowed axiom, or Lean's kernel refusing. Crashes, signals, out-of-memory kills and a failure of nanoda alone are build errors. nanoda refuses by panicking, as it errs, so its exit code can't tell the two apart. Each challenge's unit gets a 13 GB memory limit, and a probe shows the limit is enforced.
+- **The first in its job is tooLarge** on any timeout, whatever its cap. Only a later one with less than the full cap is cutOff.
+- **A self-test job,** `scripts/test-pilot-shard.sh`, drives every outcome through the real wrapper with a fake comparator, and shows the sandbox check fails without a sandbox. The shards wait for it.
+- **What this still trusts,** in EXECUTABLE_GATE §4: the release's lakefile, the dependencies' lakefiles, every module in each challenge's import closure, and the solutions built earlier in the same job. Also, what an acceptance shows: the exported statement proved by both kernels.
+- **The logs are kept:** each trusted log, with its SHA-256, as an asset of the v1.1 release. It's in Phase 7's gate.
+- **The negative controls weren't rerun.** The verification's logic didn't change, only its messages, which now print names with repr.
+
+### The trusted shards (#92)
+- **Built, as Phase 7 and Marley's answers on #87 set out:** `.github/workflows/pilot-shards.yml`, with an untrusted `fetch` job and a trusted `shard` job per shard. The design is in EXECUTABLE_GATE §4.
+- **Decided: the trusted job rebuilds rather than unpacks.** It rebuilds the release's dependencies from the pin with git alone, and compares the untrusted artifact with its rebuild, byte for byte. It never builds from the artifact, so the artifact's only role is to show that the release's own lakefile produces the same tree.
+- **Decided: one untrusted job per run,** serving every shard in it. The tree is the same for every shard, and each trusted job checks it for itself.
+- **Decided: no `lake env` in the release.** Comparator's documented command is `lake env comparator`, which would run the release's lakefile outside the sandbox. `LEAN_PATH` is set from the directories instead.
+- **Decided: results come from the trusted jobs' logs.** The untrusted job could upload an artifact under a trusted job's name, but not write another job's log.
+- **The gap Marley found, closed:** hitting the 5-hour cap is "too large to check yet". A challenge cut off only because its shared job ran out of time gets one rerun in a job of its own first. ROADMAP's Phase 7 says so too.
+- **Read, before trusting Comparator's assumption 1:** all of the release's lakefile at the pin. Besides declaring packages and libraries, its code only checks, clones and patches dependencies. EXECUTABLE_GATE §4 says what that leaves trusted.
+- **CLAUDE.md:** never run openai/math's lakefile, `lake update` or `lake build` on this PC or on BLT.
+- **Shown to bite,** before any real shard runs:
+  - #92's own run accepted the control shard, with the trees matching;
+  - the three tampering controls were refused at verification: a challenge file (#93), a dependency outside its patch (#94) and the restored toolchain (#95);
+  - the cache service refused #96's two saves.
+  The throwaways are closed and their branches deleted. The table is in EXECUTABLE_GATE §4.
+
 ### The shard plan (#91)
 - **Made,** from `pilot/data/shards.json`, by `pilot/plan_shards.py`: 33 shards in Marley's order. Families 189 and 159 come first, then 378 and 079, each in a job of its own, then 29 more.
 - **Decided: the packing.** Each estimate is the larger end of the two ranges. Families over 5 hours with several challenges are split by challenge. A unit over 3.5 hours gets a job of its own, and smaller units share jobs, first fit and largest first, up to 3.5 estimated hours each. That leaves room in a 6-hour job for the kernels and the setup.
