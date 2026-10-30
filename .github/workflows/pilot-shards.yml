@@ -73,6 +73,13 @@ jobs:
       - name: Its dependencies (untrusted, the release's lakefile runs here)
         run: bash scripts/pilot-fetch.sh "$RUNNER_TEMP/release"
 
+      - name: "THROWAWAY control 2: change a dependency outside its patch"
+        run: |
+          pkg="$RUNNER_TEMP/release/lean/.lake/packages/PrimeNumberTheoremAnd"
+          f="$(find "$pkg" -name '*.lean' -not -path '*/.lake/*' -not -path '*/.git/*' | sort | head -n 1)"
+          printf '\n-- changed outside its patch\n' >> "$f"
+          echo "tampered: $f"
+
       - name: Pack the tree it leaves
         run: |
           mkdir -p "$RUNNER_TEMP/out"
