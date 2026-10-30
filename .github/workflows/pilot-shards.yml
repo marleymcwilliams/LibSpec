@@ -273,6 +273,14 @@ jobs:
           bash scripts/pilot-shard.sh "$SHARD" "$RUNNER_TEMP/release" "$RUNNER_TEMP/results" 2>&1 |
             tee "$RUNNER_TEMP/results/shard.log"
 
+      # The control shard is the positive control: anything but an acceptance turns it red.
+      - name: The control shard must be accepted
+        if: matrix.shard == 'control'
+        run: |
+          grep -q '^result: BogomolovPopInjectivity: accepted ' "$RUNNER_TEMP/results/shard.log" ||
+            { echo "FAIL: the control shard wasn't accepted"; exit 1; }
+          echo "ok: the control shard was accepted"
+
       - name: Keep the results and logs
         if: always()
         uses: actions/upload-artifact@v4
