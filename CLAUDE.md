@@ -28,6 +28,15 @@
 - Never weaken a hypothesis or change a statement to make a proof go through.
 - After three failed approaches, stop. Report what you tried, what blocked you,
   and whether the statement itself might be false.
+- Keep at least 2 GB of memory free on my PC. Run Lean locally only with about 8 GB free;
+  otherwise let CI build. Stop any Lean process of yours that threatens the 2 GB. If mine
+  are what's holding the memory, pause and tell me instead.
+- Run heavy trusted work on BLT once I've set up SSH to it from this PC: plain `lake build`
+  and proof work on LibSpec, which need no Landlock (only Comparator's sandbox does).
+  - Submit builds through Grid Engine to the compute nodes, never on the login node.
+  - Keep one shared Mathlib checkout, within the 25 GB quota or on the cluster's shared
+    storage.
+  - Never build openai/math or any other untrusted code on BLT.
 - End every session with: files changed, theorems closed, ideas added to guide/IDEAS.md.
 
 ## When to ask the human
