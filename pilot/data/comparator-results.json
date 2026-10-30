@@ -1,0 +1,82 @@
+{
+  "run": 40916190535,
+  "url": "https://github.com/marleymcwilliams/LibSpec/actions/runs/40916190535",
+  "workflow": ".github/workflows/pilot-comparator.yml",
+  "trusted": false,
+  "why": "the release's lakefile ran outside Comparator's sandbox, on the same machine, before Comparator did (#83)",
+  "commit": "7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a",
+  "results": {
+    "Catalan": "accepted",
+    "DeligneDrinfeld": "accepted",
+    "BogomolovPopInjectivity": "accepted",
+    "JointDickman": "accepted"
+  },
+  "challenges": [
+    {
+      "name": "Catalan",
+      "result": "accepted",
+      "seconds": 5108,
+      "freeMBAfter": 88120
+    },
+    {
+      "name": "DeligneDrinfeld",
+      "result": "accepted",
+      "seconds": 525,
+      "freeMBAfter": 87877
+    },
+    {
+      "name": "BogomolovPopInjectivity",
+      "result": "accepted",
+      "seconds": 159,
+      "freeMBAfter": 87827
+    },
+    {
+      "name": "JointDickman",
+      "result": "accepted",
+      "seconds": 2897,
+      "freeMBAfter": 80126
+    }
+  ],
+  "stages": [
+    {
+      "stage": "start",
+      "elapsedSeconds": 0,
+      "freeMB": 102810
+    },
+    {
+      "stage": "fetched",
+      "elapsedSeconds": 70,
+      "freeMB": 100359
+    },
+    {
+      "stage": "dependencies",
+      "elapsedSeconds": 227,
+      "freeMB": 91331
+    },
+    {
+      "stage": "cache",
+      "elapsedSeconds": 250,
+      "freeMB": 91331
+    },
+    {
+      "stage": "Catalan",
+      "elapsedSeconds": 5358,
+      "freeMB": 88120
+    },
+    {
+      "stage": "DeligneDrinfeld",
+      "elapsedSeconds": 5883,
+      "freeMB": 87877
+    },
+    {
+      "stage": "BogomolovPopInjectivity",
+      "elapsedSeconds": 6042,
+      "freeMB": 87827
+    },
+    {
+      "stage": "JointDickman",
+      "elapsedSeconds": 8939,
+      "freeMB": 80126
+    }
+  ]
+}

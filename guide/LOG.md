@@ -4,6 +4,20 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-29
 
+### Comparator's first measurements (#83, #84)
+- **The run:** [run 40916190535](https://github.com/marleymcwilliams/LibSpec/actions/runs/40916190535), on `Catalan`, `DeligneDrinfeld`, `BogomolovPopInjectivity` and `JointDickman`. Comparator accepted all four, with nanoda and Lean's kernel, in 2 h 29 min and 22.7 GB. The table is in EXECUTABLE_GATE §4.
+- **Decided: an untrusted run's results don't count.** The release's lakefile ran outside the sandbox before Comparator did, as #83 says, so `pilot/data/comparator-results.json` marks the run untrusted. `pilot/to_lean.py` counts results only from a trusted run, and the report names this one. The stricter choice, and it changes no verdict: the four aren't accepted either way, since `statement_fidelity`, `independent_review` and `novelty` are unknown.
+- **Corrected:** §4 said a hosted runner had about 14 GB of free disk. This one had 86 GB, and 104 GB after the workflow's cleanup. It also said the release was about 54,000 files, which is only where GitHub's tree listing stops.
+
+### The pilot's first report (#84)
+- **The data:** `pilot/to_lean.py` writes `lean/JSG/Pilot/Sample.lean` from the collector's facts. It translates and decides nothing, and it fails if a dependency edge leaves the sample.
+- **The proofs** are in `JSG.Pilot.Calibration`, by `decide +kernel`:
+  - the sample's closure is settled, and none of its nine manuscripts is accepted;
+  - the three withdrawn ones are not accepted on known axes alone, in the best case, `Release.bestCase`, which resolves every unknown in a manuscript's favour and keeps every known fact;
+  - the synthetic must-pass records are accepted and the must-fail ones aren't, and both the sample and the synthetic sets are `Calibrated`, in the frozen definition's sense.
+- **The words:** `JSG.Pilot.Words` writes "not accepted: evidence incomplete on …", naming the date for a withdrawal, "through" the dependency for carried doubt, and the reason for each unknown. `Gate.lean pilot` prints the report.
+- **Stopped** at the first report, as Marley asked, before scaling to all 721.
+
 ### The pilot's collector and its first sample (#82)
 - **The collector:** `pilot/collect.py` fetches text files from openai/math at `7ef5c0c` and parses them with regular expressions. It runs nothing from the release. It writes only facts: no paper text and no Lean code. Turning those facts into grades is in Lean (#81), and so is deriving `formal_proof` and `axioms` from each challenge's facts.
 - **Where it lives:** in a new top-level `pilot/`, which holds the collector and its data. It isn't a check, so it isn't under `scripts/`. Its data is committed so that the Lean data module is generated from a fixed snapshot.
