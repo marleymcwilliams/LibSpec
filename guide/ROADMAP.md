@@ -248,7 +248,7 @@ The goal is a trusted Comparator result for every challenge in the release, fold
    - **then the rest.**
 
    Record the results in `pilot/data/comparator-results.json` as trusted, and classify each failure as a rejection, a build error or a timeout, with its log.
-5. **Regenerate the report and its proofs.** An accepted challenge makes `formal_proof` known, and a rejection is evidence that fails. A build error or a timeout leaves it unknown, never failing. A challenge that can't finish in 6 hours waits: its `formal_proof` stays unknown, "too large to check yet", for v1.1.
+5. **Regenerate the report and its proofs.** An accepted challenge makes `formal_proof` known, and a rejection is evidence that fails. A build error or a timeout leaves it unknown, never failing. A challenge that hits the 5-hour cap waits: its `formal_proof` stays unknown, "too large to check yet", for v1.1. One that was cut off only because its shared job ran out of time gets one rerun in a job of its own first.
 6. **Release v1.1.** README and REPRODUCE describe the pilot and how to rerun it, and you tag `v1.1`.
 
 **Resources:**
@@ -260,7 +260,7 @@ The goal is a trusted Comparator result for every challenge in the release, fold
 - **A family too big for one job.** By one estimate or the other, five families may take more than 5 hours: 189, 266, 090, 159 and 013.
   - **266, 090 and 013 have several challenges each,** so each can be split by challenge, at the price of building their shared modules more than once.
   - **189 and 159 have a single challenge each,** so they're measured first.
-  - **A challenge that can't finish in 6 hours waits,** as "too large to check yet". The ways to check it later would be a larger runner, which costs money, or a build carried across jobs, which needs its own trust argument.
+  - **A challenge that hits the 5-hour cap waits,** as "too large to check yet". The ways to check it later would be a larger runner, which costs money, or a build carried across jobs, which needs its own trust argument.
 - **The estimate covers building only.** The kernels can take as long, as on Catalan, and the import graph doesn't predict them.
 - **Dependencies aren't in the estimate.** PrimeNumberTheoremAnd, Carleson and the release's other dependencies build from source too: its manifest lists 42 packages, Mathlib's own dependencies among them. Their sources come only from the untrusted job, so the trusted job is the first to see how big they are.
 - **Checking the untrusted job's output is the weak point.** If the check misses a change, a tampered dependency could change what a challenge proves. The negative controls in step 3 are what show it doesn't.
@@ -269,7 +269,7 @@ The goal is a trusted Comparator result for every challenge in the release, fold
 
 **Your answers, on #87:**
 - build errors and timeouts stay unknown, never evidence that fails;
-- a challenge that can't finish in 6 hours waits, with `formal_proof` unknown, "too large to check yet", for v1.1;
+- a challenge that hits the 5-hour cap waits, with `formal_proof` unknown, "too large to check yet", for v1.1. One cut off only because its shared job ran out of time gets one rerun in a job of its own first (#92);
 - the pin stays at `7ef5c0c` for v1.1;
 - the ETH and local-smoothing shards run right after families 189 and 159;
 - every untrusted job gets `cache-mode: read` or `none`, never `write`, and runs off main, with a negative control showing it can't save a cache.

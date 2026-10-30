@@ -236,6 +236,34 @@ The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and
 | `c-MUBSix` | 266 | `MUBSix` | 17.89 h |
 | `c-PlanarPacking` | 090 | `PlanarPacking` | 12.35 h |
 
+**The trusted shards** (`.github/workflows/pilot-shards.yml`, #92). Two jobs:
+- **`fetch`, untrusted.** It fetches the release's `lean/` at the pin and runs `lake update`, so the release's lakefile clones the 42 packages at their manifest commits and applies its 23 patches. It packs the tree that leaves, sources only, as one artifact. It runs off main, with `cache-mode: read`, `contents: read` and no credentials in its checkout.
+- **`shard`, trusted,** one per shard, each on a fresh runner:
+  1. **It fetches the release itself,** at the pin, and checks that it names LibSpec's toolchain, so elan installs nothing the release chose.
+  2. **It fetches Mathlib's cache** with LibSpec's own lakefile. LibSpec pins the release's Mathlib commit.
+  3. **It rebuilds the release's dependencies with git alone** (`scripts/pilot_deps.py`). The nine packages LibSpec shares come from LibSpec's checkout, and the other 33 are cloned at their commits. Each of the 23 patches is applied to its package, as the lakefile does: `patches/<name>-lean4341.patch` to `.lake/packages/<name>`.
+  4. **It compares the untrusted artifact with that rebuild,** byte for byte, and refuses on any difference (`scripts/pilot_tree.py verify`). It reads the artifact as a stream and extracts nothing.
+  5. **It runs Comparator on each challenge** (`scripts/pilot-shard.sh`), with nanoda, inside Comparator's landrun sandbox inside the systemd-run wrapper. `LEAN_PATH` comes from the directories, so `lake env` never runs the release's lakefile outside the sandbox. The config comes from the release's, keeping only the modules, theorems, definitions and permitted axioms, so a command such as an external kernel can't come in through it.
+- **What the trusted job takes from the untrusted one:** only the artifact, which it checks and never builds from. There are no job outputs, and no expression holds anything of the untrusted job. Results are read from each trusted job's log, which only that job writes. The untrusted job could upload an artifact under a trusted job's name, but it can't write another job's log.
+- **Each challenge's result** is one of:
+  - **accepted:** Comparator printed its success line;
+  - **rejected:** both modules exported, and the comparison or a kernel refused;
+  - **buildError:** a build or an export failed;
+  - **tooLarge:** it hit the 5-hour cap, so it's too large to check yet;
+  - **cutOff:** its shared job ran out of time first;
+  - **notStarted:** the job ran out before it began.
+
+  A cut-off or unstarted challenge gets one rerun in a job of its own, `solo-<challenge>`. Only a rejection is evidence that fails.
+
+**What this still trusts.** Comparator's README assumes that the lakefile and the import closure of each challenge are "controlled by you or trustworthy". Here neither is LibSpec's:
+- **The release's lakefile** still runs during Comparator's two builds, inside the sandbox. There it can read everything, and write only `.lake`, which is where the challenge's compiled statement lands before Comparator exports it. The trusted job uses it byte for byte as at the pin, and at the pin all 362 lines of it have been read. Besides declaring 30 packages, each pinned to a commit, and its libraries, it has:
+  - a library facet that lists ComparatorChallenges' modules;
+  - code that checks each patched package's commit and origin, and clones and patches any that are missing;
+  - a hook that applies the release's patches after `lake update`.
+
+  Nothing else in it does IO. A new pin would need it read again.
+- **The challenge files,** which import Mathlib and helpers of their own, also run during the challenge's build. What they state is what Phase 8's reviewers check. So the protocol should have them read the statement Comparator exports, not only the source.
+
 **Lewis & Clark's BLT cluster, for heavy builds, if its OS can run current Lean.**
 - **As documented, it can't.** Its documentation ([About the cluster](https://watzek.github.io/BLTdocs/about-the-cluster.html)) says: "The cluster runs the CentOS Linux operating system, version 7.4". It has 144 cores and 1,500 GB of memory across one login node and three workers, uses Sun Grid Engine, and gives each user a 25 GB quota.
 - **Lean:** CentOS 7 ships glibc 2.17, and Lean's x86-64 Linux releases need glibc 2.26 or later (Lean reference, [Supported platforms](https://lean-lang.org/doc/reference/4.33.1/platforms/)).

@@ -78,12 +78,16 @@ Some of it is the human's alone. The milestone notes' closing notes are in the h
 | `.gitattributes`, `.gitignore` | LF line endings everywhere, the archive kept byte for byte; build output ignored |
 | `.github/workflows/ci.yml` | CI: the build with leanchecker, `scripts/check.sh`, the differential tests and Comparator |
 | `.github/workflows/comparator-full.yml` | The full-strength Comparator run, by hand: nanoda and the full sandbox |
-| `.github/workflows/pilot-comparator.yml` | Comparator on the release's challenges |
+| `.github/workflows/pilot-comparator.yml` | Comparator on a few of the release's challenges, as measurements only |
+| `.github/workflows/pilot-shards.yml` | Phase 7's trusted Comparator runs, by shard: an untrusted job that runs the release's lakefile, and trusted jobs that rebuild its tree from the pin and check against it |
 | `scripts/check.sh` | The build, the forbidden-token scan, the axiom audit and the statements check |
 | `scripts/comparator.sh`, `scripts/comparator-full.sh`, `scripts/build-comparator-tools.sh` | Comparator, everyday and full-strength, and the tools it needs |
 | `scripts/differential.sh`, `scripts/sirusc_adapter.py` | The differential tests, and the adapter that runs SirusSC's code from `archive/` |
-| `scripts/pilot-comparator.sh` | The pilot's Comparator runs, with their measurements |
-| `pilot/collect.py`, `pilot/to_lean.py`, `pilot/imports.py` | The pilot's collector, its Lean generator, and the import-graph reader |
-| `pilot/data/` | Collected facts: `sample.json`, `catalogue.json`, `comparator-results.json`, `shards.json` |
+| `scripts/pilot-comparator.sh` | The pilot's measurement runs |
+| `scripts/pilot-release.sh`, `scripts/pilot-fetch.sh` | The release at the pin, and its `lake update`, in the untrusted job |
+| `scripts/pilot_deps.py`, `scripts/pilot_tree.py` | The trusted job's rebuild of the release's dependencies, and the comparison with the untrusted tree |
+| `scripts/pilot-shard.sh`, `scripts/pilot_shard.py` | The trusted job's Comparator runs on a shard, and their results |
+| `pilot/collect.py`, `pilot/to_lean.py`, `pilot/imports.py`, `pilot/plan_shards.py` | The pilot's collector, its Lean generator, the import-graph reader, and the shard plan |
+| `pilot/data/` | Collected facts: `sample.json`, `catalogue.json`, `comparator-results.json`, `shards.json`, `shard-plan.json` |
 | `pilot/reports/` | The generated reports: `first-sample.md`, `catalogue.md` |
 | `archive/` | **Read-only.** The original corpus, committed once. [SOURCES.md](SOURCES.md) says what each part is |

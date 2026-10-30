@@ -4,6 +4,16 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-30
 
+### The trusted shards (#92)
+- **Built, as Phase 7 and Marley's answers on #87 set out:** `.github/workflows/pilot-shards.yml`, with an untrusted `fetch` job and a trusted `shard` job per shard. The design is in EXECUTABLE_GATE §4.
+- **Decided: the trusted job rebuilds rather than unpacks.** It rebuilds the release's dependencies from the pin with git alone, and compares the untrusted artifact with its rebuild, byte for byte. It never builds from the artifact, so the artifact's only role is to show that the release's own lakefile produces the same tree.
+- **Decided: one untrusted job per run,** serving every shard in it. The tree is the same for every shard, and each trusted job checks it for itself.
+- **Decided: no `lake env` in the release.** Comparator's documented command is `lake env comparator`, which would run the release's lakefile outside the sandbox. `LEAN_PATH` is set from the directories instead.
+- **Decided: results come from the trusted jobs' logs.** The untrusted job could upload an artifact under a trusted job's name, but not write another job's log.
+- **The gap Marley found, closed:** hitting the 5-hour cap is "too large to check yet". A challenge cut off only because its shared job ran out of time gets one rerun in a job of its own first. ROADMAP's Phase 7 says so too.
+- **Read, before trusting Comparator's assumption 1:** all of the release's lakefile at the pin. Besides declaring packages and libraries, its code only checks, clones and patches dependencies. EXECUTABLE_GATE §4 says what that leaves trusted.
+- **CLAUDE.md:** never run openai/math's lakefile, `lake update` or `lake build` on this PC or on BLT.
+
 ### The shard plan (#91)
 - **Made,** from `pilot/data/shards.json`, by `pilot/plan_shards.py`: 33 shards in Marley's order. Families 189 and 159 come first, then 378 and 079, each in a job of its own, then 29 more.
 - **Decided: the packing.** Each estimate is the larger end of the two ranges. Families over 5 hours with several challenges are split by challenge. A unit over 3.5 hours gets a job of its own, and smaller units share jobs, first fit and largest first, up to 3.5 estimated hours each. That leaves room in a 6-hour job for the kernels and the setup.
