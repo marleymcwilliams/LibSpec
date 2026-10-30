@@ -220,9 +220,14 @@ jobs:
           rustup default stable
           bash scripts/build-comparator-tools.sh "$HOME/comparator-full-tools" --with-nanoda
 
-      - name: LibSpec's own Mathlib, with its cache (our tooling, at the release's commit)
+      # Lake writes a hash file it finds missing when it first replays a module, and Mathlib's
+      # cache lacks some. Writing them all here, with LibSpec's own tooling, leaves nothing to
+      # write into these outputs once they're frozen.
+      - name: LibSpec's own Mathlib, with its cache and its hash files (our tooling)
         working-directory: lean
-        run: lake exe cache get
+        run: |
+          lake exe cache get
+          lake build Mathlib
 
       - name: The release's lean/, at the pin, fetched here
         run: bash scripts/pilot-release.sh "$RUNNER_TEMP/release"
