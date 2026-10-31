@@ -1,7 +1,7 @@
 {
  "challenges": [
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "049",
    "name": "AbhyankarSathaye",
    "permittedAxioms": [
@@ -15,7 +15,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "353",
    "name": "AffineBernstein",
    "permittedAxioms": [
@@ -29,7 +29,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "174",
    "name": "AlgorithmicThinTrees",
    "permittedAxioms": [
@@ -43,7 +43,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "276",
    "name": "AmplitudeDamping",
    "permittedAxioms": [
@@ -57,7 +57,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "347",
    "name": "ArnoldCounterexample",
    "permittedAxioms": [
@@ -71,7 +71,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "254",
    "name": "ArtinCAT0",
    "permittedAxioms": [
@@ -85,7 +85,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "254",
    "name": "ArtinParabolicIntersections",
    "permittedAxioms": [
@@ -102,7 +102,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "076",
    "name": "AsymptoticallyMinimalLittlewood",
    "permittedAxioms": [
@@ -116,7 +116,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "090",
    "name": "AtomicGaussian",
    "permittedAxioms": [
@@ -130,7 +130,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "199",
    "name": "AuslanderReiten",
    "permittedAxioms": [
@@ -144,7 +144,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "293",
    "name": "BackwardIntertwiners",
    "permittedAxioms": [
@@ -158,7 +158,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "376",
    "name": "BalancedBoxRouting",
    "permittedAxioms": [
@@ -172,7 +172,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "162",
    "name": "BalancedRyser",
    "permittedAxioms": [
@@ -186,7 +186,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "376",
    "name": "BalancedThreeStack",
    "permittedAxioms": [
@@ -200,7 +200,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "343",
    "name": "BallPacking",
    "permittedAxioms": [
@@ -214,7 +214,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "343",
    "name": "BallPackingNecessity",
    "permittedAxioms": [
@@ -228,7 +228,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "180",
    "name": "BarnetteHamiltonian",
    "permittedAxioms": [
@@ -242,7 +242,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "207",
    "name": "BassTorsionFree",
    "permittedAxioms": [
@@ -256,7 +256,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "207",
    "name": "BassTrace",
    "permittedAxioms": [
@@ -270,7 +270,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "214",
    "name": "BenjaminiSchramm",
    "permittedAxioms": [
@@ -286,7 +286,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "367",
    "name": "BernoulliNonflatInSeven",
    "permittedAxioms": [
@@ -300,7 +300,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "360",
    "name": "BiholderTransport",
    "permittedAxioms": [
@@ -314,7 +314,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "118",
    "name": "BinPackingGap",
    "permittedAxioms": [
@@ -328,7 +328,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "099",
    "name": "BinaryEditLower",
    "permittedAxioms": [
@@ -342,7 +342,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "113",
    "name": "BinaryMatching",
    "permittedAxioms": [
@@ -356,7 +356,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "238",
    "name": "BinarySweep",
    "permittedAxioms": [
@@ -370,7 +370,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "165",
    "name": "BipartiteCrossing",
    "permittedAxioms": [
@@ -384,7 +384,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "009",
    "name": "BogomolovPopInjectivity",
    "permittedAxioms": [
@@ -398,7 +398,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "363",
    "name": "BoltzmannNonuniqueness",
    "permittedAxioms": [
@@ -412,7 +412,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "250",
    "name": "BooneHigman",
    "permittedAxioms": [
@@ -426,7 +426,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "156",
    "name": "BorsukNine",
    "permittedAxioms": [
@@ -440,7 +440,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "290",
    "name": "BoundedRecovery",
    "permittedAxioms": [
@@ -454,7 +454,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "331",
    "name": "BoundedTreePotentials",
    "permittedAxioms": [
@@ -468,7 +468,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "089",
    "name": "BoundedTreewidthL1",
    "permittedAxioms": [
@@ -482,7 +482,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "374",
    "name": "Brenier",
    "permittedAxioms": [
@@ -497,7 +497,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "072",
    "name": "Brennan",
    "permittedAxioms": [
@@ -511,7 +511,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "072",
    "name": "BrennanSharp",
    "permittedAxioms": [
@@ -525,7 +525,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "218",
    "name": "BufferedIsing",
    "permittedAxioms": [
@@ -539,7 +539,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "324",
    "name": "C0Absorption",
    "permittedAxioms": [
@@ -553,7 +553,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "151",
    "name": "C1EntropyCounterexample",
    "permittedAxioms": [
@@ -567,7 +567,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "240",
    "name": "CHObstruction",
    "permittedAxioms": [
@@ -581,7 +581,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "260",
    "name": "CKSBondiPenrose",
    "permittedAxioms": [
@@ -596,7 +596,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "246",
    "name": "CannonGeometricAction",
    "permittedAxioms": [
@@ -610,7 +610,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "066",
    "name": "CartierChartCompactnessSupport",
    "permittedAxioms": [
@@ -624,7 +624,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "005",
    "name": "Catalan",
    "permittedAxioms": [
@@ -638,7 +638,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "214",
    "name": "CayleyPercolation",
    "permittedAxioms": [
@@ -652,7 +652,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "299",
    "name": "CharacterCriterion",
    "permittedAxioms": [
@@ -666,7 +666,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "027",
    "name": "CharacterVarietiesAllSeamsSupport",
    "permittedAxioms": [
@@ -680,7 +680,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "243",
    "name": "ChoicelessPolynomialTime",
    "permittedAxioms": [
@@ -694,7 +694,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "179",
    "name": "CirculantHadamard",
    "permittedAxioms": [
@@ -708,7 +708,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "215",
    "name": "ClassicalON",
    "permittedAxioms": [
@@ -722,7 +722,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "184",
    "name": "CliqueFreeLog",
    "permittedAxioms": [
@@ -736,7 +736,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "buildError",
    "family": "307",
    "name": "CoarseAssembly",
    "permittedAxioms": [
@@ -750,7 +750,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "177",
    "name": "CoboundaryExpanders",
    "permittedAxioms": [
@@ -764,7 +764,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "114",
    "name": "CommonBasesFPRAS",
    "permittedAxioms": [
@@ -778,7 +778,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "049",
    "name": "CommutingDerivations",
    "permittedAxioms": [
@@ -792,7 +792,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "098",
    "name": "CompactBanach",
    "permittedAxioms": [
@@ -806,7 +806,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "165",
    "name": "CompleteCrossing",
    "permittedAxioms": [
@@ -820,7 +820,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "325",
    "name": "CompleteCrouzeix",
    "permittedAxioms": [
@@ -834,7 +834,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "047",
    "name": "ComplexCancellation",
    "permittedAxioms": [
@@ -848,7 +848,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "365",
    "name": "Conductivity",
    "permittedAxioms": [
@@ -862,7 +862,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "358",
    "name": "ConjugatePoints",
    "permittedAxioms": [
@@ -876,7 +876,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "kernelsDisagree",
    "family": "115",
    "name": "ContingencyTables",
    "permittedAxioms": [
@@ -892,7 +892,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "293",
    "name": "ContinuousCircleWeight",
    "permittedAxioms": [
@@ -906,7 +906,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "buildError",
    "family": "275",
    "name": "ContinuumCoulombHardness",
    "permittedAxioms": [
@@ -921,7 +921,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "228",
    "name": "ContinuumTransition",
    "permittedAxioms": [
@@ -935,7 +935,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "238",
    "name": "CoordinateSweeps",
    "permittedAxioms": [
@@ -950,7 +950,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "238",
    "name": "CoordinateTrace",
    "permittedAxioms": [
@@ -964,7 +964,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "326",
    "name": "Cotype",
    "permittedAxioms": [
@@ -978,7 +978,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "373",
    "name": "CoulombCounterexample",
    "permittedAxioms": [
@@ -992,7 +992,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "263",
    "name": "CoulombIonization",
    "permittedAxioms": [
@@ -1006,7 +1006,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "263",
    "name": "CoulombRadii",
    "permittedAxioms": [
@@ -1020,7 +1020,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "119",
    "name": "CourtadeKumar",
    "permittedAxioms": [
@@ -1034,7 +1034,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "092",
    "name": "CoveringDensity",
    "permittedAxioms": [
@@ -1048,7 +1048,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "213",
    "name": "CriticalPercolation",
    "permittedAxioms": [
@@ -1062,7 +1062,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "227",
    "name": "CriticalSK",
    "permittedAxioms": [
@@ -1078,7 +1078,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "227",
    "name": "CriticalSKMixing",
    "permittedAxioms": [
@@ -1092,7 +1092,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "237",
    "name": "CriticalStripMass",
    "permittedAxioms": [
@@ -1106,7 +1106,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "213",
    "name": "CriticalZ3",
    "permittedAxioms": [
@@ -1120,7 +1120,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "325",
    "name": "CrouzeixHilbert",
    "permittedAxioms": [
@@ -1134,7 +1134,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "354",
    "name": "CubicTorus",
    "permittedAxioms": [
@@ -1148,7 +1148,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "buildError",
    "family": "189",
    "name": "CycleCliqueRamsey",
    "permittedAxioms": [
@@ -1162,7 +1162,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "181",
    "name": "CycleDecomposition",
    "permittedAxioms": [
@@ -1176,7 +1176,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "100",
    "name": "CylinderCovering",
    "permittedAxioms": [
@@ -1190,7 +1190,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "331",
    "name": "DaugavetModuli",
    "permittedAxioms": [
@@ -1206,7 +1206,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "371",
    "name": "DefocusingNLS",
    "permittedAxioms": [
@@ -1222,7 +1222,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "241",
    "name": "DegreeRigidity",
    "permittedAxioms": [
@@ -1236,7 +1236,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "008",
    "name": "DeligneDrinfeld",
    "permittedAxioms": [
@@ -1250,7 +1250,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "135",
    "name": "DepthFive",
    "permittedAxioms": [
@@ -1264,7 +1264,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "112",
    "name": "DepthThree",
    "permittedAxioms": [
@@ -1278,7 +1278,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "331",
    "name": "DiamondDistortion",
    "permittedAxioms": [
@@ -1292,7 +1292,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "221",
    "name": "DilutedSpin",
    "permittedAxioms": [
@@ -1306,7 +1306,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "272",
    "name": "DimensionTenChannel",
    "permittedAxioms": [
@@ -1320,7 +1320,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "272",
    "name": "DimensionTenPair",
    "permittedAxioms": [
@@ -1334,7 +1334,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "325",
    "name": "DirectCrouzeix",
    "permittedAxioms": [
@@ -1349,7 +1349,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "102",
    "name": "DirectedFeedback",
    "permittedAxioms": [
@@ -1363,7 +1363,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "220",
    "name": "DirectionalBallisticity",
    "permittedAxioms": [
@@ -1377,7 +1377,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "220",
    "name": "DirectionalWalk",
    "permittedAxioms": [
@@ -1391,7 +1391,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "003",
    "name": "DirichletSevenEighths",
    "permittedAxioms": [
@@ -1405,7 +1405,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "330",
    "name": "DiscreteLipschitzFree",
    "permittedAxioms": [
@@ -1419,7 +1419,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "085",
    "name": "DiskMaximal",
    "permittedAxioms": [
@@ -1433,7 +1433,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "251",
    "name": "Dixmier",
    "permittedAxioms": [
@@ -1447,7 +1447,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "251",
    "name": "DixmierAllDiscrete",
    "permittedAxioms": [
@@ -1461,7 +1461,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "098",
    "name": "DoublingHilbert",
    "permittedAxioms": [
@@ -1475,7 +1475,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "015",
    "name": "DukePrimeDegree",
    "permittedAxioms": [
@@ -1490,7 +1490,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "194",
    "name": "DuttaDomain",
    "permittedAxioms": [
@@ -1504,7 +1504,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "084",
    "name": "DyadicAvoidance",
    "permittedAxioms": [
@@ -1518,7 +1518,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "121",
    "name": "EditApproximation",
    "permittedAxioms": [
@@ -1532,7 +1532,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "099",
    "name": "EditDistance",
    "permittedAxioms": [
@@ -1546,7 +1546,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "025",
    "name": "EgyptianFractions",
    "permittedAxioms": [
@@ -1568,7 +1568,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "249",
    "name": "EilenbergGanea",
    "permittedAxioms": [
@@ -1582,7 +1582,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "348",
    "name": "EinsteinFour",
    "permittedAxioms": [
@@ -1598,7 +1598,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "372",
    "name": "ElasticityUniqueness",
    "permittedAxioms": [
@@ -1612,7 +1612,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "169",
    "name": "ElementaryPositivity",
    "permittedAxioms": [
@@ -1626,7 +1626,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "277",
    "name": "EntangledGames",
    "permittedAxioms": [
@@ -1640,7 +1640,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "273",
    "name": "EntropyPhotonNumber",
    "permittedAxioms": [
@@ -1654,7 +1654,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "tooLarge",
    "family": "159",
    "name": "ErdosReciprocal",
    "permittedAxioms": [
@@ -1668,7 +1668,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "158",
    "name": "EuclideanFiveColor",
    "permittedAxioms": [
@@ -1682,7 +1682,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "172",
    "name": "EuclideanRamsey",
    "permittedAxioms": [
@@ -1696,7 +1696,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "172",
    "name": "EuclideanRamseyCircle",
    "permittedAxioms": [
@@ -1710,7 +1710,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "172",
    "name": "EuclideanRamseyNine",
    "permittedAxioms": [
@@ -1724,7 +1724,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "172",
    "name": "EuclideanRamseyQuadratic",
    "permittedAxioms": [
@@ -1738,7 +1738,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "172",
    "name": "EuclideanRamseySpherical",
    "permittedAxioms": [
@@ -1752,7 +1752,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "172",
    "name": "EuclideanRamseyTransitive",
    "permittedAxioms": [
@@ -1766,7 +1766,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "179",
    "name": "EvenBarker",
    "permittedAxioms": [
@@ -1780,7 +1780,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "130",
    "name": "ExactFourier",
    "permittedAxioms": [
@@ -1794,7 +1794,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "303",
    "name": "ExactInfiniteness",
    "permittedAxioms": [
@@ -1809,7 +1809,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "279",
    "name": "ExactQuantumFactoring",
    "permittedAxioms": [
@@ -1823,7 +1823,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "211",
    "name": "FKCRT",
    "permittedAxioms": [
@@ -1837,7 +1837,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "296",
    "name": "FactorGeneration",
    "permittedAxioms": [
@@ -1851,7 +1851,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "073",
    "name": "FalconerAllDimensions",
    "permittedAxioms": [
@@ -1865,7 +1865,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "337",
    "name": "FillingCoefficient",
    "permittedAxioms": [
@@ -1879,7 +1879,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "099",
    "name": "FiniteCircle",
    "permittedAxioms": [
@@ -1893,7 +1893,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "206",
    "name": "FiniteCongruenceGraph",
    "permittedAxioms": [
@@ -1907,7 +1907,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "298",
    "name": "FiniteEntropySeparation",
    "permittedAxioms": [
@@ -1921,7 +1921,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "293",
    "name": "FiniteFactor",
    "permittedAxioms": [
@@ -1935,7 +1935,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "198",
    "name": "FinitisticAsymmetry",
    "permittedAxioms": [
@@ -1949,7 +1949,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "235",
    "name": "FixedClauseThreshold",
    "permittedAxioms": [
@@ -1963,7 +1963,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "376",
    "name": "ForcedNavierStokesComputation",
    "permittedAxioms": [
@@ -1977,7 +1977,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "331",
    "name": "ForestSpace",
    "permittedAxioms": [
@@ -1991,7 +1991,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "116",
    "name": "FormulaHitting",
    "permittedAxioms": [
@@ -2005,7 +2005,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "210",
    "name": "FoulkesHowe",
    "permittedAxioms": [
@@ -2019,7 +2019,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "238",
    "name": "FourRowPermanent",
    "permittedAxioms": [
@@ -2033,7 +2033,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "075",
    "name": "FourierLLogL",
    "permittedAxioms": [
@@ -2047,7 +2047,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "236",
    "name": "FreeIsing",
    "permittedAxioms": [
@@ -2061,7 +2061,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "231",
    "name": "FreeUniformSpanningForest",
    "permittedAxioms": [
@@ -2075,7 +2075,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "212",
    "name": "GammaPassage",
    "permittedAxioms": [
@@ -2089,7 +2089,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "140",
    "name": "GaussianFiniteEntropy",
    "permittedAxioms": [
@@ -2103,7 +2103,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "140",
    "name": "GaussianInformation",
    "permittedAxioms": [
@@ -2120,7 +2120,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "028",
    "name": "GaussianMoat",
    "permittedAxioms": [
@@ -2134,7 +2134,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "096",
    "name": "GaussianPropeller",
    "permittedAxioms": [
@@ -2148,7 +2148,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "140",
    "name": "GaussianReplacement",
    "permittedAxioms": [
@@ -2172,7 +2172,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "087",
    "name": "GeneralMahler",
    "permittedAxioms": [
@@ -2186,7 +2186,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "134",
    "name": "GeneralizedStarHeight",
    "permittedAxioms": [
@@ -2200,7 +2200,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "127",
    "name": "GotsmanLinial",
    "permittedAxioms": [
@@ -2214,7 +2214,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "172",
    "name": "GrahamSpherical",
    "permittedAxioms": [
@@ -2228,7 +2228,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "312",
    "name": "GrothendieckElementaryExpansion",
    "permittedAxioms": [
@@ -2242,7 +2242,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "kernelsDisagree",
    "family": "197",
    "name": "GroupRingDeterminant",
    "permittedAxioms": [
@@ -2256,7 +2256,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "266",
    "name": "HadamardCubeFiber",
    "permittedAxioms": [
@@ -2270,7 +2270,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "157",
    "name": "HadwigerCounterexample",
    "permittedAxioms": [
@@ -2285,7 +2285,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "183",
    "name": "HalvingLines",
    "permittedAxioms": [
@@ -2299,7 +2299,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "267",
    "name": "HardSphere",
    "permittedAxioms": [
@@ -2313,7 +2313,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "254",
    "name": "HarmonicArtin",
    "permittedAxioms": [
@@ -2327,7 +2327,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "361",
    "name": "HarmonicGrowth",
    "permittedAxioms": [
@@ -2341,7 +2341,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "003",
    "name": "HeckeSevenEighths",
    "permittedAxioms": [
@@ -2355,7 +2355,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "191",
    "name": "HeilbronnTriangle",
    "permittedAxioms": [
@@ -2370,7 +2370,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "271",
    "name": "Heisenberg",
    "permittedAxioms": [
@@ -2384,7 +2384,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "370",
    "name": "HenonEmden",
    "permittedAxioms": [
@@ -2398,7 +2398,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "325",
    "name": "HilbertCrouzeix",
    "permittedAxioms": [
@@ -2415,7 +2415,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "237",
    "name": "HoneycombBridgeFiniteness",
    "permittedAxioms": [
@@ -2429,7 +2429,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "buildError",
    "family": "237",
    "name": "HoneycombBridgeMassSupport",
    "permittedAxioms": [
@@ -2443,7 +2443,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "237",
    "name": "HoneycombFreeEnergy",
    "permittedAxioms": [
@@ -2457,7 +2457,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "369",
    "name": "HotSpots",
    "permittedAxioms": [
@@ -2471,7 +2471,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "095",
    "name": "HyperbolicCones",
    "permittedAxioms": [
@@ -2485,7 +2485,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "257",
    "name": "HyperbolicObstruction",
    "permittedAxioms": [
@@ -2499,7 +2499,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "293",
    "name": "HyperinvariantSubspaces",
    "permittedAxioms": [
@@ -2513,7 +2513,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "331",
    "name": "IndependentProducts",
    "permittedAxioms": [
@@ -2530,7 +2530,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "106",
    "name": "IndependentSets",
    "permittedAxioms": [
@@ -2544,7 +2544,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "303",
    "name": "IndividualStrongInfiniteness",
    "permittedAxioms": [
@@ -2558,7 +2558,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "185",
    "name": "InfiniteMatroid",
    "permittedAxioms": [
@@ -2572,7 +2572,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "185",
    "name": "InfiniteMatroidCorollaries",
    "permittedAxioms": [
@@ -2587,7 +2587,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "287",
    "name": "InterpolatedFactors",
    "permittedAxioms": [
@@ -2601,7 +2601,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "234",
    "name": "InvariantIsing",
    "permittedAxioms": [
@@ -2625,7 +2625,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "293",
    "name": "IrrationalRotation",
    "permittedAxioms": [
@@ -2640,7 +2640,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "150",
    "name": "IrrationalTriangleBilliard",
    "permittedAxioms": [
@@ -2654,7 +2654,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "222",
    "name": "IsingFiniteness",
    "permittedAxioms": [
@@ -2668,7 +2668,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "334",
    "name": "IsometricImmersion",
    "permittedAxioms": [
@@ -2682,7 +2682,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "021",
    "name": "Jacobsthal",
    "permittedAxioms": [
@@ -2696,7 +2696,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "021",
    "name": "JacobsthalImproved",
    "permittedAxioms": [
@@ -2710,7 +2710,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "012",
    "name": "JointDickman",
    "permittedAxioms": [
@@ -2726,7 +2726,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "168",
    "name": "KLInvariance",
    "permittedAxioms": [
@@ -2740,7 +2740,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "125",
    "name": "KMedianRecovery",
    "permittedAxioms": [
@@ -2754,7 +2754,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "125",
    "name": "KMedianRefinedRecovery",
    "permittedAxioms": [
@@ -2768,7 +2768,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "125",
    "name": "KMedianThreshold",
    "permittedAxioms": [
@@ -2782,7 +2782,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "110",
    "name": "KServer",
    "permittedAxioms": [
@@ -2796,7 +2796,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "295",
    "name": "KadisonRingrose",
    "permittedAxioms": [
@@ -2810,7 +2810,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "288",
    "name": "KadisonSimilarity",
    "permittedAxioms": [
@@ -2826,7 +2826,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "052",
    "name": "KahlerSplitting",
    "permittedAxioms": [
@@ -2840,7 +2840,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "kernelsDisagree",
    "family": "197",
    "name": "KaplanskyDirectFiniteness",
    "permittedAxioms": [
@@ -2854,7 +2854,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "kernelsDisagree",
    "family": "197",
    "name": "KaplanskyFinitelyPresented",
    "permittedAxioms": [
@@ -2868,7 +2868,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "294",
    "name": "KaplanskyQuasitrace",
    "permittedAxioms": [
@@ -2882,7 +2882,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "294",
    "name": "KaplanskyStableFiniteness",
    "permittedAxioms": [
@@ -2896,7 +2896,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "256",
    "name": "Kervaire",
    "permittedAxioms": [
@@ -2910,7 +2910,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "071",
    "name": "KoebeCircleDomains",
    "permittedAxioms": [
@@ -2925,7 +2925,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "269",
    "name": "Laughlin",
    "permittedAxioms": [
@@ -2939,7 +2939,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "269",
    "name": "LaughlinFock",
    "permittedAxioms": [
@@ -2953,7 +2953,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "269",
    "name": "LaughlinGap",
    "permittedAxioms": [
@@ -2967,7 +2967,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "269",
    "name": "LaughlinPlanar",
    "permittedAxioms": [
@@ -2981,7 +2981,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "262",
    "name": "LiebThirring",
    "permittedAxioms": [
@@ -2995,7 +2995,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "324",
    "name": "LipschitzEquivalence",
    "permittedAxioms": [
@@ -3009,7 +3009,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "083",
    "name": "LipschitzHilbert",
    "permittedAxioms": [
@@ -3024,7 +3024,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "157",
    "name": "ListHadwiger",
    "permittedAxioms": [
@@ -3038,7 +3038,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "198",
    "name": "LittleFinitistic",
    "permittedAxioms": [
@@ -3052,7 +3052,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "076",
    "name": "LittlewoodFiniteFlatness",
    "permittedAxioms": [
@@ -3066,7 +3066,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "079",
    "name": "LocalSmoothing",
    "permittedAxioms": [
@@ -3085,7 +3085,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "091",
    "name": "LogBrunnMinkowski",
    "permittedAxioms": [
@@ -3099,7 +3099,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "139",
    "name": "LogConcaveQuery",
    "permittedAxioms": [
@@ -3113,7 +3113,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "033",
    "name": "LogKodairaFiberNegative",
    "permittedAxioms": [
@@ -3127,7 +3127,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "kernelsDisagree",
    "family": "103",
    "name": "LogspaceEquality",
    "permittedAxioms": [
@@ -3141,7 +3141,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "tooLarge",
    "family": "266",
    "name": "MUBSix",
    "permittedAxioms": [
@@ -3155,7 +3155,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "087",
    "name": "MahlerConjecture",
    "permittedAxioms": [
@@ -3169,7 +3169,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "327",
    "name": "MarkovType",
    "permittedAxioms": [
@@ -3183,7 +3183,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "149",
    "name": "MassAction",
    "permittedAxioms": [
@@ -3197,7 +3197,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "126",
    "name": "MatchingAffineLift",
    "permittedAxioms": [
@@ -3211,7 +3211,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "113",
    "name": "MatchingEntropy",
    "permittedAxioms": [
@@ -3225,7 +3225,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "113",
    "name": "MatchingEntropyBounds",
    "permittedAxioms": [
@@ -3239,7 +3239,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "kernelsDisagree",
    "family": "113",
    "name": "MatchingFPRAS",
    "permittedAxioms": [
@@ -3253,7 +3253,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "126",
    "name": "MatchingPSD",
    "permittedAxioms": [
@@ -3267,7 +3267,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "107",
    "name": "MatrixFields",
    "permittedAxioms": [
@@ -3281,7 +3281,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "107",
    "name": "MatrixMultiplication",
    "permittedAxioms": [
@@ -3297,7 +3297,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "190",
    "name": "MatrixRemoval",
    "permittedAxioms": [
@@ -3311,7 +3311,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "111",
    "name": "MatroidProphet",
    "permittedAxioms": [
@@ -3325,7 +3325,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "111",
    "name": "MatroidSecretary",
    "permittedAxioms": [
@@ -3341,7 +3341,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "039",
    "name": "MaximalSeshadriConstants",
    "permittedAxioms": [
@@ -3355,7 +3355,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "140",
    "name": "MemoryPrecision",
    "permittedAxioms": [
@@ -3369,7 +3369,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "329",
    "name": "MetricEntropyDuality",
    "permittedAxioms": [
@@ -3383,7 +3383,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "125",
    "name": "MetricKMedian",
    "permittedAxioms": [
@@ -3397,7 +3397,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "331",
    "name": "MidpointLenses",
    "permittedAxioms": [
@@ -3411,7 +3411,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "102",
    "name": "MinUncut",
    "permittedAxioms": [
@@ -3425,7 +3425,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "039",
    "name": "Nagata",
    "permittedAxioms": [
@@ -3441,7 +3441,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "297",
    "name": "Naimark",
    "permittedAxioms": [
@@ -3455,7 +3455,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "376",
    "name": "NavierStokesAlternating",
    "permittedAxioms": [
@@ -3469,7 +3469,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "376",
    "name": "NavierStokesVelocity",
    "permittedAxioms": [
@@ -3483,7 +3483,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "350",
    "name": "NodalLength",
    "permittedAxioms": [
@@ -3497,7 +3497,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "140",
    "name": "NoiselessRegression",
    "permittedAxioms": [
@@ -3511,7 +3511,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "buildError",
    "family": "292",
    "name": "NuclearUltrapower",
    "permittedAxioms": [
@@ -3525,7 +3525,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "238",
    "name": "OccupiedOverlap",
    "permittedAxioms": [
@@ -3540,7 +3540,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "197",
    "name": "OddKaplansky",
    "permittedAxioms": [
@@ -3554,7 +3554,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "137",
    "name": "OneTapeSpace",
    "permittedAxioms": [
@@ -3569,7 +3569,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "129",
    "name": "OneWayLiveness",
    "permittedAxioms": [
@@ -3583,7 +3583,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "102",
    "name": "OptimalMaxCut",
    "permittedAxioms": [
@@ -3597,7 +3597,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "007",
    "name": "OrdinaryElliott",
    "permittedAxioms": [
@@ -3611,7 +3611,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "007",
    "name": "OrdinaryTwoPointCorrelations",
    "permittedAxioms": [
@@ -3627,7 +3627,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "013",
    "name": "OstmannComplete",
    "permittedAxioms": [
@@ -3642,7 +3642,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "013",
    "name": "OstmannPrimes",
    "permittedAxioms": [
@@ -3656,7 +3656,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "133",
    "name": "ParityLifts",
    "permittedAxioms": [
@@ -3670,7 +3670,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "238",
    "name": "PartialPermutation",
    "permittedAxioms": [
@@ -3684,7 +3684,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "244",
    "name": "PartitionConsistency",
    "permittedAxioms": [
@@ -3698,7 +3698,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "244",
    "name": "PartitionPrinciple",
    "permittedAxioms": [
@@ -3712,7 +3712,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "023",
    "name": "PattersonFirstMoment",
    "permittedAxioms": [
@@ -3728,7 +3728,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "222",
    "name": "PerceptronFreeEnergy",
    "permittedAxioms": [
@@ -3742,7 +3742,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "105",
    "name": "PerfectCompleteness",
    "permittedAxioms": [
@@ -3756,7 +3756,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "kernelsDisagree",
    "family": "247",
    "name": "PeriodicGroup",
    "permittedAxioms": [
@@ -3770,7 +3770,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "155",
    "name": "PeriodicTilingThree",
    "permittedAxioms": [
@@ -3784,7 +3784,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "108",
    "name": "PermanentCubic",
    "permittedAxioms": [
@@ -3798,7 +3798,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "088",
    "name": "PettyProjectionVolume",
    "permittedAxioms": [
@@ -3812,7 +3812,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "017",
    "name": "PiExponent",
    "permittedAxioms": [
@@ -3826,7 +3826,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "359",
    "name": "PinchedKahler",
    "permittedAxioms": [
@@ -3842,7 +3842,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "167",
    "name": "PinnedDistances",
    "permittedAxioms": [
@@ -3856,7 +3856,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "261",
    "name": "PlanarAndersonSpectrum",
    "permittedAxioms": [
@@ -3870,7 +3870,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "073",
    "name": "PlanarFalconer",
    "permittedAxioms": [
@@ -3884,7 +3884,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "212",
    "name": "PlanarFirstPassage",
    "permittedAxioms": [
@@ -3898,7 +3898,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "089",
    "name": "PlanarL1",
    "permittedAxioms": [
@@ -3912,7 +3912,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "buildError",
    "family": "090",
    "name": "PlanarPacking",
    "permittedAxioms": [
@@ -3926,7 +3926,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "167",
    "name": "PlanarUnitDistances",
    "permittedAxioms": [
@@ -3940,7 +3940,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "158",
    "name": "PlaneColoring",
    "permittedAxioms": [
@@ -3954,7 +3954,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "255",
    "name": "PolycyclicRecognition",
    "permittedAxioms": [
@@ -3970,7 +3970,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "140",
    "name": "PosteriorReplicas",
    "permittedAxioms": [
@@ -3984,7 +3984,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "020",
    "name": "PowerFreeValues",
    "permittedAxioms": [
@@ -3998,7 +3998,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "026",
    "name": "PrimeGaps",
    "permittedAxioms": [
@@ -4012,7 +4012,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "293",
    "name": "ProductBrown",
    "permittedAxioms": [
@@ -4026,7 +4026,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "088",
    "name": "ProjectionCounterexample",
    "permittedAxioms": [
@@ -4040,7 +4040,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "140",
    "name": "ProjectionMoments",
    "permittedAxioms": [
@@ -4054,7 +4054,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "088",
    "name": "ProjectionVolume",
    "permittedAxioms": [
@@ -4068,7 +4068,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "274",
    "name": "QACParity",
    "permittedAxioms": [
@@ -4082,7 +4082,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "050",
    "name": "QuadricBundles",
    "permittedAxioms": [
@@ -4096,7 +4096,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "160",
    "name": "QuantitativeVanDerWaerden",
    "permittedAxioms": [
@@ -4110,7 +4110,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "003",
    "name": "QuasiRiemannHypothesis",
    "permittedAxioms": [
@@ -4124,7 +4124,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "143",
    "name": "QuinticLienard",
    "permittedAxioms": [
@@ -4138,7 +4138,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "228",
    "name": "RadialDensityInterval",
    "permittedAxioms": [
@@ -4152,7 +4152,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "228",
    "name": "RadialTransition",
    "permittedAxioms": [
@@ -4166,7 +4166,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "170",
    "name": "RamseyFive",
    "permittedAxioms": [
@@ -4180,7 +4180,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "kernelsDisagree",
    "family": "104",
    "name": "RandomizedMeanPayoff",
    "permittedAxioms": [
@@ -4194,7 +4194,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "116",
    "name": "RationalHitting",
    "permittedAxioms": [
@@ -4208,7 +4208,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "330",
    "name": "RealL1Renorming",
    "permittedAxioms": [
@@ -4222,7 +4222,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "331",
    "name": "RecursivePotentials",
    "permittedAxioms": [
@@ -4236,7 +4236,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "328",
    "name": "ReflexiveFixedPoints",
    "permittedAxioms": [
@@ -4250,7 +4250,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "274",
    "name": "RegularParity",
    "permittedAxioms": [
@@ -4264,7 +4264,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "296",
    "name": "RelativeGeneration",
    "permittedAxioms": [
@@ -4278,7 +4278,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "081",
    "name": "RieszQuantitative",
    "permittedAxioms": [
@@ -4292,7 +4292,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "145",
    "name": "Rokhlin",
    "permittedAxioms": [
@@ -4306,7 +4306,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "100",
    "name": "RuledCovering",
    "permittedAxioms": [
@@ -4320,7 +4320,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "162",
    "name": "RyserCovering",
    "permittedAxioms": [
@@ -4334,7 +4334,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "162",
    "name": "RyserOddExtensions",
    "permittedAxioms": [
@@ -4348,7 +4348,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "235",
    "name": "SATComputability",
    "permittedAxioms": [
@@ -4362,7 +4362,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "235",
    "name": "SATSharpness",
    "permittedAxioms": [
@@ -4376,7 +4376,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "235",
    "name": "SATVariance",
    "permittedAxioms": [
@@ -4390,7 +4390,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "227",
    "name": "SKBarriers",
    "permittedAxioms": [
@@ -4404,7 +4404,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "281",
    "name": "SKFullSupport",
    "permittedAxioms": [
@@ -4418,7 +4418,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "227",
    "name": "SKHighTemperature",
    "permittedAxioms": [
@@ -4432,7 +4432,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "227",
    "name": "SKRatio",
    "permittedAxioms": [
@@ -4446,7 +4446,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "281",
    "name": "SKValue",
    "permittedAxioms": [
@@ -4460,7 +4460,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "230",
    "name": "SLELowerPositivity",
    "permittedAxioms": [
@@ -4474,7 +4474,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "205",
    "name": "Saxl",
    "permittedAxioms": [
@@ -4488,7 +4488,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "176",
    "name": "SecondKahnKalai",
    "permittedAxioms": [
@@ -4502,7 +4502,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "148",
    "name": "SelfSimilar",
    "permittedAxioms": [
@@ -4516,7 +4516,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "148",
    "name": "SelfSimilarCorollaries",
    "permittedAxioms": [
@@ -4531,7 +4531,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "132",
    "name": "SensitivitySeparation",
    "permittedAxioms": [
@@ -4545,7 +4545,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "323",
    "name": "SeparableQuotientNegative",
    "permittedAxioms": [
@@ -4559,7 +4559,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "173",
    "name": "SeymourSecondNeighborhood",
    "permittedAxioms": [
@@ -4573,7 +4573,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "337",
    "name": "SharpCAT0Filling",
    "permittedAxioms": [
@@ -4587,7 +4587,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "170",
    "name": "SharpLogRamsey",
    "permittedAxioms": [
@@ -4601,7 +4601,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "186",
    "name": "SharpThreshold",
    "permittedAxioms": [
@@ -4615,7 +4615,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "025",
    "name": "ShortEgyptianFractions",
    "permittedAxioms": [
@@ -4629,7 +4629,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "161",
    "name": "SidorenkoCounterexample",
    "permittedAxioms": [
@@ -4643,7 +4643,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "003",
    "name": "SiegelZeros",
    "permittedAxioms": [
@@ -4658,7 +4658,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "085",
    "name": "SignedFiniteBand",
    "permittedAxioms": [
@@ -4672,7 +4672,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "238",
    "name": "SignedSweepMoment",
    "permittedAxioms": [
@@ -4686,7 +4686,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "253",
    "name": "SimpleAmenable",
    "permittedAxioms": [
@@ -4700,7 +4700,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "250",
    "name": "SimpleOvergroups",
    "permittedAxioms": [
@@ -4714,7 +4714,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "242",
    "name": "SingleFold",
    "permittedAxioms": [
@@ -4728,7 +4728,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "092",
    "name": "SingleLatticeCovering",
    "permittedAxioms": [
@@ -4742,7 +4742,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "113",
    "name": "SingletonLoopMatching",
    "permittedAxioms": [
@@ -4756,7 +4756,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "108",
    "name": "SmoothInitialForm",
    "permittedAxioms": [
@@ -4770,7 +4770,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "152",
    "name": "SmoothObstruction",
    "permittedAxioms": [
@@ -4784,7 +4784,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "350",
    "name": "SmoothYau",
    "permittedAxioms": [
@@ -4799,7 +4799,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "buildError",
    "family": "187",
    "name": "SnakyCertificate",
    "permittedAxioms": [
@@ -4813,7 +4813,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "187",
    "name": "SnakyConditional",
    "permittedAxioms": [
@@ -4827,7 +4827,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "buildError",
    "family": "187",
    "name": "SnakyTwentyOne",
    "permittedAxioms": [
@@ -4841,7 +4841,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "119",
    "name": "SoftChannel204",
    "permittedAxioms": [
@@ -4855,7 +4855,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "376",
    "name": "SolenoidalSheetPrograms",
    "permittedAxioms": [
@@ -4869,7 +4869,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "222",
    "name": "SphericalField",
    "permittedAxioms": [
@@ -4883,7 +4883,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "238",
    "name": "SpinAngle",
    "permittedAxioms": [
@@ -4897,7 +4897,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "052",
    "name": "SplitTangentIntegrability",
    "permittedAxioms": [
@@ -4911,7 +4911,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "kernelsDisagree",
    "family": "182",
    "name": "SquareDifference",
    "permittedAxioms": [
@@ -4925,7 +4925,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "192",
    "name": "SquareRootDegree",
    "permittedAxioms": [
@@ -4939,7 +4939,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "049",
    "name": "StableCoordinateFour",
    "permittedAxioms": [
@@ -4953,7 +4953,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "146",
    "name": "StandardMapComponents",
    "permittedAxioms": [
@@ -4967,7 +4967,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "146",
    "name": "StandardMapEntropy",
    "permittedAxioms": [
@@ -4981,7 +4981,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "146",
    "name": "StandardMapLyapunov",
    "permittedAxioms": [
@@ -4995,7 +4995,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "097",
    "name": "SteinitzBergstrom",
    "permittedAxioms": [
@@ -5009,7 +5009,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "072",
    "name": "StrictMeans",
    "permittedAxioms": [
@@ -5023,7 +5023,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "289",
    "name": "StrongKadisonKastler",
    "permittedAxioms": [
@@ -5037,7 +5037,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "174",
    "name": "StrongThinTree",
    "permittedAxioms": [
@@ -5051,7 +5051,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "231",
    "name": "StronglyRayleighDPP",
    "permittedAxioms": [
@@ -5070,7 +5070,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "325",
    "name": "StructuralCrouzeix",
    "permittedAxioms": [
@@ -5084,7 +5084,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "buildError",
    "family": "378",
    "name": "SubexponentialSAT",
    "permittedAxioms": [
@@ -5098,7 +5098,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "094",
    "name": "SubpolynomialLp",
    "permittedAxioms": [
@@ -5112,7 +5112,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "140",
    "name": "SubsphereCurrent",
    "permittedAxioms": [
@@ -5126,7 +5126,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "128",
    "name": "Superstring",
    "permittedAxioms": [
@@ -5140,7 +5140,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "195",
    "name": "SurfaceConeCandidateSupport",
    "permittedAxioms": [
@@ -5154,7 +5154,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "333",
    "name": "SurfaceImmersion",
    "permittedAxioms": [
@@ -5168,7 +5168,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "131",
    "name": "SwitchChain",
    "permittedAxioms": [
@@ -5184,7 +5184,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "058",
    "name": "SymmetricDomains",
    "permittedAxioms": [
@@ -5198,7 +5198,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "087",
    "name": "SymmetricMahlerEquality",
    "permittedAxioms": [
@@ -5212,7 +5212,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "087",
    "name": "SymmetricPolar",
    "permittedAxioms": [
@@ -5226,7 +5226,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "199",
    "name": "Tachikawa",
    "permittedAxioms": [
@@ -5240,7 +5240,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "175",
    "name": "TalagrandDiscreteConvexity",
    "permittedAxioms": [
@@ -5254,7 +5254,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "175",
    "name": "TalagrandExpectationThreshold",
    "permittedAxioms": [
@@ -5268,7 +5268,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "buildError",
    "family": "342",
    "name": "TamingCompatibility",
    "permittedAxioms": [
@@ -5282,7 +5282,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "317",
    "name": "ThomasonModelStructures",
    "permittedAxioms": [
@@ -5297,7 +5297,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "248",
    "name": "ThompsonNonamenability",
    "permittedAxioms": [
@@ -5311,7 +5311,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "238",
    "name": "ThorpFirstReciprocal",
    "permittedAxioms": [
@@ -5325,7 +5325,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "238",
    "name": "ThorpRemaining",
    "permittedAxioms": [
@@ -5339,7 +5339,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "238",
    "name": "ThorpRouting",
    "permittedAxioms": [
@@ -5353,7 +5353,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "238",
    "name": "ThorpWeightedCompatibility",
    "permittedAxioms": [
@@ -5367,7 +5367,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "124",
    "name": "ThreeMachine",
    "permittedAxioms": [
@@ -5381,7 +5381,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "229",
    "name": "ThreeStateSupercritical",
    "permittedAxioms": [
@@ -5396,7 +5396,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "229",
    "name": "ThreeStateTreeClauses",
    "permittedAxioms": [
@@ -5411,7 +5411,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "144",
    "name": "ThreeTorus",
    "permittedAxioms": [
@@ -5425,7 +5425,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "322",
    "name": "TingleySphereIsometry",
    "permittedAxioms": [
@@ -5439,7 +5439,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "252",
    "name": "TorsionFreeHyperbolic",
    "permittedAxioms": [
@@ -5453,7 +5453,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "196",
    "name": "TorsionFreeZeroDivisors",
    "permittedAxioms": [
@@ -5467,7 +5467,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "024",
    "name": "TotientAsymptotic",
    "permittedAxioms": [
@@ -5484,7 +5484,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "024",
    "name": "TotientCompanionZero",
    "permittedAxioms": [
@@ -5498,7 +5498,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "301",
    "name": "TraceIdealTransportSupport",
    "permittedAxioms": [
@@ -5528,7 +5528,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "122",
    "name": "TraceReconstruction",
    "permittedAxioms": [
@@ -5544,7 +5544,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "099",
    "name": "TreeEdit",
    "permittedAxioms": [
@@ -5558,7 +5558,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "113",
    "name": "TriangleFace",
    "permittedAxioms": [
@@ -5572,7 +5572,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "188",
    "name": "TriangleRemoval",
    "permittedAxioms": [
@@ -5586,7 +5586,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "100",
    "name": "TriangularCovering",
    "permittedAxioms": [
@@ -5600,7 +5600,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "090",
    "name": "TriangularEnergy",
    "permittedAxioms": [
@@ -5614,7 +5614,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "090",
    "name": "TriangularGaussian",
    "permittedAxioms": [
@@ -5628,7 +5628,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "082",
    "name": "TriangularHilbert",
    "permittedAxioms": [
@@ -5642,7 +5642,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "104",
    "name": "TruffetCounterexample",
    "permittedAxioms": [
@@ -5656,7 +5656,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "129",
    "name": "TwoWayComplementation",
    "permittedAxioms": [
@@ -5670,7 +5670,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "129",
    "name": "TwoWayDeterminization",
    "permittedAxioms": [
@@ -5684,7 +5684,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "245",
    "name": "TypeSystemNormalization",
    "permittedAxioms": [
@@ -5698,7 +5698,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "288",
    "name": "UniformCommutator",
    "permittedAxioms": [
@@ -5712,7 +5712,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "130",
    "name": "UniformFourier",
    "permittedAxioms": [
@@ -5727,7 +5727,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "291",
    "name": "UniformGamma",
    "permittedAxioms": [
@@ -5741,7 +5741,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "110",
    "name": "UniformKServer",
    "permittedAxioms": [
@@ -5755,7 +5755,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "117",
    "name": "UniformSparsestCut",
    "permittedAxioms": [
@@ -5769,7 +5769,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "102",
    "name": "UniqueGamesTheorem",
    "permittedAxioms": [
@@ -5783,7 +5783,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "250",
    "name": "UniversalFInfinity",
    "permittedAxioms": [
@@ -5797,7 +5797,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "buildError",
    "family": "205",
    "name": "UniversalTensorSquares",
    "permittedAxioms": [
@@ -5811,7 +5811,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "133",
    "name": "VariableWL",
    "permittedAxioms": [
@@ -5825,7 +5825,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "220",
    "name": "VelocityHemisphere",
    "permittedAxioms": [
@@ -5839,7 +5839,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "280",
    "name": "VertexAlgebraNet",
    "permittedAxioms": [
@@ -5853,7 +5853,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "102",
    "name": "VertexCover",
    "permittedAxioms": [
@@ -5868,7 +5868,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "362",
    "name": "VlasovMaxwell",
    "permittedAxioms": [
@@ -5882,7 +5882,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "133",
    "name": "WLIdentification",
    "permittedAxioms": [
@@ -5896,7 +5896,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "356",
    "name": "WeakHessian",
    "permittedAxioms": [
@@ -5910,7 +5910,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "360",
    "name": "WeakMTWGlobalSupport",
    "permittedAxioms": [
@@ -5924,7 +5924,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "238",
    "name": "WeightedSweepMoments",
    "permittedAxioms": [
@@ -5938,7 +5938,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "133",
    "name": "WeisfeilerLeman",
    "permittedAxioms": [
@@ -5952,7 +5952,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "243",
    "name": "WitnessedChoice",
    "permittedAxioms": [
@@ -5966,7 +5966,7 @@
    ]
   },
   {
-   "comparator": "notRun",
+   "comparator": "accepted",
    "family": "350",
    "name": "YauCounterexample",
    "permittedAxioms": [

@@ -17,15 +17,17 @@ open JSG
 /-! ### The must-fail test's best case -/
 
 /-- A record's best case: every unknown resolved in the manuscript's favour, and every known
-    fact kept. A challenge not yet run counts as accepted; a missing formalization as one,
-    accepted, that permits only the three axioms; and a missing reviewer, review, priority
-    check or reading of its dependencies as done. A withdrawal, a Comparator rejection and an
-    extra permitted axiom stay. -/
+    fact kept. A challenge that isn't rejected counts as accepted: one not yet run, one whose
+    build failed, one too large to check, and one the kernels disagreed on. A missing
+    formalization counts as one, accepted, that permits only the three axioms; and a missing
+    reviewer, review, priority check or reading of its dependencies as done. A withdrawal, a
+    Comparator rejection and an extra permitted axiom stay. -/
 def Raw.bestCase (r : Raw) : Raw :=
   { r with
     challenges :=
-      if r.challenges.isEmpty then [⟨some true, threeAxioms⟩]
-      else r.challenges.map fun c => if c.result.isNone then { c with result := some true } else c
+      if r.challenges.isEmpty then [⟨.accepted, threeAxioms⟩]
+      else r.challenges.map fun c =>
+        if c.result = .rejected then c else { c with result := .accepted }
     fidelityBy := some (r.fidelityBy.getD "best case")
     reviewed := true
     noveltyChecked := true
@@ -71,7 +73,7 @@ namespace Synthetic
 
 /-- A record with every axis known to be 0. -/
 def allZero : Raw :=
-  { withdrawnOn := none, challenges := [⟨some true, threeAxioms⟩],
+  { withdrawnOn := none, challenges := [⟨.accepted, threeAxioms⟩],
     fidelityBy := some "a named reviewer", reviewed := true, noveltyChecked := true,
     depsRead := true }
 
@@ -94,10 +96,10 @@ def release : Release size where
   raw := ![allZero, allZero, { allZero with reviewed := false },
     { allZero with withdrawnOn := some "January 1, 2026" },
     { allZero with noveltyChecked := false },
-    { allZero with challenges := [⟨some false, threeAxioms⟩] },
-    { allZero with challenges := [⟨some true, threeAxioms ++ ["sorryAx"]⟩] },
-    { allZero with challenges := [⟨none, threeAxioms⟩] },
-    { allZero with challenges := [⟨none, threeAxioms⟩] }]
+    { allZero with challenges := [⟨.rejected, threeAxioms⟩] },
+    { allZero with challenges := [⟨.accepted, threeAxioms ++ ["sorryAx"]⟩] },
+    { allZero with challenges := [⟨.notRun, threeAxioms⟩] },
+    { allZero with challenges := [⟨.notRun, threeAxioms⟩] }]
   deps := ![[], [2, 3], [], [], [], [], [], [8], [3]]
 
 def mustPass : List (Fin size) := [0, 1]

@@ -1,82 +1,4798 @@
 {
-  "run": 40916190535,
-  "url": "https://github.com/marleymcwilliams/LibSpec/actions/runs/40916190535",
-  "workflow": ".github/workflows/pilot-comparator.yml",
-  "trusted": false,
-  "why": "the release's lakefile ran outside Comparator's sandbox, on the same machine, before Comparator did (#83)",
-  "commit": "7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a",
-  "results": {
-    "Catalan": "accepted",
-    "DeligneDrinfeld": "accepted",
-    "BogomolovPopInjectivity": "accepted",
-    "JointDickman": "accepted"
+ "commit": "7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a",
+ "trusted": true,
+ "why": "each result is an unmarked line of a trusted shard job's own log (EXECUTABLE_GATE §4)",
+ "runs": [
+  {
+   "run": 41146560423,
+   "url": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423",
+   "logs": [
+    {
+     "job": 124374409979,
+     "shard": "f189",
+     "file": "run-41146560423-job-124374409979-f189.log",
+     "sha256": "1ab58c4229183681ef3350b26977fca47e45ddfb36bedabbf4ab03b0683ce21a"
+    },
+    {
+     "job": 124374409983,
+     "shard": "f159",
+     "file": "run-41146560423-job-124374409983-f159.log",
+     "sha256": "9cc13b8f777b8cac5a370ebe4aa8e07e7715ec452190dbcdf3ce8514990e6fc5"
+    }
+   ],
+   "noLog": [],
+   "notFinished": []
   },
-  "challenges": [
+  {
+   "run": 41170918445,
+   "url": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445",
+   "logs": [
     {
-      "name": "Catalan",
-      "result": "accepted",
-      "seconds": 5108,
-      "freeMBAfter": 88120
+     "job": 124449525293,
+     "shard": "f079",
+     "file": "run-41170918445-job-124449525293-f079.log",
+     "sha256": "6a746b5458a6dba8a6a8f78753d02a9b4aebdde458397434652c1434465ff3e3"
     },
     {
-      "name": "DeligneDrinfeld",
-      "result": "accepted",
-      "seconds": 525,
-      "freeMBAfter": 87877
-    },
-    {
-      "name": "BogomolovPopInjectivity",
-      "result": "accepted",
-      "seconds": 159,
-      "freeMBAfter": 87827
-    },
-    {
-      "name": "JointDickman",
-      "result": "accepted",
-      "seconds": 2897,
-      "freeMBAfter": 80126
+     "job": 124449525399,
+     "shard": "f378",
+     "file": "run-41170918445-job-124449525399-f378.log",
+     "sha256": "5bb35c286f1372ac6f654c42603bd769fd72c26cc1e8dea0b03c599aca879670"
     }
-  ],
-  "stages": [
+   ],
+   "noLog": [],
+   "notFinished": []
+  },
+  {
+   "run": 41181960510,
+   "url": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510",
+   "logs": [
     {
-      "stage": "start",
-      "elapsedSeconds": 0,
-      "freeMB": 102810
+     "job": 124596648367,
+     "shard": "c-MUBSix",
+     "file": "run-41181960510-job-124596648367-c-MUBSix.log",
+     "sha256": "b5b589e463f720c1c3ae9d279677f62509cf294d44bac51e0669d1a82bc8824a"
     },
     {
-      "stage": "fetched",
-      "elapsedSeconds": 70,
-      "freeMB": 100359
+     "job": 124596648807,
+     "shard": "b05",
+     "file": "run-41181960510-job-124596648807-b05.log",
+     "sha256": "d61aab5f29b6edbf563654a4d2d5a497a031f6ac1177d5ca545182edb2db918c"
     },
     {
-      "stage": "dependencies",
-      "elapsedSeconds": 227,
-      "freeMB": 91331
+     "job": 124596648886,
+     "shard": "b01",
+     "file": "run-41181960510-job-124596648886-b01.log",
+     "sha256": "db9d4b64db9c7e8e2e1d4561d7ff61767905ef8002e55d30b0bc56186434f498"
     },
     {
-      "stage": "cache",
-      "elapsedSeconds": 250,
-      "freeMB": 91331
+     "job": 124596648935,
+     "shard": "b07",
+     "file": "run-41181960510-job-124596648935-b07.log",
+     "sha256": "4d67359381269861ab4b32fc7af34e053d62db69951162f8d76b8a7c5fc1733d"
     },
     {
-      "stage": "Catalan",
-      "elapsedSeconds": 5358,
-      "freeMB": 88120
+     "job": 124596648964,
+     "shard": "b02",
+     "file": "run-41181960510-job-124596648964-b02.log",
+     "sha256": "102236f1623499d789475744ad506e4e71c9b31470de4a949aeffbda76956b54"
     },
     {
-      "stage": "DeligneDrinfeld",
-      "elapsedSeconds": 5883,
-      "freeMB": 87877
+     "job": 124596649061,
+     "shard": "c-PlanarPacking",
+     "file": "run-41181960510-job-124596649061-c-PlanarPacking.log",
+     "sha256": "9c052109e9cf06ffcf60f311de661168b395eae92ab72f9b17f64d7caef23dc6"
     },
     {
-      "stage": "BogomolovPopInjectivity",
-      "elapsedSeconds": 6042,
-      "freeMB": 87827
+     "job": 124596649431,
+     "shard": "b13",
+     "file": "run-41181960510-job-124596649431-b13.log",
+     "sha256": "78b2417f47c27a4820b2ec8df3fe77b10f305ec993533cf21ae0517f94678ec4"
     },
     {
-      "stage": "JointDickman",
-      "elapsedSeconds": 8939,
-      "freeMB": 80126
+     "job": 124596649534,
+     "shard": "b14",
+     "file": "run-41181960510-job-124596649534-b14.log",
+     "sha256": "8ccade637219197ba5d7e3178b995d29af90d50c06cd19cae0bee38177577a55"
+    },
+    {
+     "job": 124596649605,
+     "shard": "b06",
+     "file": "run-41181960510-job-124596649605-b06.log",
+     "sha256": "a1d1e28ccd9d57ac69f8db2504cd3dbeb17f5a7c8c4a421a019039dac03d5455"
+    },
+    {
+     "job": 124596649621,
+     "shard": "b15",
+     "file": "run-41181960510-job-124596649621-b15.log",
+     "sha256": "63206a950a44b1fc2f81872cf42ef9b4a6da1fe7a728a672ec633e85dbcb2ee1"
+    },
+    {
+     "job": 124596649647,
+     "shard": "b09",
+     "file": "run-41181960510-job-124596649647-b09.log",
+     "sha256": "29d36829d5dadb69447a9b8be68904d79a4f2d6925db65bf3a9783a8d0061916"
+    },
+    {
+     "job": 124596649705,
+     "shard": "b12",
+     "file": "run-41181960510-job-124596649705-b12.log",
+     "sha256": "5f79bc68d46474593097a54274d52fc579b104c2d12e6775567e1f7046a16669"
+    },
+    {
+     "job": 124596649711,
+     "shard": "b26",
+     "file": "run-41181960510-job-124596649711-b26.log",
+     "sha256": "32a3156c36d74336e7b9f16527a37d41c4e82a4cf6fc4e98ecaeb5c5e619021f"
+    },
+    {
+     "job": 124596649734,
+     "shard": "b11",
+     "file": "run-41181960510-job-124596649734-b11.log",
+     "sha256": "cbc85855691fcc0bc7cb2c09872287d0854dc5a24d7c0d6bf39b0639c549e1aa"
+    },
+    {
+     "job": 124596649737,
+     "shard": "b19",
+     "file": "run-41181960510-job-124596649737-b19.log",
+     "sha256": "ff7bf89784ca76bd0995d7ae611aa8a66e0d27157d66879e403bd1635daf70aa"
+    },
+    {
+     "job": 124596649752,
+     "shard": "b18",
+     "file": "run-41181960510-job-124596649752-b18.log",
+     "sha256": "77ebeb5c14962a9f7eaae40602563bc15d635184168d16c0a6ff2699f081b9d3"
+    },
+    {
+     "job": 124596649764,
+     "shard": "b16",
+     "file": "run-41181960510-job-124596649764-b16.log",
+     "sha256": "e04c2519029c50595f12e7c803821d777ab2563909a53cc9ac3f78de1080a460"
+    },
+    {
+     "job": 124596649819,
+     "shard": "b08",
+     "file": "run-41181960510-job-124596649819-b08.log",
+     "sha256": "90acf81125a32fc5e119cf69c81593497410c8b7db7ee64d786214854fafa915"
+    },
+    {
+     "job": 124596649823,
+     "shard": "b10",
+     "file": "run-41181960510-job-124596649823-b10.log",
+     "sha256": "ec1c6943c9efbbff222e565e078ea8b91f8c02a3c352f5fc7e649c3f9e6881be"
+    },
+    {
+     "job": 124596649837,
+     "shard": "b17",
+     "file": "run-41181960510-job-124596649837-b17.log",
+     "sha256": "1f236a394540fd6a3d02d1e627df2c76150ec63c0178f9c4bac70788455166a1"
+    },
+    {
+     "job": 124596649904,
+     "shard": "b21",
+     "file": "run-41181960510-job-124596649904-b21.log",
+     "sha256": "6f0874e4b7046743893cacf7b85bc45c68b4f58281cbf0bf94b18318fdbd092b"
+    },
+    {
+     "job": 124596650263,
+     "shard": "b20",
+     "file": "run-41181960510-job-124596650263-b20.log",
+     "sha256": "6d6c295fdb99b097d36e64ce8c528cdf081e733c222a5cbf7e6cbe9023ba84a8"
+    },
+    {
+     "job": 124596650314,
+     "shard": "b22",
+     "file": "run-41181960510-job-124596650314-b22.log",
+     "sha256": "33e90caba529d2c5cd7cdfef24e09215b05d924610153ff7e0b16cf5921b660f"
+    },
+    {
+     "job": 124596650352,
+     "shard": "b25",
+     "file": "run-41181960510-job-124596650352-b25.log",
+     "sha256": "7bc8edeb85c2ab76a40bba61482faf75db6126e852fabd78819c26584ef45537"
+    },
+    {
+     "job": 124596650417,
+     "shard": "b27",
+     "file": "run-41181960510-job-124596650417-b27.log",
+     "sha256": "49e98b3f1ad9b601f6f102ea5973680ab3b074fd27cce5113c2b2d64dc9410bd"
+    },
+    {
+     "job": 124596650422,
+     "shard": "b24",
+     "file": "run-41181960510-job-124596650422-b24.log",
+     "sha256": "a2d6ff943a00e5bd17877b82f74a5ca56d82c3f2c7961b41430f5a3cf6fd502b"
+    },
+    {
+     "job": 124596650572,
+     "shard": "b23",
+     "file": "run-41181960510-job-124596650572-b23.log",
+     "sha256": "b86a82ec9f39980558cde94f413716bc938e8ffec7f26c72f1d816da57945df4"
+    },
+    {
+     "job": 124596681335,
+     "shard": "b04",
+     "file": "run-41181960510-job-124596681335-b04.log",
+     "sha256": "a6754d52e60b1aa905caf2f87a72e28694fffd0f5c96a0f27bd900f70df9fdeb"
+    },
+    {
+     "job": 124596682225,
+     "shard": "b03",
+     "file": "run-41181960510-job-124596682225-b03.log",
+     "sha256": "1c05c2acbd410496a1bbef84eb3e9958c2f8884dad658e908c2010feca5cd5d7"
     }
-  ]
+   ],
+   "noLog": [],
+   "notFinished": []
+  },
+  {
+   "run": 41222068108,
+   "url": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108",
+   "logs": [
+    {
+     "job": 124599680476,
+     "shard": "solo-PermanentCubic",
+     "file": "run-41222068108-job-124599680476-solo-PermanentCubic.log",
+     "sha256": "c25ec9df79b0e4b953995fd4e99741067a915d0e92b2fcfccac58a3652761f01"
+    },
+    {
+     "job": 124599680477,
+     "shard": "solo-NodalLength",
+     "file": "run-41222068108-job-124599680477-solo-NodalLength.log",
+     "sha256": "1ab7bea4669cdb6b72bced71c27efeff53cf2d2175be99b134afa81d770fff3b"
+    },
+    {
+     "job": 124599680500,
+     "shard": "solo-RandomizedMeanPayoff",
+     "file": "run-41222068108-job-124599680500-solo-RandomizedMeanPayoff.log",
+     "sha256": "9e62b251dbc2a3bd72d790d6676bd3fb071c46dbc96db0370cf3eef4a5cf65aa"
+    },
+    {
+     "job": 124599680508,
+     "shard": "solo-PettyProjectionVolume",
+     "file": "run-41222068108-job-124599680508-solo-PettyProjectionVolume.log",
+     "sha256": "e87578d2732ba217beb30ecdc79c72c7fc632c356a2d8ad9636aa2d6f7bcaff0"
+    },
+    {
+     "job": 124599680519,
+     "shard": "solo-RecursivePotentials",
+     "file": "run-41222068108-job-124599680519-solo-RecursivePotentials.log",
+     "sha256": "00e5b789185d2efb3d40e3a1c24c64c19d390245603af9302a5b4e5ffeb6b53e"
+    },
+    {
+     "job": 124599680522,
+     "shard": "solo-LaughlinPlanar",
+     "file": "run-41222068108-job-124599680522-solo-LaughlinPlanar.log",
+     "sha256": "f1461f58fd3c69914f369f7db03356633aed9390c897d97403399024357d7ee4"
+    },
+    {
+     "job": 124599680529,
+     "shard": "solo-SKRatio",
+     "file": "run-41222068108-job-124599680529-solo-SKRatio.log",
+     "sha256": "22b0e580b944b82968a7d9177e745928f08e414e6bc87c0dcff6b841dc2eb6ca"
+    },
+    {
+     "job": 124599680531,
+     "shard": "solo-PlanarAndersonSpectrum",
+     "file": "run-41222068108-job-124599680531-solo-PlanarAndersonSpectrum.log",
+     "sha256": "ed485f20d6b90915843b1659b833fda841f2bad2b1424a891c5dfa94811b4b5e"
+    },
+    {
+     "job": 124599680536,
+     "shard": "solo-SATComputability",
+     "file": "run-41222068108-job-124599680536-solo-SATComputability.log",
+     "sha256": "07e7034b8224b0974069021b6d4fee6ab7d6c13008e364bb2d1d4999e7374238"
+    },
+    {
+     "job": 124599680539,
+     "shard": "solo-QuadricBundles",
+     "file": "run-41222068108-job-124599680539-solo-QuadricBundles.log",
+     "sha256": "9ec806c2ac9e471ba1c2c49fc109a69f7b2744024e9fe9e441224f7a489c64e5"
+    },
+    {
+     "job": 124599680562,
+     "shard": "solo-SelfSimilar",
+     "file": "run-41222068108-job-124599680562-solo-SelfSimilar.log",
+     "sha256": "198aac65707228cdb600dd2e7859ba23301fe5caf76dc3a74de186f1460f5b4f"
+    },
+    {
+     "job": 124599680564,
+     "shard": "solo-SATVariance",
+     "file": "run-41222068108-job-124599680564-solo-SATVariance.log",
+     "sha256": "84ac470e9e06ac2778ff1af9bf941b1365bbc3e437d50fb602fe315e0cd9c7ba"
+    },
+    {
+     "job": 124599680569,
+     "shard": "solo-OstmannPrimes",
+     "file": "run-41222068108-job-124599680569-solo-OstmannPrimes.log",
+     "sha256": "c99e0a92552514aa3a44efae6a5af8d6271158f4341b7f36ddcb7ca01552eabf"
+    },
+    {
+     "job": 124599680583,
+     "shard": "solo-RationalHitting",
+     "file": "run-41222068108-job-124599680583-solo-RationalHitting.log",
+     "sha256": "b5797c9cd88145247b913044eb4bcd5b6bebd3daa164649906cfd33429252547"
+    },
+    {
+     "job": 124599680587,
+     "shard": "solo-SKHighTemperature",
+     "file": "run-41222068108-job-124599680587-solo-SKHighTemperature.log",
+     "sha256": "e7b0ee98d876da7a3f1221ef0fa4acfb60942c650478a7d3412cc59b9bd03dd3"
+    },
+    {
+     "job": 124599680598,
+     "shard": "solo-RelativeGeneration",
+     "file": "run-41222068108-job-124599680598-solo-RelativeGeneration.log",
+     "sha256": "b875049096b8481d5434a17b3c85bd1dffb378113e4e0e6f8552986a6b3ff750"
+    },
+    {
+     "job": 124599680608,
+     "shard": "solo-ProjectionCounterexample",
+     "file": "run-41222068108-job-124599680608-solo-ProjectionCounterexample.log",
+     "sha256": "84cb9847045130d01995d0524089a74ec9f7df50ce3711f182c34361194422a7"
+    },
+    {
+     "job": 124599680609,
+     "shard": "solo-RegularParity",
+     "file": "run-41222068108-job-124599680609-solo-RegularParity.log",
+     "sha256": "2fee52c8912dc06936bca1658bb61fc2bbc447854f2ee76f941ca6a7992562ee"
+    },
+    {
+     "job": 124599680618,
+     "shard": "solo-SKBarriers",
+     "file": "run-41222068108-job-124599680618-solo-SKBarriers.log",
+     "sha256": "614afb6eb3cf7090287ebba0c164b91f231af5f033dfd267902aef34e35bd958"
+    },
+    {
+     "job": 124599680624,
+     "shard": "solo-MatchingFPRAS",
+     "file": "run-41222068108-job-124599680624-solo-MatchingFPRAS.log",
+     "sha256": "9f09709301678cede7aa132d4444e3784030856226f25ceef680a301bdd5d308"
+    },
+    {
+     "job": 124599680640,
+     "shard": "solo-ShortEgyptianFractions",
+     "file": "run-41222068108-job-124599680640-solo-ShortEgyptianFractions.log",
+     "sha256": "2c5605e1a587e21c8736463a266b01cc16ae3fcfdc2b52c9f9b7a64c04e42266"
+    },
+    {
+     "job": 124599680646,
+     "shard": "solo-SATSharpness",
+     "file": "run-41222068108-job-124599680646-solo-SATSharpness.log",
+     "sha256": "928d87685c1a58f2ad87defae79af3bc281b4a826da06516e056660288981517"
+    },
+    {
+     "job": 124599680648,
+     "shard": "solo-SensitivitySeparation",
+     "file": "run-41222068108-job-124599680648-solo-SensitivitySeparation.log",
+     "sha256": "27be956ea8dc9322d916b4c0c8092ea19e80c0620b0322c080cb7bb03e899696"
+    },
+    {
+     "job": 124599680650,
+     "shard": "solo-QACParity",
+     "file": "run-41222068108-job-124599680650-solo-QACParity.log",
+     "sha256": "42c9e9db0036a61406ffb929d57d5f7e6d1efece1815cc6a06c848a6ab052c00"
+    },
+    {
+     "job": 124599680651,
+     "shard": "solo-ProjectionVolume",
+     "file": "run-41222068108-job-124599680651-solo-ProjectionVolume.log",
+     "sha256": "6d1939a95beb0dfc44648ae16fd0ad7d7d060afdd48e6a622f26d23bb9fe3ffa"
+    },
+    {
+     "job": 124599680685,
+     "shard": "solo-SignedFiniteBand",
+     "file": "run-41222068108-job-124599680685-solo-SignedFiniteBand.log",
+     "sha256": "a87e2d3e99a47ccb089d71ac9b5c2f199677b8f54005a62b8b87efe35943ab6a"
+    },
+    {
+     "job": 124599680688,
+     "shard": "solo-SelfSimilarCorollaries",
+     "file": "run-41222068108-job-124599680688-solo-SelfSimilarCorollaries.log",
+     "sha256": "f417281871eeff4f425ec4919a14e7a627ad50c0e430358511fa635581d616c1"
+    },
+    {
+     "job": 124599680698,
+     "shard": "solo-RealL1Renorming",
+     "file": "run-41222068108-job-124599680698-solo-RealL1Renorming.log",
+     "sha256": "826a9007553650869a7739aabc777f784f70dd7fe860b5ccdfc6a0b1ddfb0b1c"
+    },
+    {
+     "job": 124599680714,
+     "shard": "solo-SecondKahnKalai",
+     "file": "run-41222068108-job-124599680714-solo-SecondKahnKalai.log",
+     "sha256": "945755cc5b3448a47c7ef7eb2ed9e3e7e1613780a624ce52ec93a457ea210f72"
+    },
+    {
+     "job": 124599680758,
+     "shard": "solo-SeymourSecondNeighborhood",
+     "file": "run-41222068108-job-124599680758-solo-SeymourSecondNeighborhood.log",
+     "sha256": "4f15c4a7dd061da9129ce0db837c74079b214625424de35fd723a60d28fe52e0"
+    },
+    {
+     "job": 124599681797,
+     "shard": "solo-SingleFold",
+     "file": "run-41222068108-job-124599681797-solo-SingleFold.log",
+     "sha256": "b6d690281258c4348ebbc95433bc20196cc87ec686107b78edbb0c1c9ac0a8c2"
+    },
+    {
+     "job": 124599681837,
+     "shard": "solo-SingletonLoopMatching",
+     "file": "run-41222068108-job-124599681837-solo-SingletonLoopMatching.log",
+     "sha256": "32e222583e7aa9e011b404f1c515ee699e5fa89ae6d97bcd3a0685b78f40f0a8"
+    },
+    {
+     "job": 124599681863,
+     "shard": "solo-SmoothInitialForm",
+     "file": "run-41222068108-job-124599681863-solo-SmoothInitialForm.log",
+     "sha256": "d943dc29d57c9e007093d3214ed4a2364bb559802838c1e3d738615a985f6ed3"
+    },
+    {
+     "job": 124599681898,
+     "shard": "solo-SolenoidalSheetPrograms",
+     "file": "run-41222068108-job-124599681898-solo-SolenoidalSheetPrograms.log",
+     "sha256": "470fea731e339e3dacfbf7b4b6794204c995252258ff7110cb0e22837e7d00a5"
+    },
+    {
+     "job": 124599681914,
+     "shard": "solo-SplitTangentIntegrability",
+     "file": "run-41222068108-job-124599681914-solo-SplitTangentIntegrability.log",
+     "sha256": "7df15917754e9433fd60deeac078d4ee25257d1c6da924bf5a9aaf463abb1b5f"
+    },
+    {
+     "job": 124599681948,
+     "shard": "solo-SmoothYau",
+     "file": "run-41222068108-job-124599681948-solo-SmoothYau.log",
+     "sha256": "f6b8282103cd25e55cb28b44f2da9d3758d291e20d390c538302e118d6bf0328"
+    },
+    {
+     "job": 124599681967,
+     "shard": "solo-StableCoordinateFour",
+     "file": "run-41222068108-job-124599681967-solo-StableCoordinateFour.log",
+     "sha256": "5f404fa36b89cf7f4d0c73a08c95b824234beffdae8cc142d5be44d7bfe94b8f"
+    },
+    {
+     "job": 124599682013,
+     "shard": "solo-SquareRootDegree",
+     "file": "run-41222068108-job-124599682013-solo-SquareRootDegree.log",
+     "sha256": "248c78f22ef1b71513c414a4c87486d76bf56c1ccfe18b9a7bf08fb2893ebf43"
+    },
+    {
+     "job": 124599682144,
+     "shard": "solo-StrictMeans",
+     "file": "run-41222068108-job-124599682144-solo-StrictMeans.log",
+     "sha256": "bae8d3e45e23520c307446b6579ccd6634f081ed0a9b80b26985a658d9312880"
+    },
+    {
+     "job": 124599682256,
+     "shard": "solo-SteinitzBergstrom",
+     "file": "run-41222068108-job-124599682256-solo-SteinitzBergstrom.log",
+     "sha256": "500cbcf8425f3818e4b4bed05204c06a2c2c7a6bafb9399617b31887278013ce"
+    },
+    {
+     "job": 124599683082,
+     "shard": "solo-SubpolynomialLp",
+     "file": "run-41222068108-job-124599683082-solo-SubpolynomialLp.log",
+     "sha256": "033b0dbd5f82cbd1cd2324d613d163e901958ca667445f3ba8b091cf9e4b69b2"
+    },
+    {
+     "job": 124599683170,
+     "shard": "solo-StructuralCrouzeix",
+     "file": "run-41222068108-job-124599683170-solo-StructuralCrouzeix.log",
+     "sha256": "7fb685b9d6cca8461dae901e9864e1f0d50731e1aea61ab9e7ee9beec8154d06"
+    },
+    {
+     "job": 124599683177,
+     "shard": "solo-SymmetricMahlerEquality",
+     "file": "run-41222068108-job-124599683177-solo-SymmetricMahlerEquality.log",
+     "sha256": "4a1671b7244cf5a6d8b933108df08e3b4dfdb50e08e0ebdd2d2a3b65957a18f2"
+    },
+    {
+     "job": 124599683179,
+     "shard": "solo-SurfaceConeCandidateSupport",
+     "file": "run-41222068108-job-124599683179-solo-SurfaceConeCandidateSupport.log",
+     "sha256": "5d18653eb021d7a640523a156d43e88f983efaa3c1b78bb046ad7349b17bc380"
+    },
+    {
+     "job": 124599683224,
+     "shard": "solo-SymmetricPolar",
+     "file": "run-41222068108-job-124599683224-solo-SymmetricPolar.log",
+     "sha256": "f5f6edd2dc28a09a2a911544e3b96f8c112a67ec71500769b86333024e2a513a"
+    },
+    {
+     "job": 124599683301,
+     "shard": "solo-TingleySphereIsometry",
+     "file": "run-41222068108-job-124599683301-solo-TingleySphereIsometry.log",
+     "sha256": "1e6807ae27733a441710266d5c69ab36a1222b6553e177bfee0b287a04d24d5a"
+    },
+    {
+     "job": 124599683319,
+     "shard": "solo-SymmetricDomains",
+     "file": "run-41222068108-job-124599683319-solo-SymmetricDomains.log",
+     "sha256": "79beeec83c75a3192ec77556cc332db250fdbc09f0cd6c36163bde376b2c1d9b"
+    },
+    {
+     "job": 124599683334,
+     "shard": "solo-TraceIdealTransportSupport",
+     "file": "run-41222068108-job-124599683334-solo-TraceIdealTransportSupport.log",
+     "sha256": "346d42f9c7aa4d5942bb0aa1283a8df119c847630d2bb079ff244772ad2811e1"
+    },
+    {
+     "job": 124599683356,
+     "shard": "solo-TorsionFreeHyperbolic",
+     "file": "run-41222068108-job-124599683356-solo-TorsionFreeHyperbolic.log",
+     "sha256": "9bb0ed645660dc237cf856486461ee4698810ec08d5b630423ca30fee449b4ad"
+    },
+    {
+     "job": 124599683884,
+     "shard": "solo-TriangleFace",
+     "file": "run-41222068108-job-124599683884-solo-TriangleFace.log",
+     "sha256": "c8562a71eb3adad43e0ccaf1b993bc90931830a6af9e16a6537e72cf8f19b14f"
+    },
+    {
+     "job": 124599684030,
+     "shard": "solo-TriangleRemoval",
+     "file": "run-41222068108-job-124599684030-solo-TriangleRemoval.log",
+     "sha256": "0ef6cd2c7415673cacdb816d4d6c13e6fa68ab028e663ebcb53f40976199c315"
+    },
+    {
+     "job": 124599684258,
+     "shard": "solo-TriangularEnergy",
+     "file": "run-41222068108-job-124599684258-solo-TriangularEnergy.log",
+     "sha256": "28073e53d7a83e66cd8fa6a7cdbf84b80667792a39d052dfa629e635064353bf"
+    },
+    {
+     "job": 124599684263,
+     "shard": "solo-TriangularHilbert",
+     "file": "run-41222068108-job-124599684263-solo-TriangularHilbert.log",
+     "sha256": "611adbdbc52b8eca78a5cf23522b02c8106ec6af75e2dfd798ff9fdb980592c6"
+    },
+    {
+     "job": 124599684303,
+     "shard": "solo-TwoWayComplementation",
+     "file": "run-41222068108-job-124599684303-solo-TwoWayComplementation.log",
+     "sha256": "80b50ace172c446e8edc41a9c29847f3753b45f45e15c11ccfadb25735252fac"
+    },
+    {
+     "job": 124599684309,
+     "shard": "solo-TruffetCounterexample",
+     "file": "run-41222068108-job-124599684309-solo-TruffetCounterexample.log",
+     "sha256": "8b96217b6ac10bdb0e1ed8e129316ff3d6fbafce40b7f849927b89268cadfeb0"
+    },
+    {
+     "job": 124599684324,
+     "shard": "solo-TriangularGaussian",
+     "file": "run-41222068108-job-124599684324-solo-TriangularGaussian.log",
+     "sha256": "33a53699d76e4495ca83d0879c491bd44a36010ad0a8c1f40ff05a4e3aeb2489"
+    },
+    {
+     "job": 124599684350,
+     "shard": "solo-TwoWayDeterminization",
+     "file": "run-41222068108-job-124599684350-solo-TwoWayDeterminization.log",
+     "sha256": "79e7d866da406e762066af95b2f9a77c24cdfec29dc4df9cd3a21ca591894be7"
+    },
+    {
+     "job": 124599684598,
+     "shard": "solo-UniformSparsestCut",
+     "file": "run-41222068108-job-124599684598-solo-UniformSparsestCut.log",
+     "sha256": "7bf2aa64c72aa4196c057d277ba903fbbf8ca5fcb422e9cd8fd20d9540c7fc9c"
+    },
+    {
+     "job": 124599684671,
+     "shard": "solo-VelocityHemisphere",
+     "file": "run-41222068108-job-124599684671-solo-VelocityHemisphere.log",
+     "sha256": "1a2983912145efebc35769c1039c5ed0fbfd8601dc6bfabdc55fcf07e7925aed"
+    },
+    {
+     "job": 124599685195,
+     "shard": "solo-WitnessedChoice",
+     "file": "run-41222068108-job-124599685195-solo-WitnessedChoice.log",
+     "sha256": "d062c046ffd9f42688fe49df9f7b76687fdfe19616f65b7a3498076d068eec47"
+    },
+    {
+     "job": 124599685318,
+     "shard": "solo-YauCounterexample",
+     "file": "run-41222068108-job-124599685318-solo-YauCounterexample.log",
+     "sha256": "fef64e08a7bfcb65a845cfa5fce0d028af65809d768f72e45c0be0d3b2fad927"
+    }
+   ],
+   "noLog": [],
+   "notFinished": []
+  }
+ ],
+ "results": {
+  "AbhyankarSathaye": "accepted",
+  "AffineBernstein": "accepted",
+  "AlgorithmicThinTrees": "accepted",
+  "AmplitudeDamping": "accepted",
+  "ArnoldCounterexample": "accepted",
+  "ArtinCAT0": "accepted",
+  "ArtinParabolicIntersections": "accepted",
+  "AsymptoticallyMinimalLittlewood": "accepted",
+  "AtomicGaussian": "accepted",
+  "AuslanderReiten": "accepted",
+  "BackwardIntertwiners": "accepted",
+  "BalancedBoxRouting": "accepted",
+  "BalancedRyser": "accepted",
+  "BalancedThreeStack": "accepted",
+  "BallPacking": "accepted",
+  "BallPackingNecessity": "accepted",
+  "BarnetteHamiltonian": "accepted",
+  "BassTorsionFree": "accepted",
+  "BassTrace": "accepted",
+  "BenjaminiSchramm": "accepted",
+  "BernoulliNonflatInSeven": "accepted",
+  "BiholderTransport": "accepted",
+  "BinPackingGap": "accepted",
+  "BinaryEditLower": "accepted",
+  "BinaryMatching": "accepted",
+  "BinarySweep": "accepted",
+  "BipartiteCrossing": "accepted",
+  "BogomolovPopInjectivity": "accepted",
+  "BoltzmannNonuniqueness": "accepted",
+  "BooneHigman": "accepted",
+  "BorsukNine": "accepted",
+  "BoundedRecovery": "accepted",
+  "BoundedTreePotentials": "accepted",
+  "BoundedTreewidthL1": "accepted",
+  "Brenier": "accepted",
+  "Brennan": "accepted",
+  "BrennanSharp": "accepted",
+  "BufferedIsing": "accepted",
+  "C0Absorption": "accepted",
+  "C1EntropyCounterexample": "accepted",
+  "CHObstruction": "accepted",
+  "CKSBondiPenrose": "accepted",
+  "CannonGeometricAction": "accepted",
+  "CartierChartCompactnessSupport": "accepted",
+  "Catalan": "accepted",
+  "CayleyPercolation": "accepted",
+  "CharacterCriterion": "accepted",
+  "CharacterVarietiesAllSeamsSupport": "accepted",
+  "ChoicelessPolynomialTime": "accepted",
+  "CirculantHadamard": "accepted",
+  "ClassicalON": "accepted",
+  "CliqueFreeLog": "accepted",
+  "CoarseAssembly": "buildError",
+  "CoboundaryExpanders": "accepted",
+  "CommonBasesFPRAS": "accepted",
+  "CommutingDerivations": "accepted",
+  "CompactBanach": "accepted",
+  "CompleteCrossing": "accepted",
+  "CompleteCrouzeix": "accepted",
+  "ComplexCancellation": "accepted",
+  "Conductivity": "accepted",
+  "ConjugatePoints": "accepted",
+  "ContingencyTables": "kernelsDisagree",
+  "ContinuousCircleWeight": "accepted",
+  "ContinuumCoulombHardness": "buildError",
+  "ContinuumTransition": "accepted",
+  "CoordinateSweeps": "accepted",
+  "CoordinateTrace": "accepted",
+  "Cotype": "accepted",
+  "CoulombCounterexample": "accepted",
+  "CoulombIonization": "accepted",
+  "CoulombRadii": "accepted",
+  "CourtadeKumar": "accepted",
+  "CoveringDensity": "accepted",
+  "CriticalPercolation": "accepted",
+  "CriticalSK": "accepted",
+  "CriticalSKMixing": "accepted",
+  "CriticalStripMass": "accepted",
+  "CriticalZ3": "accepted",
+  "CrouzeixHilbert": "accepted",
+  "CubicTorus": "accepted",
+  "CycleCliqueRamsey": "buildError",
+  "CycleDecomposition": "accepted",
+  "CylinderCovering": "accepted",
+  "DaugavetModuli": "accepted",
+  "DefocusingNLS": "accepted",
+  "DegreeRigidity": "accepted",
+  "DeligneDrinfeld": "accepted",
+  "DepthFive": "accepted",
+  "DepthThree": "accepted",
+  "DiamondDistortion": "accepted",
+  "DilutedSpin": "accepted",
+  "DimensionTenChannel": "accepted",
+  "DimensionTenPair": "accepted",
+  "DirectCrouzeix": "accepted",
+  "DirectedFeedback": "accepted",
+  "DirectionalBallisticity": "accepted",
+  "DirectionalWalk": "accepted",
+  "DirichletSevenEighths": "accepted",
+  "DiscreteLipschitzFree": "accepted",
+  "DiskMaximal": "accepted",
+  "Dixmier": "accepted",
+  "DixmierAllDiscrete": "accepted",
+  "DoublingHilbert": "accepted",
+  "DukePrimeDegree": "accepted",
+  "DuttaDomain": "accepted",
+  "DyadicAvoidance": "accepted",
+  "EditApproximation": "accepted",
+  "EditDistance": "accepted",
+  "EgyptianFractions": "accepted",
+  "EilenbergGanea": "accepted",
+  "EinsteinFour": "accepted",
+  "ElasticityUniqueness": "accepted",
+  "ElementaryPositivity": "accepted",
+  "EntangledGames": "accepted",
+  "EntropyPhotonNumber": "accepted",
+  "ErdosReciprocal": "tooLarge",
+  "EuclideanFiveColor": "accepted",
+  "EuclideanRamsey": "accepted",
+  "EuclideanRamseyCircle": "accepted",
+  "EuclideanRamseyNine": "accepted",
+  "EuclideanRamseyQuadratic": "accepted",
+  "EuclideanRamseySpherical": "accepted",
+  "EuclideanRamseyTransitive": "accepted",
+  "EvenBarker": "accepted",
+  "ExactFourier": "accepted",
+  "ExactInfiniteness": "accepted",
+  "ExactQuantumFactoring": "accepted",
+  "FKCRT": "accepted",
+  "FactorGeneration": "accepted",
+  "FalconerAllDimensions": "accepted",
+  "FillingCoefficient": "accepted",
+  "FiniteCircle": "accepted",
+  "FiniteCongruenceGraph": "accepted",
+  "FiniteEntropySeparation": "accepted",
+  "FiniteFactor": "accepted",
+  "FinitisticAsymmetry": "accepted",
+  "FixedClauseThreshold": "accepted",
+  "ForcedNavierStokesComputation": "accepted",
+  "ForestSpace": "accepted",
+  "FormulaHitting": "accepted",
+  "FoulkesHowe": "accepted",
+  "FourRowPermanent": "accepted",
+  "FourierLLogL": "accepted",
+  "FreeIsing": "accepted",
+  "FreeUniformSpanningForest": "accepted",
+  "GammaPassage": "accepted",
+  "GaussianFiniteEntropy": "accepted",
+  "GaussianInformation": "accepted",
+  "GaussianMoat": "accepted",
+  "GaussianPropeller": "accepted",
+  "GaussianReplacement": "accepted",
+  "GeneralMahler": "accepted",
+  "GeneralizedStarHeight": "accepted",
+  "GotsmanLinial": "accepted",
+  "GrahamSpherical": "accepted",
+  "GrothendieckElementaryExpansion": "accepted",
+  "GroupRingDeterminant": "kernelsDisagree",
+  "HadamardCubeFiber": "accepted",
+  "HadwigerCounterexample": "accepted",
+  "HalvingLines": "accepted",
+  "HardSphere": "accepted",
+  "HarmonicArtin": "accepted",
+  "HarmonicGrowth": "accepted",
+  "HeckeSevenEighths": "accepted",
+  "HeilbronnTriangle": "accepted",
+  "Heisenberg": "accepted",
+  "HenonEmden": "accepted",
+  "HilbertCrouzeix": "accepted",
+  "HoneycombBridgeFiniteness": "accepted",
+  "HoneycombBridgeMassSupport": "buildError",
+  "HoneycombFreeEnergy": "accepted",
+  "HotSpots": "accepted",
+  "HyperbolicCones": "accepted",
+  "HyperbolicObstruction": "accepted",
+  "HyperinvariantSubspaces": "accepted",
+  "IndependentProducts": "accepted",
+  "IndependentSets": "accepted",
+  "IndividualStrongInfiniteness": "accepted",
+  "InfiniteMatroid": "accepted",
+  "InfiniteMatroidCorollaries": "accepted",
+  "InterpolatedFactors": "accepted",
+  "InvariantIsing": "accepted",
+  "IrrationalRotation": "accepted",
+  "IrrationalTriangleBilliard": "accepted",
+  "IsingFiniteness": "accepted",
+  "IsometricImmersion": "accepted",
+  "Jacobsthal": "accepted",
+  "JacobsthalImproved": "accepted",
+  "JointDickman": "accepted",
+  "KLInvariance": "accepted",
+  "KMedianRecovery": "accepted",
+  "KMedianRefinedRecovery": "accepted",
+  "KMedianThreshold": "accepted",
+  "KServer": "accepted",
+  "KadisonRingrose": "accepted",
+  "KadisonSimilarity": "accepted",
+  "KahlerSplitting": "accepted",
+  "KaplanskyDirectFiniteness": "kernelsDisagree",
+  "KaplanskyFinitelyPresented": "kernelsDisagree",
+  "KaplanskyQuasitrace": "accepted",
+  "KaplanskyStableFiniteness": "accepted",
+  "Kervaire": "accepted",
+  "KoebeCircleDomains": "accepted",
+  "Laughlin": "accepted",
+  "LaughlinFock": "accepted",
+  "LaughlinGap": "accepted",
+  "LaughlinPlanar": "accepted",
+  "LiebThirring": "accepted",
+  "LipschitzEquivalence": "accepted",
+  "LipschitzHilbert": "accepted",
+  "ListHadwiger": "accepted",
+  "LittleFinitistic": "accepted",
+  "LittlewoodFiniteFlatness": "accepted",
+  "LocalSmoothing": "accepted",
+  "LogBrunnMinkowski": "accepted",
+  "LogConcaveQuery": "accepted",
+  "LogKodairaFiberNegative": "accepted",
+  "LogspaceEquality": "kernelsDisagree",
+  "MUBSix": "tooLarge",
+  "MahlerConjecture": "accepted",
+  "MarkovType": "accepted",
+  "MassAction": "accepted",
+  "MatchingAffineLift": "accepted",
+  "MatchingEntropy": "accepted",
+  "MatchingEntropyBounds": "accepted",
+  "MatchingFPRAS": "kernelsDisagree",
+  "MatchingPSD": "accepted",
+  "MatrixFields": "accepted",
+  "MatrixMultiplication": "accepted",
+  "MatrixRemoval": "accepted",
+  "MatroidProphet": "accepted",
+  "MatroidSecretary": "accepted",
+  "MaximalSeshadriConstants": "accepted",
+  "MemoryPrecision": "accepted",
+  "MetricEntropyDuality": "accepted",
+  "MetricKMedian": "accepted",
+  "MidpointLenses": "accepted",
+  "MinUncut": "accepted",
+  "Nagata": "accepted",
+  "Naimark": "accepted",
+  "NavierStokesAlternating": "accepted",
+  "NavierStokesVelocity": "accepted",
+  "NodalLength": "accepted",
+  "NoiselessRegression": "accepted",
+  "NuclearUltrapower": "buildError",
+  "OccupiedOverlap": "accepted",
+  "OddKaplansky": "accepted",
+  "OneTapeSpace": "accepted",
+  "OneWayLiveness": "accepted",
+  "OptimalMaxCut": "accepted",
+  "OrdinaryElliott": "accepted",
+  "OrdinaryTwoPointCorrelations": "accepted",
+  "OstmannComplete": "accepted",
+  "OstmannPrimes": "accepted",
+  "ParityLifts": "accepted",
+  "PartialPermutation": "accepted",
+  "PartitionConsistency": "accepted",
+  "PartitionPrinciple": "accepted",
+  "PattersonFirstMoment": "accepted",
+  "PerceptronFreeEnergy": "accepted",
+  "PerfectCompleteness": "accepted",
+  "PeriodicGroup": "kernelsDisagree",
+  "PeriodicTilingThree": "accepted",
+  "PermanentCubic": "accepted",
+  "PettyProjectionVolume": "accepted",
+  "PiExponent": "accepted",
+  "PinchedKahler": "accepted",
+  "PinnedDistances": "accepted",
+  "PlanarAndersonSpectrum": "accepted",
+  "PlanarFalconer": "accepted",
+  "PlanarFirstPassage": "accepted",
+  "PlanarL1": "accepted",
+  "PlanarPacking": "buildError",
+  "PlanarUnitDistances": "accepted",
+  "PlaneColoring": "accepted",
+  "PolycyclicRecognition": "accepted",
+  "PosteriorReplicas": "accepted",
+  "PowerFreeValues": "accepted",
+  "PrimeGaps": "accepted",
+  "ProductBrown": "accepted",
+  "ProjectionCounterexample": "accepted",
+  "ProjectionMoments": "accepted",
+  "ProjectionVolume": "accepted",
+  "QACParity": "accepted",
+  "QuadricBundles": "accepted",
+  "QuantitativeVanDerWaerden": "accepted",
+  "QuasiRiemannHypothesis": "accepted",
+  "QuinticLienard": "accepted",
+  "RadialDensityInterval": "accepted",
+  "RadialTransition": "accepted",
+  "RamseyFive": "accepted",
+  "RandomizedMeanPayoff": "kernelsDisagree",
+  "RationalHitting": "accepted",
+  "RealL1Renorming": "accepted",
+  "RecursivePotentials": "accepted",
+  "ReflexiveFixedPoints": "accepted",
+  "RegularParity": "accepted",
+  "RelativeGeneration": "accepted",
+  "RieszQuantitative": "accepted",
+  "Rokhlin": "accepted",
+  "RuledCovering": "accepted",
+  "RyserCovering": "accepted",
+  "RyserOddExtensions": "accepted",
+  "SATComputability": "accepted",
+  "SATSharpness": "accepted",
+  "SATVariance": "accepted",
+  "SKBarriers": "accepted",
+  "SKFullSupport": "accepted",
+  "SKHighTemperature": "accepted",
+  "SKRatio": "accepted",
+  "SKValue": "accepted",
+  "SLELowerPositivity": "accepted",
+  "Saxl": "accepted",
+  "SecondKahnKalai": "accepted",
+  "SelfSimilar": "accepted",
+  "SelfSimilarCorollaries": "accepted",
+  "SensitivitySeparation": "accepted",
+  "SeparableQuotientNegative": "accepted",
+  "SeymourSecondNeighborhood": "accepted",
+  "SharpCAT0Filling": "accepted",
+  "SharpLogRamsey": "accepted",
+  "SharpThreshold": "accepted",
+  "ShortEgyptianFractions": "accepted",
+  "SidorenkoCounterexample": "accepted",
+  "SiegelZeros": "accepted",
+  "SignedFiniteBand": "accepted",
+  "SignedSweepMoment": "accepted",
+  "SimpleAmenable": "accepted",
+  "SimpleOvergroups": "accepted",
+  "SingleFold": "accepted",
+  "SingleLatticeCovering": "accepted",
+  "SingletonLoopMatching": "accepted",
+  "SmoothInitialForm": "accepted",
+  "SmoothObstruction": "accepted",
+  "SmoothYau": "accepted",
+  "SnakyCertificate": "buildError",
+  "SnakyConditional": "accepted",
+  "SnakyTwentyOne": "buildError",
+  "SoftChannel204": "accepted",
+  "SolenoidalSheetPrograms": "accepted",
+  "SphericalField": "accepted",
+  "SpinAngle": "accepted",
+  "SplitTangentIntegrability": "accepted",
+  "SquareDifference": "kernelsDisagree",
+  "SquareRootDegree": "accepted",
+  "StableCoordinateFour": "accepted",
+  "StandardMapComponents": "accepted",
+  "StandardMapEntropy": "accepted",
+  "StandardMapLyapunov": "accepted",
+  "SteinitzBergstrom": "accepted",
+  "StrictMeans": "accepted",
+  "StrongKadisonKastler": "accepted",
+  "StrongThinTree": "accepted",
+  "StronglyRayleighDPP": "accepted",
+  "StructuralCrouzeix": "accepted",
+  "SubexponentialSAT": "buildError",
+  "SubpolynomialLp": "accepted",
+  "SubsphereCurrent": "accepted",
+  "Superstring": "accepted",
+  "SurfaceConeCandidateSupport": "accepted",
+  "SurfaceImmersion": "accepted",
+  "SwitchChain": "accepted",
+  "SymmetricDomains": "accepted",
+  "SymmetricMahlerEquality": "accepted",
+  "SymmetricPolar": "accepted",
+  "Tachikawa": "accepted",
+  "TalagrandDiscreteConvexity": "accepted",
+  "TalagrandExpectationThreshold": "accepted",
+  "TamingCompatibility": "buildError",
+  "ThomasonModelStructures": "accepted",
+  "ThompsonNonamenability": "accepted",
+  "ThorpFirstReciprocal": "accepted",
+  "ThorpRemaining": "accepted",
+  "ThorpRouting": "accepted",
+  "ThorpWeightedCompatibility": "accepted",
+  "ThreeMachine": "accepted",
+  "ThreeStateSupercritical": "accepted",
+  "ThreeStateTreeClauses": "accepted",
+  "ThreeTorus": "accepted",
+  "TingleySphereIsometry": "accepted",
+  "TorsionFreeHyperbolic": "accepted",
+  "TorsionFreeZeroDivisors": "accepted",
+  "TotientAsymptotic": "accepted",
+  "TotientCompanionZero": "accepted",
+  "TraceIdealTransportSupport": "accepted",
+  "TraceReconstruction": "accepted",
+  "TreeEdit": "accepted",
+  "TriangleFace": "accepted",
+  "TriangleRemoval": "accepted",
+  "TriangularCovering": "accepted",
+  "TriangularEnergy": "accepted",
+  "TriangularGaussian": "accepted",
+  "TriangularHilbert": "accepted",
+  "TruffetCounterexample": "accepted",
+  "TwoWayComplementation": "accepted",
+  "TwoWayDeterminization": "accepted",
+  "TypeSystemNormalization": "accepted",
+  "UniformCommutator": "accepted",
+  "UniformFourier": "accepted",
+  "UniformGamma": "accepted",
+  "UniformKServer": "accepted",
+  "UniformSparsestCut": "accepted",
+  "UniqueGamesTheorem": "accepted",
+  "UniversalFInfinity": "accepted",
+  "UniversalTensorSquares": "buildError",
+  "VariableWL": "accepted",
+  "VelocityHemisphere": "accepted",
+  "VertexAlgebraNet": "accepted",
+  "VertexCover": "accepted",
+  "VlasovMaxwell": "accepted",
+  "WLIdentification": "accepted",
+  "WeakHessian": "accepted",
+  "WeakMTWGlobalSupport": "accepted",
+  "WeightedSweepMoments": "accepted",
+  "WeisfeilerLeman": "accepted",
+  "WitnessedChoice": "accepted",
+  "YauCounterexample": "accepted"
+ },
+ "kernelsDisagree": [
+  "ContingencyTables",
+  "GroupRingDeterminant",
+  "KaplanskyDirectFiniteness",
+  "KaplanskyFinitelyPresented",
+  "LogspaceEquality",
+  "MatchingFPRAS",
+  "PeriodicGroup",
+  "RandomizedMeanPayoff",
+  "SquareDifference"
+ ],
+ "challenges": [
+  {
+   "name": "AbhyankarSathaye",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 76,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "AffineBernstein",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 1304,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "AlgorithmicThinTrees",
+   "shard": "b18",
+   "status": "accepted",
+   "seconds": 2416,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649752"
+  },
+  {
+   "name": "AmplitudeDamping",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 497,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "ArnoldCounterexample",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 1930,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "ArtinCAT0",
+   "shard": "b17",
+   "status": "accepted",
+   "seconds": 202,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649837"
+  },
+  {
+   "name": "ArtinParabolicIntersections",
+   "shard": "b17",
+   "status": "accepted",
+   "seconds": 1454,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649837"
+  },
+  {
+   "name": "AsymptoticallyMinimalLittlewood",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 412,
+   "capSeconds": 17622,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "AtomicGaussian",
+   "shard": "b16",
+   "status": "accepted",
+   "seconds": 12157,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649764"
+  },
+  {
+   "name": "AuslanderReiten",
+   "shard": "b19",
+   "status": "accepted",
+   "seconds": 2841,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649737"
+  },
+  {
+   "name": "BackwardIntertwiners",
+   "shard": "b15",
+   "status": "accepted",
+   "seconds": 291,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649621"
+  },
+  {
+   "name": "BalancedBoxRouting",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 169,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "BalancedRyser",
+   "shard": "b11",
+   "status": "accepted",
+   "seconds": 1253,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649734"
+  },
+  {
+   "name": "BalancedThreeStack",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 355,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "BallPacking",
+   "shard": "b20",
+   "status": "accepted",
+   "seconds": 3369,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650263"
+  },
+  {
+   "name": "BallPackingNecessity",
+   "shard": "b20",
+   "status": "accepted",
+   "seconds": 1005,
+   "capSeconds": 16752,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650263"
+  },
+  {
+   "name": "BarnetteHamiltonian",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 307,
+   "capSeconds": 17209,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "BassTorsionFree",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 742,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "BassTrace",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 168,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "BenjaminiSchramm",
+   "shard": "b17",
+   "status": "accepted",
+   "seconds": 1924,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649837"
+  },
+  {
+   "name": "BernoulliNonflatInSeven",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 880,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "BiholderTransport",
+   "shard": "b19",
+   "status": "accepted",
+   "seconds": 2810,
+   "capSeconds": 17246,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649737"
+  },
+  {
+   "name": "BinPackingGap",
+   "shard": "b10",
+   "status": "accepted",
+   "seconds": 1107,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649823"
+  },
+  {
+   "name": "BinaryEditLower",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 260,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "BinaryMatching",
+   "shard": "b20",
+   "status": "accepted",
+   "seconds": 627,
+   "capSeconds": 15746,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650263"
+  },
+  {
+   "name": "BinarySweep",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 653,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "BipartiteCrossing",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 369,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "BogomolovPopInjectivity",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 199,
+   "capSeconds": 16901,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "BoltzmannNonuniqueness",
+   "shard": "b20",
+   "status": "accepted",
+   "seconds": 1919,
+   "capSeconds": 15118,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650263"
+  },
+  {
+   "name": "BooneHigman",
+   "shard": "b21",
+   "status": "accepted",
+   "seconds": 529,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649904"
+  },
+  {
+   "name": "BorsukNine",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 1025,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "BoundedRecovery",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 481,
+   "capSeconds": 16701,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "BoundedTreePotentials",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 472,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "BoundedTreewidthL1",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 283,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "Brenier",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 528,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "Brennan",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 549,
+   "capSeconds": 17709,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "BrennanSharp",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 167,
+   "capSeconds": 17159,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "BufferedIsing",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 134,
+   "capSeconds": 16219,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "C0Absorption",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 313,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "C1EntropyCounterexample",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 592,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "CHObstruction",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 155,
+   "capSeconds": 16083,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "CKSBondiPenrose",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 1295,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "CannonGeometricAction",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 1053,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "CartierChartCompactnessSupport",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 159,
+   "capSeconds": 15927,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "Catalan",
+   "shard": "b10",
+   "status": "accepted",
+   "seconds": 5448,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649823"
+  },
+  {
+   "name": "CayleyPercolation",
+   "shard": "b17",
+   "status": "accepted",
+   "seconds": 235,
+   "capSeconds": 16547,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649837"
+  },
+  {
+   "name": "CharacterCriterion",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 1297,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "CharacterVarietiesAllSeamsSupport",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 2503,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "ChoicelessPolynomialTime",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 397,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "CirculantHadamard",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 263,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "ClassicalON",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 816,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "CliqueFreeLog",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 244,
+   "capSeconds": 15767,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "CoarseAssembly",
+   "shard": "b23",
+   "status": "buildError",
+   "seconds": 1116,
+   "capSeconds": 15729,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "CoboundaryExpanders",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 488,
+   "capSeconds": 17473,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "CommonBasesFPRAS",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 380,
+   "capSeconds": 16991,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "CommutingDerivations",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 82,
+   "capSeconds": 16609,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "CompactBanach",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 278,
+   "capSeconds": 15522,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "CompleteCrossing",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 169,
+   "capSeconds": 17590,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "CompleteCrouzeix",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 717,
+   "capSeconds": 16526,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "ComplexCancellation",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 433,
+   "capSeconds": 15243,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "Conductivity",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 1841,
+   "capSeconds": 17420,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "ConjugatePoints",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 673,
+   "capSeconds": 17045,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "ContingencyTables",
+   "shard": "b03",
+   "status": "kernelsDisagree",
+   "seconds": 3455,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596682225"
+  },
+  {
+   "name": "ContinuousCircleWeight",
+   "shard": "b15",
+   "status": "accepted",
+   "seconds": 428,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649621"
+  },
+  {
+   "name": "ContinuumCoulombHardness",
+   "shard": "b08",
+   "status": "buildError",
+   "seconds": 4711,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649819"
+  },
+  {
+   "name": "ContinuumTransition",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 1006,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "CoordinateSweeps",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 376,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "CoordinateTrace",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 408,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "Cotype",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 537,
+   "capSeconds": 16371,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "CoulombCounterexample",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 417,
+   "capSeconds": 15832,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "CoulombIonization",
+   "shard": "b15",
+   "status": "accepted",
+   "seconds": 1578,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649621"
+  },
+  {
+   "name": "CoulombRadii",
+   "shard": "b15",
+   "status": "accepted",
+   "seconds": 1103,
+   "capSeconds": 17788,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649621"
+  },
+  {
+   "name": "CourtadeKumar",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 279,
+   "capSeconds": 16984,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "CoveringDensity",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 763,
+   "capSeconds": 14606,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "CriticalPercolation",
+   "shard": "b19",
+   "status": "accepted",
+   "seconds": 1698,
+   "capSeconds": 14434,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649737"
+  },
+  {
+   "name": "CriticalSK",
+   "shard": "b14",
+   "status": "accepted",
+   "seconds": 356,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649534"
+  },
+  {
+   "name": "CriticalSKMixing",
+   "shard": "b14",
+   "status": "accepted",
+   "seconds": 1527,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649534"
+  },
+  {
+   "name": "CriticalStripMass",
+   "shard": "b15",
+   "status": "accepted",
+   "seconds": 872,
+   "capSeconds": 16684,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649621"
+  },
+  {
+   "name": "CriticalZ3",
+   "shard": "b19",
+   "status": "accepted",
+   "seconds": 318,
+   "capSeconds": 12735,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649737"
+  },
+  {
+   "name": "CrouzeixHilbert",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 790,
+   "capSeconds": 15807,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "CubicTorus",
+   "shard": "b19",
+   "status": "accepted",
+   "seconds": 2587,
+   "capSeconds": 12416,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649737"
+  },
+  {
+   "name": "CycleCliqueRamsey",
+   "shard": "f189",
+   "status": "buildError",
+   "seconds": 965,
+   "capSeconds": 18000,
+   "run": 41146560423,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423/job/124374409979"
+  },
+  {
+   "name": "CycleDecomposition",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 356,
+   "capSeconds": 16704,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "CylinderCovering",
+   "shard": "b02",
+   "status": "accepted",
+   "seconds": 1886,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648964"
+  },
+  {
+   "name": "DaugavetModuli",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 327,
+   "capSeconds": 15016,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "DefocusingNLS",
+   "shard": "b09",
+   "status": "accepted",
+   "seconds": 5498,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649647"
+  },
+  {
+   "name": "DegreeRigidity",
+   "shard": "b17",
+   "status": "accepted",
+   "seconds": 1524,
+   "capSeconds": 16311,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649837"
+  },
+  {
+   "name": "DeligneDrinfeld",
+   "shard": "b08",
+   "status": "accepted",
+   "seconds": 761,
+   "capSeconds": 15340,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649819"
+  },
+  {
+   "name": "DepthFive",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 463,
+   "capSeconds": 16347,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "DepthThree",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 450,
+   "capSeconds": 14688,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "DiamondDistortion",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 349,
+   "capSeconds": 14237,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "DilutedSpin",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 1234,
+   "capSeconds": 15578,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "DimensionTenChannel",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 1656,
+   "capSeconds": 13841,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "DimensionTenPair",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 734,
+   "capSeconds": 12183,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "DirectCrouzeix",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 516,
+   "capSeconds": 13887,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "DirectedFeedback",
+   "shard": "b02",
+   "status": "accepted",
+   "seconds": 2065,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648964"
+  },
+  {
+   "name": "DirectionalBallisticity",
+   "shard": "b20",
+   "status": "accepted",
+   "seconds": 1869,
+   "capSeconds": 13198,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650263"
+  },
+  {
+   "name": "DirectionalWalk",
+   "shard": "b20",
+   "status": "accepted",
+   "seconds": 588,
+   "capSeconds": 11328,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650263"
+  },
+  {
+   "name": "DirichletSevenEighths",
+   "shard": "b04",
+   "status": "accepted",
+   "seconds": 8348,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596681335"
+  },
+  {
+   "name": "DiscreteLipschitzFree",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 198,
+   "capSeconds": 14809,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "DiskMaximal",
+   "shard": "b20",
+   "status": "accepted",
+   "seconds": 513,
+   "capSeconds": 10739,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650263"
+  },
+  {
+   "name": "Dixmier",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 155,
+   "capSeconds": 14610,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "DixmierAllDiscrete",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 178,
+   "capSeconds": 14454,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "DoublingHilbert",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 149,
+   "capSeconds": 14275,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "DukePrimeDegree",
+   "shard": "b17",
+   "status": "accepted",
+   "seconds": 5164,
+   "capSeconds": 14786,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649837"
+  },
+  {
+   "name": "DuttaDomain",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 2202,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "DyadicAvoidance",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 257,
+   "capSeconds": 13370,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "EditApproximation",
+   "shard": "b15",
+   "status": "accepted",
+   "seconds": 1950,
+   "capSeconds": 15812,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649621"
+  },
+  {
+   "name": "EditDistance",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 280,
+   "capSeconds": 11446,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "EgyptianFractions",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 819,
+   "capSeconds": 14125,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "EilenbergGanea",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 3966,
+   "capSeconds": 16390,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "EinsteinFour",
+   "shard": "b16",
+   "status": "accepted",
+   "seconds": 4657,
+   "capSeconds": 7896,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649764"
+  },
+  {
+   "name": "ElasticityUniqueness",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 1057,
+   "capSeconds": 15414,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "ElementaryPositivity",
+   "shard": "b21",
+   "status": "accepted",
+   "seconds": 2828,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649904"
+  },
+  {
+   "name": "EntangledGames",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 386,
+   "capSeconds": 13304,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "EntropyPhotonNumber",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 747,
+   "capSeconds": 15884,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "ErdosReciprocal",
+   "shard": "f159",
+   "status": "tooLarge",
+   "seconds": 18000,
+   "capSeconds": 18000,
+   "run": 41146560423,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423/job/124374409983"
+  },
+  {
+   "name": "EuclideanFiveColor",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 653,
+   "capSeconds": 15135,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "EuclideanRamsey",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 342,
+   "capSeconds": 14481,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "EuclideanRamseyCircle",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 201,
+   "capSeconds": 14138,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "EuclideanRamseyNine",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 105,
+   "capSeconds": 13936,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "EuclideanRamseyQuadratic",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 177,
+   "capSeconds": 13830,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "EuclideanRamseySpherical",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 95,
+   "capSeconds": 13652,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "EuclideanRamseyTransitive",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 185,
+   "capSeconds": 13556,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "EvenBarker",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 178,
+   "capSeconds": 13370,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "ExactFourier",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 538,
+   "capSeconds": 13191,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "ExactInfiniteness",
+   "shard": "b17",
+   "status": "accepted",
+   "seconds": 3463,
+   "capSeconds": 9621,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649837"
+  },
+  {
+   "name": "ExactQuantumFactoring",
+   "shard": "b21",
+   "status": "accepted",
+   "seconds": 1471,
+   "capSeconds": 16707,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649904"
+  },
+  {
+   "name": "FKCRT",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 567,
+   "capSeconds": 12422,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "FactorGeneration",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 3463,
+   "capSeconds": 13112,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "FalconerAllDimensions",
+   "shard": "b09",
+   "status": "accepted",
+   "seconds": 4983,
+   "capSeconds": 14594,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649647"
+  },
+  {
+   "name": "FillingCoefficient",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 392,
+   "capSeconds": 11165,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "FiniteCircle",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 296,
+   "capSeconds": 10772,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "FiniteCongruenceGraph",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 23,
+   "capSeconds": 12916,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "FiniteEntropySeparation",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 1189,
+   "capSeconds": 14356,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "FiniteFactor",
+   "shard": "b15",
+   "status": "accepted",
+   "seconds": 585,
+   "capSeconds": 13861,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649621"
+  },
+  {
+   "name": "FinitisticAsymmetry",
+   "shard": "b21",
+   "status": "accepted",
+   "seconds": 2013,
+   "capSeconds": 15235,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649904"
+  },
+  {
+   "name": "FixedClauseThreshold",
+   "shard": "b20",
+   "status": "accepted",
+   "seconds": 173,
+   "capSeconds": 10225,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650263"
+  },
+  {
+   "name": "ForcedNavierStokesComputation",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 155,
+   "capSeconds": 9648,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "ForestSpace",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 249,
+   "capSeconds": 9492,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "FormulaHitting",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 79,
+   "capSeconds": 9242,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "FoulkesHowe",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 286,
+   "capSeconds": 12892,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "FourRowPermanent",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 71,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "FourierLLogL",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 873,
+   "capSeconds": 9162,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "FreeIsing",
+   "shard": "b19",
+   "status": "accepted",
+   "seconds": 2354,
+   "capSeconds": 9828,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649737"
+  },
+  {
+   "name": "FreeUniformSpanningForest",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 595,
+   "capSeconds": 11854,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "GammaPassage",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 441,
+   "capSeconds": 14343,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "GaussianFiniteEntropy",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 167,
+   "capSeconds": 13901,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "GaussianInformation",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 561,
+   "capSeconds": 13733,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "GaussianMoat",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 514,
+   "capSeconds": 8287,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "GaussianPropeller",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 651,
+   "capSeconds": 7772,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "GaussianReplacement",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 458,
+   "capSeconds": 13171,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "GeneralMahler",
+   "shard": "b20",
+   "status": "accepted",
+   "seconds": 6295,
+   "capSeconds": 10051,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650263"
+  },
+  {
+   "name": "GeneralizedStarHeight",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 319,
+   "capSeconds": 12605,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "GotsmanLinial",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 103,
+   "capSeconds": 12285,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "GrahamSpherical",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 108,
+   "capSeconds": 12652,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "GrothendieckElementaryExpansion",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 436,
+   "capSeconds": 13166,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "GroupRingDeterminant",
+   "shard": "b24",
+   "status": "kernelsDisagree",
+   "seconds": 918,
+   "capSeconds": 11258,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "HadamardCubeFiber",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 90,
+   "capSeconds": 12181,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "HadwigerCounterexample",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 619,
+   "capSeconds": 10338,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "HalvingLines",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 471,
+   "capSeconds": 12543,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "HardSphere",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 1232,
+   "capSeconds": 10475,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "HarmonicArtin",
+   "shard": "b17",
+   "status": "accepted",
+   "seconds": 362,
+   "capSeconds": 6157,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649837"
+  },
+  {
+   "name": "HarmonicGrowth",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 1102,
+   "capSeconds": 12729,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "HeckeSevenEighths",
+   "shard": "b04",
+   "status": "accepted",
+   "seconds": 865,
+   "capSeconds": 11767,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596681335"
+  },
+  {
+   "name": "HeilbronnTriangle",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 615,
+   "capSeconds": 12071,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "Heisenberg",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 1206,
+   "capSeconds": 11456,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "HenonEmden",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 838,
+   "capSeconds": 11625,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "HilbertCrouzeix",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 199,
+   "capSeconds": 7120,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "HoneycombBridgeFiniteness",
+   "shard": "b15",
+   "status": "accepted",
+   "seconds": 186,
+   "capSeconds": 13276,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649621"
+  },
+  {
+   "name": "HoneycombBridgeMassSupport",
+   "shard": "b15",
+   "status": "buildError",
+   "seconds": 438,
+   "capSeconds": 13089,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649621"
+  },
+  {
+   "name": "HoneycombFreeEnergy",
+   "shard": "b15",
+   "status": "accepted",
+   "seconds": 68,
+   "capSeconds": 12644,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649621"
+  },
+  {
+   "name": "HotSpots",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 876,
+   "capSeconds": 10786,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "HyperbolicCones",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 444,
+   "capSeconds": 6920,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "HyperbolicObstruction",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 1159,
+   "capSeconds": 12712,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "HyperinvariantSubspaces",
+   "shard": "b15",
+   "status": "accepted",
+   "seconds": 140,
+   "capSeconds": 12575,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649621"
+  },
+  {
+   "name": "IndependentProducts",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 300,
+   "capSeconds": 6475,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "IndependentSets",
+   "shard": "b20",
+   "status": "accepted",
+   "seconds": 1388,
+   "capSeconds": 3753,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650263"
+  },
+  {
+   "name": "IndividualStrongInfiniteness",
+   "shard": "b17",
+   "status": "accepted",
+   "seconds": 158,
+   "capSeconds": 5795,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649837"
+  },
+  {
+   "name": "InfiniteMatroid",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 162,
+   "capSeconds": 12090,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "InfiniteMatroidCorollaries",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 80,
+   "capSeconds": 11927,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "InterpolatedFactors",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 1796,
+   "capSeconds": 9909,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "InvariantIsing",
+   "shard": "b06",
+   "status": "accepted",
+   "seconds": 4306,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649605"
+  },
+  {
+   "name": "IrrationalRotation",
+   "shard": "b15",
+   "status": "accepted",
+   "seconds": 1197,
+   "capSeconds": 12434,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649621"
+  },
+  {
+   "name": "IrrationalTriangleBilliard",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 427,
+   "capSeconds": 10249,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "IsingFiniteness",
+   "shard": "b19",
+   "status": "accepted",
+   "seconds": 480,
+   "capSeconds": 7473,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649737"
+  },
+  {
+   "name": "IsometricImmersion",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 648,
+   "capSeconds": 9243,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "Jacobsthal",
+   "shard": "b18",
+   "status": "accepted",
+   "seconds": 3320,
+   "capSeconds": 17714,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649752"
+  },
+  {
+   "name": "JacobsthalImproved",
+   "shard": "b18",
+   "status": "accepted",
+   "seconds": 719,
+   "capSeconds": 14391,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649752"
+  },
+  {
+   "name": "JointDickman",
+   "shard": "b12",
+   "status": "accepted",
+   "seconds": 3860,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649705"
+  },
+  {
+   "name": "KLInvariance",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 1460,
+   "capSeconds": 9718,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "KMedianRecovery",
+   "shard": "b12",
+   "status": "accepted",
+   "seconds": 1625,
+   "capSeconds": 16257,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649705"
+  },
+  {
+   "name": "KMedianRefinedRecovery",
+   "shard": "b12",
+   "status": "accepted",
+   "seconds": 1548,
+   "capSeconds": 14630,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649705"
+  },
+  {
+   "name": "KMedianThreshold",
+   "shard": "b12",
+   "status": "accepted",
+   "seconds": 702,
+   "capSeconds": 13081,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649705"
+  },
+  {
+   "name": "KServer",
+   "shard": "b21",
+   "status": "accepted",
+   "seconds": 443,
+   "capSeconds": 13221,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649904"
+  },
+  {
+   "name": "KadisonRingrose",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 1364,
+   "capSeconds": 8594,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "KadisonSimilarity",
+   "shard": "b13",
+   "status": "accepted",
+   "seconds": 4475,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649431"
+  },
+  {
+   "name": "KahlerSplitting",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 618,
+   "capSeconds": 6174,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "KaplanskyDirectFiniteness",
+   "shard": "b24",
+   "status": "kernelsDisagree",
+   "seconds": 258,
+   "capSeconds": 8257,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "KaplanskyFinitelyPresented",
+   "shard": "b24",
+   "status": "kernelsDisagree",
+   "seconds": 269,
+   "capSeconds": 7998,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "KaplanskyQuasitrace",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 748,
+   "capSeconds": 5555,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "KaplanskyStableFiniteness",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 529,
+   "capSeconds": 4806,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "Kervaire",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 679,
+   "capSeconds": 11846,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "KoebeCircleDomains",
+   "shard": "b06",
+   "status": "accepted",
+   "seconds": 5396,
+   "capSeconds": 15755,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649605"
+  },
+  {
+   "name": "Laughlin",
+   "shard": "b14",
+   "status": "accepted",
+   "seconds": 5185,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649534"
+  },
+  {
+   "name": "LaughlinFock",
+   "shard": "b14",
+   "status": "accepted",
+   "seconds": 6504,
+   "capSeconds": 13057,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649534"
+  },
+  {
+   "name": "LaughlinGap",
+   "shard": "b14",
+   "status": "accepted",
+   "seconds": 4278,
+   "capSeconds": 6549,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649534"
+  },
+  {
+   "name": "LaughlinPlanar",
+   "shard": "solo-LaughlinPlanar",
+   "status": "accepted",
+   "seconds": 6732,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680522"
+  },
+  {
+   "name": "LiebThirring",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 546,
+   "capSeconds": 9821,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "LipschitzEquivalence",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 609,
+   "capSeconds": 8112,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "LipschitzHilbert",
+   "shard": "b10",
+   "status": "accepted",
+   "seconds": 2534,
+   "capSeconds": 13536,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649823"
+  },
+  {
+   "name": "ListHadwiger",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 461,
+   "capSeconds": 7728,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "LittleFinitistic",
+   "shard": "b21",
+   "status": "accepted",
+   "seconds": 647,
+   "capSeconds": 12777,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649904"
+  },
+  {
+   "name": "LittlewoodFiniteFlatness",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 216,
+   "capSeconds": 11166,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "LocalSmoothing",
+   "shard": "f079",
+   "status": "accepted",
+   "seconds": 8952,
+   "capSeconds": 18000,
+   "run": 41170918445,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445/job/124449525293"
+  },
+  {
+   "name": "LogBrunnMinkowski",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 620,
+   "capSeconds": 4276,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "LogConcaveQuery",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 1355,
+   "capSeconds": 11552,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "LogKodairaFiberNegative",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 383,
+   "capSeconds": 10949,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "LogspaceEquality",
+   "shard": "b24",
+   "status": "kernelsDisagree",
+   "seconds": 616,
+   "capSeconds": 7266,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "MUBSix",
+   "shard": "c-MUBSix",
+   "status": "tooLarge",
+   "seconds": 18001,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648367"
+  },
+  {
+   "name": "MahlerConjecture",
+   "shard": "b20",
+   "status": "accepted",
+   "seconds": 629,
+   "capSeconds": 2362,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650263"
+  },
+  {
+   "name": "MarkovType",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 357,
+   "capSeconds": 3655,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "MassAction",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 221,
+   "capSeconds": 9274,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "MatchingAffineLift",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 471,
+   "capSeconds": 10565,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "MatchingEntropy",
+   "shard": "b20",
+   "status": "accepted",
+   "seconds": 129,
+   "capSeconds": 1731,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650263"
+  },
+  {
+   "name": "MatchingEntropyBounds",
+   "shard": "b20",
+   "status": "accepted",
+   "seconds": 376,
+   "capSeconds": 1600,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650263"
+  },
+  {
+   "name": "MatchingFPRAS",
+   "shard": "solo-MatchingFPRAS",
+   "status": "kernelsDisagree",
+   "seconds": 1230,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680624"
+  },
+  {
+   "name": "MatchingPSD",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 166,
+   "capSeconds": 10093,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "MatrixFields",
+   "shard": "b11",
+   "status": "accepted",
+   "seconds": 4055,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649734"
+  },
+  {
+   "name": "MatrixMultiplication",
+   "shard": "b11",
+   "status": "accepted",
+   "seconds": 772,
+   "capSeconds": 14815,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649734"
+  },
+  {
+   "name": "MatrixRemoval",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 216,
+   "capSeconds": 9926,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "MatroidProphet",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 246,
+   "capSeconds": 6649,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "MatroidSecretary",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 292,
+   "capSeconds": 6402,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "MaximalSeshadriConstants",
+   "shard": "b16",
+   "status": "accepted",
+   "seconds": 2129,
+   "capSeconds": 3236,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649764"
+  },
+  {
+   "name": "MemoryPrecision",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 500,
+   "capSeconds": 10196,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "MetricEntropyDuality",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 103,
+   "capSeconds": 9709,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "MetricKMedian",
+   "shard": "b12",
+   "status": "accepted",
+   "seconds": 236,
+   "capSeconds": 12377,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649705"
+  },
+  {
+   "name": "MidpointLenses",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 176,
+   "capSeconds": 3297,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "MinUncut",
+   "shard": "b02",
+   "status": "accepted",
+   "seconds": 1618,
+   "capSeconds": 16110,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648964"
+  },
+  {
+   "name": "Nagata",
+   "shard": "b16",
+   "status": "accepted",
+   "seconds": 430,
+   "capSeconds": 1106,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649764"
+  },
+  {
+   "name": "Naimark",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 3311,
+   "capSeconds": 7502,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "NavierStokesAlternating",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 370,
+   "capSeconds": 3120,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "NavierStokesVelocity",
+   "shard": "b25",
+   "status": "accepted",
+   "seconds": 763,
+   "capSeconds": 2749,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "NodalLength",
+   "shard": "solo-NodalLength",
+   "status": "accepted",
+   "seconds": 587,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680477"
+  },
+  {
+   "name": "NoiselessRegression",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 164,
+   "capSeconds": 9695,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "NuclearUltrapower",
+   "shard": "b25",
+   "status": "buildError",
+   "seconds": 1208,
+   "capSeconds": 1985,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650352"
+  },
+  {
+   "name": "OccupiedOverlap",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 427,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "OddKaplansky",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 580,
+   "capSeconds": 6109,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "OneTapeSpace",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 267,
+   "capSeconds": 9605,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "OneWayLiveness",
+   "shard": "b01",
+   "status": "accepted",
+   "seconds": 120,
+   "capSeconds": 9337,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648886"
+  },
+  {
+   "name": "OptimalMaxCut",
+   "shard": "b02",
+   "status": "accepted",
+   "seconds": 1927,
+   "capSeconds": 14490,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648964"
+  },
+  {
+   "name": "OrdinaryElliott",
+   "shard": "b07",
+   "status": "accepted",
+   "seconds": 1892,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648935"
+  },
+  {
+   "name": "OrdinaryTwoPointCorrelations",
+   "shard": "b07",
+   "status": "accepted",
+   "seconds": 3233,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648935"
+  },
+  {
+   "name": "OstmannComplete",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 3718,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "OstmannPrimes",
+   "shard": "solo-OstmannPrimes",
+   "status": "accepted",
+   "seconds": 7346,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680569"
+  },
+  {
+   "name": "ParityLifts",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 146,
+   "capSeconds": 9530,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "PartialPermutation",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 266,
+   "capSeconds": 14427,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "PartitionConsistency",
+   "shard": "b12",
+   "status": "accepted",
+   "seconds": 474,
+   "capSeconds": 12140,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649705"
+  },
+  {
+   "name": "PartitionPrinciple",
+   "shard": "b12",
+   "status": "accepted",
+   "seconds": 3137,
+   "capSeconds": 11665,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649705"
+  },
+  {
+   "name": "PattersonFirstMoment",
+   "shard": "b03",
+   "status": "accepted",
+   "seconds": 9041,
+   "capSeconds": 16635,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596682225"
+  },
+  {
+   "name": "PerceptronFreeEnergy",
+   "shard": "b19",
+   "status": "accepted",
+   "seconds": 1712,
+   "capSeconds": 6991,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649737"
+  },
+  {
+   "name": "PerfectCompleteness",
+   "shard": "b04",
+   "status": "accepted",
+   "seconds": 2770,
+   "capSeconds": 10900,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596681335"
+  },
+  {
+   "name": "PeriodicGroup",
+   "shard": "b24",
+   "status": "kernelsDisagree",
+   "seconds": 602,
+   "capSeconds": 5528,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "PeriodicTilingThree",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 310,
+   "capSeconds": 9052,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "PermanentCubic",
+   "shard": "solo-PermanentCubic",
+   "status": "accepted",
+   "seconds": 826,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680476"
+  },
+  {
+   "name": "PettyProjectionVolume",
+   "shard": "solo-PettyProjectionVolume",
+   "status": "accepted",
+   "seconds": 594,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680508"
+  },
+  {
+   "name": "PiExponent",
+   "shard": "b18",
+   "status": "accepted",
+   "seconds": 3227,
+   "capSeconds": 13670,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649752"
+  },
+  {
+   "name": "PinchedKahler",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 1093,
+   "capSeconds": 4189,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "PinnedDistances",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 459,
+   "capSeconds": 4925,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "PlanarAndersonSpectrum",
+   "shard": "solo-PlanarAndersonSpectrum",
+   "status": "accepted",
+   "seconds": 177,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680531"
+  },
+  {
+   "name": "PlanarFalconer",
+   "shard": "b09",
+   "status": "accepted",
+   "seconds": 280,
+   "capSeconds": 9610,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649647"
+  },
+  {
+   "name": "PlanarFirstPassage",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 394,
+   "capSeconds": 9383,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "PlanarL1",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 360,
+   "capSeconds": 7229,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "PlanarPacking",
+   "shard": "c-PlanarPacking",
+   "status": "buildError",
+   "seconds": 3876,
+   "capSeconds": 18000,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649061"
+  },
+  {
+   "name": "PlanarUnitDistances",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 575,
+   "capSeconds": 4465,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "PlaneColoring",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 74,
+   "capSeconds": 8741,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "PolycyclicRecognition",
+   "shard": "b07",
+   "status": "accepted",
+   "seconds": 7691,
+   "capSeconds": 14880,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648935"
+  },
+  {
+   "name": "PosteriorReplicas",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 587,
+   "capSeconds": 8988,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "PowerFreeValues",
+   "shard": "b17",
+   "status": "accepted",
+   "seconds": 566,
+   "capSeconds": 5636,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649837"
+  },
+  {
+   "name": "PrimeGaps",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 577,
+   "capSeconds": 8400,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "ProductBrown",
+   "shard": "b15",
+   "status": "accepted",
+   "seconds": 186,
+   "capSeconds": 11236,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649621"
+  },
+  {
+   "name": "ProjectionCounterexample",
+   "shard": "solo-ProjectionCounterexample",
+   "status": "accepted",
+   "seconds": 203,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680608"
+  },
+  {
+   "name": "ProjectionMoments",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 248,
+   "capSeconds": 7822,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "ProjectionVolume",
+   "shard": "solo-ProjectionVolume",
+   "status": "accepted",
+   "seconds": 241,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680651"
+  },
+  {
+   "name": "QACParity",
+   "shard": "solo-QACParity",
+   "status": "accepted",
+   "seconds": 242,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680650"
+  },
+  {
+   "name": "QuadricBundles",
+   "shard": "solo-QuadricBundles",
+   "status": "accepted",
+   "seconds": 627,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680539"
+  },
+  {
+   "name": "QuantitativeVanDerWaerden",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 211,
+   "capSeconds": 8666,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "QuasiRiemannHypothesis",
+   "shard": "b04",
+   "status": "accepted",
+   "seconds": 892,
+   "capSeconds": 8127,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596681335"
+  },
+  {
+   "name": "QuinticLienard",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 919,
+   "capSeconds": 8454,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "RadialDensityInterval",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 770,
+   "capSeconds": 3889,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "RadialTransition",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 177,
+   "capSeconds": 3118,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "RamseyFive",
+   "shard": "b18",
+   "status": "accepted",
+   "seconds": 1891,
+   "capSeconds": 10442,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649752"
+  },
+  {
+   "name": "RandomizedMeanPayoff",
+   "shard": "solo-RandomizedMeanPayoff",
+   "status": "kernelsDisagree",
+   "seconds": 606,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680500"
+  },
+  {
+   "name": "RationalHitting",
+   "shard": "solo-RationalHitting",
+   "status": "accepted",
+   "seconds": 694,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680583"
+  },
+  {
+   "name": "RealL1Renorming",
+   "shard": "solo-RealL1Renorming",
+   "status": "accepted",
+   "seconds": 185,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680698"
+  },
+  {
+   "name": "RecursivePotentials",
+   "shard": "solo-RecursivePotentials",
+   "status": "accepted",
+   "seconds": 261,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680519"
+  },
+  {
+   "name": "ReflexiveFixedPoints",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 244,
+   "capSeconds": 3095,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "RegularParity",
+   "shard": "solo-RegularParity",
+   "status": "accepted",
+   "seconds": 284,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680609"
+  },
+  {
+   "name": "RelativeGeneration",
+   "shard": "solo-RelativeGeneration",
+   "status": "accepted",
+   "seconds": 3633,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680598"
+  },
+  {
+   "name": "RieszQuantitative",
+   "shard": "b18",
+   "status": "accepted",
+   "seconds": 2132,
+   "capSeconds": 8550,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649752"
+  },
+  {
+   "name": "Rokhlin",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 688,
+   "capSeconds": 7534,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "RuledCovering",
+   "shard": "b02",
+   "status": "accepted",
+   "seconds": 211,
+   "capSeconds": 12560,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648964"
+  },
+  {
+   "name": "RyserCovering",
+   "shard": "b11",
+   "status": "accepted",
+   "seconds": 212,
+   "capSeconds": 14042,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649734"
+  },
+  {
+   "name": "RyserOddExtensions",
+   "shard": "b11",
+   "status": "accepted",
+   "seconds": 65,
+   "capSeconds": 13829,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649734"
+  },
+  {
+   "name": "SATComputability",
+   "shard": "solo-SATComputability",
+   "status": "accepted",
+   "seconds": 1447,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680536"
+  },
+  {
+   "name": "SATSharpness",
+   "shard": "solo-SATSharpness",
+   "status": "accepted",
+   "seconds": 300,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680646"
+  },
+  {
+   "name": "SATVariance",
+   "shard": "solo-SATVariance",
+   "status": "accepted",
+   "seconds": 349,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680564"
+  },
+  {
+   "name": "SKBarriers",
+   "shard": "solo-SKBarriers",
+   "status": "accepted",
+   "seconds": 1691,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680618"
+  },
+  {
+   "name": "SKFullSupport",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 471,
+   "capSeconds": 6868,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "SKHighTemperature",
+   "shard": "solo-SKHighTemperature",
+   "status": "accepted",
+   "seconds": 1689,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680587"
+  },
+  {
+   "name": "SKRatio",
+   "shard": "solo-SKRatio",
+   "status": "accepted",
+   "seconds": 8642,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680529"
+  },
+  {
+   "name": "SKValue",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 671,
+   "capSeconds": 6396,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "SLELowerPositivity",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 623,
+   "capSeconds": 2940,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "Saxl",
+   "shard": "b13",
+   "status": "accepted",
+   "seconds": 659,
+   "capSeconds": 15609,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649431"
+  },
+  {
+   "name": "SecondKahnKalai",
+   "shard": "solo-SecondKahnKalai",
+   "status": "accepted",
+   "seconds": 120,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680714"
+  },
+  {
+   "name": "SelfSimilar",
+   "shard": "solo-SelfSimilar",
+   "status": "accepted",
+   "seconds": 558,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680562"
+  },
+  {
+   "name": "SelfSimilarCorollaries",
+   "shard": "solo-SelfSimilarCorollaries",
+   "status": "accepted",
+   "seconds": 554,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680688"
+  },
+  {
+   "name": "SensitivitySeparation",
+   "shard": "solo-SensitivitySeparation",
+   "status": "accepted",
+   "seconds": 195,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680648"
+  },
+  {
+   "name": "SeparableQuotientNegative",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 739,
+   "capSeconds": 2850,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "SeymourSecondNeighborhood",
+   "shard": "solo-SeymourSecondNeighborhood",
+   "status": "accepted",
+   "seconds": 101,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680758"
+  },
+  {
+   "name": "SharpCAT0Filling",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 979,
+   "capSeconds": 5724,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "SharpLogRamsey",
+   "shard": "b18",
+   "status": "accepted",
+   "seconds": 1555,
+   "capSeconds": 6417,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649752"
+  },
+  {
+   "name": "SharpThreshold",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 212,
+   "capSeconds": 6845,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "ShortEgyptianFractions",
+   "shard": "solo-ShortEgyptianFractions",
+   "status": "accepted",
+   "seconds": 557,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680640"
+  },
+  {
+   "name": "SidorenkoCounterexample",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 829,
+   "capSeconds": 6632,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "SiegelZeros",
+   "shard": "b04",
+   "status": "accepted",
+   "seconds": 1746,
+   "capSeconds": 7232,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596681335"
+  },
+  {
+   "name": "SignedFiniteBand",
+   "shard": "solo-SignedFiniteBand",
+   "status": "accepted",
+   "seconds": 506,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599680685"
+  },
+  {
+   "name": "SignedSweepMoment",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 677,
+   "capSeconds": 14160,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "SimpleAmenable",
+   "shard": "b21",
+   "status": "accepted",
+   "seconds": 2382,
+   "capSeconds": 12129,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649904"
+  },
+  {
+   "name": "SimpleOvergroups",
+   "shard": "b21",
+   "status": "accepted",
+   "seconds": 1408,
+   "capSeconds": 9746,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649904"
+  },
+  {
+   "name": "SingleFold",
+   "shard": "solo-SingleFold",
+   "status": "accepted",
+   "seconds": 448,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599681797"
+  },
+  {
+   "name": "SingleLatticeCovering",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 219,
+   "capSeconds": 4744,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "SingletonLoopMatching",
+   "shard": "solo-SingletonLoopMatching",
+   "status": "accepted",
+   "seconds": 713,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599681837"
+  },
+  {
+   "name": "SmoothInitialForm",
+   "shard": "solo-SmoothInitialForm",
+   "status": "accepted",
+   "seconds": 307,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599681863"
+  },
+  {
+   "name": "SmoothObstruction",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 657,
+   "capSeconds": 5802,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "SmoothYau",
+   "shard": "solo-SmoothYau",
+   "status": "accepted",
+   "seconds": 1988,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599681948"
+  },
+  {
+   "name": "SnakyCertificate",
+   "shard": "b13",
+   "status": "buildError",
+   "seconds": 264,
+   "capSeconds": 14948,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649431"
+  },
+  {
+   "name": "SnakyConditional",
+   "shard": "b13",
+   "status": "accepted",
+   "seconds": 2794,
+   "capSeconds": 14676,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649431"
+  },
+  {
+   "name": "SnakyTwentyOne",
+   "shard": "b13",
+   "status": "buildError",
+   "seconds": 1095,
+   "capSeconds": 11878,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649431"
+  },
+  {
+   "name": "SoftChannel204",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 307,
+   "capSeconds": 5144,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "SolenoidalSheetPrograms",
+   "shard": "solo-SolenoidalSheetPrograms",
+   "status": "accepted",
+   "seconds": 303,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599681898"
+  },
+  {
+   "name": "SphericalField",
+   "shard": "b19",
+   "status": "accepted",
+   "seconds": 691,
+   "capSeconds": 5278,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649737"
+  },
+  {
+   "name": "SpinAngle",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 227,
+   "capSeconds": 13482,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "SplitTangentIntegrability",
+   "shard": "solo-SplitTangentIntegrability",
+   "status": "accepted",
+   "seconds": 555,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599681914"
+  },
+  {
+   "name": "SquareDifference",
+   "shard": "b26",
+   "status": "kernelsDisagree",
+   "seconds": 744,
+   "capSeconds": 4836,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "SquareRootDegree",
+   "shard": "solo-SquareRootDegree",
+   "status": "accepted",
+   "seconds": 191,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599682013"
+  },
+  {
+   "name": "StableCoordinateFour",
+   "shard": "solo-StableCoordinateFour",
+   "status": "accepted",
+   "seconds": 373,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599681967"
+  },
+  {
+   "name": "StandardMapComponents",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 1634,
+   "capSeconds": 7573,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "StandardMapEntropy",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 203,
+   "capSeconds": 5938,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "StandardMapLyapunov",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 200,
+   "capSeconds": 5734,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "SteinitzBergstrom",
+   "shard": "solo-SteinitzBergstrom",
+   "status": "accepted",
+   "seconds": 625,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599682256"
+  },
+  {
+   "name": "StrictMeans",
+   "shard": "solo-StrictMeans",
+   "status": "accepted",
+   "seconds": 609,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599682144"
+  },
+  {
+   "name": "StrongKadisonKastler",
+   "shard": "b08",
+   "status": "accepted",
+   "seconds": 12693,
+   "capSeconds": 14578,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649819"
+  },
+  {
+   "name": "StrongThinTree",
+   "shard": "b18",
+   "status": "accepted",
+   "seconds": 220,
+   "capSeconds": 4860,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649752"
+  },
+  {
+   "name": "StronglyRayleighDPP",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 403,
+   "capSeconds": 2315,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "StructuralCrouzeix",
+   "shard": "solo-StructuralCrouzeix",
+   "status": "accepted",
+   "seconds": 821,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599683170"
+  },
+  {
+   "name": "SubexponentialSAT",
+   "shard": "f378",
+   "status": "buildError",
+   "seconds": 5936,
+   "capSeconds": 18000,
+   "run": 41170918445,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445/job/124449525399"
+  },
+  {
+   "name": "SubpolynomialLp",
+   "shard": "solo-SubpolynomialLp",
+   "status": "accepted",
+   "seconds": 552,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599683082"
+  },
+  {
+   "name": "SubsphereCurrent",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 342,
+   "capSeconds": 5533,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "Superstring",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 370,
+   "capSeconds": 4084,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "SurfaceConeCandidateSupport",
+   "shard": "solo-SurfaceConeCandidateSupport",
+   "status": "accepted",
+   "seconds": 651,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599683179"
+  },
+  {
+   "name": "SurfaceImmersion",
+   "shard": "b11",
+   "status": "accepted",
+   "seconds": 4466,
+   "capSeconds": 13763,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649734"
+  },
+  {
+   "name": "SwitchChain",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 413,
+   "capSeconds": 3713,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "SymmetricDomains",
+   "shard": "solo-SymmetricDomains",
+   "status": "accepted",
+   "seconds": 1533,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599683319"
+  },
+  {
+   "name": "SymmetricMahlerEquality",
+   "shard": "solo-SymmetricMahlerEquality",
+   "status": "accepted",
+   "seconds": 769,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599683177"
+  },
+  {
+   "name": "SymmetricPolar",
+   "shard": "solo-SymmetricPolar",
+   "status": "accepted",
+   "seconds": 488,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599683224"
+  },
+  {
+   "name": "Tachikawa",
+   "shard": "b19",
+   "status": "accepted",
+   "seconds": 1285,
+   "capSeconds": 4586,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649737"
+  },
+  {
+   "name": "TalagrandDiscreteConvexity",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 57,
+   "capSeconds": 3299,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "TalagrandExpectationThreshold",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 66,
+   "capSeconds": 3241,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "TamingCompatibility",
+   "shard": "b21",
+   "status": "buildError",
+   "seconds": 1593,
+   "capSeconds": 8337,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649904"
+  },
+  {
+   "name": "ThomasonModelStructures",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 670,
+   "capSeconds": 4524,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "ThompsonNonamenability",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 170,
+   "capSeconds": 3174,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "ThorpFirstReciprocal",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 380,
+   "capSeconds": 13254,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "ThorpRemaining",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 273,
+   "capSeconds": 12873,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "ThorpRouting",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 835,
+   "capSeconds": 12599,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "ThorpWeightedCompatibility",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 160,
+   "capSeconds": 11763,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "ThreeMachine",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 429,
+   "capSeconds": 3003,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "ThreeStateSupercritical",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 199,
+   "capSeconds": 2573,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "ThreeStateTreeClauses",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 225,
+   "capSeconds": 2373,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "ThreeTorus",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 539,
+   "capSeconds": 1910,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "TingleySphereIsometry",
+   "shard": "solo-TingleySphereIsometry",
+   "status": "accepted",
+   "seconds": 153,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599683301"
+  },
+  {
+   "name": "TorsionFreeHyperbolic",
+   "shard": "solo-TorsionFreeHyperbolic",
+   "status": "accepted",
+   "seconds": 353,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599683356"
+  },
+  {
+   "name": "TorsionFreeZeroDivisors",
+   "shard": "b24",
+   "status": "accepted",
+   "seconds": 666,
+   "capSeconds": 1370,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650422"
+  },
+  {
+   "name": "TotientAsymptotic",
+   "shard": "b18",
+   "status": "accepted",
+   "seconds": 2140,
+   "capSeconds": 4639,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649752"
+  },
+  {
+   "name": "TotientCompanionZero",
+   "shard": "b18",
+   "status": "accepted",
+   "seconds": 68,
+   "capSeconds": 2498,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649752"
+  },
+  {
+   "name": "TraceIdealTransportSupport",
+   "shard": "solo-TraceIdealTransportSupport",
+   "status": "accepted",
+   "seconds": 207,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599683334"
+  },
+  {
+   "name": "TraceReconstruction",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 419,
+   "capSeconds": 2147,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "TreeEdit",
+   "shard": "b23",
+   "status": "accepted",
+   "seconds": 171,
+   "capSeconds": 3853,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650572"
+  },
+  {
+   "name": "TriangleFace",
+   "shard": "solo-TriangleFace",
+   "status": "accepted",
+   "seconds": 274,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599683884"
+  },
+  {
+   "name": "TriangleRemoval",
+   "shard": "solo-TriangleRemoval",
+   "status": "accepted",
+   "seconds": 864,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599684030"
+  },
+  {
+   "name": "TriangularCovering",
+   "shard": "b02",
+   "status": "accepted",
+   "seconds": 139,
+   "capSeconds": 12348,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648964"
+  },
+  {
+   "name": "TriangularEnergy",
+   "shard": "solo-TriangularEnergy",
+   "status": "accepted",
+   "seconds": 11408,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599684258"
+  },
+  {
+   "name": "TriangularGaussian",
+   "shard": "solo-TriangularGaussian",
+   "status": "accepted",
+   "seconds": 11370,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599684324"
+  },
+  {
+   "name": "TriangularHilbert",
+   "shard": "solo-TriangularHilbert",
+   "status": "accepted",
+   "seconds": 820,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599684263"
+  },
+  {
+   "name": "TruffetCounterexample",
+   "shard": "solo-TruffetCounterexample",
+   "status": "accepted",
+   "seconds": 100,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599684309"
+  },
+  {
+   "name": "TwoWayComplementation",
+   "shard": "solo-TwoWayComplementation",
+   "status": "accepted",
+   "seconds": 196,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599684303"
+  },
+  {
+   "name": "TwoWayDeterminization",
+   "shard": "solo-TwoWayDeterminization",
+   "status": "accepted",
+   "seconds": 225,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599684350"
+  },
+  {
+   "name": "TypeSystemNormalization",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 248,
+   "capSeconds": 1727,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "UniformCommutator",
+   "shard": "b13",
+   "status": "accepted",
+   "seconds": 8591,
+   "capSeconds": 10779,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649431"
+  },
+  {
+   "name": "UniformFourier",
+   "shard": "b26",
+   "status": "accepted",
+   "seconds": 273,
+   "capSeconds": 1478,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649711"
+  },
+  {
+   "name": "UniformGamma",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 714,
+   "capSeconds": 2109,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "UniformKServer",
+   "shard": "b21",
+   "status": "accepted",
+   "seconds": 1242,
+   "capSeconds": 6736,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649904"
+  },
+  {
+   "name": "UniformSparsestCut",
+   "shard": "solo-UniformSparsestCut",
+   "status": "accepted",
+   "seconds": 532,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599684598"
+  },
+  {
+   "name": "UniqueGamesTheorem",
+   "shard": "b02",
+   "status": "accepted",
+   "seconds": 1669,
+   "capSeconds": 12208,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648964"
+  },
+  {
+   "name": "UniversalFInfinity",
+   "shard": "b21",
+   "status": "accepted",
+   "seconds": 630,
+   "capSeconds": 5493,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649904"
+  },
+  {
+   "name": "UniversalTensorSquares",
+   "shard": "b13",
+   "status": "buildError",
+   "seconds": 610,
+   "capSeconds": 2187,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649431"
+  },
+  {
+   "name": "VariableWL",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 409,
+   "capSeconds": 5190,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "VelocityHemisphere",
+   "shard": "solo-VelocityHemisphere",
+   "status": "accepted",
+   "seconds": 1542,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599684671"
+  },
+  {
+   "name": "VertexAlgebraNet",
+   "shard": "b27",
+   "status": "accepted",
+   "seconds": 848,
+   "capSeconds": 1394,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650417"
+  },
+  {
+   "name": "VertexCover",
+   "shard": "b02",
+   "status": "accepted",
+   "seconds": 970,
+   "capSeconds": 10536,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648964"
+  },
+  {
+   "name": "VlasovMaxwell",
+   "shard": "b21",
+   "status": "accepted",
+   "seconds": 1847,
+   "capSeconds": 4862,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649904"
+  },
+  {
+   "name": "WLIdentification",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 451,
+   "capSeconds": 4780,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "WeakHessian",
+   "shard": "b21",
+   "status": "accepted",
+   "seconds": 1719,
+   "capSeconds": 3014,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649904"
+  },
+  {
+   "name": "WeakMTWGlobalSupport",
+   "shard": "b19",
+   "status": "accepted",
+   "seconds": 1152,
+   "capSeconds": 3300,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596649737"
+  },
+  {
+   "name": "WeightedSweepMoments",
+   "shard": "b05",
+   "status": "accepted",
+   "seconds": 185,
+   "capSeconds": 11602,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596648807"
+  },
+  {
+   "name": "WeisfeilerLeman",
+   "shard": "b22",
+   "status": "accepted",
+   "seconds": 343,
+   "capSeconds": 4328,
+   "run": 41181960510,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510/job/124596650314"
+  },
+  {
+   "name": "WitnessedChoice",
+   "shard": "solo-WitnessedChoice",
+   "status": "accepted",
+   "seconds": 520,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599685195"
+  },
+  {
+   "name": "YauCounterexample",
+   "shard": "solo-YauCounterexample",
+   "status": "accepted",
+   "seconds": 2430,
+   "capSeconds": 18000,
+   "run": 41222068108,
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108/job/124599685318"
+  }
+ ]
 }

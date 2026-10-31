@@ -70,17 +70,36 @@ inductive Formal
   | accepted
   /-- It rejects one. -/
   | rejected
-  /-- A challenge exists, but our run hasn't been done. -/
-  | notRun
+  /-- Challenges exist and none is rejected, but not all are accepted: one hasn't run yet, its
+      build failed, it was too large to check, or the kernels disagreed. -/
+  | unknown
   /-- No challenge exists. -/
   | noChallenge
   deriving DecidableEq, Repr
 
+/-- Our full-strength Comparator run on a challenge, as its trusted log records it
+    (guide/EXECUTABLE_GATE.md §4). Only `accepted` and `rejected` are evidence; the rest
+    leave `formal_proof` unknown. -/
+inductive RunResult
+  /-- Comparator accepted it, with nanoda and Lean's kernel. -/
+  | accepted
+  /-- Comparator rejected it, on one of its own rejections. -/
+  | rejected
+  /-- Its build or export failed, or it was stopped: by a crash, a signal or the memory
+      limit. -/
+  | buildError
+  /-- It timed out as the first in its job, or with the full 5-hour cap. -/
+  | tooLarge
+  /-- nanoda failed while Lean's kernel accepted. -/
+  | kernelsDisagree
+  /-- No trusted run has finished it yet. -/
+  | notRun
+  deriving DecidableEq, Repr
+
 /-- One of a manuscript's challenges, as the collectors read it. -/
 structure ChallengeFacts where
-  /-- Our full-strength Comparator run's result: `some true` if it accepted, `some false` if
-      it rejected, and `none` if it hasn't run. -/
-  result : Option Bool
+  /-- Our full-strength Comparator run's result. -/
+  result : RunResult
   /-- The axioms its configuration permits. -/
   permitted : List String
   deriving DecidableEq, Repr
@@ -109,13 +128,13 @@ def ChallengeFacts.exact (c : ChallengeFacts) : Bool :=
   c.permitted.all (· ∈ threeAxioms) && threeAxioms.all (· ∈ c.permitted)
 
 /-- What is known of a manuscript's formalization: no challenge; rejected if Comparator
-    rejected any of its challenges; accepted if it accepted all of them; and otherwise not
-    run. -/
+    rejected any of its challenges; accepted if it accepted all of them; and otherwise
+    unknown. -/
 def Raw.formal (r : Raw) : Formal :=
   if r.challenges.isEmpty then .noChallenge
-  else if r.challenges.any (·.result = some false) then .rejected
-  else if r.challenges.all (·.result = some true) then .accepted
-  else .notRun
+  else if r.challenges.any (·.result = .rejected) then .rejected
+  else if r.challenges.all (·.result = .accepted) then .accepted
+  else .unknown
 
 /-- Whether its challenges permit exactly the three axioms, or `none` without a challenge. -/
 def Raw.axiomsOk (r : Raw) : Option Bool :=
@@ -136,7 +155,7 @@ def ownGrade (r : Raw) : XGrade Axis
   | .formalProof => match r.formal with
     | .accepted => XBound.known 0
     | .rejected => XBound.known 1
-    | .notRun | .noChallenge => XBound.unknown
+    | .unknown | .noChallenge => XBound.unknown
   | .statementFidelity => if r.fidelityBy.isSome then XBound.known 0 else XBound.unknown
   | .axioms => match r.axiomsOk with
     | some true => XBound.known 0
