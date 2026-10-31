@@ -55,6 +55,13 @@ Decisions Claude Code made without asking, because they are reversible and don't
 - **Phase 6's gate,** in ROADMAP.md: all four items were done, each now ticked with its pointer: README and REPRODUCE (#58, #71), the layer map's pointers (#57), the full-strength runs (#56, #61, #71), and `v1.0` at `0c36127`.
 - **LAYER_MAP's twins row** said the pilot was still to come. It now says the pilot grades all 724 manuscripts with the twins, and links the report.
 
+### BLT's facts brought up to date (Marley's message on #92)
+- **From Marley:** BLT runs Ubuntu 20.04 and SLURM, not Grid Engine. Its SSH needs MFA. Lean goes in Marley's home directory on Mayo. The compute nodes reach the internet, space is plentiful, and there's no time limit for now.
+- **Updated:** CLAUDE.md's BLT rule, ROADMAP's "What the phases draw on" and Phase 9's resources, and EXECUTABLE_GATE §4. BLT's public documentation still says CentOS 7.4, Grid Engine and 25 GB per user, so the guide says it's out of date on all three.
+- **Added:** `scripts/blt-build.sbatch`, a sample job. It asks for 8 cores with `--cpus-per-task` and 32 GB with `--mem`, sets `LEAN_NUM_THREADS` to `$SLURM_CPUS_PER_TASK`, and runs `lake exe cache get` and `lake build` in `lean/`. It stops if it isn't in a SLURM job, if it wasn't submitted from LibSpec's root, or if there's no `lake`. Its log, `libspec-build-<job id>.log`, goes in the directory it's submitted from, where SLURM can always open it, and `.gitignore` ignores it there. At first it went in `lean/.lake/`, but SLURM doesn't create directories, and a fresh clone has no `lean/.lake/` (Marley's review). It sets no `--time`, since there's no time limit for now.
+- **Not run on BLT:** Claude Code doesn't use BLT until Marley has a login it can use without MFA.
+- **Still unknown:** whether BLT's kernel has Landlock. Comparator stays on Actions either way.
+
 ## 2026-10-29
 
 ### The docs cleanup (#88, a draft for Marley's review)
