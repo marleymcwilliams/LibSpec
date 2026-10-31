@@ -22,8 +22,10 @@ Each record holds only facts. The pilot's Lean module turns them into grades
 - --folder: a preprints/ folder to collect as well, such as a withdrawn manuscript, which
   CONTENTS.md no longer lists.
 - --cache: a directory that keeps each fetched file, so that a rerun reads it from there.
-- --comparator: a JSON file of our Comparator results, {"challenge": "accepted" | "rejected"}.
-  A challenge without a result is "notRun".
+- --comparator: our trusted Comparator results, pilot/data/comparator-results.json as
+  pilot/shard_results.py writes it. A file not marked trusted is refused. Each result is
+  accepted, rejected, kernelsDisagree, buildError, tooLarge, cutOff or notStarted, and a
+  challenge without one is "notRun".
 """
 import argparse
 import concurrent.futures
@@ -162,7 +164,12 @@ def main():
         cache_dir = args.cache
         os.makedirs(cache_dir, exist_ok=True)
     sys.stdout.reconfigure(encoding="utf-8", newline="\n")  # the same bytes on every OS
-    results = json.load(open(args.comparator, encoding="utf-8")) if args.comparator else {}
+    results = {}
+    if args.comparator:
+        c = json.load(open(args.comparator, encoding="utf-8"))
+        if c.get("trusted") is not True:
+            sys.exit(f"collect.py: {args.comparator} isn't marked trusted, so its results don't count")
+        results = c["results"]
 
     contents = contents_map(fetch("CONTENTS.md"))
     review = re.search(r"^review:\s*\n\s*status:\s*(\S+)", fetch("lean/formalization.yaml"), re.M)

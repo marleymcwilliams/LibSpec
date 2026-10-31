@@ -4,13 +4,15 @@ output, and our Comparator results.
 usage: python3 pilot/to_lean.py DATA [--comparator RESULTS] > lean/JSG/Pilot/Sample.lean
 
 It translates facts into Lean terms and decides nothing: grades, carry-over and verdicts are
-JSG.Pilot.Core's. A Comparator result is "accepted" or "rejected"; anything else, a build
-error or a run not yet made, is no result. Results count only from a run that the results
-file marks trusted. An untrusted run's results are measurements: the report names them, and
-its challenges still count as not run. It fails if a dependency edge leaves the sample,
-since dropping it silently could change a verdict.
+JSG.Pilot.Core's. A Comparator result is a `RunResult`: accepted, rejected, a build error,
+too large to check yet, or the kernels disagreeing. A challenge cut off or not started, or
+with no result, hasn't run. Results count only from a results file marked trusted, which
+pilot/shard_results.py writes. An untrusted run's results are measurements: the report names
+them, and its challenges still count as not run. It fails if a dependency edge leaves the
+sample, since dropping it silently could change a verdict.
 """
 import argparse
+import collections
 import json
 import sys
 import textwrap
@@ -30,6 +32,24 @@ namespace JSG.Pilot.{name}
 
 open JSG.Pilot
 """
+
+
+# Each trusted result as its `RunResult`. cutOff and notStarted, which get a job of their own,
+# and a challenge with no result, haven't run.
+RUN_RESULTS = {"accepted": ".accepted", "rejected": ".rejected", "buildError": ".buildError",
+               "tooLarge": ".tooLarge", "kernelsDisagree": ".kernelsDisagree"}
+
+# How the report's note counts each result, in this order.
+RESULT_WORDS = [
+    ("accepted", lambda k: f"{k} {'was' if k == 1 else 'were'} accepted"),
+    ("rejected", lambda k: f"{k} {'was' if k == 1 else 'were'} rejected"),
+    ("tooLarge", lambda k: f"{k} {'was' if k == 1 else 'were'} too large to check yet"),
+    ("buildError", lambda k: f"{k} ended in a build error"),
+    ("kernelsDisagree", lambda k: f"on {k} the kernels disagreed"),
+    ("cutOff", lambda k: f"{k} {'is' if k == 1 else 'are'} still to rerun"),
+    ("notStarted", lambda k: f"{k} {'is' if k == 1 else 'are'} still to run"),
+    ("notRun", lambda k: f"{k} {'has' if k == 1 else 'have'} no result yet"),
+]
 
 
 def lean_str(s):
@@ -67,7 +87,9 @@ def main():
     results, measured, run = {}, {}, None
     if args.comparator:
         c = json.load(open(args.comparator, encoding="utf-8"))
-        run = f"[run {c['run']}]({c['url']})"
+        # pilot/shard_results.py lists its runs; #83's measurements are a single run.
+        runs = c["runs"] if "runs" in c else [c]
+        run = and_list([f"[run {r['run']}]({r['url']})" for r in runs])
         if c.get("trusted") is True:
             results = c.get("results", {})
         else:
@@ -78,8 +100,7 @@ def main():
     n = len(ms)
 
     def result(name):
-        r = results.get(name)
-        return {"accepted": "some true", "rejected": "some false"}.get(r, "none")
+        return RUN_RESULTS.get(results.get(name), ".notRun")
 
     raws, deps = [], []
     for m in ms:
@@ -101,7 +122,14 @@ def main():
     src = d["source"]
     names = list(dict.fromkeys(x for m in ms for x in m["challenges"]))
     if results:
-        comparator = f"Comparator results come from our {run}."
+        counts = collections.Counter(results.get(x, "notRun") for x in names)
+        told = [phrase(counts[s]) for s, phrase in RESULT_WORDS if counts[s]]
+        if not counts["rejected"]:
+            told[-1] += "; none was rejected"
+        comparator = (f"Comparator results come from our trusted shard runs, {run}. Of the "
+                      f"{len(names)} challenges, " + and_list(told) + ". A build error, a "
+                      "timeout or the kernels disagreeing leaves `formal_proof` unknown, "
+                      "never failing.")
     elif measured:
         by = {}
         for x in names:

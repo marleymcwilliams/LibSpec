@@ -13,8 +13,16 @@ namespace JSG.Pilot
 
 open JSG
 
+/-- Why a challenge's run leaves `formal_proof` unknown, in words. -/
+def RunResult.why : RunResult → String
+  | .buildError => "its build failed or was stopped"
+  | .tooLarge => "too large to check yet"
+  | .kernelsDisagree => "the kernels disagree: nanoda failed while Lean's kernel accepted"
+  | _ => "no trusted Comparator result yet"
+
 /-- Why an axis is above its threshold, in words, given the manuscript's raw record and the
-    names of the manuscripts it rests on. -/
+    names of the manuscripts it rests on. An unknown `formal_proof` names why each of its
+    challenges that isn't accepted leaves it unknown. -/
 def whyWords {n : ℕ} (name : Fin n → String) (r : Raw) (a : Axis) : Why n → String
   | .through d => s!"through {name d}"
   | .evidence => match a with
@@ -26,7 +34,8 @@ def whyWords {n : ℕ} (name : Fin n → String) (r : Raw) (a : Axis) : Why n �
     | .dependencyWithdrawn => "unknown: its dependencies aren't read yet"
     | .formalProof =>
       if r.challenges.isEmpty then "unknown: no formalization"
-      else "unknown: no trusted Comparator result yet"
+      else "unknown: " ++ "; ".intercalate
+        ((r.challenges.filter (·.result ≠ RunResult.accepted)).map (·.result.why)).eraseDups
     | .statementFidelity => "unknown: no named reviewer has checked its statement"
     | .axioms => "unknown: no challenge"
     | _ => "unknown"

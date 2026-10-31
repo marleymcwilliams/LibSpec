@@ -72,6 +72,20 @@ jobs:
         shell: bash
         run: bash scripts/differential.sh
 
+      # The pilot's reports must be what Gate.lean prints from the data its proofs check
+      # (guide/EXECUTABLE_GATE.md §3). On a difference, the generated reports are kept.
+      - name: The pilot's reports match their data
+        id: pilot-reports
+        shell: bash
+        run: bash scripts/pilot-reports.sh "$RUNNER_TEMP/pilot-reports"
+
+      - name: Keep the generated reports
+        if: failure() && steps.pilot-reports.outcome == 'failure'
+        uses: actions/upload-artifact@v4
+        with:
+          name: pilot-reports
+          path: ${{ runner.temp }}/pilot-reports
+
       # Comparator runs in this job so the required `build` check covers it.
       # Its tools are small and cached; the cache key changes with the pins.
       - name: Restore Comparator tools
