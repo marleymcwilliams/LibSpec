@@ -4,6 +4,17 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-31
 
+### The trusted results in the report (#100)
+- **Recorded:** `pilot/data/comparator-results.json` holds the trusted results of all 418 challenges, from four runs: 396 accepted, 11 build errors, 9 with the kernels disagreeing, 2 too large to check yet, and none rejected. `pilot/collect.py --comparator` recorded them in `catalogue.json`, which is otherwise byte for byte as before. It refuses a file not marked trusted.
+- **Decided: #83's untrusted results move** to `comparator-measurements.json`. The first report keeps them, so its text is unchanged: it records the pilot as it first stood.
+- **Decided: a `RunResult` for each challenge,** in place of `Option Bool`: accepted, rejected, buildError, tooLarge, kernelsDisagree or notRun. Only accepted and rejected are evidence, so the only grade that changes is `formal_proof`, on the 313 manuscripts whose challenges are all accepted. `Formal.notRun` becomes `Formal.unknown`.
+- **Decided: the report's words** for an unknown `formal_proof`:
+  - "its build failed or was stopped", since a build error covers memory kills and crashes too;
+  - "too large to check yet", Marley's words;
+  - "the kernels disagree: nanoda failed while Lean's kernel accepted", Marley's term, with what happened.
+- **Decided: CI checks both reports** (`scripts/pilot-reports.sh`). Each must be what `Gate.lean` prints from the data its proofs check, and on a difference CI keeps the generated reports. A stronger check, and this PR's report came from it.
+- **All 9 disagreements are nanoda overflowing its stack,** exit 134. Its checking threads have a fixed 16 MiB stack, so `RUST_MIN_STACK` can't raise it. Marley decides whether to patch it and rerun them.
+
 ### The rest of the shards, and two runner losses (run 41181960510)
 - **Two runners were lost:** b13 and b26 failed about four hours in, with GitHub's annotation "The hosted runner lost communication with the server". GitHub kept no log for either, so their 54 challenges have no evidence.
   - **Decided: rerun both jobs as they were** (`gh run rerun --failed`), since a lost runner can be GitHub's fault. If one is lost again, a challenge is likelier to blame, and that shard is split into jobs of one challenge each.
