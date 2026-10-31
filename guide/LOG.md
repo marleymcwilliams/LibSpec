@@ -2,6 +2,14 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-10-31
+
+### The rest of the shards, and two runner losses (run 41181960510)
+- **Two runners were lost:** b13 and b26 failed about four hours in, with GitHub's annotation "The hosted runner lost communication with the server". GitHub kept no log for either, so their 54 challenges have no evidence.
+  - **Decided: rerun both jobs as they were** (`gh run rerun --failed`), since a lost runner can be GitHub's fault. If one is lost again, a challenge is likelier to blame, and that shard is split into jobs of one challenge each.
+- **The collector lists such jobs** instead of stopping: a job that hasn't finished, or that GitHub has no log for, gives no results and is listed in its run's entry. A download that fails on the way is tried twice more: b01's first failed on a TLS handshake timeout, and the second worked.
+- **Decided: every challenge cut off or not started gets a job of its own,** 61 of them (`solo-<name>`). Each is first in its job, so a timeout there is tooLarge. The bins' estimates were too low for some shards: b01, b25, b20 and b14 left 20, 17, 9 and 7 challenges unstarted.
+
 ## 2026-10-30
 
 ### The results collector reads the raw job logs (Phase 7's first shards)

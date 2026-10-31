@@ -17,6 +17,10 @@ print in a marked line, and so could start a line of its own.
 
 Runs are read in the order given. A later result for a challenge replaces an earlier one only
 when the earlier one is cutOff or notStarted, which is what a rerun in a job of its own is for.
+Each run is read at its latest attempt, so a rerun of its failed jobs replaces them.
+
+A trusted job gives no results, and is listed in its run's entry, if it hasn't finished
+("notFinished") or if GitHub has no log for it ("noLog"), as when its runner was lost.
 
 GitHub keeps a public repository's logs for 90 days at most, and these logs are the evidence.
 With --logs, each trusted job's raw log is saved in DIR, byte for byte, and its SHA-256 recorded
@@ -31,6 +35,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 
 REPO = "marleymcwilliams/LibSpec"
 COMMIT = "7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a"
@@ -48,6 +53,20 @@ RERUN = {"cutOff", "notStarted"}
 
 def gh(*args):
     return subprocess.run(["gh"] + list(args), capture_output=True, check=True).stdout
+
+
+def job_log(job_id):
+    """A job's raw log. A download that fails on the way, as one did on a TLS handshake timeout,
+    is tried twice more; GitHub's 404 for a job with no log isn't. The raw log keeps the terminal
+    escapes of the echoed scripts, which gh refuses to pass on without --allow-escape-sequences.
+    They're data here, never printed."""
+    for attempt in range(3):
+        try:
+            return gh("api", "--allow-escape-sequences", f"repos/{REPO}/actions/jobs/{job_id}/logs")
+        except subprocess.CalledProcessError as e:
+            if b"HTTP 404" in e.stderr or attempt == 2:
+                raise
+            time.sleep(15)
 
 
 def step_lines(log, where):
@@ -80,15 +99,27 @@ def main():
         jobs = json.loads(gh("api", f"repos/{REPO}/actions/runs/{run}/jobs?per_page=100")
                           .decode("utf-8"))["jobs"]
         entry_run = {"run": int(run), "url": f"https://github.com/{REPO}/actions/runs/{run}",
-                     "logs": []}
+                     "logs": [], "noLog": [], "notFinished": []}
         for job in jobs:
             m = JOB.match(job["name"])
-            if not m or job["conclusion"] not in ("success", "failure"):
+            if not m:
                 continue
-            # The raw log keeps the terminal escapes of the echoed scripts, which gh refuses to
-            # pass on without --allow-escape-sequences. They're data here, never printed.
-            data = gh("api", "--allow-escape-sequences",
-                      f"repos/{REPO}/actions/jobs/{job['id']}/logs")
+            if job["conclusion"] not in ("success", "failure"):
+                # Still running, cancelled or skipped: no results from it, and listed.
+                entry_run["notFinished"].append({"job": job["id"], "shard": m.group(1),
+                                                 "conclusion": job["conclusion"]})
+                continue
+            try:
+                data = job_log(job["id"])
+            except subprocess.CalledProcessError as e:
+                # A job whose runner was lost can leave no log, and GitHub answers 404. It gives
+                # no results, and is listed, so that its shard can be rerun.
+                why = e.stderr.decode("utf-8", errors="replace").strip().splitlines()[:1]
+                entry_run["noLog"].append({"job": job["id"], "shard": m.group(1),
+                                           "conclusion": job["conclusion"],
+                                           "why": why[0] if why else f"gh exited {e.returncode}"})
+                print(f"no log: run {run}, job {job['id']} ({m.group(1)})", file=sys.stderr)
+                continue
             if logs:
                 name = f"run-{run}-job-{job['id']}-{m.group(1)}.log"
                 open(os.path.join(logs, name), "wb").write(data)
