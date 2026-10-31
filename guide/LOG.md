@@ -4,6 +4,13 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-10-30
 
+### The results collector reads the raw job logs (Phase 7's first shards)
+- **Found on the first real shards,** 189 and 159 (run 41146560423). gh named every step of f189's log "UNKNOWN STEP". The collector keeps only lines of the step "Comparator on the shard", so it missed f189's result. f159's log had its step names.
+- **Decided: the raw job log.** `pilot/shard_results.py` now reads each trusted job's raw log from GitHub's API. It finds the step by its own header, `##[group]Run` and the step's first line, and reads up to the next step's header or the job's cleanup. A header that appears twice stops it. The check is as strict as before: only the unmarked result lines of that step, in a trusted job.
+- **Lines are split at newlines alone,** and only lines with the runner's timestamp count. `str.splitlines()` also splits at characters such as U+2028, which the release could print inside a marked line. The old code was safe from that only because each line needed gh's prefix.
+- **The saved logs are the raw logs,** byte for byte. Two downloads of each gave the same SHA-256.
+- **Tested:** 14 synthetic cases, and runs 41146560423 (both results) and 41134538539 (the control).
+
 ### The trusted shards, round 3 (#92, Marley's review)
 - **A way around the freeze, closed.** Lean resolves a module through the first search-path entry holding its top-level directory, and lean4export appends the toolchain's library after `LEAN_PATH`. A build could plant a substitute `Mathlib/` or `Init/` in a writable entry ahead of the frozen copies. It could also rename the directories above a frozen one inside `.lake`.
   - **The fix:** each frozen output is bind-mounted read-only outside `.lake`. The exports' `LEAN_PATH` starts with the toolchain's `lib/lean` and those mounts.

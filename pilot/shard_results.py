@@ -9,12 +9,19 @@ scripts/pilot-shard.sh prints everything of the release's marked or with repr, s
 release controls can pass for one. The results artifacts aren't read: the untrusted job of the
 same run could have uploaded one under a trusted job's name.
 
+The log is the job's raw log, as GitHub's API serves it, and the step is found by its own header
+in it. gh's split of a log into steps can't be relied on: it named every step of one job
+"UNKNOWN STEP" (run 41146560423, f189). Lines are split at newlines alone, as the runner splits
+them, since str.splitlines() also splits at characters such as U+2028 that the release could
+print in a marked line, and so could start a line of its own.
+
 Runs are read in the order given. A later result for a challenge replaces an earlier one only
 when the earlier one is cutOff or notStarted, which is what a rerun in a job of its own is for.
 
 GitHub keeps a public repository's logs for 90 days at most, and these logs are the evidence.
-With --logs, each trusted job's log is saved in DIR, and its SHA-256 recorded in the output, so
-that the logs can be kept as assets of the v1.1 release and checked against this file.
+With --logs, each trusted job's raw log is saved in DIR, byte for byte, and its SHA-256 recorded
+in the output, so that the logs can be kept as assets of the v1.1 release and checked against
+this file.
 
 It needs the GitHub CLI, `gh`, signed in.
 """
@@ -28,7 +35,11 @@ import sys
 REPO = "marleymcwilliams/LibSpec"
 COMMIT = "7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a"
 JOB = re.compile(r"^Shard ([A-Za-z0-9_-]+) \(trusted\)$")
-STEP = "Comparator on the shard"
+# The header GitHub writes at the start of the step "Comparator on the shard": "##[group]Run" and
+# the step's first line in .github/workflows/pilot-shards.yml. The step ends where the next
+# step's header, or the job's cleanup, begins.
+STEP_HEADER = '##[group]Run export PILOT_FROZEN="$RUNNER_TEMP/frozen.txt"'
+STEP_END = ("##[group]Run ", "Post job cleanup.")
 RESULT = re.compile(r"^result: ([A-Za-z0-9_]+): (accepted|rejected|kernelsDisagree|buildError|"
                     r"tooLarge|cutOff|notStarted)(?: in (\d+) s \(cap (\d+) s\))?")
 TIMESTAMP = re.compile(r"^\d{4}-\d\d-\d\dT[0-9:.]+Z ")
@@ -36,8 +47,24 @@ RERUN = {"cutOff", "notStarted"}
 
 
 def gh(*args):
-    out = subprocess.run(["gh"] + list(args), capture_output=True, check=True).stdout
-    return out.decode("utf-8", errors="replace")
+    return subprocess.run(["gh"] + list(args), capture_output=True, check=True).stdout
+
+
+def step_lines(log, where):
+    """The lines of the step "Comparator on the shard" in a raw job log, without timestamps: none
+    if the job stopped before the step, and an error if its header appears more than once."""
+    # Every line the runner writes starts with its timestamp, so a line without one isn't a line.
+    lines = [TIMESTAMP.sub("", line.rstrip("\r"), count=1)
+             for line in log.lstrip("\ufeff").split("\n") if TIMESTAMP.match(line)]
+    starts = [i for i, line in enumerate(lines) if line == STEP_HEADER]
+    if len(starts) > 1:
+        sys.exit(f"{where}: the step's header appears {len(starts)} times")
+    out = []
+    for line in lines[starts[0] + 1:] if starts else []:
+        if line.startswith(STEP_END):
+            break
+        out.append(line)
+    return out
 
 
 def main():
@@ -50,26 +77,25 @@ def main():
     for run in args:
         if not run.isdigit():
             sys.exit(f"not a run id: {run!r}")
-        jobs = json.loads(gh("api", f"repos/{REPO}/actions/runs/{run}/jobs?per_page=100"))["jobs"]
+        jobs = json.loads(gh("api", f"repos/{REPO}/actions/runs/{run}/jobs?per_page=100")
+                          .decode("utf-8"))["jobs"]
         entry_run = {"run": int(run), "url": f"https://github.com/{REPO}/actions/runs/{run}",
                      "logs": []}
         for job in jobs:
             m = JOB.match(job["name"])
             if not m or job["conclusion"] not in ("success", "failure"):
                 continue
-            log = gh("run", "view", run, "--repo", REPO, "--job", str(job["id"]), "--log")
+            # The raw log keeps the terminal escapes of the echoed scripts, which gh refuses to
+            # pass on without --allow-escape-sequences. They're data here, never printed.
+            data = gh("api", "--allow-escape-sequences",
+                      f"repos/{REPO}/actions/jobs/{job['id']}/logs")
             if logs:
                 name = f"run-{run}-job-{job['id']}-{m.group(1)}.log"
-                data = log.encode("utf-8")
                 open(os.path.join(logs, name), "wb").write(data)
                 entry_run["logs"].append({"job": job["id"], "shard": m.group(1), "file": name,
                                           "sha256": hashlib.sha256(data).hexdigest()})
-            for line in log.splitlines():
-                # gh prints each line as: job name, a tab, step name, a tab, then the timestamp.
-                parts = line.split("\t", 2)
-                if len(parts) != 3 or parts[1] != STEP:
-                    continue
-                text = TIMESTAMP.sub("", parts[2], count=1)
+            log = data.decode("utf-8", errors="replace")
+            for text in step_lines(log, f"run {run}, job {job['id']}"):
                 r = RESULT.match(text)
                 if not r:
                     continue
