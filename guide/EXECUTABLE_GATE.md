@@ -102,7 +102,7 @@ It stores none of the release's paper text or Lean code. The collected data (`pi
 | --- | --- | --- | --- |
 | `withdrawn` | [∞, ∞] if withdrawn, else [0, 0] | `preprints/<m>/README.md`: a withdrawal notice heads it ("Withdrawal notice: …") | **Yes**, for every folder |
 | `dependency_withdrawn` | not collected: the closure computes it (below). It is [0, 0] if the manuscript's formalization is complete. Otherwise it is unknown until its dependencies are read, and then [∞, ∞] if it rests on a withdrawn manuscript at any distance, else [0, 0] | the dependency edges: from a notice where it names one, and otherwise from each paper's bibliography of companion papers | **Partly.** Two notices name their dependency; other citations aren't machine-readable yet |
-| `formal_proof` | [0, 0] if the full-strength Comparator accepts a challenge for its top-line claim, [1, 1] if it rejects, and unknown if none exists, or if its run ended in a build error, a timeout or the kernels disagreeing | the family's `lean/docs/<NNN>.md`, whose "Comparator links" table names the challenges, then our run | **Partly.** About 58% of top-line results have no formalization, and our trusted runs leave 31 of the 344 manuscripts with challenges unknown (§4) |
+| `formal_proof` | [0, 0] if the full-strength Comparator accepts a challenge for its top-line claim, [1, 1] if it rejects, and unknown if none exists, or if its run was stopped by the memory limit, ended in a build error or a timeout, or the kernels disagreed | the family's `lean/docs/<NNN>.md`, whose "Comparator links" table names the challenges, then our run | **Partly.** About 58% of top-line results have no formalization, and our trusted runs leave 20 of the 344 manuscripts with challenges unknown (§4) |
 | `statement_fidelity` | [0, 0] once a named reviewer confirms that the challenge states the paper's top-line claim, else unknown | `lean/docs/<NNN>.md`'s "Scope" prose, and `lean/formalization.yaml`, whose `review` is `status: unchecked` | **No**, for any manuscript |
 | `axioms` | [0, 0] if the challenge permits exactly `propext`, `Quot.sound` and `Classical.choice`, else [1, 1] | `lean/ComparatorChallenges/<name>.json`, then our run | **Yes**, for configs (the one checked permits exactly those three) |
 | `independent_review` | [0, 0] once an independent review is published, else unknown | outside the repo. For example, `history.md` says a working group led by Impagliazzo, Paturi and Williams will examine the ETH paper | **No** |
@@ -334,9 +334,9 @@ Reading the release's lakefile, freezing what came through LibSpec's tooling, an
 | tooLarge | 2 | `ErdosReciprocal` and `MUBSix`, each at the full 5-hour cap |
 
 **What the reruns showed.**
-- **The nine where nanoda overflowed its stack:** with the patch, eight were accepted by both kernels, so no disagreement is left. `SquareDifference` ran nanoda out of memory, as [#62](https://github.com/ammkrn/nanoda_lib/issues/62) led us to expect, so Lean's kernel never ran on that attempt.
+- **The nine where nanoda overflowed its stack:** with the patch, eight were accepted by both kernels, so no disagreement is left. `SquareDifference` reached the memory limit while nanoda ran, as [#62](https://github.com/ammkrn/nanoda_lib/issues/62) led us to expect, so Lean's kernel never ran on that attempt. A unit's peak is the whole unit's, so the log can't say how much of it was nanoda's.
 
-  | Accepted | Seconds | Unit's memory peak (MB) |
+  | Accepted | Seconds | Unit's memory peak (MiB, page cache included) |
   | --- | --- | --- |
   | `ContingencyTables` | 3610 | 10933 |
   | `MatchingFPRAS` | 1153 | 9391 |
@@ -347,9 +347,9 @@ Reading the release's lakefile, freezing what came through LibSpec's tooling, an
   | `LogspaceEquality` | 751 | 9319 |
   | `PeriodicGroup` | 702 | 8196 |
 
-- **The 11 build errors were memory.** Each stopped inside `lake build`, before either kernel ran, and within a few dozen modules of where its first attempt stopped. Four stopped at the same module count both times: `NuclearUltrapower`, `PlanarPacking`, `SnakyCertificate` and `SnakyTwentyOne`.
+- **The 11 build errors were memory.** Each stopped inside `lake build`, before either kernel ran, and within 32 of Lake's jobs of where its first attempt stopped. Four stopped at the same count both times: `NuclearUltrapower`, `PlanarPacking`, `SnakyCertificate` and `SnakyTwentyOne`.
 
-  | Stopped | Stage | Seconds | Modules built, of those Lake knew of |
+  | Stopped | Stage | Seconds | Lake's job count when it stopped |
   | --- | --- | --- | --- |
   | `SubexponentialSAT` | `lake build` | 5938 | 11756 of 12014 |
   | `ContinuumCoulombHardness` | `lake build` | 4833 | 10771 of 10849 |

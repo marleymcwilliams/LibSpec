@@ -70,8 +70,9 @@ inductive Formal
   | accepted
   /-- It rejects one. -/
   | rejected
-  /-- Challenges exist and none is rejected, but not all are accepted: one hasn't run yet, its
-      build failed, it was too large to check, or the kernels disagreed. -/
+  /-- Challenges exist and none is rejected, but not all are accepted: one hasn't run yet, the
+      memory limit stopped it, its build failed, it was too large to check, or the kernels
+      disagreed. -/
   | unknown
   /-- No challenge exists. -/
   | noChallenge

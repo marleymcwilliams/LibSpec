@@ -16,10 +16,10 @@ open JSG
 
 /-! ### The must-fail test's best case -/
 
-/-- A record's best case: every unknown resolved in the manuscript's favour, and every known
-    fact kept. A challenge that isn't rejected counts as accepted: one not yet run, one whose
-    build failed, one too large to check, and one the kernels disagreed on. A missing
-    formalization counts as one, accepted, that permits only the three axioms; and a missing
+/-- A record's best case: every unknown resolved in the manuscript's favour, and every known fact
+    kept. A challenge that isn't rejected counts as accepted: one not yet run, one the memory limit
+    stopped, one whose build failed, one too large to check, and one the kernels disagreed on. A
+    missing formalization counts as one, accepted, that permits only the three axioms; and a missing
     reviewer, review, priority check or reading of its dependencies as done. A withdrawal, a
     Comparator rejection and an extra permitted axiom stay. -/
 def Raw.bestCase (r : Raw) : Raw :=
