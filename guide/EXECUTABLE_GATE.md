@@ -102,7 +102,7 @@ It stores none of the release's paper text or Lean code. The collected data (`pi
 | --- | --- | --- | --- |
 | `withdrawn` | [∞, ∞] if withdrawn, else [0, 0] | `preprints/<m>/README.md`: a withdrawal notice heads it ("Withdrawal notice: …") | **Yes**, for every folder |
 | `dependency_withdrawn` | not collected: the closure computes it (below). It is [0, 0] if the manuscript's formalization is complete. Otherwise it is unknown until its dependencies are read, and then [∞, ∞] if it rests on a withdrawn manuscript at any distance, else [0, 0] | the dependency edges: from a notice where it names one, and otherwise from each paper's bibliography of companion papers | **Partly.** Two notices name their dependency; other citations aren't machine-readable yet |
-| `formal_proof` | [0, 0] if the full-strength Comparator accepts a challenge for its top-line claim, [1, 1] if it rejects, and unknown if none exists, or if its run ended in a build error, a timeout or the kernels disagreeing | the family's `lean/docs/<NNN>.md`, whose "Comparator links" table names the challenges, then our run | **Partly.** About 58% of top-line results have no formalization, and our trusted runs leave 31 of the 344 manuscripts with challenges unknown (§4) |
+| `formal_proof` | [0, 0] if the full-strength Comparator accepts a challenge for its top-line claim, [1, 1] if it rejects, and unknown if none exists, or if its run was stopped by the memory limit, ended in a build error or a timeout, or the kernels disagreed | the family's `lean/docs/<NNN>.md`, whose "Comparator links" table names the challenges, then our run | **Partly.** About 58% of top-line results have no formalization, and our trusted runs leave 20 of the 344 manuscripts with challenges unknown (§4) |
 | `statement_fidelity` | [0, 0] once a named reviewer confirms that the challenge states the paper's top-line claim, else unknown | `lean/docs/<NNN>.md`'s "Scope" prose, and `lean/formalization.yaml`, whose `review` is `status: unchecked` | **No**, for any manuscript |
 | `axioms` | [0, 0] if the challenge permits exactly `propext`, `Quot.sound` and `Classical.choice`, else [1, 1] | `lean/ComparatorChallenges/<name>.json`, then our run | **Yes**, for configs (the one checked permits exactly those three) |
 | `independent_review` | [0, 0] once an independent review is published, else unknown | outside the repo. For example, `history.md` says a working group led by Impagliazzo, Paturi and Williams will examine the ETH paper | **No** |
@@ -321,25 +321,58 @@ Reading the release's lakefile, freezing what came through LibSpec's tooling, an
 - **Why:** nine challenges aborted nanoda with a stack overflow while Lean's kernel accepted (the table below).
 - **What it changes:** the constant's only use is the stack size of those threads. So it changes no check, only how deep nanoda can recurse before it aborts. Stack pages are committed as they're touched, and they count against each challenge's memory limit.
 - **Why 1 GiB:** nanoda's issues [#61](https://github.com/ammkrn/nanoda_lib/issues/61) and [#77](https://github.com/ammkrn/nanoda_lib/issues/77) report checks passing at 1 GiB that overflow at 16 MiB. We didn't measure other sizes first.
-- **What it can't fix:** [#62](https://github.com/ammkrn/nanoda_lib/issues/62) reports `SquareDifference` still running at 96 GB with an 8 GiB stack, and [#71](https://github.com/ammkrn/nanoda_lib/pull/71) proposes a change to nanoda's logic for it. We've changed only the stack, so a run like that ends at the memory limit, unknown.
-- **Which build gave which result:** each attempt in `pilot/data/comparator-results.json` names its run's LibSpec commit, and so the build. The earlier results, the 396 acceptances among them, came from the unpatched build.
+- **What it can't fix:** [#62](https://github.com/ammkrn/nanoda_lib/issues/62) reports `SquareDifference` still running at 96 GB with an 8 GiB stack, and [#71](https://github.com/ammkrn/nanoda_lib/pull/71) proposes a change to nanoda's logic for it. We've changed only the stack, so a run like that ends at the memory limit, unknown, as ours did.
+- **Which build gave which result:** each attempt in `pilot/data/comparator-results.json` names its run's LibSpec commit, and so the build. The earlier results, 396 acceptances among them, came from the unpatched build, and the 20 reruns' came from the patched one.
 - **Upstream:** nanoda's master added a `stack_size_bytes` option on 2026-10-29 ([#78](https://github.com/ammkrn/nanoda_lib/pull/78)), two days after our pin, with a 32 MiB default. Comparator v4.34.0 writes nanoda's config itself and doesn't set it, so using the option here would need a change to Comparator too.
 
-**The results.** Every one of the 418 challenges has a trusted result, in `pilot/data/comparator-results.json`, from four runs: [41146560423](https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423) (families 189 and 159), [41170918445](https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445) (378 and 079), [41181960510](https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510) (the other 29 shards) and [41222068108](https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108) (61 challenges in jobs of their own). No challenge was rejected.
+**The results.** Every one of the 418 challenges has a trusted result, in `pilot/data/comparator-results.json`, from five runs: [41146560423](https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423) (families 189 and 159), [41170918445](https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445) (378 and 079), [41181960510](https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510) (the other 29 shards), [41222068108](https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108) (61 challenges in jobs of their own) and [41891664929](https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929) (20 reruns, each in a job of its own, with the patched nanoda and each unit's end recorded). No challenge was rejected.
 
 | Result | Challenges | Which, and why |
 | --- | --- | --- |
-| accepted | 396 | |
-| buildError | 11 | `CoarseAssembly`, `ContinuumCoulombHardness`, `CycleCliqueRamsey`, `HoneycombBridgeMassSupport`, `NuclearUltrapower`, `PlanarPacking`, `SnakyCertificate`, `SnakyTwentyOne`, `SubexponentialSAT`, `TamingCompatibility` and `UniversalTensorSquares`. Each stopped mid-build with no exit status, as the 13 GB memory limit stops a challenge. The log can't confirm it was memory |
-| kernelsDisagree | 9 | `ContingencyTables`, `GroupRingDeterminant`, `KaplanskyDirectFiniteness`, `KaplanskyFinitelyPresented`, `LogspaceEquality`, `MatchingFPRAS`, `PeriodicGroup`, `RandomizedMeanPayoff` and `SquareDifference`. In each, nanoda overflowed its stack and aborted, exit 134. nanoda's checking threads have a fixed 16 MiB stack (`STACK_SIZE` in its `src/lib.rs`, at the commit we build) |
+| accepted | 404 | |
+| outOfMemory | 12 | The 13 GB memory limit stopped each, with `result=oom-kill` and one OOM kill. The table below says where |
 | tooLarge | 2 | `ErdosReciprocal` and `MUBSix`, each at the full 5-hour cap |
+
+**What the reruns showed.**
+- **The nine where nanoda overflowed its stack:** with the patch, eight were accepted by both kernels, so no disagreement is left. `SquareDifference` reached the memory limit while nanoda ran, as [#62](https://github.com/ammkrn/nanoda_lib/issues/62) led us to expect, so Lean's kernel never ran on that attempt. A unit's peak is the whole unit's, so the log can't say how much of it was nanoda's.
+
+  | Accepted | Seconds | Unit's memory peak (MiB, page cache included) |
+  | --- | --- | --- |
+  | `ContingencyTables` | 3610 | 10933 |
+  | `MatchingFPRAS` | 1153 | 9391 |
+  | `KaplanskyFinitelyPresented` | 1008 | 8435 |
+  | `GroupRingDeterminant` | 970 | 9216 |
+  | `KaplanskyDirectFiniteness` | 954 | 8617 |
+  | `RandomizedMeanPayoff` | 885 | 9910 |
+  | `LogspaceEquality` | 751 | 9319 |
+  | `PeriodicGroup` | 702 | 8196 |
+
+- **The 11 build errors were memory.** Each stopped inside `lake build`, before either kernel ran, and within 32 of Lake's jobs of where its first attempt stopped. Four stopped at the same count both times: `NuclearUltrapower`, `PlanarPacking`, `SnakyCertificate` and `SnakyTwentyOne`.
+
+  | Stopped | Stage | Seconds | Lake's job count when it stopped, of those it knew of by then |
+  | --- | --- | --- | --- |
+  | `SubexponentialSAT` | `lake build` | 5938 | 11756 of 12014 |
+  | `ContinuumCoulombHardness` | `lake build` | 4833 | 10771 of 10849 |
+  | `PlanarPacking` | `lake build` | 2945 | 3860 of 4330 |
+  | `CoarseAssembly` | `lake build` | 1731 | 9205 of 9270 |
+  | `TamingCompatibility` | `lake build` | 1575 | 9231 of 9505 |
+  | `NuclearUltrapower` | `lake build` | 1242 | 8954 of 8962 |
+  | `CycleCliqueRamsey` | `lake build` | 1075 | 9096 of 9190 |
+  | `UniversalTensorSquares` | `lake build` | 994 | 9108 of 9496 |
+  | `SnakyTwentyOne` | `lake build` | 684 | 9014 of 9017 |
+  | `HoneycombBridgeMassSupport` | `lake build` | 501 | 8937 of 9007 |
+  | `SnakyCertificate` | `lake build` | 282 | 8956 of 8974 |
+  | `SquareDifference` | nanoda | 592 | all 9004 |
+
+- **What these logs can't say:** whether one Lean process passed the limit, or several together. A unit's peak is the whole unit's, and the job's log keeps only the last 20 lines of Comparator's output. They also can't say how much a unit would have needed, since each peak stops at the limit.
+- **Every earlier attempt stays listed:** the 11 as `buildError`, the nine as `kernelsDisagree`, `MatchingFPRAS` also as `cutOff`, and `RandomizedMeanPayoff` also as `notStarted`.
 
 - **On the way:**
   - **Two runners were lost.** b13 and b26 stopped about four hours in, with "The hosted runner lost communication with the server", and left no log. Both were rerun as they were, and finished.
   - **The bins' estimates were low.** 6 challenges were cut off and 55 never started, so each got a job of its own.
   - **Collecting the results** turned up two faults in the collector, both fixed: gh's step names (#98), and jobs with no log (#99).
-- **In the report,** 313 manuscripts have `formal_proof` known, every challenge accepted, and 31 have it unknown: 16 on a build error, 12 on the kernels disagreeing and 3 too large to check yet. The report names the reason for each.
-- **Reruns, on Marley's calls on #100:** the nine with the patched nanoda, and the 11 build errors with each unit's end recorded, `SubexponentialSAT` and `CycleCliqueRamsey` included. `ErdosReciprocal` (family 159) waits, too large to check yet. If memory stopped the 11, the fix is proposed before it's run.
+- **In the report,** 324 manuscripts have `formal_proof` known, every challenge accepted, and 20 have it unknown: 17 stopped by the memory limit and 3 too large to check yet. The other 380 have no challenge. The report names the reason for each. The reruns moved 11 manuscripts to known.
+- **What's next, on Marley's calls on #100:** `ErdosReciprocal` (family 159) waits, too large to check yet. A fix for the memory limit goes to Marley before it's run.
 
 **Lewis & Clark's BLT cluster, for heavy builds, if its OS can run current Lean.**
 - **It can.** It runs Ubuntu 20.04 and SLURM, as you've confirmed. Its documentation ([About the cluster](https://watzek.github.io/BLTdocs/about-the-cluster.html)) is out of date: it still says "The cluster runs the CentOS Linux operating system, version 7.4", with Sun Grid Engine and a 25 GB quota per user. It has 144 cores and 1,500 GB of memory across one login node and three workers.
@@ -391,7 +424,7 @@ The order of work:
 
    Looking up one manuscript walks the list to it, so the proofs check each list once rather than look up all 724 at every step. They take about two minutes of kernel time.
 
-   **Comparator's trusted results** for all 418 challenges are in `pilot/data/comparator-results.json` (§4), and `pilot/collect.py --comparator` records each one in `catalogue.json`. Each challenge's result is a `RunResult`, and only an acceptance or a rejection is evidence. So `formal_proof` is known for 313 manuscripts. For the other 31, the report says why it's unknown: "its build failed or was stopped", "too large to check yet", or "the kernels disagree: nanoda failed while Lean's kernel accepted". None is accepted yet, since none has a published independent review.
+   **Comparator's trusted results** for all 418 challenges are in `pilot/data/comparator-results.json` (§4), and `pilot/collect.py --comparator` records each one in `catalogue.json`. Each challenge's result is a `RunResult`, and only an acceptance or a rejection is evidence. So `formal_proof` is known for 324 manuscripts. For the other 20, the report says why it's unknown: "the memory limit stopped it" or "too large to check yet". It would also say "its build failed or was stopped" or "the kernels disagree: nanoda failed while Lean's kernel accepted", though no challenge counts as either now. None is accepted yet, since none has a published independent review.
 
    **CI checks both reports:** `scripts/pilot-reports.sh` fails unless each is what `Gate.lean` prints from the data its proofs check.
 

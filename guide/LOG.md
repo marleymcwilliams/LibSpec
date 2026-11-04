@@ -4,6 +4,12 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-04
 
+### The reruns' results
+- **Recorded:** run [41891664929](https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929) reran the nine and the 11, each in its own job, on `8badfa7`. `pilot/data/comparator-results.json` now holds 404 accepted, 12 out of memory and 2 too large, none rejected, with every attempt listed. The report has 324 manuscripts known and 20 unknown.
+- **Decided: `outOfMemory` is a `RunResult` of its own,** not a kind of build error, since each unit's end now says which it was. The report reads "the memory limit stopped it". `buildError` stays, for a failed build or export, a crash or another signal, though no challenge counts as one now. Undo by reverting this PR.
+- **Added:** the run's 20 logs to the draft v1.1 release, 114 in all, each checked against its recorded SHA-256 after downloading it back. It stays a draft with no tag.
+- **Applied from the fresh-context review:** a stale count and list of reasons in §1's `formal_proof` row, two docstrings that left out memory, "Lake's job count" for what §4 called modules built, `SquareDifference`'s wording, and the units of §4's peak column. It also corrected what #103's description claimed about the proposed fix. No result changed.
+
 ### The PR template, the deny rules, and the review rule (Marley's list)
 - **Decided: the file rules cover every checkout.** They're anchored at the filesystem root (`//**/...`), because PR work happens in worktrees outside the project, which a project-relative rule wouldn't reach. Only the rules on the live settings files are anchored at the project.
 - **Added, beyond the list:**

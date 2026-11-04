@@ -4,11 +4,11 @@ output, and our Comparator results.
 usage: python3 pilot/to_lean.py DATA [--comparator RESULTS] > lean/JSG/Pilot/Sample.lean
 
 It translates facts into Lean terms and decides nothing: grades, carry-over and verdicts are
-JSG.Pilot.Core's. A Comparator result is a `RunResult`: accepted, rejected, a build error,
-too large to check yet, or the kernels disagreeing. A challenge cut off or not started, or
-with no result, hasn't run. Results count only from a results file marked trusted, which
-pilot/shard_results.py writes. An untrusted run's results are measurements: the report names
-them, and its challenges still count as not run. It fails if a dependency edge leaves the
+JSG.Pilot.Core's. A Comparator result is a `RunResult`: accepted, rejected, out of memory, a
+build error, too large to check yet, or the kernels disagreeing. A challenge cut off or not
+started, or with no result, hasn't run. Results count only from a results file marked trusted,
+which pilot/shard_results.py writes. An untrusted run's results are measurements: the report
+names them, and its challenges still count as not run. It fails if a dependency edge leaves the
 sample, since dropping it silently could change a verdict.
 """
 import argparse
@@ -36,14 +36,16 @@ open JSG.Pilot
 
 # Each trusted result as its `RunResult`. cutOff and notStarted, which get a job of their own,
 # and a challenge with no result, haven't run.
-RUN_RESULTS = {"accepted": ".accepted", "rejected": ".rejected", "buildError": ".buildError",
-               "tooLarge": ".tooLarge", "kernelsDisagree": ".kernelsDisagree"}
+RUN_RESULTS = {"accepted": ".accepted", "rejected": ".rejected", "outOfMemory": ".outOfMemory",
+               "buildError": ".buildError", "tooLarge": ".tooLarge",
+               "kernelsDisagree": ".kernelsDisagree"}
 
 # How the report's note counts each result, in this order.
 RESULT_WORDS = [
     ("accepted", lambda k: f"{k} {'was' if k == 1 else 'were'} accepted"),
     ("rejected", lambda k: f"{k} {'was' if k == 1 else 'were'} rejected"),
     ("tooLarge", lambda k: f"{k} {'was' if k == 1 else 'were'} too large to check yet"),
+    ("outOfMemory", lambda k: f"{k} {'was' if k == 1 else 'were'} stopped by the memory limit"),
     ("buildError", lambda k: f"{k} ended in a build error"),
     ("kernelsDisagree", lambda k: f"on {k} the kernels disagreed"),
     ("cutOff", lambda k: f"{k} {'is' if k == 1 else 'are'} still to rerun"),
@@ -127,9 +129,9 @@ def main():
         if not counts["rejected"]:
             told[-1] += "; none was rejected"
         comparator = (f"Comparator results come from our trusted shard runs, {run}. Of the "
-                      f"{len(names)} challenges, " + and_list(told) + ". A build error, a "
-                      "timeout or the kernels disagreeing leaves `formal_proof` unknown, "
-                      "never failing.")
+                      f"{len(names)} challenges, " + and_list(told) + ". Running out of memory, "
+                      "a build error, a timeout or the kernels disagreeing leaves "
+                      "`formal_proof` unknown, never failing.")
     elif measured:
         by = {}
         for x in names:

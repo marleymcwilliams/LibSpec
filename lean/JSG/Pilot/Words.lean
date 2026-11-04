@@ -15,6 +15,7 @@ open JSG
 
 /-- Why a challenge's run leaves `formal_proof` unknown, in words. -/
 def RunResult.why : RunResult → String
+  | .outOfMemory => "the memory limit stopped it"
   | .buildError => "its build failed or was stopped"
   | .tooLarge => "too large to check yet"
   | .kernelsDisagree => "the kernels disagree: nanoda failed while Lean's kernel accepted"

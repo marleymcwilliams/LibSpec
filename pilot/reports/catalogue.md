@@ -2,7 +2,7 @@
 
 openai/math at `7ef5c0c`, θ = 0 on every axis, no leases. It grades 724 manuscripts: the 721 that `CONTENTS.md` lists, and the 3 withdrawn ones it no longer lists. Every verdict is proved by the kernel (`JSG.Pilot.CatalogueCalibration`): none is accepted today, so each report says what evidence is missing.
 
-Comparator results come from our trusted shard runs, [run 41146560423](https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423), [run 41170918445](https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445), [run 41181960510](https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510) and [run 41222068108](https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108). Of the 418 challenges, 396 were accepted, 2 were too large to check yet, 11 ended in a build error and on 9 the kernels disagreed; none was rejected. A build error, a timeout or the kernels disagreeing leaves `formal_proof` unknown, never failing.
+Comparator results come from our trusted shard runs, [run 41146560423](https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423), [run 41170918445](https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445), [run 41181960510](https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510), [run 41222068108](https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108) and [run 41891664929](https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929). Of the 418 challenges, 404 were accepted, 2 were too large to check yet and 12 were stopped by the memory limit; none was rejected. Running out of memory, a build error, a timeout or the kernels disagreeing leaves `formal_proof` unknown, never failing.
 
 ## What's missing, by axis
 
@@ -12,7 +12,7 @@ A report names every axis that holds its manuscript back, so a manuscript counts
 | --- | --- | --- |
 | `withdrawn` | 3 | its authors withdrew it on October 6, 2026: 3 |
 | `dependency_withdrawn` | 724 | unknown: its dependencies aren't read yet: 722; through Algebraicity of Weil classes on split abelian eightfolds: 2 |
-| `formal_proof` | 411 | unknown: no formalization: 380; unknown: the kernels disagree: nanoda failed while Lean's kernel accepted: 12; unknown: its build failed or was stopped: 16; unknown: too large to check yet: 3 |
+| `formal_proof` | 400 | unknown: no formalization: 380; unknown: the memory limit stopped it: 17; unknown: too large to check yet: 3 |
 | `statement_fidelity` | 724 | unknown: no named reviewer has checked its statement: 724 |
 | `axioms` | 380 | unknown: no challenge: 380 |
 | `independent_review` | 724 | unknown: 724 |
@@ -22,13 +22,12 @@ A report names every axis that holds its manuscript back, so a manuscript counts
 
 Every manuscript's report is one of these.
 
-1. **313 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `statement_fidelity` (unknown: no named reviewer has checked its statement), `independent_review` (unknown), `novelty` (unknown)
+1. **324 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `statement_fidelity` (unknown: no named reviewer has checked its statement), `independent_review` (unknown), `novelty` (unknown)
 2. **377 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: no formalization), `statement_fidelity` (unknown: no named reviewer has checked its statement), `axioms` (unknown: no challenge), `independent_review` (unknown), `novelty` (unknown)
-3. **12 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: the kernels disagree: nanoda failed while Lean's kernel accepted), `statement_fidelity` (unknown: no named reviewer has checked its statement), `independent_review` (unknown), `novelty` (unknown)
-4. **16 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: its build failed or was stopped), `statement_fidelity` (unknown: no named reviewer has checked its statement), `independent_review` (unknown), `novelty` (unknown)
-5. **2 manuscripts:** not accepted: evidence incomplete on `withdrawn` (its authors withdrew it on October 6, 2026), `dependency_withdrawn` (through Algebraicity of Weil classes on split abelian eightfolds), `formal_proof` (unknown: no formalization), `statement_fidelity` (unknown: no named reviewer has checked its statement), `axioms` (unknown: no challenge), `independent_review` (unknown), `novelty` (unknown)
-6. **1 manuscript:** not accepted: evidence incomplete on `withdrawn` (its authors withdrew it on October 6, 2026), `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: no formalization), `statement_fidelity` (unknown: no named reviewer has checked its statement), `axioms` (unknown: no challenge), `independent_review` (unknown), `novelty` (unknown)
-7. **3 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: too large to check yet), `statement_fidelity` (unknown: no named reviewer has checked its statement), `independent_review` (unknown), `novelty` (unknown)
+3. **17 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: the memory limit stopped it), `statement_fidelity` (unknown: no named reviewer has checked its statement), `independent_review` (unknown), `novelty` (unknown)
+4. **2 manuscripts:** not accepted: evidence incomplete on `withdrawn` (its authors withdrew it on October 6, 2026), `dependency_withdrawn` (through Algebraicity of Weil classes on split abelian eightfolds), `formal_proof` (unknown: no formalization), `statement_fidelity` (unknown: no named reviewer has checked its statement), `axioms` (unknown: no challenge), `independent_review` (unknown), `novelty` (unknown)
+5. **1 manuscript:** not accepted: evidence incomplete on `withdrawn` (its authors withdrew it on October 6, 2026), `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: no formalization), `statement_fidelity` (unknown: no named reviewer has checked its statement), `axioms` (unknown: no challenge), `independent_review` (unknown), `novelty` (unknown)
+6. **3 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: too large to check yet), `statement_fidelity` (unknown: no named reviewer has checked its statement), `independent_review` (unknown), `novelty` (unknown)
 
 ## Every manuscript
 
@@ -36,9 +35,9 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 
 | Family | Manuscript | Challenges | Report |
 | --- | --- | --- | --- |
-| — | Algebraicity of Kuga-Satake Correspondences for K3 Surfaces | 0 | 5 |
-| — | Algebraicity of Weil classes on split abelian eightfolds | 0 | 6 |
-| — | The rational Hodge conjecture for products of K3 surfaces | 0 | 5 |
+| — | Algebraicity of Kuga-Satake Correspondences for K3 Surfaces | 0 | 4 |
+| — | Algebraicity of Weil classes on split abelian eightfolds | 0 | 5 |
+| — | The rational Hodge conjecture for products of K3 surfaces | 0 | 4 |
 | 001 | Milne's rationality conjecture for abelian varieties | 0 | 2 |
 | 002 | Exact Birch–Swinnerton-Dyer Formula from Low Selmer Corank | 0 | 2 |
 | 002 | The Selmer converse for elliptic curves at every prime | 0 | 2 |
@@ -217,8 +216,8 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 088 | Petty’s projection-volume conjecture in dimensions at least four | 3 | 1 |
 | 089 | $L_1$ Embeddings of Graphs of Bounded Treewidth | 2 | 1 |
 | 089 | Planar Graph Metrics Embed into $L_1$ with Constant Distortion | 2 | 1 |
-| 090 | A sharp Fourier certificate for planar circle packing | 4 | 4 |
-| 090 | An atomic certificate for triangular-lattice universal optimality | 4 | 4 |
+| 090 | A sharp Fourier certificate for planar circle packing | 4 | 3 |
+| 090 | An atomic certificate for triangular-lattice universal optimality | 4 | 3 |
 | 090 | Triangular minimality for planar Coulomb renormalized energy | 0 | 2 |
 | 090 | Universal optimality of the triangular lattice | 0 | 2 |
 | 091 | The logarithmic Brunn–Minkowski conjecture | 1 | 1 |
@@ -245,10 +244,10 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 102 | Constant-factor hardness of directed feedback vertex set | 5 | 1 |
 | 102 | The Factor-Two Hardness Threshold for Vertex Cover | 5 | 1 |
 | 102 | The Unique Games Theorem | 5 | 1 |
-| 103 | Exact Derandomization of Logarithmic Space: L = RL = BPL | 1 | 3 |
-| 104 | Deterministic quasipolynomial-time mean-payoff games | 2 | 3 |
+| 103 | Exact Derandomization of Logarithmic Space: L = RL = BPL | 1 | 1 |
+| 104 | Deterministic quasipolynomial-time mean-payoff games | 2 | 1 |
 | 104 | Mean-payoff parity games in quasipolynomial time | 0 | 2 |
-| 104 | Randomized quasipolynomial-time mean-payoff games | 2 | 3 |
+| 104 | Randomized quasipolynomial-time mean-payoff games | 2 | 1 |
 | 104 | Turn-Based Stochastic Mean-Payoff Games in Deterministic Quasipolynomial Time | 0 | 2 |
 | 105 | Perfect completeness for 2-to-1 games | 1 | 1 |
 | 106 | Hardness of finding large independent sets in three-colorable graphs | 1 | 1 |
@@ -261,12 +260,12 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 110 | Uniform computation of the squared-logarithmic k-server bound | 2 | 1 |
 | 111 | One Sample Suffices for Matroid Prophet Inequalities against an Almighty Adversary | 2 | 1 |
 | 112 | Beyond the Square-Root Exponent for Depth-Three Boolean Circuits | 1 | 1 |
-| 113 | A Fully Polynomial Randomized Approximation Scheme for Perfect Matchings in General Graphs | 6 | 3 |
-| 113 | Entropy and Face Dimension of the Perfect-Matching Polytope | 6 | 3 |
+| 113 | A Fully Polynomial Randomized Approximation Scheme for Perfect Matchings in General Graphs | 6 | 1 |
+| 113 | Entropy and Face Dimension of the Perfect-Matching Polytope | 6 | 1 |
 | 114 | An FPRAS for Common Integer Polymatroid Bases with Binary Capacities | 0 | 2 |
 | 114 | Approximate counting of common bases of two matroids | 1 | 1 |
-| 115 | An FPRAS for Cell-Bounded Contingency Tables | 1 | 3 |
-| 115 | Exact Uniform Sampling of Contingency Tables with Arbitrary Margins | 1 | 3 |
+| 115 | An FPRAS for Cell-Bounded Contingency Tables | 1 | 1 |
+| 115 | Exact Uniform Sampling of Contingency Tables with Arbitrary Margins | 1 | 1 |
 | 116 | One Rational Matrix Hitting Point for Noncommutative Formulas | 2 | 1 |
 | 116 | Polynomial Hitting Lists for Noncommutative Rational Formulas | 2 | 1 |
 | 116 | Uniform Matrix Hitting Points in Every Positive Characteristic | 0 | 2 |
@@ -338,7 +337,7 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 157 | A counterexample to the Colin de Verdière chromatic conjecture | 0 | 2 |
 | 157 | A linear list-coloring bound in terms of the Hadwiger number | 2 | 1 |
 | 158 | The Euclidean plane is not five-colorable | 2 | 1 |
-| 159 | Quasipolynomial Bounds for Arithmetic Progressions | 1 | 7 |
+| 159 | Quasipolynomial Bounds for Arithmetic Progressions | 1 | 6 |
 | 160 | Quantitative Superexponential Bounds for van der Waerden Numbers | 1 | 1 |
 | 161 | A counterexample to Sidorenko's conjecture | 1 | 1 |
 | 162 | A counterexample to Ryser's covering conjecture | 3 | 1 |
@@ -376,9 +375,9 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 185 | A Counterexample to the Infinite Matroid Packing/Covering Conjecture | 2 | 1 |
 | 186 | A Sharp Threshold Bound for Monotone Graph Properties | 1 | 1 |
 | 186 | A uniform influence bound for hypergraph properties | 0 | 2 |
-| 187 | Snaky in 21 Maker moves | 3 | 4 |
+| 187 | Snaky in 21 Maker moves | 3 | 3 |
 | 188 | The sharp terminal leave in random triangle removal | 1 | 1 |
-| 189 | Cycle–clique Ramsey numbers | 1 | 4 |
+| 189 | Cycle–clique Ramsey numbers | 1 | 3 |
 | 190 | Polynomial removal fails for ordered binary matrices | 1 | 1 |
 | 191 | A power improvement in the Heilbronn triangle lower bound | 1 | 1 |
 | 192 | Unbounded Violations of the Square-Root Degree Bound | 1 | 1 |
@@ -386,9 +385,9 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 194 | Lech's multiplicity conjecture | 1 | 1 |
 | 195 | A Complete Local Domain without a Small Cohen-Macaulay Module | 1 | 1 |
 | 196 | A Torsion-Free Group Algebra with Zero Divisors | 1 | 1 |
-| 197 | A Counterexample to Kaplansky's Direct-Finiteness Conjecture in Characteristic Two | 4 | 3 |
-| 197 | A Counterexample to Kaplansky's Direct-Finiteness Conjecture in Odd Characteristic | 4 | 3 |
-| 197 | A Counterexample to the Group-Ring Determinant Conjecture | 4 | 3 |
+| 197 | A Counterexample to Kaplansky's Direct-Finiteness Conjecture in Characteristic Two | 4 | 1 |
+| 197 | A Counterexample to Kaplansky's Direct-Finiteness Conjecture in Odd Characteristic | 4 | 1 |
+| 197 | A Counterexample to the Group-Ring Determinant Conjecture | 4 | 1 |
 | 197 | A Torsion-Free Group Algebra That Is Not Directly Finite | 0 | 2 |
 | 198 | An algebra of infinite little finitistic dimension | 2 | 1 |
 | 199 | A counterexample to Tachikawa's second conjecture | 2 | 1 |
@@ -400,8 +399,8 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 203 | Donovan's Conjecture over Algebraically Closed Fields | 0 | 2 |
 | 203 | Integral Donovan Finiteness over Witt Vectors | 0 | 2 |
 | 204 | Tensor saturation for even spin groups | 0 | 2 |
-| 205 | A Cyclic Polytabloid Proof of Saxl's Conjecture | 2 | 4 |
-| 205 | Universal Tensor Squares for Symmetric Groups | 2 | 4 |
+| 205 | A Cyclic Polytabloid Proof of Saxl's Conjecture | 2 | 3 |
+| 205 | Universal Tensor Squares for Symmetric Groups | 2 | 3 |
 | 206 | A negative solution to the finite lattice representation problem | 0 | 2 |
 | 206 | Finite congruence lattices: characterization and undecidability | 1 | 1 |
 | 207 | The $\ell^1$-Bass Conjecture for Discrete Groups | 0 | 2 |
@@ -490,16 +489,16 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 235 | Variance of the Random k-SAT Hitting Time | 4 | 1 |
 | 236 | The sharp factor-of-IID threshold for the free Ising model on regular trees | 1 | 1 |
 | 237 | Cap-selected amplitudes and triangle chords for honeycomb walks | 0 | 2 |
-| 237 | Critical honeycomb chords with prescribed boundary endpoints | 4 | 4 |
-| 237 | Critical strip-crossing mass on the honeycomb lattice | 4 | 4 |
+| 237 | Critical honeycomb chords with prescribed boundary endpoints | 4 | 3 |
+| 237 | Critical strip-crossing mass on the honeycomb lattice | 4 | 3 |
 | 237 | Cylinder amplitudes and logarithmic bridge-length windows on the honeycomb lattice | 0 | 2 |
 | 237 | Cylinder loop weights and planar nesting | 0 | 2 |
 | 237 | Disk transfer representations and confined bridge mass | 0 | 2 |
 | 237 | Marked polygon correlations and one-arc bounds | 0 | 2 |
 | 237 | Mass and covering exponents for fixed-length honeycomb walks | 0 | 2 |
-| 237 | Polynomial vacuum representations and bridge mass for honeycomb walks | 4 | 4 |
+| 237 | Polynomial vacuum representations and bridge mass for honeycomb walks | 4 | 3 |
 | 237 | Radial transfer estimates and polygon length laws for honeycomb walks | 0 | 2 |
-| 237 | Renewal and changes of law for critical honeycomb walks | 4 | 4 |
+| 237 | Renewal and changes of law for critical honeycomb walks | 4 | 3 |
 | 237 | Signed cylinder propagation and marked polygons on the honeycomb lattice | 0 | 2 |
 | 237 | Uniform marked-polygon estimates and sharp finite bridge moments | 0 | 2 |
 | 238 | A strict four-row permanent inequality and permutation moments | 13 | 1 |
@@ -525,7 +524,7 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 244 | The Partition Principle does not imply Choice | 2 | 1 |
 | 245 | Weak and strong normalization in pure type systems | 1 | 1 |
 | 246 | A Modulus Proof of Cannon’s Conjecture | 1 | 1 |
-| 247 | An infinite finitely presented periodic group | 1 | 3 |
+| 247 | An infinite finitely presented periodic group | 1 | 1 |
 | 247 | An infinite finitely presented residually finite 2-group | 0 | 2 |
 | 248 | Thompson's group F is nonamenable | 1 | 1 |
 | 249 | A finitely generated counterexample to the Eilenberg–Ganea conjecture | 1 | 1 |
@@ -572,8 +571,8 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 264 | Quantitative Near-Kerr Evolution and Generic C² Future Inextendibility | 0 | 2 |
 | 265 | A two-dimensional area law from a global spectral gap | 0 | 2 |
 | 265 | Polynomial PEPS approximation of gapped square-grid ground states | 0 | 2 |
-| 266 | Exact Fourier certificates for complex Hadamard matrices of order six | 2 | 7 |
-| 266 | The maximum number of mutually unbiased bases in dimension six | 2 | 7 |
+| 266 | Exact Fourier certificates for complex Hadamard matrices of order six | 2 | 6 |
+| 266 | The maximum number of mutually unbiased bases in dimension six | 2 | 6 |
 | 267 | A density-uniform condensate bound for dilute Bose gases | 0 | 2 |
 | 267 | Bose–Einstein condensation at positive temperature in the dilute hard-sphere gas | 0 | 2 |
 | 267 | Ground-state condensation in the dilute hard-sphere gas | 1 | 1 |
@@ -593,8 +592,8 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 273 | The entropy photon-number inequality | 1 | 1 |
 | 274 | Product-projection localization and the QAC⁰ parity lower bound | 2 | 1 |
 | 274 | Regular trajectories, pruning and quantum parity | 2 | 1 |
-| 275 | Continuum Coulomb hardness with binary nuclear charges | 1 | 4 |
-| 275 | QMA-hardness of continuum Coulomb energy with unit nuclear charges | 1 | 4 |
+| 275 | Continuum Coulomb hardness with binary nuclear charges | 1 | 3 |
+| 275 | QMA-hardness of continuum Coulomb energy with unit nuclear charges | 1 | 3 |
 | 276 | Classical capacity and entropy inequalities for generalized amplitude damping | 1 | 1 |
 | 277 | Threshold parallel repetition for finite-dimensional entangled games | 1 | 1 |
 | 278 | A Coulomb ground-state density without Kohn–Sham ensemble representation | 0 | 2 |
@@ -621,7 +620,7 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 291 | Equivariant Jiang–Su Stability for Amenable Actions in the Unital Stably Finite Case | 0 | 2 |
 | 291 | Nuclear dimension and Jiang–Su stability without elementary subquotients | 0 | 2 |
 | 291 | Tracial projection methods and uniform property Γ | 1 | 1 |
-| 292 | An explicit obstruction to nuclear norm-ultrapower embeddings | 1 | 4 |
+| 292 | An explicit obstruction to nuclear norm-ultrapower embeddings | 1 | 3 |
 | 293 | Backward intertwiners and a transitive commutant | 6 | 1 |
 | 293 | Invariant-projection counterexamples for every irrational rotation | 6 | 1 |
 | 294 | A counterexample to Kaplansky's quasitrace conjecture and failure of tensor-product stable finiteness | 2 | 1 |
@@ -641,7 +640,7 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 305 | A boundary-only obstruction to four-dimensional disk embedding | 0 | 2 |
 | 305 | A marked tensor obstruction to four-dimensional disk embedding | 0 | 2 |
 | 306 | Purely cosmetic surgery on knots in the three-sphere | 0 | 2 |
-| 307 | A counterexample to the coarse Novikov conjecture | 1 | 4 |
+| 307 | A counterexample to the coarse Novikov conjecture | 1 | 3 |
 | 307 | Failure of rational injectivity for maximal coarse assembly | 0 | 2 |
 | 308 | A finite Smith–Toda complex V(4) at the prime 1009 | 0 | 2 |
 | 308 | Finite Smith–Toda Complexes at Varying Primes | 0 | 2 |
@@ -694,7 +693,7 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 339 | Entropy equality and local symmetry in negative curvature | 0 | 2 |
 | 340 | A counterexample to the nearby Lagrangian conjecture | 0 | 2 |
 | 341 | Deforming hypersymplectic four-manifolds to hyperkähler triples | 0 | 2 |
-| 342 | Taming implies compatibility on four-manifolds | 1 | 4 |
+| 342 | Taming implies compatibility on four-manifolds | 1 | 3 |
 | 343 | Symplectic Ball Packings in Higher Dimensions | 2 | 1 |
 | 344 | The metric Blaschke theorem | 0 | 2 |
 | 345 | Infinitely many closed geodesic images on every Riemannian sphere | 0 | 2 |
@@ -759,7 +758,7 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 376 | Universal Computation with Eventually Stationary Navier–Stokes Forcing | 0 | 2 |
 | 376 | Velocity-Field Detection of Computation in Forced Navier–Stokes Flows | 6 | 1 |
 | 377 | Uniform Interior $C^{1,\alpha}$ Estimates for Infinity-Harmonic Functions | 0 | 2 |
-| 378 | The Exponential Time Hypothesis is False | 1 | 4 |
+| 378 | The Exponential Time Hypothesis is False | 1 | 3 |
 
 ## Not graded
 
