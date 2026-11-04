@@ -349,7 +349,7 @@ Reading the release's lakefile, freezing what came through LibSpec's tooling, an
 
 - **The 11 build errors were memory.** Each stopped inside `lake build`, before either kernel ran, and within 32 of Lake's jobs of where its first attempt stopped. Four stopped at the same count both times: `NuclearUltrapower`, `PlanarPacking`, `SnakyCertificate` and `SnakyTwentyOne`.
 
-  | Stopped | Stage | Seconds | Lake's job count when it stopped |
+  | Stopped | Stage | Seconds | Lake's job count when it stopped, of those it knew of by then |
   | --- | --- | --- | --- |
   | `SubexponentialSAT` | `lake build` | 5938 | 11756 of 12014 |
   | `ContinuumCoulombHardness` | `lake build` | 4833 | 10771 of 10849 |
