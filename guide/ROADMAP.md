@@ -276,9 +276,16 @@ The goal is a trusted Comparator result for every challenge in the release, fold
 - the ETH and local-smoothing shards run right after families 189 and 159;
 - every untrusted job gets `cache-mode: read` or `none`, never `write`, and runs off main, with a negative control showing it can't save a cache.
 
+**Your calls, on #100:**
+- patch nanoda's thread stack in our build, changing only the stack size, and rerun the nine challenges where it overflowed;
+- print each challenge's memory peak and how its unit ended, record a unit the memory limit stopped as out of memory, still unknown, and rerun the 11 build errors with that. If memory stopped them, the fix is proposed before it's run;
+- family 159 waits, too large to check yet, and family 189 goes with the build errors;
+- a later result replaces an earlier unknown one, never an acceptance or a rejection, and every attempt stays listed with its run's commit;
+- the trusted logs go up now as assets of a draft v1.1 release, which you publish with the tag.
+
 **Decisions that stay yours:**
 - merging the workflow and its scripts;
-- whether family 189 or 159 matters enough to check another way, once both are measured;
+- the fix, if memory stopped the build errors;
 - tagging `v1.1`.
 
 **Gate**

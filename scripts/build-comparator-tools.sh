@@ -9,7 +9,7 @@ set -euo pipefail
 
 COMPARATOR_REV=d03acab154d269c06e60e4de7e4cc85deebff94b # tag v4.34.0
 LANDRUN_REV=811cfff51ceaf3d9843708aa6d22e9b84ccac8b4    # main, 2026-10-13
-NANODA_REV=d0a02cc5defadd683f62f9d078f41688314fa31f     # master, 2026-10-27 (0.4.30)
+NANODA_REV=d0a02cc5defadd683f62f9d078f41688314fa31f     # master, 2026-10-27 (0.4.30), patched below
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
 dest="${1:?usage: build-comparator-tools.sh <dest> [--with-nanoda]}"
@@ -32,6 +32,20 @@ git -C "$src/landrun" checkout -q "$LANDRUN_REV"
 if [ "$with_nanoda" = "--with-nanoda" ]; then
   git clone -q https://github.com/ammkrn/nanoda_lib "$src/nanoda"
   git -C "$src/nanoda" checkout -q "$NANODA_REV"
+  # Our one change to nanoda: its checking threads' stack, from 16 MiB to 1 GiB. It changes no
+  # check, only how deep the checker can recurse before it aborts (guide/EXECUTABLE_GATE.md §4).
+  # It's in this script so that the tools' cache key, a hash of this file, changes with it.
+  git -C "$src/nanoda" apply - <<'PATCH'
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -20,4 +20,4 @@
+ pub mod unique_hasher;
+ pub mod util;
+
+-pub(crate) const STACK_SIZE: usize = 16_777_216;
++pub(crate) const STACK_SIZE: usize = 1_073_741_824;
+PATCH
+  git -C "$src/nanoda" diff
   (cd "$src/nanoda" && cargo build --release --locked)
   cp "$src/nanoda/target/release/nanoda_bin" "$dest/bin/"
 elif [ -n "$with_nanoda" ]; then

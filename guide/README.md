@@ -75,7 +75,7 @@ Some of it is the human's alone. The milestone notes' closing notes are in the h
 | --- | --- |
 | [README.md](../README.md), [REPRODUCE.md](../REPRODUCE.md) | What is proved, and how to check it yourself |
 | [CLAUDE.md](../CLAUDE.md) | The working rules for Claude Code |
-| `.gitattributes`, `.gitignore` | LF line endings everywhere, the archive kept byte for byte; build output and BLT's job logs ignored |
+| `.gitattributes`, `.gitignore` | LF line endings everywhere, the archive kept byte for byte; build output, Python bytecode and BLT's job logs ignored |
 | `.github/workflows/ci.yml` | CI: the build with leanchecker, `scripts/check.sh`, the differential tests and Comparator |
 | `.github/workflows/comparator-full.yml` | The full-strength Comparator run, by hand: nanoda and the full sandbox |
 | `.github/workflows/pilot-comparator.yml` | Comparator on a few of the release's challenges, as measurements only |
@@ -88,10 +88,11 @@ Some of it is the human's alone. The milestone notes' closing notes are in the h
 | `scripts/pilot-release.sh`, `scripts/pilot-fetch.sh` | The release at the pin, and its `lake update`, in the untrusted job |
 | `scripts/pilot_deps.py`, `scripts/pilot_tree.py` | The trusted job's rebuild of the release's dependencies, and the comparison with the untrusted tree |
 | `scripts/pilot-shard.sh`, `scripts/pilot_shard.py` | The trusted job's Comparator runs on a shard, and their results |
+| `scripts/pilot-unit-end.sh` | Records how a challenge's unit ended, and its memory peak, from systemd and the kernel |
 | `scripts/sandbox-check.sh` | Proves Comparator's landrun sandbox is in force, and the frozen build outputs unwritable |
 | `scripts/pilot-reports.sh` | CI's check that the pilot's reports are what `Gate.lean` prints from their data |
 | `scripts/pilot-trusted-lib.sh`, `scripts/pilot_resolve.lean` | The frozen outputs' read-only mounts outside `.lake`, and Lean's own resolution of the exports' modules |
-| `scripts/test-pilot-shard.sh` | The self-test of the shard runs: every outcome, with a fake comparator |
+| `scripts/test-pilot-shard.sh`, `scripts/test_shard_results.py` | The self-test of the shard runs: every outcome, with a fake comparator, and the results collector's rules |
 | `pilot/collect.py`, `pilot/to_lean.py`, `pilot/imports.py`, `pilot/plan_shards.py`, `pilot/shard_results.py` | The pilot's collector, its Lean generator, the import-graph reader, the shard plan, and the collector of the trusted results |
 | `pilot/data/` | Collected facts: `sample.json`, `catalogue.json`, `comparator-results.json` (trusted), `comparator-measurements.json` (#83's, untrusted), `shards.json`, `shard-plan.json` |
 | `pilot/reports/` | The generated reports: `first-sample.md`, `catalogue.md` |

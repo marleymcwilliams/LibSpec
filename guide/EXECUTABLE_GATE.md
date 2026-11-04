@@ -259,21 +259,29 @@ The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and
     - **It reads each job's raw log** from GitHub's API, and finds the step by its own header, up to the next step's header or the job's cleanup. A header that appears twice stops it. gh's own step names can't be relied on: it once named every step of a job "UNKNOWN STEP".
     - **Lines are split at newlines alone,** and only lines with the runner's timestamp count, since `str.splitlines()` also splits at characters such as U+2028 that the release could print inside a marked line.
     - **A job that hasn't finished, or that GitHub has no log for, gives no results** and is listed in the output, so its shard can be rerun. A runner that loses contact with GitHub can leave no log. A download that fails on the way is tried twice more.
+    - **Every attempt stays listed,** with its run, its attempt, its job and the LibSpec commit its run used, which says which build of the tools gave it. A later result replaces an earlier unknown one (cutOff, notStarted, outOfMemory, buildError, kernelsDisagree or tooLarge), and never an acceptance or a rejection. A challenge with both an acceptance and a rejection is listed under `conflicts`.
   - **Nothing of the release's is printed unmarked.** Every line of Comparator's output is prefixed with `comparator|`, with carriage returns turned to spaces. Names from the release's config and tar are printed with repr. So no line the release controls can pass for a result line or a GitHub workflow command.
   - **The logs are kept beyond GitHub's 90 days.** That's GitHub's most for a public repository. `pilot/shard_results.py --logs` saves each trusted job's raw log, byte for byte, with its SHA-256 recorded in `pilot/data/comparator-results.json`, so the logs can be attached to the v1.1 release and checked against it.
 - **Each challenge's result** is one of these. Comparator's exit status is recorded by the shell around it, outside the sandbox:
   - **accepted:** Comparator exited 0, after its success line.
   - **rejected:** Comparator exited 1 on one of its own rejections: a mismatched statement or constant, a disallowed axiom, or a refusal by Lean's kernel. nanoda reports a refusal by panicking, and an internal error the same way, so a failure of nanoda alone doesn't count as one.
   - **kernelsDisagree:** nanoda failed while Lean's kernel accepted, and it wasn't killed by SIGKILL. It stays unknown, is flagged as a warning on the run, and every case goes to Marley.
-  - **buildError:** anything else that stopped it. That covers a failed build or export, a crash, and a kill by a signal or by the memory limit, nanoda's included: exit 137 is 128 plus SIGKILL, as Lean's `wait` reports a signal. Its detail says which.
+  - **outOfMemory:** the memory limit stopped it: systemd's result for its unit is `oom-kill`, or the kernel counted an OOM kill in the unit's cgroup. It stays unknown. Only an acceptance outranks it, since both kernels had already finished. A rejection in a unit with an OOM kill doesn't count as one.
+  - **buildError:** anything else that stopped it. That covers a failed build or export, a crash, and a kill by a signal, nanoda's included: exit 137 is 128 plus SIGKILL, as Lean's `wait` reports a signal. Its detail says which.
   - **tooLarge:** it timed out as the first challenge in its job, whatever its cap, or later with the full 5-hour cap. It's too large to check yet.
   - **cutOff:** it timed out after other challenges, with less than the full cap, because its shared job was running out of time.
   - **notStarted:** its job ran out before it began.
 
-  A cut-off or unstarted challenge gets one rerun in a job of its own, `solo-<challenge>`. Only a rejection is evidence that fails, and build errors and timeouts stay unknown.
+  A cut-off or unstarted challenge gets one rerun in a job of its own, `solo-<challenge>`. Only a rejection is evidence that fails. Running out of memory, build errors and timeouts stay unknown.
+- **How each unit ended** is printed after each challenge, as an unmarked line of ours: `unit: <challenge>: result=… code=… status=… peak_mb=… oom_kills=…`.
+  - **Where it comes from:** `scripts/pilot-unit-end.sh`, which systemd runs as the unit's `ExecStopPost`, outside Comparator's sandbox, once the main process has gone. The result, code and status are systemd's. The peak and the kill count are the kernel's, from the unit's cgroup.
+  - **What the peak means:** it counts page cache, which the kernel reclaims before it kills anything. So a peak near the limit doesn't mean a unit ran out of memory; the result and the kill count do.
+  - **Shown to work in every job:** a probe before the first challenge runs a unit past a 256 MB limit, and the job stops unless that's recorded as out of memory.
 - **`selftest`, a third job,** runs `scripts/test-pilot-shard.sh` before any shard. It drives `scripts/pilot-shard.sh` through the real wrapper, landrun, caps and memory limit, with a fake comparator acting out each outcome. It checks:
   - every result above;
-  - that forged result lines and workflow commands appear only marked;
+  - how each unit ended: a clean exit, the memory limit, the time limit, and a unit killed another way, which mustn't be called out of memory;
+  - that forged result lines, unit lines and workflow commands appear only marked;
+  - the results collector's rules, in `scripts/test_shard_results.py`: finding the step, splitting lines, and which attempt counts;
   - that the sandbox check fails when landrun sandboxes nothing, and when a directory listed as frozen can be written;
   - the two attacks on resolution. From inside landrun, with Comparator's flags, it plants `Mathlib/` and `Init/` in the release's build directory, and renames the frozen Mathlib package to put a substitute in its place. Those flags let a build run only the toolchain and git, so the attack is Lean code, run by the toolchain's `lean`, as a build's own code would be. The old `LEAN_PATH` would then resolve the planted copies, and the exports' `LEAN_PATH` still resolves Mathlib and Init to the trusted ones.
 
@@ -303,6 +311,20 @@ In the three refusals, the trusted job stopped before any build. Both jobs' logs
 
 Reading the release's lakefile, freezing what came through LibSpec's tooling, and proving the sandbox is on all narrow this. None of them closes it.
 
+**Our one patch to a tool: nanoda's stack.** `scripts/build-comparator-tools.sh` builds nanoda at `d0a02cc` with one line changed: the stack of its checking threads, from 16 MiB to 1 GiB.
+
+```diff
+-pub(crate) const STACK_SIZE: usize = 16_777_216;
++pub(crate) const STACK_SIZE: usize = 1_073_741_824;
+```
+
+- **Why:** nine challenges aborted nanoda with a stack overflow while Lean's kernel accepted (the table below).
+- **What it changes:** the constant's only use is the stack size of those threads. So it changes no check, only how deep nanoda can recurse before it aborts. Stack pages are committed as they're touched, and they count against each challenge's memory limit.
+- **Why 1 GiB:** nanoda's issues [#61](https://github.com/ammkrn/nanoda_lib/issues/61) and [#77](https://github.com/ammkrn/nanoda_lib/issues/77) report checks passing at 1 GiB that overflow at 16 MiB. We didn't measure other sizes first.
+- **What it can't fix:** [#62](https://github.com/ammkrn/nanoda_lib/issues/62) reports `SquareDifference` still running at 96 GB with an 8 GiB stack, and [#71](https://github.com/ammkrn/nanoda_lib/pull/71) proposes a change to nanoda's logic for it. We've changed only the stack, so a run like that ends at the memory limit, unknown.
+- **Which build gave which result:** each attempt in `pilot/data/comparator-results.json` names its run's LibSpec commit, and so the build. The earlier results, the 396 acceptances among them, came from the unpatched build.
+- **Upstream:** nanoda's master added a `stack_size_bytes` option on 2026-10-29 ([#78](https://github.com/ammkrn/nanoda_lib/pull/78)), two days after our pin, with a 32 MiB default. Comparator v4.34.0 writes nanoda's config itself and doesn't set it, so using the option here would need a change to Comparator too.
+
 **The results.** Every one of the 418 challenges has a trusted result, in `pilot/data/comparator-results.json`, from four runs: [41146560423](https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423) (families 189 and 159), [41170918445](https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445) (378 and 079), [41181960510](https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510) (the other 29 shards) and [41222068108](https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108) (61 challenges in jobs of their own). No challenge was rejected.
 
 | Result | Challenges | Which, and why |
@@ -317,6 +339,7 @@ Reading the release's lakefile, freezing what came through LibSpec's tooling, an
   - **The bins' estimates were low.** 6 challenges were cut off and 55 never started, so each got a job of its own.
   - **Collecting the results** turned up two faults in the collector, both fixed: gh's step names (#98), and jobs with no log (#99).
 - **In the report,** 313 manuscripts have `formal_proof` known, every challenge accepted, and 31 have it unknown: 16 on a build error, 12 on the kernels disagreeing and 3 too large to check yet. The report names the reason for each.
+- **Reruns, on Marley's calls on #100:** the nine with the patched nanoda, and the 11 build errors with each unit's end recorded, `SubexponentialSAT` and `CycleCliqueRamsey` included. `ErdosReciprocal` (family 159) waits, too large to check yet. If memory stopped the 11, the fix is proposed before it's run.
 
 **Lewis & Clark's BLT cluster, for heavy builds, if its OS can run current Lean.**
 - **It can.** It runs Ubuntu 20.04 and SLURM, as you've confirmed. Its documentation ([About the cluster](https://watzek.github.io/BLTdocs/about-the-cluster.html)) is out of date: it still says "The cluster runs the CentOS Linux operating system, version 7.4", with Sun Grid Engine and a 25 GB quota per user. It has 144 cores and 1,500 GB of memory across one login node and three workers.
