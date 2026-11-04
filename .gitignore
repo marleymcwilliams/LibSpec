@@ -2,3 +2,4 @@ lean/.lake/
 # BLT job logs from scripts/blt-build.sbatch, in the directory the job is submitted from
 /libspec-build-*.log
 __pycache__/
+.claude/settings.local.json

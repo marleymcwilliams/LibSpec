@@ -4,6 +4,19 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-04
 
+### The PR template, the deny rules, and the review rule (Marley's list)
+- **Decided: the file rules cover every checkout.** They're anchored at the filesystem root (`//**/...`), because PR work happens in worktrees outside the project, which a project-relative rule wouldn't reach. Only the rules on the live settings files are anchored at the project.
+- **Added, beyond the list:**
+  - **the rules deny editing the live settings files,** so Claude Code can't lift its own rule;
+  - **`.claude/` joins the paths only Marley merges,** for the same reason;
+  - **CLAUDE.md says not to get a denied effect another way,** since the rules can't stop every way (below).
+- **Tested against the real harness,** with `claude -p` in a throwaway repository with a local remote, checking the outcome on disk and on the remote. 25 actions were refused, and the 8 that must keep working weren't, including branch pushes and `origin/main:refs/heads/pilot/runs`.
+- **Not stopped, as that test also showed:** a Python one-liner writing a denied file, `bash -c "git tag t9"`, and a bare `git push` from `main`. The rules guard Claude Code's direct commands; they aren't a sandbox. What stands behind them:
+  - GitHub's rulesets, for pushes to `main` and for moving or deleting `v*` and `statements-v*` tags;
+  - the statements check, for the statements and their definitions.
+  - **Nothing stands behind them for `archive/`, or for creating a tag.** Both went to Marley as decisions.
+- **Answered: main already requires green checks.** Ruleset 24442162 requires a PR and the `build` check, and blocks force-pushes and deletion, with no bypass. `build` is the right one to require, as the path-filtered workflows would hang as pending on PRs they don't run for.
+
 ### nanoda's stack and each unit's end (#101, Marley's calls on #100)
 - **Answered first:** `CycleCliqueRamsey` and `SubexponentialSAT` each ran once, in runs 41146560423 and 41170918445, and #100 records those runs. No network error touched them, and neither was rerun. The jobs rerun after losing a runner were b13 and b26.
 - **Patched: nanoda's stack,** as Marley asked, from 16 MiB to 1 GiB, in `scripts/build-comparator-tools.sh`, so that the tools' cache key changes with it.
