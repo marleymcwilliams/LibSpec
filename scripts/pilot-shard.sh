@@ -28,6 +28,11 @@
 # from scripts/pilot-unit-end.sh. A unit the memory limit stopped is outOfMemory, which stays
 # unknown. A probe before the first challenge shows that this record works.
 #
+# Then an unmarked "sample:" line gives what a loop outside the sandbox saw while the unit ran:
+# the setting of LEAN_NUM_THREADS, the most Lean processes at once, the largest one's memory, and
+# nanoda's and the whole unit's anonymous memory. It holds numbers only, nothing of the release's.
+# PILOT_LEAN_THREADS sets LEAN_NUM_THREADS for the challenges; left empty, Lean chooses.
+#
 # Nothing of the release's is printed unmarked: Comparator's output is prefixed line by line,
 # and names from the release's config are printed with repr. The unmarked "result:" lines are
 # the evidence (pilot/shard_results.py reads them).
@@ -37,7 +42,7 @@
 # manager, and comparator, lean4export, landrun and nanoda_bin on PATH. PILOT_FROZEN names a
 # file listing the frozen build directories, one per line, and PILOT_TRUSTED_LIB the directory
 # of their read-only mounts. Tests may set PILOT_PLAN,
-# PILOT_FULL_CAP, PILOT_BUDGET, PILOT_MIN_START and PILOT_MEMORY_MAX
+# PILOT_FULL_CAP, PILOT_BUDGET, PILOT_MIN_START, PILOT_MEMORY_MAX and PILOT_SAMPLE_SECONDS
 # (scripts/test-pilot-shard.sh).
 set -euo pipefail
 
@@ -51,6 +56,8 @@ full_cap="${PILOT_FULL_CAP:-18000}"          # 5 hours, the cap on one challenge
 deadline=$((JOB_START + ${PILOT_BUDGET:-20400}))  # 340 minutes: 15 of the job's 355 are left
 min_start="${PILOT_MIN_START:-300}"           # don't start a challenge with less than this left
 memory_max="${PILOT_MEMORY_MAX:-13G}"         # below the runner's 16 GB, so only it is killed
+sample_seconds="${PILOT_SAMPLE_SECONDS:-5}"   # how often the sampler looks at a running unit
+lean_threads="${PILOT_LEAN_THREADS:-}"        # LEAN_NUM_THREADS for the challenges, if set
 mkdir -p "$out/logs"
 tsv="$out/results.tsv"
 : > "$tsv"
@@ -68,6 +75,12 @@ systemctl --user show-environment > /dev/null 2>&1 ||
   { echo "FAIL: no systemd user manager (try: sudo loginctl enable-linger \"\$USER\")"; exit 1; }
 echo "kernel: $(uname -r)"
 echo "lean: $(command -v lean)"
+threads_env=()
+if [ -n "$lean_threads" ]; then
+  [[ "$lean_threads" =~ ^[1-9][0-9]*$ ]] || { echo "FAIL: PILOT_LEAN_THREADS isn't a positive number"; exit 1; }
+  threads_env=(-E LEAN_NUM_THREADS="$lean_threads")
+fi
+echo "lean threads: ${lean_threads:-default}"
 names="$(helper challenges "$plan" "$shard")"
 mapfile -t challenges <<< "$names"
 echo "shard: $shard (${#challenges[@]} challenges)"
@@ -97,7 +110,7 @@ in_wrapper() {
     --property=MemoryMax="${MEMORY:-$memory_max}" \
     --property=MemorySwapMax=0 \
     ${end[@]+"${end[@]}"} \
-    -E PATH="$PATH" -E HOME="$HOME" -E LEAN_PATH="$LEAN_PATH" \
+    -E PATH="$PATH" -E HOME="$HOME" -E LEAN_PATH="$LEAN_PATH" ${threads_env[@]+"${threads_env[@]}"} \
     --working-directory "$lean_dir" \
     -- "$@"
 }
@@ -152,13 +165,20 @@ for c in "${challenges[@]}"; do
   log="$out/logs/$c.log"
   exit_file="$out/logs/$c.exit"
   unit_file="$out/logs/$c.unit"
-  rm -f "$exit_file" "$unit_file"
+  sample_file="$out/logs/$c.sample"
+  cgroup_file="$out/logs/$c.cgroup"
+  rm -f "$exit_file" "$unit_file" "$sample_file" "$cgroup_file"
+  helper sample "$cgroup_file" "$sample_file" "$sample_seconds" "${lean_threads:-default}" > /dev/null 2>&1 &
+  sampler=$!
   t0=$(date +%s)
   # The shell around Comparator records its exit status, outside the sandbox, where nothing
   # the release builds can write. A unit stopped at its cap or by the memory limit leaves none.
-  UNIT_END="$unit_file" MAX_SECONDS=$cap in_wrapper bash -c 'comparator "$1" > "$2" 2>&1; echo "$?" > "$3"' \
-    pilot-shard "$config" "$log" "$exit_file" || true
+  UNIT_END="$unit_file" MAX_SECONDS=$cap in_wrapper bash -c \
+    'cut -d: -f3 /proc/self/cgroup > "$4"; comparator "$1" > "$2" 2>&1; echo "$?" > "$3"' \
+    pilot-shard "$config" "$log" "$exit_file" "$cgroup_file" || true
   t1=$(date +%s)
+  kill "$sampler" 2> /dev/null || true
+  wait "$sampler" 2> /dev/null || true
   res="$(helper classify "$log" "$exit_file" "$((t1 - t0))" "$cap" "$full_cap" "$first" "$unit_file")"
   status="${res%%$'\t'*}"
   detail="${res#*$'\t'}"
@@ -168,6 +188,7 @@ for c in "${challenges[@]}"; do
   resolved || { echo "FAIL: after $c, the exports no longer resolve the trusted copies"; exit 1; }
   printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$c" "$status" "$((t1 - t0))" "$cap" "$(free_mb)" "$detail" >> "$tsv"
   echo "unit: $c: $(helper unit "$unit_file")"
+  echo "sample: $c: $(helper sample-line "$sample_file")"
   echo "result: $c: $status in $((t1 - t0)) s (cap $cap s), $(free_mb) MB free; $detail"
   if [ "$status" = kernelsDisagree ]; then
     echo "::warning title=Kernels disagree::$c: nanoda failed while Lean's kernel accepted ($detail)"

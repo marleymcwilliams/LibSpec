@@ -4,6 +4,13 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-04
 
+### The thread setting and the sampler (Marley's calls on #103)
+- **Applied, as Marley asked:** one line in Comparator's `safeLakeBuild`, and its mirror in `scripts/sandbox-check.sh`.
+- **Decided: only `safeLakeBuild`.** comparator#104 also patches `safeExport`, but all 11 stopped before any export, and Marley asked for the one line. Easy to extend if an export runs out of memory.
+- **Decided: the setting is a dispatch input,** `lean_threads`, empty by default, so nothing else changes. A run that doesn't set it behaves as before.
+- **Decided: the sampler reads the unit's cgroup every 5 seconds, and prints numbers only.** It reports anonymous memory as well as total, since mapped `.olean` pages can be reclaimed and anonymous memory can't. The earlier proposal said 30 seconds, and the review on #103 pointed out that could miss the climb before a kill.
+- **Also Marley's calls:** tag creation on GitHub stays as it is, and no branch name starts with `v`, since the deny rule `git push * v*` would block pushing it.
+
 ### The reruns' results
 - **Recorded:** run [41891664929](https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929) reran the nine and the 11, each in its own job, on `8badfa7`. `pilot/data/comparator-results.json` now holds 404 accepted, 12 out of memory and 2 too large, none rejected, with every attempt listed. The report has 324 manuscripts known and 20 unknown.
 - **Decided: `outOfMemory` is a `RunResult` of its own,** not a kind of build error, since each unit's end now says which it was. The report reads "the memory limit stopped it". `buildError` stays, for a failed build or export, a crash or another signal, though no challenge counts as one now. Undo by reverting this PR.

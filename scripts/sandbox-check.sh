@@ -7,7 +7,8 @@
 # gives a `lake build`, and requires:
 # - a write inside PROJECT_DIR/.lake to work;
 # - a write outside it, in PROJECT_DIR and in $HOME, to fail;
-# - for each FROZEN_DIR, creating a file in it and changing a file in it to fail.
+# - for each FROZEN_DIR, creating a file in it and changing a file in it to fail;
+# - LEAN_NUM_THREADS, if it's set, to reach a sandboxed command.
 # It exits 1 otherwise. Run it inside the systemd-run wrapper, as Comparator runs.
 #
 # usage: bash scripts/sandbox-check.sh PROJECT_DIR [FROZEN_DIR...]
@@ -21,7 +22,7 @@ mkdir -p "$project/.lake"
 # Comparator's buildLandrunArgs for safeLakeBuild, with its envPass, readablePaths,
 # writablePaths and executablePaths.
 args=(--best-effort --ro / --rw /dev -ldd -add-exec
-      --env PATH --env HOME --env LEAN_ABORT_ON_PANIC
+      --env PATH --env HOME --env LEAN_ABORT_ON_PANIC --env LEAN_NUM_THREADS
       --ro "$project" --rwx "$project/.lake" --rox "$prefix" --rox "$git_bin")
 
 # writes <file>: whether a sandboxed shell can write to file, by creating it or appending to it.
@@ -37,6 +38,12 @@ rm -f "$inside"
 if writes "$outside"; then rm -f "$outside"; fail "a sandboxed write outside .lake worked: Landlock isn't in force"; fi
 if writes "$home"; then rm -f "$home"; fail "a sandboxed write into \$HOME worked: Landlock isn't in force"; fi
 echo "ok: inside landrun, a write inside .lake works, and writes outside it fail"
+
+if [ -n "${LEAN_NUM_THREADS:-}" ]; then
+  landrun "${args[@]}" -- /bin/sh -c '[ "$LEAN_NUM_THREADS" = "$1" ]' sh "$LEAN_NUM_THREADS" ||
+    fail "LEAN_NUM_THREADS doesn't reach a sandboxed command"
+  echo "ok: inside landrun, LEAN_NUM_THREADS is $LEAN_NUM_THREADS"
+fi
 
 for d in "$@"; do
   [ -d "$d" ] || fail "no such directory to check: $d"

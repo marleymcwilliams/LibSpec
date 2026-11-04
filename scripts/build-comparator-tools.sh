@@ -7,7 +7,7 @@
 # Needs git, go and elan, and cargo for nanoda. Linux only (landrun uses Landlock).
 set -euo pipefail
 
-COMPARATOR_REV=d03acab154d269c06e60e4de7e4cc85deebff94b # tag v4.34.0
+COMPARATOR_REV=d03acab154d269c06e60e4de7e4cc85deebff94b # tag v4.34.0, patched below
 LANDRUN_REV=811cfff51ceaf3d9843708aa6d22e9b84ccac8b4    # main, 2026-10-13
 NANODA_REV=d0a02cc5defadd683f62f9d078f41688314fa31f     # master, 2026-10-27 (0.4.30), patched below
 
@@ -20,6 +20,24 @@ mkdir -p "$dest/bin"
 
 git clone -q https://github.com/leanprover/comparator "$src/comparator"
 git -C "$src/comparator" checkout -q "$COMPARATOR_REV"
+# Our one change to Comparator: its sandboxed `lake build` may see LEAN_NUM_THREADS. Landrun omits
+# a variable that isn't set, so a run that doesn't set it is unchanged. It changes no check, only
+# how many Lean processes a build runs at once (guide/EXECUTABLE_GATE.md §4). It's in this script
+# so that the tools' cache key, a hash of this file, changes with it.
+git -C "$src/comparator" apply - <<'PATCH'
+--- a/Main.lean
++++ b/Main.lean
+@@ -124,7 +124,7 @@
+   runSandBoxed {
+     cmd := "lake",
+     args := #["build", target.toString],
+-    envPass := #["PATH", "HOME", "LEAN_ABORT_ON_PANIC"]
++    envPass := #["PATH", "HOME", "LEAN_ABORT_ON_PANIC", "LEAN_NUM_THREADS"]
+     envOverride := #[("LEAN_ABORT_ON_PANIC", some "1")]
+     readablePaths := #[projectDir]
+     writablePaths := #[dotLakeDir]
+PATCH
+git -C "$src/comparator" diff
 cp "$root/lean/lean-toolchain" "$src/comparator/lean-toolchain"
 (cd "$src/comparator" && lake build lean4export comparator)
 cp "$src/comparator/.lake/build/bin/comparator" "$dest/bin/"

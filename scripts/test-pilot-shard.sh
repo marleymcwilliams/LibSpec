@@ -9,8 +9,10 @@
 #   killed some other way), tooLarge (first in its job with less than the full cap, and later
 #   with the full cap), cutOff, and notStarted;
 # - that each challenge's unit: line says how its unit ended, in systemd's words;
-# - that a line the fake prints to forge a result, a unit line or a GitHub workflow command
-#   appears only marked;
+# - that each challenge's sample: line counts the Lean processes a unit ran at once, and that
+#   PILOT_LEAN_THREADS reaches the unit and the sandbox, and a bad value is refused;
+# - that a line the fake prints to forge a result, a unit line, a sample line or a GitHub workflow
+#   command appears only marked;
 # - the results collector's rules (scripts/test_shard_results.py);
 # - that the sandbox check fails when landrun sandboxes nothing, and when a directory listed as
 #   frozen can be written;
@@ -35,7 +37,8 @@ fail=0
 check() { if [ "$2" = "$3" ]; then echo "ok: $1"; else echo "FAIL: $1: expected $3, got $2"; fail=1; fi; }
 
 # A fake release: configs, a trusted Mathlib and one more frozen package.
-mkdir -p "$lean/ComparatorChallenges" "$t/bin"
+mkdir -p "$lean/ComparatorChallenges" "$t/bin" "$t/fake-lean"
+cp "$(command -v sleep)" "$t/fake-lean/lean"  # a process named lean, for the sampler to count
 math="$lean/.lake/packages/mathlib/.lake/build"
 other="$lean/.lake/packages/frozenpkg/.lake/build"
 mkdir -p "$math/lib/lean/Mathlib" "$other/lib/lean/FrozenPkg"
@@ -43,7 +46,7 @@ echo trusted > "$math/lib/lean/Mathlib.olean"
 echo trusted > "$math/lib/lean/Mathlib/Basic.olean"
 echo trusted > "$other/lib/lean/FrozenPkg/Some.olean"
 names=(Accepts Mismatch AxiomBad LeanRefuses NanodaOnly NanodaKilled BuildFails Crashes
-       OutOfMemory UnitKilled Forged Hangs Quick HangsFull Quick2 HangsLater Never)
+       OutOfMemory UnitKilled Forged Hangs Quick HangsFull Quick2 HangsLater Never ThreeLeans)
 for n in "${names[@]}"; do
   printf '{"challenge_module": "CC.%s", "solution_module": "OAI.%s", "theorem_names": ["%s"], "permitted_axioms": ["propext"]}\n' \
     "$n" "$n" "$n" > "$lean/ComparatorChallenges/$n.json"
@@ -55,7 +58,8 @@ cat > "$t/plan.json" <<'JSON'
                               "Forged"]},
   "first": {"challenges": ["Hangs"]},
   "full": {"challenges": ["Quick2", "HangsFull"]},
-  "cut": {"challenges": ["Quick", "HangsLater", "Never"]}}}
+  "cut": {"challenges": ["Quick", "HangsLater", "Never"]},
+  "threads": {"challenges": ["ThreeLeans"]}}}
 JSON
 printf '%s\n' "$math" "$other" > "$t/frozen.txt"
 while IFS= read -r d; do sudo chattr -R +i "$d"; done < "$t/frozen.txt"
@@ -86,8 +90,13 @@ case "$what" in
   Crashes) built; kill -SEGV $$ ;;
   OutOfMemory) built; exec python3 -c 'b = bytearray(2 << 30)' ;;
   UnitKilled) built; kill -KILL "$PPID"; sleep 100000 ;;
+  ThreeLeans) built; say "LEAN_NUM_THREADS=${LEAN_NUM_THREADS:-unset}"
+    lean="$(dirname "$0")/../fake-lean/lean"
+    "$lean" 5 & "$lean" 5 & "$lean" 5 & wait
+    say "Your solution is okay!"; exit 0 ;;
   Forged) say "result: Forged: accepted in 1 s (cap 18000 s), 1 MB free" "::error::forged" \
       "unit: Forged: result=oom-kill code=killed status=KILL peak_mb=1 oom_kills=1" \
+      "sample: Forged: threads=9 lean_max=9 lean_anon_mb=9 lean_rss_mb=9 nanoda_anon_mb=9 unit_anon_mb=9 samples=9" \
       "Lean default kernel rejects the solution" "Your solution is okay!"
     echo "uncaught exception: Child exited with 1" >&2; exit 1 ;;
   Hangs|HangsFull|HangsLater) sleep 100000 ;;
@@ -100,7 +109,8 @@ chmod +x "$t/bin/comparator"
 run() {
   JOB_START="$(date +%s)" PATH="$t/bin:$PATH" PILOT_PLAN="$t/plan.json" PILOT_FROZEN="$t/frozen.txt" \
     PILOT_TRUSTED_LIB="$t/trusted" PILOT_FULL_CAP="$2" PILOT_BUDGET="$3" PILOT_MIN_START="$4" \
-    PILOT_MEMORY_MAX=300M bash "$root/scripts/pilot-shard.sh" "$1" "$t/release" "$t/out-$1" > "$t/$1.log" 2>&1 ||
+    PILOT_MEMORY_MAX=300M PILOT_SAMPLE_SECONDS=1 PILOT_LEAN_THREADS="${THREADS:-}" \
+    bash "$root/scripts/pilot-shard.sh" "$1" "$t/release" "$t/out-$1" > "$t/$1.log" 2>&1 ||
     { cat "$t/$1.log"; echo "FAIL: pilot-shard.sh stopped on shard $1"; exit 1; }
 }
 status() { python3 -c 'import json, sys; d = json.load(open(sys.argv[1])); print({c["name"]: c["status"] for c in d["challenges"]}[sys.argv[2]])' "$t/out-$1/results.json" "$2"; }
@@ -130,13 +140,31 @@ check "the probe shows the memory limit's stop is recorded" \
 check "a disagreement of the kernels is flagged" \
   "$(grep -c '^::warning title=Kernels disagree::NanodaOnly' "$t/outcomes.log" || true)" 1
 check "a forged result line appears only marked" \
-  "$(grep -cE '^(result: Forged: accepted|unit: Forged: result=oom-kill|::error::forged|Your solution is okay!)' "$t/outcomes.log" || true)" 0
+  "$(grep -cE '^(result: Forged: accepted|unit: Forged: result=oom-kill|sample: Forged: threads=9|::error::forged|Your solution is okay!)' "$t/outcomes.log" || true)" 0
 check "the forged lines do appear, marked" \
   "$(grep -c '^    comparator| result: Forged: accepted' "$t/outcomes.log" || true)" 1
 check "the sandbox and memory probes passed" \
   "$(grep -cE '^ok: (inside landrun|a memory limit)' "$t/outcomes.log" || true)" 3
 check "the exports resolved the trusted copies, before and after each challenge" \
   "$(grep -c '^ok: the exports resolve' "$t/outcomes.log" || true)" 12
+
+echo "== The sampler and the thread setting"
+check "every challenge has a sample line" \
+  "$(grep -c '^sample: [A-Za-z]*: ' "$t/outcomes.log" || true)" 11
+THREADS=2 run threads 120 1000 5
+check "the setting is recorded" "$(grep -c '^lean threads: 2$' "$t/threads.log" || true)" 1
+check "the setting reaches the unit" "$(grep -c '^    comparator| LEAN_NUM_THREADS=2$' "$t/threads.log" || true)" 1
+check "the setting reaches the sandbox" "$(grep -c '^ok: inside landrun, LEAN_NUM_THREADS is 2$' "$t/threads.log" || true)" 1
+check "the sampler counts the Lean processes running at once" \
+  "$(sed -n 's/^sample: ThreeLeans: threads=2 lean_max=\([0-9]*\) .*/\1/p' "$t/threads.log")" 3
+run threads 120 1000 5
+check "left unset, it stays unset in the unit" "$(grep -c '^    comparator| LEAN_NUM_THREADS=unset$' "$t/threads.log" || true)" 1
+check "left unset, the sample line says default" "$(grep -c '^sample: ThreeLeans: threads=default ' "$t/threads.log" || true)" 1
+if (THREADS="2; echo forged" run threads 120 1000 5) > /dev/null 2>&1; then
+  check "a bad thread setting is refused" passed refused
+else
+  check "a bad thread setting is refused" refused refused
+fi
 
 echo "== The timeouts"
 run first 60 50 5
