@@ -15,9 +15,17 @@ in it. gh's split of a log into steps can't be relied on: it named every step of
 them, since str.splitlines() also splits at characters such as U+2028 that the release could
 print in a marked line, and so could start a line of its own.
 
-Runs are read in the order given. A later result for a challenge replaces an earlier one only
-when the earlier one is cutOff or notStarted, which is what a rerun in a job of its own is for.
-Each run is read at its latest attempt, so a rerun of its failed jobs replaces them.
+Runs are read in the order given, and each run's attempts oldest first. Every attempt stays
+listed: each challenge has its "attempts", each with its run, its attempt, its job and
+"libspecCommit", the commit the run used, which says which build of the tools gave that result.
+The attempt that counts is the latest, as long as those before it are unknown (cutOff,
+notStarted, outOfMemory, buildError, kernelsDisagree or tooLarge). An acceptance or a rejection
+is never replaced. A challenge with both among its attempts is listed under "conflicts", and
+what counts is whichever came first.
+
+A rerun copies the jobs it doesn't rerun into its new attempt, under new ids, with the same times
+and the same log. So a job is one name and start time, kept once, under its latest id, with the
+attempt that really ran it.
 
 A trusted job gives no results, and is listed in its run's entry, if it hasn't finished
 ("notFinished") or if GitHub has no log for it ("noLog"), as when its runner was lost.
@@ -45,14 +53,52 @@ JOB = re.compile(r"^Shard ([A-Za-z0-9_-]+) \(trusted\)$")
 # step's header, or the job's cleanup, begins.
 STEP_HEADER = '##[group]Run export PILOT_FROZEN="$RUNNER_TEMP/frozen.txt"'
 STEP_END = ("##[group]Run ", "Post job cleanup.")
-RESULT = re.compile(r"^result: ([A-Za-z0-9_]+): (accepted|rejected|kernelsDisagree|buildError|"
-                    r"tooLarge|cutOff|notStarted)(?: in (\d+) s \(cap (\d+) s\))?")
+RESULT = re.compile(r"^result: ([A-Za-z0-9_]+): (accepted|rejected|kernelsDisagree|outOfMemory|"
+                    r"buildError|tooLarge|cutOff|notStarted)(?: in (\d+) s \(cap (\d+) s\))?")
+UNIT = re.compile(r"^unit: ([A-Za-z0-9_]+): (result=\S+ code=\S+ status=\S+ peak_mb=\S+ "
+                  r"oom_kills=\S+|not recorded)$")
 TIMESTAMP = re.compile(r"^\d{4}-\d\d-\d\dT[0-9:.]+Z ")
-RERUN = {"cutOff", "notStarted"}
+UNKNOWN = {"cutOff", "notStarted", "outOfMemory", "buildError", "kernelsDisagree", "tooLarge"}
+EVIDENCE = {"accepted", "rejected"}
 
 
 def gh(*args):
     return subprocess.run(["gh"] + list(args), capture_output=True, check=True).stdout
+
+
+def api(path):
+    return json.loads(gh("api", f"repos/{REPO}/actions/{path}").decode("utf-8"))
+
+
+def attempt_jobs(run, attempt):
+    """Every job of one attempt of a run."""
+    jobs, page = [], 1
+    while True:
+        got = api(f"runs/{run}/attempts/{attempt}/jobs?per_page=100&page={page}")["jobs"]
+        jobs += got
+        if len(got) < 100:
+            return jobs
+        page += 1
+
+
+def run_jobs(run):
+    """A run's commit, how many attempts it has, and each job it really ran, oldest attempt first."""
+    info = api(f"runs/{run}")
+    seen = {}
+    for attempt in range(info["run_attempt"], 0, -1):
+        for job in attempt_jobs(run, attempt):
+            seen.setdefault((job["name"], job["started_at"]), job)["attempt"] = attempt
+    return info["head_sha"], info["run_attempt"], sorted(seen.values(), key=lambda j: j["attempt"])
+
+
+def counted(attempts):
+    """The attempt that counts, of a challenge's attempts in order: the latest, unless an earlier
+    one was accepted or rejected, which is never replaced."""
+    best = None
+    for a in attempts:
+        if best is None or best["status"] in UNKNOWN:
+            best = a
+    return best
 
 
 def job_log(job_id):
@@ -92,13 +138,13 @@ def main():
     if args[:1] == ["--logs"]:
         logs, args = args[1], args[2:]
         os.makedirs(logs, exist_ok=True)
-    found, runs = {}, []
+    attempts, runs = {}, []
     for run in args:
         if not run.isdigit():
             sys.exit(f"not a run id: {run!r}")
-        jobs = json.loads(gh("api", f"repos/{REPO}/actions/runs/{run}/jobs?per_page=100")
-                          .decode("utf-8"))["jobs"]
+        commit, tries, jobs = run_jobs(run)
         entry_run = {"run": int(run), "url": f"https://github.com/{REPO}/actions/runs/{run}",
+                     "libspecCommit": commit, "attempts": tries,
                      "logs": [], "noLog": [], "notFinished": []}
         for job in jobs:
             m = JOB.match(job["name"])
@@ -106,7 +152,8 @@ def main():
                 continue
             if job["conclusion"] not in ("success", "failure"):
                 # Still running, cancelled or skipped: no results from it, and listed.
-                entry_run["notFinished"].append({"job": job["id"], "shard": m.group(1),
+                entry_run["notFinished"].append({"job": job["id"], "attempt": job["attempt"],
+                                                 "shard": m.group(1),
                                                  "conclusion": job["conclusion"]})
                 continue
             try:
@@ -115,29 +162,42 @@ def main():
                 # A job whose runner was lost can leave no log, and GitHub answers 404. It gives
                 # no results, and is listed, so that its shard can be rerun.
                 why = e.stderr.decode("utf-8", errors="replace").strip().splitlines()[:1]
-                entry_run["noLog"].append({"job": job["id"], "shard": m.group(1),
-                                           "conclusion": job["conclusion"],
+                entry_run["noLog"].append({"job": job["id"], "attempt": job["attempt"],
+                                           "shard": m.group(1), "conclusion": job["conclusion"],
                                            "why": why[0] if why else f"gh exited {e.returncode}"})
                 print(f"no log: run {run}, job {job['id']} ({m.group(1)})", file=sys.stderr)
                 continue
             if logs:
-                name = f"run-{run}-job-{job['id']}-{m.group(1)}.log"
-                open(os.path.join(logs, name), "wb").write(data)
-                entry_run["logs"].append({"job": job["id"], "shard": m.group(1), "file": name,
+                file = f"run-{run}-job-{job['id']}-{m.group(1)}.log"
+                open(os.path.join(logs, file), "wb").write(data)
+                entry_run["logs"].append({"job": job["id"], "attempt": job["attempt"],
+                                          "shard": m.group(1), "file": file,
                                           "sha256": hashlib.sha256(data).hexdigest()})
             log = data.decode("utf-8", errors="replace")
+            units = {}
             for text in step_lines(log, f"run {run}, job {job['id']}"):
+                u = UNIT.match(text)
+                if u:
+                    units[u.group(1)] = u.group(2)
                 r = RESULT.match(text)
                 if not r:
                     continue
                 name, status = r.group(1), r.group(2)
-                entry = {"name": name, "shard": m.group(1), "status": status,
+                entry = {"shard": m.group(1), "status": status,
                          "seconds": int(r.group(3) or 0), "capSeconds": int(r.group(4) or 0),
-                         "run": int(run), "job": job["html_url"]}
-                old = found.get(name)
-                if old is None or old["status"] in RERUN:
-                    found[name] = entry
+                         "run": int(run), "attempt": job["attempt"], "libspecCommit": commit,
+                         "job": job["html_url"]}
+                if name in units:
+                    entry["unit"] = units[name]
+                attempts.setdefault(name, []).append(entry)
         runs.append(entry_run)
+    found = {n: counted(a) for n, a in attempts.items()}
+    # An acceptance and a rejection of one challenge would be a real contradiction: never settled
+    # here, always shown.
+    conflicts = sorted(n for n, a in attempts.items()
+                       if len({e["status"] for e in a} & EVIDENCE) > 1)
+    for n in conflicts:
+        print(f"CONFLICT: {n} has both an acceptance and a rejection", file=sys.stderr)
     out = {
         "commit": COMMIT,
         "trusted": True,
@@ -146,7 +206,8 @@ def main():
         "results": {n: e["status"] for n, e in sorted(found.items())},
         # Each a case for Marley: nanoda failed while Lean's kernel accepted.
         "kernelsDisagree": sorted(n for n, e in found.items() if e["status"] == "kernelsDisagree"),
-        "challenges": [found[n] for n in sorted(found)],
+        "conflicts": conflicts,
+        "challenges": [{"name": n, **found[n], "attempts": attempts[n]} for n in sorted(found)],
     }
     json.dump(out, sys.stdout, indent=1, ensure_ascii=False)
     sys.stdout.write("\n")

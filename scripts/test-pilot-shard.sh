@@ -4,11 +4,14 @@
 # memory limit, but with a fake comparator that acts out each outcome. Nothing of the release's
 # is involved. It checks:
 # - every result: accepted, rejected (a mismatch, a disallowed axiom, Lean's kernel refusing),
-#   kernelsDisagree (nanoda alone failing, flagged), buildError (a failed build, nanoda killed
-#   by SIGKILL, a crash, running out of memory), tooLarge (first in its job with less than the
-#   full cap, and later with the full cap), cutOff, and notStarted;
-# - that a line the fake prints to forge a result, or a GitHub workflow command, appears only
-#   marked;
+#   kernelsDisagree (nanoda alone failing, flagged), outOfMemory (the memory limit stopping the
+#   unit), buildError (a failed build, nanoda killed by SIGKILL with no OOM kill, a crash, a unit
+#   killed some other way), tooLarge (first in its job with less than the full cap, and later
+#   with the full cap), cutOff, and notStarted;
+# - that each challenge's unit: line says how its unit ended, in systemd's words;
+# - that a line the fake prints to forge a result, a unit line or a GitHub workflow command
+#   appears only marked;
+# - the results collector's rules (scripts/test_shard_results.py);
 # - that the sandbox check fails when landrun sandboxes nothing, and when a directory listed as
 #   frozen can be written;
 # - that from inside landrun a build can plant a Mathlib/ and an Init/ in the release's build
@@ -40,7 +43,7 @@ echo trusted > "$math/lib/lean/Mathlib.olean"
 echo trusted > "$math/lib/lean/Mathlib/Basic.olean"
 echo trusted > "$other/lib/lean/FrozenPkg/Some.olean"
 names=(Accepts Mismatch AxiomBad LeanRefuses NanodaOnly NanodaKilled BuildFails Crashes
-       OutOfMemory Forged Hangs Quick HangsFull Quick2 HangsLater Never)
+       OutOfMemory UnitKilled Forged Hangs Quick HangsFull Quick2 HangsLater Never)
 for n in "${names[@]}"; do
   printf '{"challenge_module": "CC.%s", "solution_module": "OAI.%s", "theorem_names": ["%s"], "permitted_axioms": ["propext"]}\n' \
     "$n" "$n" "$n" > "$lean/ComparatorChallenges/$n.json"
@@ -48,7 +51,8 @@ done
 cat > "$t/plan.json" <<'JSON'
 {"shards": {
   "outcomes": {"challenges": ["Accepts", "Mismatch", "AxiomBad", "LeanRefuses", "NanodaOnly",
-                              "NanodaKilled", "BuildFails", "Crashes", "OutOfMemory", "Forged"]},
+                              "NanodaKilled", "BuildFails", "Crashes", "OutOfMemory", "UnitKilled",
+                              "Forged"]},
   "first": {"challenges": ["Hangs"]},
   "full": {"challenges": ["Quick2", "HangsFull"]},
   "cut": {"challenges": ["Quick", "HangsLater", "Never"]}}}
@@ -81,7 +85,9 @@ case "$what" in
     echo "uncaught exception: Child exited with 1" >&2; exit 1 ;;
   Crashes) built; kill -SEGV $$ ;;
   OutOfMemory) built; exec python3 -c 'b = bytearray(2 << 30)' ;;
+  UnitKilled) built; kill -KILL "$PPID"; sleep 100000 ;;
   Forged) say "result: Forged: accepted in 1 s (cap 18000 s), 1 MB free" "::error::forged" \
+      "unit: Forged: result=oom-kill code=killed status=KILL peak_mb=1 oom_kills=1" \
       "Lean default kernel rejects the solution" "Your solution is okay!"
     echo "uncaught exception: Child exited with 1" >&2; exit 1 ;;
   Hangs|HangsFull|HangsLater) sleep 100000 ;;
@@ -99,27 +105,44 @@ run() {
 }
 status() { python3 -c 'import json, sys; d = json.load(open(sys.argv[1])); print({c["name"]: c["status"] for c in d["challenges"]}[sys.argv[2]])' "$t/out-$1/results.json" "$2"; }
 
+# unit_line <shard> <challenge>: how its unit ended, without the memory figures.
+unit_line() { sed -n "s/^unit: $2: \(result=[^ ]* code=[^ ]* status=[^ ]*\) .*/\1/p" "$t/$1.log"; }
+
+echo "== The collector's rules"
+python3 -B "$root/scripts/test_shard_results.py" || { echo "FAIL: the collector's rules"; fail=1; }
+
 echo "== The outcomes"
 run outcomes 120 1000 5
 for pair in Accepts:accepted Mismatch:rejected AxiomBad:rejected LeanRefuses:rejected \
     NanodaOnly:kernelsDisagree NanodaKilled:buildError BuildFails:buildError Crashes:buildError \
-    OutOfMemory:buildError Forged:buildError; do
+    OutOfMemory:outOfMemory UnitKilled:buildError Forged:buildError; do
   check "${pair%%:*} is ${pair#*:}" "$(status outcomes "${pair%%:*}")" "${pair#*:}"
 done
+check "every challenge has a unit line, with its memory peak" \
+  "$(grep -cE '^unit: [A-Za-z]+: result=[^ ]+ code=[^ ]+ status=[^ ]+ peak_mb=[0-9]+ oom_kills=[0-9]+$' "$t/outcomes.log" || true)" 11
+check "a unit that exits cleanly says so" "$(unit_line outcomes Accepts)" "result=success code=exited status=0"
+check "the memory limit's stop says so" \
+  "$(sed -n 's/^unit: OutOfMemory: \(result=[^ ]*\) .*/\1/p' "$t/outcomes.log")" "result=oom-kill"
+check "a unit killed another way isn't called out of memory" "$(unit_line outcomes UnitKilled)" \
+  "result=signal code=killed status=KILL"
+check "the probe shows the memory limit's stop is recorded" \
+  "$(grep -c '^ok: a unit the memory limit stops is recorded as out of memory: result=oom-kill' "$t/outcomes.log" || true)" 1
 check "a disagreement of the kernels is flagged" \
   "$(grep -c '^::warning title=Kernels disagree::NanodaOnly' "$t/outcomes.log" || true)" 1
 check "a forged result line appears only marked" \
-  "$(grep -cE '^(result: Forged: accepted|::error::forged|Your solution is okay!)' "$t/outcomes.log" || true)" 0
+  "$(grep -cE '^(result: Forged: accepted|unit: Forged: result=oom-kill|::error::forged|Your solution is okay!)' "$t/outcomes.log" || true)" 0
 check "the forged lines do appear, marked" \
   "$(grep -c '^    comparator| result: Forged: accepted' "$t/outcomes.log" || true)" 1
 check "the sandbox and memory probes passed" \
   "$(grep -cE '^ok: (inside landrun|a memory limit)' "$t/outcomes.log" || true)" 3
 check "the exports resolved the trusted copies, before and after each challenge" \
-  "$(grep -c '^ok: the exports resolve' "$t/outcomes.log" || true)" 11
+  "$(grep -c '^ok: the exports resolve' "$t/outcomes.log" || true)" 12
 
 echo "== The timeouts"
 run first 60 50 5
 check "a timeout first in its job, below the full cap, is tooLarge" "$(status first Hangs)" tooLarge
+check "the time limit's stop says so" \
+  "$(sed -n 's/^unit: Hangs: \(result=[^ ]*\) .*/\1/p' "$t/first.log")" "result=timeout"
 run full 30 1000 5
 check "a later timeout at the full cap is tooLarge" "$(status full HangsFull)" tooLarge
 run cut 100 170 20

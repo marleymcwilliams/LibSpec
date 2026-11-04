@@ -24,6 +24,10 @@
 # check yet. One that times out after others, with less than the full cap, is cut off, and
 # gets one rerun in a job of its own (solo-<name>).
 #
+# After each challenge, an unmarked "unit:" line says how its unit ended and its memory peak,
+# from scripts/pilot-unit-end.sh. A unit the memory limit stopped is outOfMemory, which stays
+# unknown. A probe before the first challenge shows that this record works.
+#
 # Nothing of the release's is printed unmarked: Comparator's output is prefixed line by line,
 # and names from the release's config are printed with repr. The unmarked "result:" lines are
 # the evidence (pilot/shard_results.py reads them).
@@ -79,14 +83,20 @@ for m in "$trusted"/*; do [ -d "$m" ] && frozen+=("$m"); done
 resolved() { helper resolution "$trusted" "$toolchain_lib" "$root/scripts/pilot_resolve.lean"; }
 
 # in_wrapper <command>...: a command inside the systemd-run wrapper, in the release's lean/.
-# MAX_SECONDS caps how long it may run, and MEMORY how much memory it may use.
+# MAX_SECONDS caps how long it may run, and MEMORY how much memory it may use. UNIT_END names a
+# file for scripts/pilot-unit-end.sh to record how the unit ended.
 in_wrapper() {
+  local end=()
+  if [ -n "${UNIT_END:-}" ]; then
+    end=(--property="ExecStopPost=$(command -v bash) $root/scripts/pilot-unit-end.sh $UNIT_END")
+  fi
   systemd-run --user --quiet --collect --wait --pipe \
     --property=RestrictAddressFamilies=~AF_UNIX \
     --property=NoNewPrivileges=yes \
     --property=RuntimeMaxSec="${MAX_SECONDS:-infinity}" \
     --property=MemoryMax="${MEMORY:-$memory_max}" \
     --property=MemorySwapMax=0 \
+    ${end[@]+"${end[@]}"} \
     -E PATH="$PATH" -E HOME="$HOME" -E LEAN_PATH="$LEAN_PATH" \
     --working-directory "$lean_dir" \
     -- "$@"
@@ -108,11 +118,15 @@ echo "ok: sudo gains no privileges inside the wrapper"
 allocate='import sys; b = bytearray(int(sys.argv[1]) << 20); b[::4096] = b"x" * len(b[::4096])'
 MEMORY=256M in_wrapper python3 -c "$allocate" 64 ||
   { echo "FAIL: a unit with a 256 MB memory limit couldn't allocate 64 MB"; exit 1; }
-if MEMORY=256M in_wrapper python3 -c "$allocate" 512 2> /dev/null; then
+probe="$out/logs/memory-probe.unit"
+if UNIT_END="$probe" MEMORY=256M in_wrapper python3 -c "$allocate" 512 2> /dev/null; then
   echo "FAIL: a unit with a 256 MB memory limit allocated 512 MB: the limit isn't enforced"
   exit 1
 fi
 echo "ok: a memory limit on the wrapper's unit is enforced (each challenge gets $memory_max)"
+helper unit-out-of-memory "$probe" ||
+  { echo "FAIL: a unit the memory limit stopped wasn't recorded as one: $(helper unit "$probe")"; exit 1; }
+echo "ok: a unit the memory limit stops is recorded as out of memory: $(helper unit "$probe")"
 
 step "The sandbox is in force"
 in_wrapper bash "$root/scripts/sandbox-check.sh" "$lean_dir" ${frozen[@]+"${frozen[@]}"}
@@ -137,14 +151,15 @@ for c in "${challenges[@]}"; do
   helper config "$lean_dir" "$c" "$config" > /dev/null
   log="$out/logs/$c.log"
   exit_file="$out/logs/$c.exit"
-  rm -f "$exit_file"
+  unit_file="$out/logs/$c.unit"
+  rm -f "$exit_file" "$unit_file"
   t0=$(date +%s)
   # The shell around Comparator records its exit status, outside the sandbox, where nothing
   # the release builds can write. A unit stopped at its cap or by the memory limit leaves none.
-  MAX_SECONDS=$cap in_wrapper bash -c 'comparator "$1" > "$2" 2>&1; echo "$?" > "$3"' \
+  UNIT_END="$unit_file" MAX_SECONDS=$cap in_wrapper bash -c 'comparator "$1" > "$2" 2>&1; echo "$?" > "$3"' \
     pilot-shard "$config" "$log" "$exit_file" || true
   t1=$(date +%s)
-  res="$(helper classify "$log" "$exit_file" "$((t1 - t0))" "$cap" "$full_cap" "$first")"
+  res="$(helper classify "$log" "$exit_file" "$((t1 - t0))" "$cap" "$full_cap" "$first" "$unit_file")"
   status="${res%%$'\t'*}"
   detail="${res#*$'\t'}"
   # The release's output, marked on every line, so no line of it can pass for ours.
@@ -152,6 +167,7 @@ for c in "${challenges[@]}"; do
   # The exports ran during that challenge. They must have resolved the trusted copies.
   resolved || { echo "FAIL: after $c, the exports no longer resolve the trusted copies"; exit 1; }
   printf '%s\t%s\t%s\t%s\t%s\t%s\n' "$c" "$status" "$((t1 - t0))" "$cap" "$(free_mb)" "$detail" >> "$tsv"
+  echo "unit: $c: $(helper unit "$unit_file")"
   echo "result: $c: $status in $((t1 - t0)) s (cap $cap s), $(free_mb) MB free; $detail"
   if [ "$status" = kernelsDisagree ]; then
     echo "::warning title=Kernels disagree::$c: nanoda failed while Lean's kernel accepted ($detail)"

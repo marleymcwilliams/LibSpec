@@ -43,6 +43,10 @@ on:
       - scripts/test-pilot-shard.sh
       - scripts/pilot-trusted-lib.sh
       - scripts/pilot_resolve.lean
+      - scripts/pilot-unit-end.sh
+      - scripts/test_shard_results.py
+      - scripts/build-comparator-tools.sh
+      - pilot/shard_results.py
       - pilot/data/shard-plan.json
 
 permissions:
@@ -313,7 +317,7 @@ jobs:
           {
             echo "### Shard $SHARD"
             echo '```'
-            grep -E '^(shard|kernel|result|ok|FAIL|REFUSED|note):|pilot-shard.sh: done' \
+            grep -E '^(shard|kernel|result|unit|ok|FAIL|REFUSED|note):|pilot-shard.sh: done' \
               "$RUNNER_TEMP/results/shard.log" || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"

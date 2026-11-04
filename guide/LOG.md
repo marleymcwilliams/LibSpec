@@ -2,6 +2,22 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-11-04
+
+### nanoda's stack and each unit's end (#101, Marley's calls on #100)
+- **Answered first:** `CycleCliqueRamsey` and `SubexponentialSAT` each ran once, in runs 41146560423 and 41170918445, and #100 records those runs. No network error touched them, and neither was rerun. The jobs rerun after losing a runner were b13 and b26.
+- **Patched: nanoda's stack,** as Marley asked, from 16 MiB to 1 GiB, in `scripts/build-comparator-tools.sh`, so that the tools' cache key changes with it.
+  - **Decided: 1 GiB,** from the sizes reported in nanoda's issues #61 and #77. Stack pages are committed as they're touched, so the size costs nothing until it's used.
+  - **Not offered upstream yet.** nanoda's master already has a `stack_size_bytes` option (#78, 2026-10-29), so a patch to its constant would add nothing. The real gap is that Comparator doesn't set the option. Marley decides what, if anything, to offer.
+- **Decided: how a unit's end is read.** `scripts/pilot-unit-end.sh` runs as the unit's `ExecStopPost`, and takes its values from systemd's environment and the kernel's cgroup files. The alternative, parsing `systemd-run`'s closing summary, depends on its format and on a pipe shared with the unit.
+- **Decided: outOfMemory outranks everything but an acceptance.** A rejection in a unit with an OOM kill isn't evidence, since the kill may be what ended it. It takes systemd's `oom-kill` or a kill counted by the kernel, so a unit killed another way stays a build error.
+- **Decided: systemd's word settles a timeout,** where it's recorded, in place of the time taken.
+- **The collector** lists every attempt with its LibSpec commit, as Marley asked. A later result replaces an earlier unknown one, never an acceptance or a rejection. `outOfMemory` joins Marley's list of unknowns, being one.
+  - **Decided: a `conflicts` list,** for a challenge with both an acceptance and a rejection, which nothing settles quietly.
+  - **Decided: its rules are tested in the repository,** in `scripts/test_shard_results.py`, which the self-test runs. They were only in a scratchpad.
+- **The draft v1.1 release** holds the 94 trusted logs. Each matched its recorded SHA-256 before the upload and again after downloading it back. It's unpublished, and no `v1.1` tag exists.
+- **Corrected:** a report to Marley said shards might have run on different runner images. All 94 logged jobs ran on `ubuntu-24.04`.
+
 ## 2026-10-31
 
 ### The trusted results in the report (#100)

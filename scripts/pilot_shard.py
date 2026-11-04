@@ -6,7 +6,9 @@ usage: python3 scripts/pilot_shard.py challenges PLAN SHARD
        python3 scripts/pilot_shard.py config RELEASE_LEAN_DIR CHALLENGE OUT.json
        python3 scripts/pilot_shard.py leanpath RELEASE_LEAN_DIR TRUSTED_DIR TOOLCHAIN_LIB
        python3 scripts/pilot_shard.py resolution TRUSTED_DIR TOOLCHAIN_LIB RESOLVER
-       python3 scripts/pilot_shard.py classify LOG EXIT_FILE ELAPSED CAP FULL_CAP FIRST
+       python3 scripts/pilot_shard.py classify LOG EXIT_FILE ELAPSED CAP FULL_CAP FIRST UNIT_FILE
+       python3 scripts/pilot_shard.py unit UNIT_FILE
+       python3 scripts/pilot_shard.py unit-out-of-memory UNIT_FILE
        python3 scripts/pilot_shard.py results RESULTS.tsv SHARD OUT.json
 
 A shard is a name from pilot/data/shard-plan.json, or solo-<Challenge> for one challenge rerun in
@@ -16,18 +18,23 @@ a job of its own. A result is one of:
   constant, a disallowed axiom, or the refusal of Lean's kernel;
 - kernelsDisagree: nanoda failed while Lean's kernel accepted, and nanoda wasn't killed by
   SIGKILL. It stays unknown, and is flagged;
+- outOfMemory: the memory limit stopped it. systemd's result for its unit is oom-kill, or the
+  kernel counted an OOM kill in the unit's cgroup. It stays unknown;
 - buildError: anything else that stopped it, such as a failed build or export, a crash, or a
-  kill by a signal or by the memory limit, nanoda's included;
+  kill by a signal, nanoda's included;
 - tooLarge: it timed out as the first challenge in its job, or with the full 5-hour cap
   ("too large to check yet");
 - cutOff: it timed out with less than the full cap, after other challenges in its job, so it
   gets one rerun in a job of its own;
 - notStarted: its job ran out of time before it began, so it gets a rerun too.
-Only a rejection is evidence that fails. Build errors and timeouts stay unknown.
+Only a rejection is evidence that fails. Running out of memory, build errors and timeouts stay
+unknown. How each unit ended comes from scripts/pilot-unit-end.sh, in systemd's and the kernel's
+words, never the release's.
 
 nanoda reports a refusal by panicking, as it does an internal error, so its exit code can't
 tell the two apart, and a refusal counts only when Lean's kernel refuses too. Exit 137 is
-128 + SIGKILL, as Lean's wait reports a signal: the memory limit's kill, a build error.
+128 + SIGKILL, as Lean's wait reports a signal. With no OOM kill in the unit, that's a build
+error.
 """
 import json
 import os
@@ -52,6 +59,7 @@ LEAN_REFUSALS = ("Lean default kernel rejects the solution",
                  "Quotient post-check rejects the solution")
 LEAN_ACCEPTS = "Lean default kernel accepts the solution"
 CORE = ("Init", "Std", "Lean", "Lake")
+UNIT_END = re.compile(r"result=(\S+) code=(\S+) status=(\S+) peak_bytes=(\d+|-) oom_kills=(\d+|-)")
 
 
 def challenges(plan, shard):
@@ -149,8 +157,38 @@ def resolution(trusted, toolchain_lib, resolver):
           f"ok: the exports resolve all {len(want)} trusted roots to the trusted copies")
 
 
-def classify(log, exit_file, elapsed, cap, full_cap, first):
-    """(status, detail). The detail is LibSpec's own words, never the release's."""
+def unit_end(path):
+    """How a challenge's unit ended, as scripts/pilot-unit-end.sh recorded it, or None if it
+    didn't: the unit's file is written outside the sandbox, by that script alone."""
+    if not os.path.exists(path):
+        return None
+    m = UNIT_END.fullmatch(open(path, encoding="utf-8", errors="replace").read().strip())
+    if not m:
+        return None
+    result, code, status, peak, kills = m.groups()
+    return {"result": result, "code": code, "status": status,
+            "peak_mb": peak if peak == "-" else str(int(peak) // (1024 * 1024)),
+            "oom_kills": kills}
+
+
+def unit_line(path):
+    """The part of a challenge's "unit:" line after its name."""
+    end = unit_end(path)
+    if end is None:
+        return "not recorded"
+    return " ".join(f"{k}={end[k]}" for k in ("result", "code", "status", "peak_mb", "oom_kills"))
+
+
+def out_of_memory(end):
+    """Whether the memory limit stopped a unit: systemd says so, or the kernel counted a kill."""
+    return end is not None and (end["result"] == "oom-kill" or end["oom_kills"] not in ("-", "0"))
+
+
+def classify(log, exit_file, elapsed, cap, full_cap, first, unit_file):
+    """(status, detail). The detail is LibSpec's own words, systemd's and the kernel's, never the
+    release's. A unit the memory limit stopped is outOfMemory unless Comparator had already
+    finished and accepted: both kernels' acceptance stands, and nothing else can be evidence once
+    the kernel has killed part of the run."""
     elapsed, cap, full_cap, first = int(elapsed), int(cap), int(full_cap), first == "1"
     text = open(log, encoding="utf-8", errors="replace").read()
     code = None
@@ -159,13 +197,18 @@ def classify(log, exit_file, elapsed, cap, full_cap, first):
         code = int(raw) if re.fullmatch(r"-?\d+", raw) else None
     if code == 0 and "Your solution is okay!" in text:
         return "accepted", "Comparator's success line, and exit 0"
+    end = unit_end(unit_file)
+    if out_of_memory(end):
+        return "outOfMemory", f"the memory limit stopped its unit: {unit_line(unit_file)}"
+    # systemd says whether the time limit stopped the unit. With no record, the time it took does.
+    timed_out = end["result"] == "timeout" if end else code is None and elapsed >= cap - 15
+    if timed_out:
+        if first or cap >= full_cap:
+            return "tooLarge", f"timed out at {cap} s" + (", first in its job" if first else "")
+        return "cutOff", f"timed out at {cap} s, less than the full {full_cap} s"
     if code is None:
         # The wrapper's unit stopped before the shell around Comparator could record its exit.
-        if elapsed >= cap - 15:
-            if first or cap >= full_cap:
-                return "tooLarge", f"timed out at {cap} s" + (", first in its job" if first else "")
-            return "cutOff", f"timed out at {cap} s, less than the full {full_cap} s"
-        return "buildError", "the wrapper's unit stopped early, as the memory limit stops it"
+        return "buildError", f"the wrapper's unit stopped early: {unit_line(unit_file)}"
     if code != 1:
         return "buildError", f"Comparator exited with {code}, a crash or a signal"
     i = text.rfind("uncaught exception: ")
@@ -178,7 +221,7 @@ def classify(log, exit_file, elapsed, cap, full_cap, first):
     m = re.match(r"nanoda exited with (-?\d+)\s*$", message)
     if m:
         if m.group(1) == "137":
-            return "buildError", "nanoda was killed by SIGKILL, as the memory limit kills"
+            return "buildError", "nanoda was killed by SIGKILL, with no OOM kill in its unit"
         if j >= 0 and LEAN_ACCEPTS in text[j:]:
             return "kernelsDisagree", f"nanoda exited with {m.group(1)} while Lean's kernel accepted"
         return "buildError", f"nanoda exited with {m.group(1)}, and Lean's kernel didn't accept"
@@ -212,10 +255,15 @@ def main():
         resolution(*args)
     elif cmd == "classify":
         print("\t".join(classify(*args)))
+    elif cmd == "unit":
+        print(unit_line(*args))
+    elif cmd == "unit-out-of-memory":
+        sys.exit(0 if out_of_memory(unit_end(*args)) else 1)
     elif cmd == "results":
         results(*args)
     else:
-        sys.exit(f"usage: {sys.argv[0]} challenges|config|leanpath|resolution|classify|results ...")
+        sys.exit(f"usage: {sys.argv[0]} challenges|config|leanpath|resolution|classify|unit|"
+                 "unit-out-of-memory|results ...")
 
 
 if __name__ == "__main__":
