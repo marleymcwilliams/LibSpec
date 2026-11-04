@@ -75,6 +75,8 @@ Some of it is the human's alone. The milestone notes' closing notes are in the h
 | --- | --- |
 | [README.md](../README.md), [REPRODUCE.md](../REPRODUCE.md) | What is proved, and how to check it yourself |
 | [CLAUDE.md](../CLAUDE.md) | The working rules for Claude Code |
+| `.claude/settings.json` | Claude Code's deny rules: the statements, their definitions, `archive/`, tags, and pushes to `main`. To lift one once, run the command yourself, or delete its line in your working copy and `git restore` it afterwards |
+| `.github/pull_request_template.md` | The sections of every PR's description |
 | `.gitattributes`, `.gitignore` | LF line endings everywhere, the archive kept byte for byte; build output, Python bytecode and BLT's job logs ignored |
 | `.github/workflows/ci.yml` | CI: the build with leanchecker, `scripts/check.sh`, the differential tests and Comparator |
 | `.github/workflows/comparator-full.yml` | The full-strength Comparator run, by hand: nanoda and the full sandbox |
