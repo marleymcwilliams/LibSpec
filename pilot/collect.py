@@ -24,8 +24,8 @@ Each record holds only facts. The pilot's Lean module turns them into grades
 - --cache: a directory that keeps each fetched file, so that a rerun reads it from there.
 - --comparator: our trusted Comparator results, pilot/data/comparator-results.json as
   pilot/shard_results.py writes it. A file not marked trusted is refused. Each result is
-  accepted, rejected, kernelsDisagree, buildError, tooLarge, cutOff or notStarted, and a
-  challenge without one is "notRun".
+  accepted, rejected, kernelsDisagree, outOfMemory, buildError, tooLarge, cutOff or notStarted,
+  and a challenge without one is "notRun".
 """
 import argparse
 import concurrent.futures

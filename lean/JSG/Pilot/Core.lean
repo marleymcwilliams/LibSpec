@@ -85,8 +85,9 @@ inductive RunResult
   | accepted
   /-- Comparator rejected it, on one of its own rejections. -/
   | rejected
-  /-- Its build or export failed, or it was stopped: by a crash, a signal or the memory
-      limit. -/
+  /-- The memory limit stopped it. -/
+  | outOfMemory
+  /-- Its build or export failed, or it was stopped another way: by a crash or a signal. -/
   | buildError
   /-- It timed out as the first in its job, or with the full 5-hour cap. -/
   | tooLarge
