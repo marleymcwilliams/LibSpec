@@ -63,8 +63,8 @@
   to the milestone that needs it.
 - You may merge your own PR once CI is green if it touches none of: the statements and
   every file the statements check covers, archive/, CLAUDE.md, .claude/, .gitattributes,
-  scripts/, .github/, guide/decisions/, pilot/ and lean/JSG/Pilot/ (they decide and record
-  what counts as evidence), the checks that live in lean/
+  scripts/, .github/, guide/decisions/, pilot/, lean/JSG/Pilot/ and lean/Gate.lean (they
+  decide and record what counts as evidence), the checks that live in lean/
   (lean/ComparatorTargets.lean, lean/AxiomAudit.lean, lean/JSG/Tests/Comparator/), and any
   existing file in lean/JSG/Tests/. Adding a new test file stays self-mergeable. I merge
   everything else.
