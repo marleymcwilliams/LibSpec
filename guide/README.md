@@ -82,7 +82,8 @@ Some of it is the human's alone. The milestone notes' closing notes are in the h
 | `.github/workflows/comparator-full.yml` | The full-strength Comparator run, by hand: nanoda and the full sandbox |
 | `.github/workflows/pilot-comparator.yml` | Comparator on a few of the release's challenges, as measurements only |
 | `.github/workflows/pilot-shards.yml` | Phase 7's trusted Comparator runs, by shard: an untrusted job that runs the release's lakefile, and trusted jobs that rebuild its tree from the pin and check against it |
-| `scripts/check.sh` | The build, the forbidden-token scan, the axiom audit and the statements check |
+| `scripts/check.sh` | The build, the forbidden-token scan, the axiom audit, the statements check and the archive check |
+| `scripts/archive-check.sh`, `scripts/test-archive-check.sh` | The check that `archive/` is the tree it's frozen at, and the test that it has teeth |
 | `scripts/blt-build.sbatch` | A sample SLURM job for BLT: LibSpec's own `lake build` on a compute node |
 | `scripts/comparator.sh`, `scripts/comparator-full.sh`, `scripts/build-comparator-tools.sh` | Comparator, everyday and full-strength, and the tools it needs |
 | `scripts/differential.sh`, `scripts/sirusc_adapter.py` | The differential tests, and the adapter that runs SirusSC's code from `archive/` |
