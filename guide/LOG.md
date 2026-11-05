@@ -5,7 +5,7 @@ Decisions Claude Code made without asking, because they are reversible and don't
 ## 2026-11-05
 
 ### README and REPRODUCE describe the pilot (Phase 7, step 6)
-- **Decided: neither gives counts of results,** beyond the 724 manuscripts graded. They link to the report, which CI holds to its data, so they won't go stale when results change, as they're about to with the 11's rerun. Undo by adding counts.
+- **Decided: neither gives counts of results,** beyond the 724 manuscripts graded. They link to the report, which CI holds to its Lean data, so they won't go stale when results change, as they're about to with the 11's rerun. Undo by adding counts.
 - **Decided: REPRODUCE sorts the pilot's checks by what they run.** Checking the report and checking the logs read the release only as data. Only the rerun builds it, and that stays on GitHub Actions, as this repository's own rule requires.
 - **Brought up to date while there:** `REPRODUCE.md` said `check.sh` has five steps, and #106 added a sixth. It promises a row for each full-strength run started by hand on `main`, and two were missing. Its tools line now names the two patches.
 

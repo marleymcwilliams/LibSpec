@@ -145,7 +145,7 @@ bash scripts/pilot-reports.sh "$(mktemp -d)"
 
 You should see `ok: pilot/reports/first-sample.md is what Gate.lean prints`, and the same for `catalogue.md`. Step 2's `lake build` has already proved every verdict by the kernel, in `JSG.Pilot.CatalogueCalibration`. CI runs this script on Linux; it hasn't been tried on Windows.
 
-**Check the Lean data against the recorded facts.** CI doesn't do this one. These commands read the release only as data, at the pin, and should leave `git diff` empty:
+**Check the Lean data against the recorded facts.** CI doesn't do this one. These commands read the release only as data, at the pin, and should leave `git diff` empty. If they don't, `git restore` both files before going on:
 
 ```bash
 python3 pilot/collect.py --all --cache pilot-cache --comparator pilot/data/comparator-results.json > pilot/data/catalogue.json
@@ -184,7 +184,7 @@ grep -hE '^[^ ]+ (unit|sample|result): ' pilot-logs/*.log
    ```
 
    It takes about 15 minutes. The log of the job "Shard control (trusted)" should show `result: BogomolovPopInjectivity: accepted in … s (cap 18000 s), … MB free; Comparator's success line, and exit 0`.
-3. **Run what you want to check.** `shards` takes names from `pilot/data/shard-plan.json`, or `solo-<Challenge>` for one challenge in a job of its own. Adding `-f lean_threads=2` sets `LEAN_NUM_THREADS`, so a build runs fewer Lean processes at once. That can keep it under the memory limit, at some cost in time. On `SnakyCertificate` it barely changed the largest Lean process, so it won't rescue a module that's too big on its own:
+3. **Run what you want to check.** `shards` takes names from `pilot/data/shard-plan.json`, or `solo-<Challenge>` for one challenge in a job of its own. Adding `-f lean_threads=2` sets `LEAN_NUM_THREADS`, so a build runs fewer Lean processes at once. That can keep it under the memory limit, at some cost in time. On `SnakyCertificate`, the largest Lean process's anonymous memory barely changed, though the run without it was killed early, so don't count on it for a module that's too big on its own:
 
    ```bash
    gh workflow run pilot-shards.yml --ref pilot/runs -f shards='["solo-SnakyCertificate"]' -f lean_threads=2
@@ -196,7 +196,7 @@ grep -hE '^[^ ]+ (unit|sample|result): ' pilot-logs/*.log
    python3 pilot/shard_results.py --logs pilot-logs RUN_ID... > my-results.json
    ```
 
-5. **To put a rerun into the report,** the results file must cover every challenge, or the ones it leaves out count as not run. So name every run in the committed file's `runs`, oldest first, then yours: a later result replaces an earlier unknown one, never an acceptance or a rejection. The collector reads one repository, and GitHub keeps logs for 90 days at most, so this works only in this repository, within that time. Then regenerate, still reading the release only as data, and rebuild as in "2. Build" above. The last command fails while `pilot/reports/` is out of date, and leaves the new reports in the directory you give it, to copy there:
+5. **To put a rerun into the report,** the results file must cover every challenge, or the ones it leaves out count as not run. So, unless your own runs cover them all, name every run in the committed file's `runs`, oldest first, then yours: a later result replaces an earlier unknown one, never an acceptance or a rejection. The collector reads one repository, and GitHub keeps logs for 90 days at most, so naming them works only here, within that time. Then regenerate, still reading the release only as data, and rebuild as in "2. Build" above. The last command fails while `pilot/reports/` is out of date, and leaves the new reports in the directory you give it, to copy there:
 
    ```bash
    python3 pilot/shard_results.py --logs pilot-logs EVERY_RUN_ID... > pilot/data/comparator-results.json
