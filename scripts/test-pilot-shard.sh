@@ -165,6 +165,7 @@ if (THREADS="2; echo forged" run threads 120 1000 5) > /dev/null 2>&1; then
 else
   check "a bad thread setting is refused" refused refused
 fi
+check "no sampler outlives its challenge" "$(pgrep -fc 'pilot_shard\.py sample' || true)" 0
 
 echo "== The timeouts"
 run first 60 50 5

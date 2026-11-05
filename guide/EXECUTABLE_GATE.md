@@ -284,7 +284,7 @@ The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and
 - **`selftest`, a third job,** runs `scripts/test-pilot-shard.sh` before any shard. It drives `scripts/pilot-shard.sh` through the real wrapper, landrun, caps and memory limit, with a fake comparator acting out each outcome. It checks:
   - every result above;
   - how each unit ended: a clean exit, the memory limit, the time limit, and a unit killed another way, which mustn't be called out of memory;
-  - that the sampler counts the Lean processes running at once, that a thread setting reaches the unit and the sandbox, and that a bad one is refused;
+  - that the sampler counts the Lean processes running at once and stops with its challenge, that a thread setting reaches the unit and the sandbox, and that a bad one is refused;
   - that forged result lines, unit lines, sample lines and workflow commands appear only marked;
   - the results collector's rules, in `scripts/test_shard_results.py`: finding the step, splitting lines, and which attempt counts;
   - that the sandbox check fails when landrun sandboxes nothing, and when a directory listed as frozen can be written;

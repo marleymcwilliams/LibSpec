@@ -168,7 +168,8 @@ for c in "${challenges[@]}"; do
   sample_file="$out/logs/$c.sample"
   cgroup_file="$out/logs/$c.cgroup"
   rm -f "$exit_file" "$unit_file" "$sample_file" "$cgroup_file"
-  helper sample "$cgroup_file" "$sample_file" "$sample_seconds" "${lean_threads:-default}" > /dev/null 2>&1 &
+  # Not through helper: that's a function, so $! would be a subshell, and the kill would miss python3.
+  python3 "$root/scripts/pilot_shard.py" sample "$cgroup_file" "$sample_file" "$sample_seconds" "${lean_threads:-default}" > /dev/null 2>&1 &
   sampler=$!
   t0=$(date +%s)
   # The shell around Comparator records its exit status, outside the sandbox, where nothing
