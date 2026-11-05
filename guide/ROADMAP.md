@@ -300,7 +300,7 @@ The goal is a trusted Comparator result for every challenge in the release, fold
 - [x] A negative control shows that an untrusted job can't save a cache: #96, in #92
 - [x] Every challenge has a trusted result, or a classified failure with its log: a rejection, a build error, a timeout, or too large to check yet: #100
 - [x] `pilot/reports/catalogue.md` is regenerated with them, and its proofs pass: #100
-- [ ] README and REPRODUCE describe the pilot and how to rerun it
+- [x] README and REPRODUCE describe the pilot and how to rerun it: #109
 - [ ] Every trusted log is kept as an asset of the v1.1 release, matching its recorded SHA-256
 - [ ] Tagged `v1.1`
 
