@@ -135,9 +135,9 @@ The negative controls are theorems in `lean/JSG/Tests/Differential.lean`, so ste
 
 The pilot runs the executable gate on [openai/math](https://github.com/openai/math), pinned at `7ef5c0c`. [Its report](pilot/reports/catalogue.md) gives every manuscript's verdict and the evidence it's missing, and sections 3 and 4 of [the executable gate](guide/EXECUTABLE_GATE.md) explain how it works.
 
-**Don't run the release's lakefile, `lake update` or `lake build` on your own machine,** since they run the release's code. The first two checks below read it only as data, and the rerun happens on GitHub Actions.
+**Don't run the release's lakefile, `lake update` or `lake build` on your own machine,** since they run the release's code. The first three checks below read it only as data, and the rerun happens on GitHub Actions.
 
-**Check the report against its data.** After step 2, from the repository root:
+**Check the report against its Lean data.** After step 2, from the repository root:
 
 ```bash
 bash scripts/pilot-reports.sh "$(mktemp -d)"
@@ -145,7 +145,15 @@ bash scripts/pilot-reports.sh "$(mktemp -d)"
 
 You should see `ok: pilot/reports/first-sample.md is what Gate.lean prints`, and the same for `catalogue.md`. Step 2's `lake build` has already proved every verdict by the kernel, in `JSG.Pilot.CatalogueCalibration`. CI runs this script on Linux; it hasn't been tried on Windows.
 
-**Check the kept logs.** Each Comparator result comes from a trusted job's own log. GitHub keeps logs for 90 days at most, so they're kept as assets of the v1.1 release, with their SHA-256s in `pilot/data/comparator-results.json`:
+**Check the Lean data against the recorded facts.** CI doesn't do this one. These commands read the release only as data, at the pin, and should leave `git diff` empty:
+
+```bash
+python3 pilot/collect.py --all --cache pilot-cache --comparator pilot/data/comparator-results.json > pilot/data/catalogue.json
+python3 pilot/to_lean.py pilot/data/catalogue.json --comparator pilot/data/comparator-results.json --name Catalogue > lean/JSG/Pilot/Catalogue.lean
+git diff --stat
+```
+
+**Check the kept logs.** Each Comparator result comes from a trusted job's own log. GitHub keeps logs for 90 days at most, so they're kept as assets of the v1.1 release, with their SHA-256s in `pilot/data/comparator-results.json`. Until v1.1 is published, the download finds no release:
 
 ```bash
 gh release download v1.1 --repo marleymcwilliams/LibSpec --pattern '*.log' --dir pilot-logs
@@ -159,7 +167,7 @@ print(f"{len(logs)} logs, {len(bad)} differ", bad)
 EOF
 ```
 
-It should print the number of logs and `0 differ []`. Each challenge's result, how its unit ended and, in later runs, what ran inside it, are unmarked lines in those logs. Everything of the release's is marked `comparator|`. To read them:
+It should print the number of logs and `0 differ []`. Each challenge's result is an unmarked line in those logs. Later runs add how its unit ended, and the latest also what ran inside it. Everything of the release's is marked `comparator|`. To read them:
 
 ```bash
 grep -hE '^[^ ]+ (unit|sample|result): ' pilot-logs/*.log
@@ -176,28 +184,29 @@ grep -hE '^[^ ]+ (unit|sample|result): ' pilot-logs/*.log
    ```
 
    It takes about 15 minutes. The log of the job "Shard control (trusted)" should show `result: BogomolovPopInjectivity: accepted in … s (cap 18000 s), … MB free; Comparator's success line, and exit 0`.
-3. **Run what you want to check.** `shards` takes names from `pilot/data/shard-plan.json`, or `solo-<Challenge>` for one challenge in a job of its own. Adding `-f lean_threads=2` sets `LEAN_NUM_THREADS`, so a build runs fewer Lean processes at once. That can keep it under the memory limit, at some cost in time, though it doesn't shrink any one process:
+3. **Run what you want to check.** `shards` takes names from `pilot/data/shard-plan.json`, or `solo-<Challenge>` for one challenge in a job of its own. Adding `-f lean_threads=2` sets `LEAN_NUM_THREADS`, so a build runs fewer Lean processes at once. That can keep it under the memory limit, at some cost in time. On `SnakyCertificate` it barely changed the largest Lean process, so it won't rescue a module that's too big on its own:
 
    ```bash
    gh workflow run pilot-shards.yml --ref pilot/runs -f shards='["solo-SnakyCertificate"]' -f lean_threads=2
    ```
 
-4. **Collect the results.** In a fork, first change `REPO` at the top of `pilot/shard_results.py`. It reads each trusted job's raw log, saves it under `pilot-logs/`, and writes the results. Give the runs oldest first, since a later result replaces an earlier unknown one, never an acceptance or a rejection:
+4. **Collect the results into a file of their own.** In a fork, first change `REPO` at the top of `pilot/shard_results.py`. It reads each trusted job's raw log, saves it under `pilot-logs/`, and writes a results file holding only the runs you name. Compare each challenge's `status` and `attempts` under `challenges` with those in `pilot/data/comparator-results.json`:
 
    ```bash
-   python3 pilot/shard_results.py --logs pilot-logs RUN_ID... > pilot/data/comparator-results.json
+   python3 pilot/shard_results.py --logs pilot-logs RUN_ID... > my-results.json
    ```
 
-5. **Regenerate the report,** still reading the release only as data, then rebuild as in "2. Build" above. The last command fails while `pilot/reports/` is out of date, and leaves the new reports in the directory you give it, to copy there:
+5. **To put a rerun into the report,** the results file must cover every challenge, or the ones it leaves out count as not run. So name every run in the committed file's `runs`, oldest first, then yours: a later result replaces an earlier unknown one, never an acceptance or a rejection. The collector reads one repository, and GitHub keeps logs for 90 days at most, so this works only in this repository, within that time. Then regenerate, still reading the release only as data, and rebuild as in "2. Build" above. The last command fails while `pilot/reports/` is out of date, and leaves the new reports in the directory you give it, to copy there:
 
    ```bash
+   python3 pilot/shard_results.py --logs pilot-logs EVERY_RUN_ID... > pilot/data/comparator-results.json
    python3 pilot/collect.py --all --cache pilot-cache --comparator pilot/data/comparator-results.json > pilot/data/catalogue.json
    python3 pilot/to_lean.py pilot/data/catalogue.json --comparator pilot/data/comparator-results.json --name Catalogue > lean/JSG/Pilot/Catalogue.lean
    # rebuild, then:
    bash scripts/pilot-reports.sh pilot-new-reports
    ```
 
-**What can differ in a rerun.** Each challenge gets a 13 GB memory limit and a 5-hour cap, on a runner with 4 cores and 16 GB, and GitHub keeps updating the runner's image. So a run can stop on memory or time where another didn't. Those results stay unknown and never count against a manuscript. Only an acceptance or a rejection is evidence, and `pilot/data/comparator-results.json` lists every attempt, with its run, its job and the LibSpec commit that says which build of the tools gave it.
+**What can differ in a rerun.** Each challenge gets a 13 GB memory limit and a 5-hour cap, on a runner with 4 cores and 16 GB, and GitHub keeps updating the runner's image. So a run can stop on memory or time where another didn't. Those results stay unknown: they never count as failures, though an unknown still keeps a manuscript from being accepted. Only an acceptance or a rejection is evidence, and `pilot/data/comparator-results.json` lists every attempt, with its run, its job and the LibSpec commit that says which build of the tools gave it.
 
 **What an acceptance shows.** Both kernels accept the proof of the statement Comparator exported, with only the permitted axioms. Whether that statement says what the paper claims is a separate question, and no named reviewer has checked one yet. [The executable gate](guide/EXECUTABLE_GATE.md#4-where-things-run) lists what these runs still trust, chiefly the release's lakefiles and each challenge's import closure, which run inside the sandbox.
 
