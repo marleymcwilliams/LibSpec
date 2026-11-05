@@ -57,6 +57,8 @@ RESULT = re.compile(r"^result: ([A-Za-z0-9_]+): (accepted|rejected|kernelsDisagr
                     r"buildError|tooLarge|cutOff|notStarted)(?: in (\d+) s \(cap (\d+) s\))?")
 UNIT = re.compile(r"^unit: ([A-Za-z0-9_]+): (result=\S+ code=\S+ status=\S+ peak_mb=\S+ "
                   r"oom_kills=\S+|not recorded)$")
+SAMPLE = re.compile(r"^sample: ([A-Za-z0-9_]+): (threads=\S+ lean_max=\d+ lean_anon_mb=\d+ "
+                    r"lean_rss_mb=\d+ nanoda_anon_mb=\d+ unit_anon_mb=\d+ samples=\d+|not recorded)$")
 TIMESTAMP = re.compile(r"^\d{4}-\d\d-\d\dT[0-9:.]+Z ")
 UNKNOWN = {"cutOff", "notStarted", "outOfMemory", "buildError", "kernelsDisagree", "tooLarge"}
 EVIDENCE = {"accepted", "rejected"}
@@ -174,11 +176,14 @@ def main():
                                           "shard": m.group(1), "file": file,
                                           "sha256": hashlib.sha256(data).hexdigest()})
             log = data.decode("utf-8", errors="replace")
-            units = {}
+            units, samples = {}, {}
             for text in step_lines(log, f"run {run}, job {job['id']}"):
                 u = UNIT.match(text)
                 if u:
                     units[u.group(1)] = u.group(2)
+                sampled = SAMPLE.match(text)
+                if sampled:
+                    samples[sampled.group(1)] = sampled.group(2)
                 r = RESULT.match(text)
                 if not r:
                     continue
@@ -189,6 +194,8 @@ def main():
                          "job": job["html_url"]}
                 if name in units:
                     entry["unit"] = units[name]
+                if name in samples:
+                    entry["sample"] = samples[name]
                 attempts.setdefault(name, []).append(entry)
         runs.append(entry_run)
     found = {n: counted(a) for n, a in attempts.items()}

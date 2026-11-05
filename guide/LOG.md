@@ -4,6 +4,15 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-04
 
+### The thread setting and the sampler (Marley's calls on #103)
+- **Applied, as Marley asked:** one line in Comparator's `safeLakeBuild`, and its mirror in `scripts/sandbox-check.sh`.
+- **Decided: only `safeLakeBuild`.** comparator#104 also patches `safeExport`, but all 11 stopped before any export, and Marley asked for the one line. Easy to extend if an export runs out of memory.
+- **Decided: the setting is a dispatch input,** `lean_threads`, empty by default, so nothing else changes. A run that doesn't set it behaves as before.
+- **Decided: the sampler reads the unit's cgroup every 5 seconds, and prints numbers only.** It reports anonymous memory as well as total, since mapped `.olean` pages can be reclaimed and anonymous memory can't. The earlier proposal said 30 seconds, and the review on #103 pointed out that could miss the climb before a kill.
+- **Fixed, found by the control:** the sampler's first version outlived each challenge. It was started through `helper`, a shell function, so `$!` named a subshell and the kill missed `python3`. That made the self-test fail on one run, since its two `threads` runs share a file, and each job's end listed an orphan. The self-test now fails if a sampler outlives its challenge. A real job's numbers weren't affected: each challenge has its own file, and once its unit has gone the sampler records nothing more.
+- **Decided: the control adds a pair on `SnakyCertificate`,** since `KaplanskyDirectFiniteness` saw only one Lean process at once with the setting, which might not show the cap. Neither pair is collected as results.
+- **Also Marley's calls:** tag creation on GitHub stays as it is, and no branch name starts with `v`, since the deny rule `git push * v*` would block pushing it.
+
 ### The reruns' results
 - **Recorded:** run [41891664929](https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929) reran the nine and the 11, each in its own job, on `8badfa7`. `pilot/data/comparator-results.json` now holds 404 accepted, 12 out of memory and 2 too large, none rejected, with every attempt listed. The report has 324 manuscripts known and 20 unknown.
 - **Decided: `outOfMemory` is a `RunResult` of its own,** not a kind of build error, since each unit's end now says which it was. The report reads "the memory limit stopped it". `buildError` stays, for a failed build or export, a crash or another signal, though no challenge counts as one now. Undo by reverting this PR.

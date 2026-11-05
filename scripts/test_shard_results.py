@@ -59,6 +59,10 @@ check("a unit line is read",
       "result=oom-kill code=killed status=KILL peak_mb=13312 oom_kills=1")
 check("an unrecorded unit is read", sr.UNIT.match("unit: X: not recorded").group(2), "not recorded")
 check("a marked unit line isn't read", sr.UNIT.match("    comparator| unit: X: not recorded"), None)
+SAMPLED = "threads=2 lean_max=2 lean_anon_mb=6000 lean_rss_mb=9000 nanoda_anon_mb=0 unit_anon_mb=7000 samples=9"
+check("a sample line is read", sr.SAMPLE.match(f"sample: X: {SAMPLED}").group(2), SAMPLED)
+check("an unrecorded sample is read", sr.SAMPLE.match("sample: X: not recorded").group(2), "not recorded")
+check("a marked sample line isn't read", sr.SAMPLE.match(f"    comparator| sample: X: {SAMPLED}"), None)
 
 
 def status(*xs):

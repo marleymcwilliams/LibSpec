@@ -18,6 +18,8 @@ name: Pilot shards
 #
 #     gh workflow run pilot-shards.yml --ref pilot/runs -f shards='["f189","f159"]'
 #
+# lean_threads sets LEAN_NUM_THREADS for the challenges. Left empty, Lean chooses.
+#
 # A pull request that changes this workflow or its scripts runs the control shard. Read each
 # shard's results from the unmarked lines of its job's log, which only that job writes
 # (pilot/shard_results.py).
@@ -30,6 +32,9 @@ on:
       shards:
         description: 'Shards, as a JSON array: names from pilot/data/shard-plan.json, or solo-<Challenge>'
         default: '["control"]'
+      lean_threads:
+        description: "LEAN_NUM_THREADS for the challenges, or empty for Lean's default"
+        default: ''
   pull_request:
     paths:
       - .github/workflows/pilot-shards.yml
@@ -276,6 +281,7 @@ jobs:
         shell: bash
         env:
           SHARD: ${{ matrix.shard }}
+          PILOT_LEAN_THREADS: ${{ github.event.inputs.lean_threads }}
         run: |
           export PILOT_FROZEN="$RUNNER_TEMP/frozen.txt"
           export PILOT_TRUSTED_LIB="$RUNNER_TEMP/trusted-lib"
@@ -317,7 +323,7 @@ jobs:
           {
             echo "### Shard $SHARD"
             echo '```'
-            grep -E '^(shard|kernel|result|unit|ok|FAIL|REFUSED|note):|pilot-shard.sh: done' \
+            grep -E '^(shard|kernel|lean threads|result|unit|sample|ok|FAIL|REFUSED|note):|pilot-shard.sh: done' \
               "$RUNNER_TEMP/results/shard.log" || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"

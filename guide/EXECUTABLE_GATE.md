@@ -277,10 +277,15 @@ The estimate leaves out the dependencies' own modules, PrimeNumberTheoremAnd and
   - **Where it comes from:** `scripts/pilot-unit-end.sh`, which systemd runs as the unit's `ExecStopPost`, outside Comparator's sandbox, once the main process has gone. The result, code and status are systemd's. The peak and the kill count are the kernel's, from the unit's cgroup.
   - **What the peak means:** it counts page cache, which the kernel reclaims before it kills anything. So a peak near the limit doesn't mean a unit ran out of memory; the result and the kill count do.
   - **Shown to work in every job:** a probe before the first challenge runs a unit past a 256 MB limit, and the job stops unless that's recorded as out of memory.
+- **What ran inside each unit** comes next, as another unmarked line of ours: `sample: <challenge>: threads=… lean_max=… lean_anon_mb=… lean_rss_mb=… nanoda_anon_mb=… unit_anon_mb=… samples=…`.
+  - **Where it comes from:** a loop outside the sandbox looks at the unit's cgroup every 5 seconds, and keeps the most each counter reached. It records the setting of `LEAN_NUM_THREADS`, the most Lean processes at once, the largest Lean process's anonymous and total memory, nanoda's anonymous memory, and the whole unit's anonymous memory. It writes its record after each look, so a kill leaves what it saw last.
+  - **Why anonymous memory:** Lean maps its `.olean` files, and the kernel can reclaim those pages, so they don't push a unit to the limit. Anonymous memory can't be reclaimed with no swap, so that's what fills the limit.
+  - **What it can miss:** a kill can land between looks, so the numbers can stop short of the true peak. A process in the unit could rename itself to distort the counts, but they can't carry text, so nothing of the release's reaches the line.
 - **`selftest`, a third job,** runs `scripts/test-pilot-shard.sh` before any shard. It drives `scripts/pilot-shard.sh` through the real wrapper, landrun, caps and memory limit, with a fake comparator acting out each outcome. It checks:
   - every result above;
   - how each unit ended: a clean exit, the memory limit, the time limit, and a unit killed another way, which mustn't be called out of memory;
-  - that forged result lines, unit lines and workflow commands appear only marked;
+  - that the sampler counts the Lean processes running at once and stops with its challenge, that a thread setting reaches the unit and the sandbox, and that a bad one is refused;
+  - that forged result lines, unit lines, sample lines and workflow commands appear only marked;
   - the results collector's rules, in `scripts/test_shard_results.py`: finding the step, splitting lines, and which attempt counts;
   - that the sandbox check fails when landrun sandboxes nothing, and when a directory listed as frozen can be written;
   - the two attacks on resolution. From inside landrun, with Comparator's flags, it plants `Mathlib/` and `Init/` in the release's build directory, and renames the frozen Mathlib package to put a substitute in its place. Those flags let a build run only the toolchain and git, so the attack is Lean code, run by the toolchain's `lean`, as a build's own code would be. The old `LEAN_PATH` would then resolve the planted copies, and the exports' `LEAN_PATH` still resolves Mathlib and Init to the trusted ones.
@@ -324,6 +329,19 @@ Reading the release's lakefile, freezing what came through LibSpec's tooling, an
 - **What it can't fix:** [#62](https://github.com/ammkrn/nanoda_lib/issues/62) reports `SquareDifference` still running at 96 GB with an 8 GiB stack, and [#71](https://github.com/ammkrn/nanoda_lib/pull/71) proposes a change to nanoda's logic for it. We've changed only the stack, so a run like that ends at the memory limit, unknown, as ours did.
 - **Which build gave which result:** each attempt in `pilot/data/comparator-results.json` names its run's LibSpec commit, and so the build. The earlier results, 396 acceptances among them, came from the unpatched build, and the 20 reruns' came from the patched one.
 - **Upstream:** nanoda's master added a `stack_size_bytes` option on 2026-10-29 ([#78](https://github.com/ammkrn/nanoda_lib/pull/78)), two days after our pin, with a 32 MiB default. Comparator v4.34.0 writes nanoda's config itself and doesn't set it, so using the option here would need a change to Comparator too.
+
+**Our patch to Comparator, on Marley's call on #103.** `scripts/build-comparator-tools.sh` builds Comparator v4.34.0 with one line changed, in its `safeLakeBuild`:
+
+```diff
+-    envPass := #["PATH", "HOME", "LEAN_ABORT_ON_PANIC"]
++    envPass := #["PATH", "HOME", "LEAN_ABORT_ON_PANIC", "LEAN_NUM_THREADS"]
+```
+
+- **Why:** the memory limit stopped 11 challenges inside `lake build`, and landrun passes a sandboxed command only the variables Comparator names.
+- **What it changes:** a run can now set how many Lean processes a build runs at once, and the size of each one's thread pool. It changes no check: the kernels check the export, however the build was scheduled. `scripts/sandbox-check.sh` mirrors the list, and fails if a set value doesn't reach a sandboxed command.
+- **A run that doesn't set it** is unchanged, as landrun omits a variable that isn't set (`processEnvironmentVars` at the commit we build).
+- **Who sets it:** the workflow's `lean_threads` input, which reaches the wrapper as `PILOT_LEAN_THREADS`, must be a positive number, and is recorded in each job's log. Only `safeLakeBuild` passes it to its sandbox. Comparator's own process sees it too, and that's where Lean's kernel runs. nanoda doesn't: Comparator writes its config with 4 threads and passes it no variables.
+- **Upstream:** [comparator#104](https://github.com/leanprover/comparator/pull/104), an open pull request, makes this change for `safeLakeBuild` and `safeExport`. Comparator is deprecated in favour of `lake comparator`, in Lean v4.35.0, whose lists don't name the variable either.
 
 **The results.** Every one of the 418 challenges has a trusted result, in `pilot/data/comparator-results.json`, from five runs: [41146560423](https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423) (families 189 and 159), [41170918445](https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445) (378 and 079), [41181960510](https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510) (the other 29 shards), [41222068108](https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108) (61 challenges in jobs of their own) and [41891664929](https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929) (20 reruns, each in a job of its own, with the patched nanoda and each unit's end recorded). No challenge was rejected.
 
@@ -372,7 +390,7 @@ Reading the release's lakefile, freezing what came through LibSpec's tooling, an
   - **The bins' estimates were low.** 6 challenges were cut off and 55 never started, so each got a job of its own.
   - **Collecting the results** turned up two faults in the collector, both fixed: gh's step names (#98), and jobs with no log (#99).
 - **In the report,** 324 manuscripts have `formal_proof` known, every challenge accepted, and 20 have it unknown: 17 stopped by the memory limit and 3 too large to check yet. The other 380 have no challenge. The report names the reason for each. The reruns moved 11 manuscripts to known.
-- **What's next, on Marley's calls on #100:** `ErdosReciprocal` (family 159) waits, too large to check yet. A fix for the memory limit goes to Marley before it's run.
+- **What's next, on Marley's calls on #100:** `ErdosReciprocal` (family 159) waits, too large to check yet. The 11 stopped in `lake build` rerun with `LEAN_NUM_THREADS=2`, after a control. `SquareDifference` doesn't rerun, and there's no bigger runner for now. Swap is decided after that round. v1.1 can ship with the rest unknown.
 
 **Lewis & Clark's BLT cluster, for heavy builds, if its OS can run current Lean.**
 - **It can.** It runs Ubuntu 20.04 and SLURM, as you've confirmed. Its documentation ([About the cluster](https://watzek.github.io/BLTdocs/about-the-cluster.html)) is out of date: it still says "The cluster runs the CentOS Linux operating system, version 7.4", with Sun Grid Engine and a 25 GB quota per user. It has 144 cores and 1,500 GB of memory across one login node and three workers.

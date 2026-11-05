@@ -283,9 +283,15 @@ The goal is a trusted Comparator result for every challenge in the release, fold
 - a later result replaces an earlier unknown one, never an acceptance or a rejection, and every attempt stays listed with its run's commit;
 - the trusted logs go up now as assets of a draft v1.1 release, which you publish with the tag.
 
+**Your calls, on #103:**
+- rerun the 11 stopped in `lake build` with `LEAN_NUM_THREADS=2`, after a control, and report each one's process count, memory peak and result;
+- decide on swap after that round;
+- `SquareDifference` doesn't rerun, and there's no bigger runner for now;
+- v1.1 can ship with the rest unknown.
+
 **Decisions that stay yours:**
 - merging the workflow and its scripts;
-- the fix, if memory stopped the build errors;
+- swap, after the 11's rerun;
 - tagging `v1.1`.
 
 **Gate**

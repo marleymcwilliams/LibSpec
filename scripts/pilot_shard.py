@@ -9,6 +9,8 @@ usage: python3 scripts/pilot_shard.py challenges PLAN SHARD
        python3 scripts/pilot_shard.py classify LOG EXIT_FILE ELAPSED CAP FULL_CAP FIRST UNIT_FILE
        python3 scripts/pilot_shard.py unit UNIT_FILE
        python3 scripts/pilot_shard.py unit-out-of-memory UNIT_FILE
+       python3 scripts/pilot_shard.py sample CGROUP_FILE OUT SECONDS THREADS
+       python3 scripts/pilot_shard.py sample-line OUT
        python3 scripts/pilot_shard.py results RESULTS.tsv SHARD OUT.json
 
 A shard is a name from pilot/data/shard-plan.json, or solo-<Challenge> for one challenge rerun in
@@ -31,6 +33,9 @@ Only a rejection is evidence that fails. Running out of memory, build errors and
 unknown. How each unit ended comes from scripts/pilot-unit-end.sh, in systemd's and the kernel's
 words, never the release's.
 
+The sampler watches a running unit from outside the sandbox, through its cgroup. A process in the
+unit can rename itself, so it could distort the counts, but all that's ever printed is numbers.
+
 nanoda reports a refusal by panicking, as it does an internal error, so its exit code can't
 tell the two apart, and a refusal counts only when Lean's kernel refuses too. Exit 137 is
 128 + SIGKILL, as Lean's wait reports a signal. With no OOM kill in the unit, that's a build
@@ -40,6 +45,7 @@ import json
 import os
 import re
 import sys
+import time
 
 NAME = re.compile(r"^[A-Za-z0-9_]+$")
 SHARD = re.compile(r"^[A-Za-z0-9_-]+$")
@@ -184,6 +190,71 @@ def out_of_memory(end):
     return end is not None and (end["result"] == "oom-kill" or end["oom_kills"] not in ("-", "0"))
 
 
+SAMPLE = re.compile(r"^threads=(?:default|\d+) lean_max=\d+ lean_anon_mb=\d+ lean_rss_mb=\d+ "
+                    r"nanoda_anon_mb=\d+ unit_anon_mb=\d+ samples=\d+$")
+
+
+def status_kb(pid, field):
+    """A field of /proc/PID/status, in kB, or 0 if the process has gone."""
+    try:
+        with open(f"/proc/{pid}/status", encoding="ascii", errors="replace") as f:
+            for line in f:
+                if line.startswith(field + ":"):
+                    return int(line.split()[1])
+    except (OSError, ValueError, IndexError):
+        pass
+    return 0
+
+
+def comm(pid):
+    try:
+        with open(f"/proc/{pid}/comm", encoding="ascii", errors="replace") as f:
+            return f.read().strip()
+    except OSError:
+        return ""
+
+
+def sample(cgroup_file, out, seconds, threads):
+    """Until it's stopped, records the most each counter reached while the unit in CGROUP_FILE
+    ran. It rewrites OUT after each look, so a unit that's killed leaves what was seen last."""
+    most = {"lean_max": 0, "lean_anon_mb": 0, "lean_rss_mb": 0, "nanoda_anon_mb": 0,
+            "unit_anon_mb": 0}
+    samples = 0
+    while True:
+        time.sleep(float(seconds))
+        try:
+            with open(cgroup_file, encoding="ascii") as f:
+                cgroup = "/sys/fs/cgroup" + f.read().strip()
+            with open(f"{cgroup}/cgroup.procs", encoding="ascii") as f:
+                pids = f.read().split()
+            with open(f"{cgroup}/memory.stat", encoding="ascii") as f:
+                unit_anon = next(int(l.split()[1]) for l in f if l.startswith("anon "))
+        except (OSError, ValueError, StopIteration):
+            continue
+        names = {pid: comm(pid) for pid in pids}
+        lean = [pid for pid, name in names.items() if name == "lean"]
+        nanoda = [pid for pid, name in names.items() if name == "nanoda_bin"]
+        most["lean_max"] = max(most["lean_max"], len(lean))
+        most["lean_anon_mb"] = max([most["lean_anon_mb"]] + [status_kb(p, "RssAnon") // 1024 for p in lean])
+        most["lean_rss_mb"] = max([most["lean_rss_mb"]] + [status_kb(p, "VmRSS") // 1024 for p in lean])
+        most["nanoda_anon_mb"] = max([most["nanoda_anon_mb"]] + [status_kb(p, "RssAnon") // 1024 for p in nanoda])
+        most["unit_anon_mb"] = max(most["unit_anon_mb"], unit_anon // (1024 * 1024))
+        samples += 1
+        counters = " ".join(f"{k}={v}" for k, v in most.items())
+        with open(out + ".tmp", "w", encoding="ascii") as f:
+            f.write(f"threads={threads} {counters} samples={samples}\n")
+        os.replace(out + ".tmp", out)
+
+
+def sample_line(path):
+    try:
+        with open(path, encoding="ascii") as f:
+            line = f.read().strip()
+    except (OSError, UnicodeDecodeError):
+        return "not recorded"
+    return line if SAMPLE.match(line) else "not recorded"
+
+
 def classify(log, exit_file, elapsed, cap, full_cap, first, unit_file):
     """(status, detail). The detail is LibSpec's own words, systemd's and the kernel's, never the
     release's. A unit the memory limit stopped is outOfMemory unless Comparator had already
@@ -259,10 +330,14 @@ def main():
         print(unit_line(*args))
     elif cmd == "unit-out-of-memory":
         sys.exit(0 if out_of_memory(unit_end(*args)) else 1)
+    elif cmd == "sample":
+        sample(*args)
+    elif cmd == "sample-line":
+        print(sample_line(*args))
     elif cmd == "results":
         results(*args)
     else:
-        sys.exit(f"usage: {sys.argv[0]} challenges|config|leanpath|resolution|classify|unit|"
+        sys.exit(f"usage: {sys.argv[0]} challenges|config|leanpath|resolution|classify|unit|sample|sample-line|"
                  "unit-out-of-memory|results ...")
 
 
