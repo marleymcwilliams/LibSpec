@@ -4,6 +4,12 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-05
 
+### The rerun with two Lean processes at once (Marley's call on #103)
+- **Recorded:** run [42065367459](https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459) reran the 11 stopped in `lake build`, each in its own job, with `LEAN_NUM_THREADS=2`, on `b58db93`. `pilot/data/comparator-results.json`, collected from all six runs, now holds 406 accepted, 9 out of memory and 3 too large, none rejected, with every attempt listed. The report has 328 manuscripts known and 16 unknown.
+- **As the collector's rule says,** `PlanarPacking`'s timeout replaces its earlier out of memory, since both are unknown. It was first in its job, so it's too large to check yet.
+- **Decided: the control's four runs stay out of the results,** as planned on #104, and §4 gives them as a table of their own. They ran on `9cc4004`, #104's branch before it was merged.
+- **Added:** the run's 11 logs to the draft v1.1 release, 125 in all, each checked against its recorded SHA-256 after downloading them all back. It stays a draft with no tag. So Phase 7's gate box for the logs is ticked.
+
 ### README and REPRODUCE describe the pilot (Phase 7, step 6)
 - **Decided: neither gives counts of results,** beyond the 724 manuscripts graded. They link to the report, which CI holds to its Lean data, so they won't go stale when results change, as they're about to with the 11's rerun. Undo by adding counts.
 - **Decided: REPRODUCE sorts the pilot's checks by what they run.** Checking the report and checking the logs read the release only as data. Only the rerun builds it, and that stays on GitHub Actions, as this repository's own rule requires.
