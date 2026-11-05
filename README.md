@@ -11,7 +11,9 @@ LibSpec takes the JSG/SIRUS governance corpus, a set of papers and specs on grad
 - **Controls:** each theorem has a mutant, a plausible wrong version proved to fail it, and a witness, an instance proved to satisfy it.
 - **Frozen versions:** the statements were frozen in four versions, `statements-v1` to `statements-v4`, each before its proofs were written. No statement was changed to make a proof go through.
 
-**v1.0** (the tag `v1.0`, at `0c36127`) had the first 26, frozen in `statements-v1` to `statements-v3`. Since then, `statements-v4` has added eight more. They are executable twins of the core's graded values, combine, verdict, residual threading, widths and leases, each with a theorem that it agrees with its frozen definition ([the executable gate](guide/EXECUTABLE_GATE.md), [the changelog](guide/CHANGELOG.md)). Milestone 4 proved them, and the full-strength Comparator run passes on `main` with all 34. The harness now runs the twins, and differential tests check another implementation against them, with every twinned mutant as a negative control ([REPRODUCE.md](REPRODUCE.md), step 5). The pilot is still to come.
+**v1.0** (the tag `v1.0`, at `0c36127`) had the first 26, frozen in `statements-v1` to `statements-v3`. Since then, `statements-v4` has added eight more. They are executable twins of the core's graded values, combine, verdict, residual threading, widths and leases, each with a theorem that it agrees with its frozen definition ([the executable gate](guide/EXECUTABLE_GATE.md), [the changelog](guide/CHANGELOG.md)). Milestone 4 proved them, and the full-strength Comparator run passes on `main` with all 34. The harness now runs the twins, and differential tests check another implementation against them, with every twinned mutant as a negative control ([REPRODUCE.md](REPRODUCE.md), step 5).
+
+**The pilot, which v1.1 adds,** runs that gate on a real release, [openai/math](https://github.com/openai/math) at `7ef5c0c`. It grades 724 manuscripts, and [its report](pilot/reports/catalogue.md) gives each one's verdict and the evidence it's missing. None is accepted today. Three were withdrawn by their authors. For the others, that's about missing evidence, not a finding against the mathematics: no named reviewer has checked any statement against its paper, and independent review and novelty are unknown for all of them. Comparator ran on each Lean challenge in trusted jobs on GitHub Actions. Runs that finished used both kernels, and the report gives the reason for each manuscript affected. An acceptance means both kernels accept the proof of the statement Comparator exported, not that the statement says what the paper claims. [The executable gate](guide/EXECUTABLE_GATE.md#4-where-things-run) lists what those runs still trust, and [REPRODUCE.md](REPRODUCE.md#6-the-pilot-the-gate-on-a-real-release), step 6, shows how to check them or rerun them.
 
 To check v1.0 itself, check out its tag ([REPRODUCE.md](REPRODUCE.md)).
 
@@ -26,7 +28,7 @@ CI shows that the proofs conform to the statements. Whether the statements say t
 
 ## Checking it yourself
 
-[REPRODUCE.md](REPRODUCE.md) takes a fresh machine through building everything and running `scripts/check.sh`, which does the build, a forbidden-token scan, an axiom audit, and a check that the statements match their frozen tag. It also covers Comparator, both CI's everyday run and the full-strength run, and records the latest full-strength result.
+[REPRODUCE.md](REPRODUCE.md) takes a fresh machine through building everything and running `scripts/check.sh`, which does the build, a forbidden-token scan, an axiom audit, a check that the statements match their frozen tag, a check that `archive/` hasn't changed, and a check of the links. It also covers Comparator, both CI's everyday run and the full-strength run, records the latest full-strength result, and shows how to check and rerun the pilot.
 
 ## Layout
 
@@ -36,9 +38,11 @@ CI shows that the proofs conform to the statements. Whether the statements say t
 | `lean/JSG/Proofs/` | One proof file per milestone. Each restates its frozen theorems under the same names, and `Solution.lean` imports them all |
 | `lean/JSG/Lemmas/` | Helper lemmas, used by the proofs |
 | `lean/JSG/Tests/` | Mutants, witnesses and calibration controls, the concrete Loader, the differential tests' negative controls, and the Comparator self-test fixtures |
-| `lean/JSG/Harness/`, `lean/Gate.lean` | The executable gate's harness: the report, JSON, the test corpus and the executable mutants. `Gate.lean` runs it |
+| `lean/JSG/Harness/`, `lean/Gate.lean` | The executable gate's harness: the report, JSON, the test corpus and the executable mutants. `Gate.lean` runs it, and prints the pilot's reports |
+| `lean/JSG/Pilot/` | The pilot's logic, its data as Lean, the words of its reports, and the proofs of its verdicts |
 | `lean/AxiomAudit.lean`, `lean/ComparatorTargets.lean` | The axiom audit, and the list of theorems Comparator checks |
-| `scripts/` | `check.sh`, Comparator's everyday and full-strength runs, the Comparator tools build, and the differential tests with SirusSC's adapter |
+| `pilot/` | The pilot's collectors, the facts they record, Comparator's trusted results, and the generated reports |
+| `scripts/` | `check.sh`, Comparator's everyday and full-strength runs, the Comparator tools build, the differential tests with SirusSC's adapter, and the pilot's trusted shard runs, which `.github/workflows/pilot-shards.yml` starts |
 | `guide/` | The guide, mapped in [guide/README.md](guide/README.md): the glossary, the layer map, the defects and sources, the roadmap, the milestone notes, the decision queue and log |
 | `archive/` | The source corpus, read-only |
 
