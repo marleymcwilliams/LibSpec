@@ -61,7 +61,7 @@ jobs:
   fetch:
     name: Fetch the release (untrusted)
     if: github.ref != 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v5
@@ -108,7 +108,7 @@ jobs:
   selftest:
     name: Self-test of the shard runs (trusted, no release)
     if: github.ref != 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v5
@@ -173,7 +173,7 @@ jobs:
     name: Shard ${{ matrix.shard }} (trusted)
     needs: [fetch, selftest]
     if: github.ref != 'refs/heads/main'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 355
     strategy:
       fail-fast: false

@@ -4,6 +4,10 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-04
 
+### The runner image is pinned (Marley's call on #103)
+- **Applied:** every workflow runs on `ubuntu-24.04`, not `ubuntu-latest`, since all 114 logged jobs ran on it. So a change of what `latest` means can't change the runs between one result and the next.
+- **What it doesn't pin:** the image's weekly build, which GitHub keeps updating. Each job's log names the build it ran on.
+
 ### The thread setting and the sampler (Marley's calls on #103)
 - **Applied, as Marley asked:** one line in Comparator's `safeLakeBuild`, and its mirror in `scripts/sandbox-check.sh`.
 - **Decided: only `safeLakeBuild`.** comparator#104 also patches `safeExport`, but all 11 stopped before any export, and Marley asked for the one line. Easy to extend if an export runs out of memory.
