@@ -40,7 +40,7 @@ How files, branches, pull requests and theorems are named in LibSpec. These are 
 ## Pull requests
 
 - **Title:** `<area>: <what it does>`, in plain words, with its place in a series when it has one: `proof: xverdict_agrees (Milestone 4, 3 of 8)`, `harness: the corpus, the oracle, and the diff command (3 of 5)`, `pilot: … (step 5)`. A statements draft is titled `statements-v<N> (proposal): …`. A throwaway is titled `THROWAWAY: <the question it answers>? (don't merge)`.
-- **Body:** `## What`, then any section the change needs (a report, findings, measurements), then `## Merging`, which says whose merge it is and why, by CLAUDE.md's list. It ends with the attribution line.
+- **Body:** the sections of [`.github/pull_request_template.md`](../.github/pull_request_template.md). `gh pr create --body-file` doesn't apply the template, so write them out, and end with the attribution line.
 - **Stacks:** a series of pull requests can stack, each on the one before. When one merges, the next is retargeted to `main` before the merged branch is deleted, since deleting a base first closes the pull request on it.
 - **Commits:** `<area>: <summary>`, then a body saying what changed and why, ending with the co-author line.
 
