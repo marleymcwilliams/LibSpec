@@ -301,7 +301,7 @@ The goal is a trusted Comparator result for every challenge in the release, fold
 - [x] Every challenge has a trusted result, or a classified failure with its log: a rejection, a build error, a timeout, or too large to check yet: #100
 - [x] `pilot/reports/catalogue.md` is regenerated with them, and its proofs pass: #100
 - [x] README and REPRODUCE describe the pilot and how to rerun it: #109
-- [x] Every trusted log is kept as an asset of the v1.1 release, matching its recorded SHA-256: all 125, on the draft you publish with the tag: PR_NUMBER
+- [x] Every trusted log is kept as an asset of the v1.1 release, matching its recorded SHA-256: all 125, on the draft you publish with the tag: #110
 - [ ] Tagged `v1.1`
 
 ## Phase 8: Statement review

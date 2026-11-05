@@ -417,7 +417,7 @@ Reading the release's lakefile, freezing what came through LibSpec's tooling, an
 
 - **Two were accepted** by both kernels: `SnakyCertificate`, as in the control, and `HoneycombBridgeMassSupport`.
 - **`PlanarPacking` didn't run out of memory this time.** The 5-hour cap stopped it, still in `lake build`, 290 of Lake's jobs further on than before. It was first in its job, so it's too large to check yet, and waits.
-- **`TamingCompatibility` finished its build,** and the limit stopped it in nanoda's stage, with nanoda at 10292 MiB, so Lean's kernel never ran. The setting doesn't reach nanoda, which Comparator runs with 4 threads.
+- **`TamingCompatibility` finished its build,** and the limit stopped it in nanoda's stage, with nanoda at 10292 MiB. Comparator runs nanoda before Lean's kernel, so that never ran. The setting doesn't reach nanoda, which Comparator runs with 4 threads.
 - **Seven still stopped in `lake build`.** In five, one Lean process alone reached 10130 to 11544 MiB, over three quarters of the limit. In `CycleCliqueRamsey` and `UniversalTensorSquares`, no Lean process passed 6548 MiB, so at the unit's peak more than 6000 MiB was in its other processes. `SnakyTwentyOne` and `NuclearUltrapower` stopped at the same job count as the time before.
 - **What these numbers can't say:** whether one Lean process at a time would fit, or how much any of them needs. The sampler looks every 5 seconds, so a kill can land between looks, and every peak stops at the limit.
 - **Time:** nine ran longer before they stopped or finished than the time before. `CoarseAssembly` stopped sooner, at a lower job count, and `NuclearUltrapower` at about the same time.
