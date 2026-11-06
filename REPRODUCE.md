@@ -49,7 +49,7 @@ From the repository root:
 bash scripts/check.sh
 ```
 
-It runs six steps and ends with `check.sh: passed`:
+It runs seven steps and ends with `check.sh: passed`:
 
 | Step | What it checks | What you should see |
 | --- | --- | --- |
@@ -57,6 +57,7 @@ It runs six steps and ends with `check.sh: passed`:
 | Forbidden tokens | no `sorry`, `admit`, `axiom` or native evaluation in `Proofs/`, `Lemmas/`, `Tests/`, `Harness/` or `Pilot/`, or in `lean/Gate.lean` | `ok` |
 | Axiom audit | `#print axioms` on every theorem in `Proofs/`, `Lemmas/`, `Tests/`, `Harness/` and `Pilot/` (`lean/AxiomAudit.lean`) | each theorem lists only `propext`, `Classical.choice` and `Quot.sound`, then `ok` |
 | Statements unchanged | `Defs.lean`, `Statements.lean`, their imports, the toolchain, the Mathlib pin and the lakefile, against the latest `statements-v*` tag | `ok (statements-v4): …`, or `ok (statements-v3): …` at v1.0 |
+| CODEOWNERS | `.github/CODEOWNERS` gives `@marleymcwilliams` every file the statements check covers, and itself, by the path or a directory above it (`scripts/codeowners_check.py`), and that check fails on CODEOWNERS files of its own when it should (`scripts/test-codeowners-check.sh`). v1.0 and v1.1 don't have this step | `ok: @marleymcwilliams owns all 6: …`, then an `ok` for each case |
 | `archive/` unchanged | `archive/` is the tree it's frozen at, committed and in the working tree (`scripts/archive-check.sh`), and that check fails on a throwaway repository when it should (`scripts/test-archive-check.sh`). v1.0 doesn't have this step | `ok: archive/ is tree c2f6dac…, with nothing uncommitted`, then an `ok` for each case |
 | Links | every relative link in the Markdown outside `archive/`, and the heading its anchor names (`scripts/check-links.py`). v1.0 doesn't have this step. On Windows, run it with `PYTHON=python` | `… links checked, 0 broken` |
 

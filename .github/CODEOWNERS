@@ -1,0 +1,40 @@
+# The paths only Marley merges. GitHub requires a code owner's approval to merge a pull request
+# that touches any of them: the ruleset "main: code owners approve protected paths". This is the
+# one list, and CLAUDE.md's self-merge rule points here. GitHub reads the file from the branch a
+# pull request merges into. scripts/check.sh fails unless the statements' files and this file
+# stay listed. Each comment gives the reason, in CLAUDE.md's words where it gives one.
+
+# The statements, and every other file the statements check covers (scripts/check.sh). "The
+# human owns lean/JSG/Statements.lean and lean/JSG/Defs.lean, the definitions it uses."
+/lean/JSG/Statements.lean @marleymcwilliams
+/lean/JSG/Defs.lean @marleymcwilliams
+/lean/lean-toolchain @marleymcwilliams
+/lean/lake-manifest.json @marleymcwilliams
+/lean/lakefile.toml @marleymcwilliams
+
+# "archive/ is read-only."
+/archive/ @marleymcwilliams
+
+# The rules and what enforces them: CLAUDE.md, the deny rules in .claude/ ("Lifting a rule is
+# mine to do"), how every file is stored (.gitattributes), the checks in scripts/, the workflows
+# and this file in .github/, and the decision records in guide/decisions/.
+/CLAUDE.md @marleymcwilliams
+/.claude/ @marleymcwilliams
+/.gitattributes @marleymcwilliams
+/scripts/ @marleymcwilliams
+/.github/ @marleymcwilliams
+/guide/decisions/ @marleymcwilliams
+
+# "They decide and record what counts as evidence."
+/pilot/ @marleymcwilliams
+/lean/JSG/Pilot/ @marleymcwilliams
+/lean/Gate.lean @marleymcwilliams
+
+# The harness: it holds the corpus and the executable mutants the differential tests rest on,
+# and the commands lean/Gate.lean runs.
+/lean/JSG/Harness/ @marleymcwilliams
+
+# The checks that live in lean/, and every test file, new ones included.
+/lean/ComparatorTargets.lean @marleymcwilliams
+/lean/AxiomAudit.lean @marleymcwilliams
+/lean/JSG/Tests/ @marleymcwilliams

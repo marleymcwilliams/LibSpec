@@ -6,7 +6,7 @@
 
 ## Trust
 <!-- Answer all three, each with yes or no and why. -->
-- **Touches a path only Marley merges:**
+- **Touches a path in `.github/CODEOWNERS`:**
 - **Runs untrusted code:**
 - **Changes what counts as evidence:**
 

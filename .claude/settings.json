@@ -1,5 +1,11 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {
+    "GIT_AUTHOR_NAME": "MarleyMCo",
+    "GIT_AUTHOR_EMAIL": "353441399+MarleyMCo@users.noreply.github.com",
+    "GIT_COMMITTER_NAME": "MarleyMCo",
+    "GIT_COMMITTER_EMAIL": "353441399+MarleyMCo@users.noreply.github.com"
+  },
   "permissions": {
     "deny": [
       "Edit(//**/lean/JSG/Statements.lean)",
@@ -27,6 +33,14 @@
       "Bash(gh api *git/refs*)",
       "Bash(gh api *git/tags*)",
       "Bash(gh api *tag_name*)",
+      "Bash(gh auth login)",
+      "Bash(gh auth login *)",
+      "Bash(gh auth switch)",
+      "Bash(gh auth switch *)",
+      "Bash(gh auth refresh)",
+      "Bash(gh auth refresh *)",
+      "Bash(gh auth token)",
+      "Bash(gh auth token *)",
       "Bash(git push * main)",
       "Bash(git push * main *)",
       "Bash(git push *:main)",
@@ -61,6 +75,14 @@
       "PowerShell(gh api *git/refs*)",
       "PowerShell(gh api *git/tags*)",
       "PowerShell(gh api *tag_name*)",
+      "PowerShell(gh auth login)",
+      "PowerShell(gh auth login *)",
+      "PowerShell(gh auth switch)",
+      "PowerShell(gh auth switch *)",
+      "PowerShell(gh auth refresh)",
+      "PowerShell(gh auth refresh *)",
+      "PowerShell(gh auth token)",
+      "PowerShell(gh auth token *)",
       "PowerShell(git push * main)",
       "PowerShell(git push * main *)",
       "PowerShell(git push *:main)",

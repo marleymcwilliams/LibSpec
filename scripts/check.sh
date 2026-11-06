@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Build, forbidden-token scan, axiom audit, statements-unchanged check, archive check, and links.
+# Build, forbidden-token scan, axiom audit, statements-unchanged check, CODEOWNERS check, archive
+# check, and links.
 # Runs locally (Git Bash on Windows) and in CI. Exits non-zero on any failure.
 set -euo pipefail
 
@@ -104,6 +105,14 @@ statements_check() {
 step "Statements unchanged since the latest statements-v* tag"
 mapfile -t covered < <(statement_files)
 statements_check || fail=1
+
+# GitHub requires Marley's approval to merge a change to any path .github/CODEOWNERS lists, and
+# CLAUDE.md's self-merge rule points to the same file, so the statements' files and the file
+# itself must stay listed.
+step "CODEOWNERS gives Marley the statements' files and itself (scripts/codeowners_check.py), and that check has teeth"
+"${PYTHON:-python3}" "$root/scripts/codeowners_check.py" "$root/.github/CODEOWNERS" \
+  "${covered[@]}" .github/CODEOWNERS || fail=1
+bash "$root/scripts/test-codeowners-check.sh" || fail=1
 
 step "archive/ unchanged (scripts/archive-check.sh), and that check has teeth"
 bash "$root/scripts/archive-check.sh" || fail=1
