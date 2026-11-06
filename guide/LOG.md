@@ -2,6 +2,16 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-11-06
+
+### v1.1 is tagged and published (Marley's)
+- **Recorded:** Marley tagged `v1.1` at `6f2ffae`, the merge of #110, as an annotated tag. `git ls-remote origin 'refs/tags/v1.1*'` gives the tag object `09bcc82`, which peels to `6f2ffae`. `gh release view v1.1` shows the release published at 2026-11-06 08:00:45 UTC, as immutable.
+- **Checked: its 125 log assets total 7,671,563 bytes,** and each one's SHA-256 digest, as GitHub reports it, matches its entry in `pilot/data/comparator-results.json`.
+- **`gh release verify v1.1` passed:** "Resolved tag v1.1 to sha1:09bcc82b5a241c6fe8f0c8b989e6e811fd1336d0", "Loaded attestation from GitHub API", "✓ Release v1.1 verified!". The attestation lists the same 125 assets, each with the digest the results file records.
+- **Recorded in the guide:** Phase 7's last gate box is ticked, and its swap line records Marley's call of 2026-11-06 at 00:38 UTC. `REPRODUCE.md` has a row for the full-strength run at the tag commit, [42138237336](https://github.com/marleymcwilliams/LibSpec/actions/runs/42138237336), and its "Which version" names v1.1.
+- **Decided: the new row names the sandbox check,** `scripts/sandbox-check.sh`, which shows landrun in force. The rows for 2026-11-04 and 2026-11-05 don't name it, though their runs had it too, and they're left as they were. Undo by dropping the clause.
+- **Brought up to date while there, found by the review:** step 6 of `REPRODUCE.md` said the download finds no release until v1.1 is published. It now says the commands download the logs and check each against its recorded SHA-256. Run as written against the published release, they print `125 logs, 0 differ []`.
+
 ## 2026-11-05
 
 ### The rerun with two Lean processes at once (Marley's call on #103)

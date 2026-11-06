@@ -2,7 +2,7 @@
 
 This takes a fresh machine through building everything, running the checks, and reading off what is proved and what isn't. Each step says what you should see.
 
-**Which version.** It describes `main`: 34 frozen theorems, all proved. v1.0, the tag `v1.0`, had the first 26. `statements-v4` added eight more, which Milestone 4 proved ([the executable gate](guide/EXECUTABLE_GATE.md)). Where v1.0 differs, the step says so. The pilot in step 6 is what v1.1 adds.
+**Which version.** It describes `main`: 34 frozen theorems, all proved. v1.0, the tag `v1.0`, had the first 26. `statements-v4` added eight more, which Milestone 4 proved ([the executable gate](guide/EXECUTABLE_GATE.md)). v1.1, the tag `v1.1` at `6f2ffae`, has all 34 proved and adds the pilot. Where v1.0 differs, the step says so. The pilot in step 6 is what v1.1 adds.
 
 ## What you need
 
@@ -153,7 +153,7 @@ python3 pilot/to_lean.py pilot/data/catalogue.json --comparator pilot/data/compa
 git diff --stat
 ```
 
-**Check the kept logs.** Each Comparator result comes from a trusted job's own log. GitHub keeps logs for 90 days at most, so they're kept as assets of the v1.1 release, with their SHA-256s in `pilot/data/comparator-results.json`. Until v1.1 is published, the download finds no release:
+**Check the kept logs.** Each Comparator result comes from a trusted job's own log. GitHub keeps logs for 90 days at most, so they're kept as assets of the v1.1 release, with their SHA-256s in `pilot/data/comparator-results.json`. To download them and check each against its recorded SHA-256:
 
 ```bash
 gh release download v1.1 --repo marleymcwilliams/LibSpec --pattern '*.log' --dir pilot-logs
@@ -219,10 +219,11 @@ grep -hE '^[^ ]+ (unit|sample|result): ' pilot-logs/*.log
 
 ## Full-strength runs
 
-The latest run checked all 34 frozen theorems, on `main` at `cbe89aa`, with the tools as they're built now. The runs back to `6a8a77c`, after Milestone 4, checked all 34 too, and every run before that checked v1.0's 26. The first run on `main` was started by hand at `d568ed1`, after #56, #57 and #58 were merged. The four before it came from #56, which added the workflow, before it was merged. Each of those checked `main`'s proofs, since #56 changes no Lean file. Each later run started by hand on `main` gets a row here too. The three earliest ran before the step had `shell: bash`, when a failing script could still have shown green. Their logs show they passed: each ends with the script's own pass line, which it prints only if every step succeeded.
+The latest run checked all 34 frozen theorems, on `main` at `6f2ffae`, with the tools as they're built now. The runs back to `6a8a77c`, after Milestone 4, checked all 34 too, and every run before that checked v1.0's 26. The first run on `main` was started by hand at `d568ed1`, after #56, #57 and #58 were merged. The four before it came from #56, which added the workflow, before it was merged. Each of those checked `main`'s proofs, since #56 changes no Lean file. Each later run started by hand on `main` gets a row here too. The three earliest ran before the step had `shell: bash`, when a failing script could still have shown green. Their logs show they passed: each ends with the script's own pass line, which it prints only if every step succeeded.
 
 | Date | Run | Commit | Result |
 | --- | --- | --- | --- |
+| 2026-11-06 | [42138237336](https://github.com/marleymcwilliams/LibSpec/actions/runs/42138237336) | `main` at `6f2ffae`, the commit v1.1 tags, after #110, started with `gh workflow run` | **Passed** with all 34 frozen theorems, using the same build of the tools as the pilot's rerun of 11 challenges with two Lean processes at once ([42065367459](https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459)). Both probes passed, the sandbox check showed landrun in force, the self-test passed, the mutant was rejected for its statement, and the Lean kernel and nanoda each accept the solution. Linux 7.0.0-1017-azure, systemd 255, Lean 4.34.1, 4.5 min |
 | 2026-11-05 | [41973625293](https://github.com/marleymcwilliams/LibSpec/actions/runs/41973625293) | `main` at `cbe89aa`, after #104, started with `gh workflow run` | **Passed** with all 34 frozen theorems, the first run on `main` with both patched tools. Both probes passed, the self-test passed, the mutant was rejected for its statement, and the Lean kernel and nanoda each accept the solution. Linux 7.0.0-1017-azure, systemd 255, Lean 4.34.1, 6 min |
 | 2026-11-04 | [41890870505](https://github.com/marleymcwilliams/LibSpec/actions/runs/41890870505) | `main` at `8badfa7`, after #101, started with `gh workflow run` | **Passed** with all 34 frozen theorems, the first run on `main` with the patched nanoda: the same checks as the row above, 5 min |
 | 2026-10-29 | [40840546350](https://github.com/marleymcwilliams/LibSpec/actions/runs/40840546350) | `main` at `6a8a77c`, after Milestone 4, started with `gh workflow run` | **Passed** with all 34 frozen theorems. Both probes passed, the self-test passed, the mutant was rejected for its statement, and the Lean kernel and nanoda each accept the solution. Linux 7.0.0-1017-azure, systemd 255, Lean 4.34.1, 5 min |
