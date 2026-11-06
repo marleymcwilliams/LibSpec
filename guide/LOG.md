@@ -4,6 +4,11 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-06
 
+### A Stacks Project lead for the must-pass set (Marley's decision, #112)
+- **Added:** under Phase 9's "Calibration sources", the Stacks Project as must-pass candidates. Mathlib's `@[stacks]` theorems come first, and Axiom's StacksCore second. The lead also says what each candidate needs and which tags are excluded. Nothing under "Claims to grade" changed, and neither did Phase 9's gate.
+- **Its facts are the reviewer's reading of 2026-11-05,** written as text, with no links into Axiom's repository, and they're checked again at step 1. Nothing of Axiom's was cloned, fetched or built.
+- **Decided: the section's lead-in now says its sources' fate is already known,** either way, since "known to be withdrawn or retracted" no longer covers every lead. Undo by restoring it and giving the Stacks lead a section of its own.
+
 ### v1.1 is tagged and published (Marley's)
 - **Recorded:** Marley tagged `v1.1` at `6f2ffae`, the merge of #110, as an annotated tag. `git ls-remote origin 'refs/tags/v1.1*'` gives the tag object `09bcc82`, which peels to `6f2ffae`. `gh release view v1.1` shows the release published at 2026-11-06 08:00:45 UTC, as immutable.
 - **Checked: its 125 log assets total 7,671,563 bytes,** and each one's SHA-256 digest, as GitHub reports it, matches its entry in `pilot/data/comparator-results.json`.
