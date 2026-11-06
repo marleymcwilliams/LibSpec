@@ -19,6 +19,10 @@ Decisions Claude Code made without asking, because they are reversible and don't
 - **Decided: the check decides each path by the last rule that matches it, as GitHub does,** so a later rule can't take a path away unseen. A glob or an unanchored pattern that might match counts as a match, so the check fails rather than guesses. That's stronger than finding a rule that names the path. Undo by checking only for such a rule.
 - **Decided: each deny rule comes in two forms,** bare and with arguments, since all four commands run with none.
 - **Decided: this PR's commits are already MarleyMCo's,** as the settings' `env` block makes every later one.
+- **On the review's notes:**
+  - `/lean/JSG/Harness/` joins CODEOWNERS, though CLAUDE.md never listed it. It holds the corpus and the executable mutants the differential tests rest on, and the commands `lean/Gate.lean` runs.
+  - The PR template's first Trust question becomes "Touches a path in `.github/CODEOWNERS`:".
+  - `gh auth git-credential` isn't denied, the review's answer to the PR's decision 1: `git credential fill` prints the same token, so the rule wouldn't close anything.
 
 ### A Stacks Project lead for the must-pass set (Marley's decision, #112)
 - **Added:** under Phase 9's "Calibration sources", the Stacks Project as must-pass candidates. Mathlib's `@[stacks]` theorems come first, and Axiom's StacksCore second. The lead also says what each candidate needs and which tags are excluded. Nothing under "Claims to grade" changed, and neither did Phase 9's gate.
