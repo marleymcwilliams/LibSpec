@@ -10,9 +10,10 @@ Comparator results come from our trusted shard runs, [run
 41146560423](https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423), [run
 41170918445](https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445), [run
 41181960510](https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510), [run
-41222068108](https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108) and [run
-41891664929](https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929). Of the 418
-challenges, 404 were accepted, 2 were too large to check yet and 12 were stopped by the memory
+41222068108](https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108), [run
+41891664929](https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929) and [run
+42065367459](https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459). Of the 418
+challenges, 406 were accepted, 3 were too large to check yet and 9 were stopped by the memory
 limit; none was rejected. Running out of memory, a build error, a timeout or the kernels
 disagreeing leaves `formal_proof` unknown, never failing.
 -/
@@ -2648,7 +2649,7 @@ def raws : List Raw :=
       depsRead := false },
    { withdrawnOn := none,
       challenges := [⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
-        ⟨.outOfMemory, ["propext", "Quot.sound", "Classical.choice"]⟩,
+        ⟨.tooLarge, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩],
       fidelityBy := none, reviewed := false, noveltyChecked := false,
@@ -2867,7 +2868,7 @@ def raws : List Raw :=
       depsRead := false },
    { withdrawnOn := none,
       challenges := [⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
-        ⟨.outOfMemory, ["propext", "Quot.sound", "Classical.choice"]⟩,
+        ⟨.tooLarge, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩],
       fidelityBy := none, reviewed := false, noveltyChecked := false,
@@ -3287,7 +3288,7 @@ def raws : List Raw :=
    { withdrawnOn := none,
       challenges := [⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
-        ⟨.outOfMemory, ["propext", "Quot.sound", "Classical.choice"]⟩,
+        ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩],
       fidelityBy := none, reviewed := false, noveltyChecked := false,
       depsRead := false },
@@ -3310,7 +3311,7 @@ def raws : List Raw :=
    { withdrawnOn := none,
       challenges := [⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
-        ⟨.outOfMemory, ["propext", "Quot.sound", "Classical.choice"]⟩,
+        ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩],
       fidelityBy := none, reviewed := false, noveltyChecked := false,
       depsRead := false },
@@ -4256,7 +4257,7 @@ def raws : List Raw :=
    { withdrawnOn := none,
       challenges := [⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
-        ⟨.outOfMemory, ["propext", "Quot.sound", "Classical.choice"]⟩,
+        ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩],
       fidelityBy := none, reviewed := false, noveltyChecked := false,
       depsRead := false },
@@ -4490,7 +4491,7 @@ def raws : List Raw :=
    { withdrawnOn := none,
       challenges := [⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
-        ⟨.outOfMemory, ["propext", "Quot.sound", "Classical.choice"]⟩,
+        ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩],
       fidelityBy := none, reviewed := false, noveltyChecked := false,
       depsRead := false },
@@ -4693,7 +4694,7 @@ def raws : List Raw :=
       fidelityBy := none, reviewed := false, noveltyChecked := false,
       depsRead := false },
    { withdrawnOn := none,
-      challenges := [⟨.outOfMemory, ["propext", "Quot.sound", "Classical.choice"]⟩,
+      challenges := [⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.accepted, ["propext", "Quot.sound", "Classical.choice"]⟩,
         ⟨.outOfMemory, ["propext", "Quot.sound", "Classical.choice"]⟩],
       fidelityBy := none, reviewed := false, noveltyChecked := false,
@@ -6370,11 +6371,12 @@ def comparatorNote : String :=
     "https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445), [run 4118" ++
     "1960510](https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510), " ++
     "[run 41222068108](https://github.com/marleymcwilliams/LibSpec/actions/runs/41222" ++
-    "068108) and [run 41891664929](https://github.com/marleymcwilliams/LibSpec/action" ++
-    "s/runs/41891664929). Of the 418 challenges, 404 were accepted, 2 were too large " ++
-    "to check yet and 12 were stopped by the memory limit; none was rejected. Running" ++
-    " out of memory, a build error, a timeout or the kernels disagreeing leaves " ++
-    "`formal_proof` unknown, never failing."
+    "068108), [run 41891664929](https://github.com/marleymcwilliams/LibSpec/actions/r" ++
+    "uns/41891664929) and [run 42065367459](https://github.com/marleymcwilliams/LibSp" ++
+    "ec/actions/runs/42065367459). Of the 418 challenges, 406 were accepted, 3 were " ++
+    "too large to check yet and 9 were stopped by the memory limit; none was " ++
+    "rejected. Running out of memory, a build error, a timeout or the kernels " ++
+    "disagreeing leaves `formal_proof` unknown, never failing."
 
 /-- The catalogue as a release: each manuscript's raw facts, and the manuscripts its withdrawal
     notice links to. -/

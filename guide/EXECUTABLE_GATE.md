@@ -102,7 +102,7 @@ It stores none of the release's paper text or Lean code. The collected data (`pi
 | --- | --- | --- | --- |
 | `withdrawn` | [∞, ∞] if withdrawn, else [0, 0] | `preprints/<m>/README.md`: a withdrawal notice heads it ("Withdrawal notice: …") | **Yes**, for every folder |
 | `dependency_withdrawn` | not collected: the closure computes it (below). It is [0, 0] if the manuscript's formalization is complete. Otherwise it is unknown until its dependencies are read, and then [∞, ∞] if it rests on a withdrawn manuscript at any distance, else [0, 0] | the dependency edges: from a notice where it names one, and otherwise from each paper's bibliography of companion papers | **Partly.** Two notices name their dependency; other citations aren't machine-readable yet |
-| `formal_proof` | [0, 0] if the full-strength Comparator accepts a challenge for its top-line claim, [1, 1] if it rejects, and unknown if none exists, or if its run was stopped by the memory limit, ended in a build error or a timeout, or the kernels disagreed | the family's `lean/docs/<NNN>.md`, whose "Comparator links" table names the challenges, then our run | **Partly.** About 58% of top-line results have no formalization, and our trusted runs leave 20 of the 344 manuscripts with challenges unknown (§4) |
+| `formal_proof` | [0, 0] if the full-strength Comparator accepts a challenge for its top-line claim, [1, 1] if it rejects, and unknown if none exists, or if its run was stopped by the memory limit, ended in a build error or a timeout, or the kernels disagreed | the family's `lean/docs/<NNN>.md`, whose "Comparator links" table names the challenges, then our run | **Partly.** About 58% of top-line results have no formalization, and our trusted runs leave 16 of the 344 manuscripts with challenges unknown (§4) |
 | `statement_fidelity` | [0, 0] once a named reviewer confirms that the challenge states the paper's top-line claim, else unknown | `lean/docs/<NNN>.md`'s "Scope" prose, and `lean/formalization.yaml`, whose `review` is `status: unchecked` | **No**, for any manuscript |
 | `axioms` | [0, 0] if the challenge permits exactly `propext`, `Quot.sound` and `Classical.choice`, else [1, 1] | `lean/ComparatorChallenges/<name>.json`, then our run | **Yes**, for configs (the one checked permits exactly those three) |
 | `independent_review` | [0, 0] once an independent review is published, else unknown | outside the repo. For example, `history.md` says a working group led by Impagliazzo, Paturi and Williams will examine the ETH paper | **No** |
@@ -327,7 +327,7 @@ Reading the release's lakefile, freezing what came through LibSpec's tooling, an
 - **What it changes:** the constant's only use is the stack size of those threads. So it changes no check, only how deep nanoda can recurse before it aborts. Stack pages are committed as they're touched, and they count against each challenge's memory limit.
 - **Why 1 GiB:** nanoda's issues [#61](https://github.com/ammkrn/nanoda_lib/issues/61) and [#77](https://github.com/ammkrn/nanoda_lib/issues/77) report checks passing at 1 GiB that overflow at 16 MiB. We didn't measure other sizes first.
 - **What it can't fix:** [#62](https://github.com/ammkrn/nanoda_lib/issues/62) reports `SquareDifference` still running at 96 GB with an 8 GiB stack, and [#71](https://github.com/ammkrn/nanoda_lib/pull/71) proposes a change to nanoda's logic for it. We've changed only the stack, so a run like that ends at the memory limit, unknown, as ours did.
-- **Which build gave which result:** each attempt in `pilot/data/comparator-results.json` names its run's LibSpec commit, and so the build. The earlier results, 396 acceptances among them, came from the unpatched build, and the 20 reruns' came from the patched one.
+- **Which build gave which result:** each attempt in `pilot/data/comparator-results.json` names its run's LibSpec commit, and so the build. The first four runs' results, 396 acceptances among them, came from the unpatched build. The 20 reruns' came from the build with this patch, and the 11 rerun with two Lean processes at once came from the build with both patches.
 - **Upstream:** nanoda's master added a `stack_size_bytes` option on 2026-10-29 ([#78](https://github.com/ammkrn/nanoda_lib/pull/78)), two days after our pin, with a 32 MiB default. Comparator v4.34.0 writes nanoda's config itself and doesn't set it, so using the option here would need a change to Comparator too.
 
 **Our patch to Comparator, on Marley's call on #103.** `scripts/build-comparator-tools.sh` builds Comparator v4.34.0 with one line changed, in its `safeLakeBuild`:
@@ -343,15 +343,15 @@ Reading the release's lakefile, freezing what came through LibSpec's tooling, an
 - **Who sets it:** the workflow's `lean_threads` input, which reaches the wrapper as `PILOT_LEAN_THREADS`, must be a positive number, and is recorded in each job's log. Only `safeLakeBuild` passes it to its sandbox. Comparator's own process sees it too, and that's where Lean's kernel runs. nanoda doesn't: Comparator writes its config with 4 threads and passes it no variables.
 - **Upstream:** [comparator#104](https://github.com/leanprover/comparator/pull/104), an open pull request, makes this change for `safeLakeBuild` and `safeExport`. Comparator is deprecated in favour of `lake comparator`, in Lean v4.35.0, whose lists don't name the variable either.
 
-**The results.** Every one of the 418 challenges has a trusted result, in `pilot/data/comparator-results.json`, from five runs: [41146560423](https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423) (families 189 and 159), [41170918445](https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445) (378 and 079), [41181960510](https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510) (the other 29 shards), [41222068108](https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108) (61 challenges in jobs of their own) and [41891664929](https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929) (20 reruns, each in a job of its own, with the patched nanoda and each unit's end recorded). No challenge was rejected.
+**The results.** Every one of the 418 challenges has a trusted result, in `pilot/data/comparator-results.json`, from six runs: [41146560423](https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423) (families 189 and 159), [41170918445](https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445) (378 and 079), [41181960510](https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510) (the other 29 shards), [41222068108](https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108) (61 challenges in jobs of their own), [41891664929](https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929) (20 reruns, each in a job of its own, with the patched nanoda and each unit's end recorded) and [42065367459](https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459) (the 11 stopped in `lake build`, each in a job of its own, with `LEAN_NUM_THREADS=2`). No challenge was rejected.
 
 | Result | Challenges | Which, and why |
 | --- | --- | --- |
-| accepted | 404 | |
-| outOfMemory | 12 | The 13 GB memory limit stopped each, with `result=oom-kill` and one OOM kill. The table below says where |
-| tooLarge | 2 | `ErdosReciprocal` and `MUBSix`, each at the full 5-hour cap |
+| accepted | 406 | |
+| outOfMemory | 9 | The 13 GB memory limit stopped each, with `result=oom-kill` and one OOM kill. The tables below say where |
+| tooLarge | 3 | `ErdosReciprocal`, `MUBSix` and `PlanarPacking`, each at the full 5-hour cap |
 
-**What the reruns showed.**
+**What the first reruns showed** (run 41891664929).
 - **The nine where nanoda overflowed its stack:** with the patch, eight were accepted by both kernels, so no disagreement is left. `SquareDifference` reached the memory limit while nanoda ran, as [#62](https://github.com/ammkrn/nanoda_lib/issues/62) led us to expect, so Lean's kernel never ran on that attempt. A unit's peak is the whole unit's, so the log can't say how much of it was nanoda's.
 
   | Accepted | Seconds | Unit's memory peak (MiB, page cache included) |
@@ -389,8 +389,44 @@ Reading the release's lakefile, freezing what came through LibSpec's tooling, an
   - **Two runners were lost.** b13 and b26 stopped about four hours in, with "The hosted runner lost communication with the server", and left no log. Both were rerun as they were, and finished.
   - **The bins' estimates were low.** 6 challenges were cut off and 55 never started, so each got a job of its own.
   - **Collecting the results** turned up two faults in the collector, both fixed: gh's step names (#98), and jobs with no log (#99).
-- **In the report,** 324 manuscripts have `formal_proof` known, every challenge accepted, and 20 have it unknown: 17 stopped by the memory limit and 3 too large to check yet. The other 380 have no challenge. The report names the reason for each. The reruns moved 11 manuscripts to known.
-- **What's next, on Marley's calls on #100:** `ErdosReciprocal` (family 159) waits, too large to check yet. The 11 stopped in `lake build` rerun with `LEAN_NUM_THREADS=2`, after a control. `SquareDifference` doesn't rerun, and there's no bigger runner for now. Swap is decided after that round. v1.1 can ship with the rest unknown.
+**What the rerun with two Lean processes at once showed** ([run 42065367459](https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459), on Marley's call on #103). Each of the 11 ran alone in its job, with `LEAN_NUM_THREADS=2`. Memory here is anonymous, in MiB, the most the sampler saw. Every unit's peak with page cache included was 12841 MiB or more, so it says little here.
+- **A control came first,** on `9cc4004`, each challenge alone in a job, with the setting and without. It isn't collected as results. The setting held `SnakyCertificate` to 2 Lean processes at once, and it was accepted; without it, 4 ran at once and the limit stopped it. `KaplanskyDirectFiniteness` ran one at a time either way, and its largest Lean process was smaller with the setting, which also sets each process's thread pool.
+
+  | Challenge | `LEAN_NUM_THREADS` | Lean processes at once, at most | Largest Lean process | Whole unit | Result | Run |
+  | --- | --- | --- | --- | --- | --- | --- |
+  | `SnakyCertificate` | 2 | 2 | 9212 | 11369 | accepted in 1000 s | [41956648677](https://github.com/marleymcwilliams/LibSpec/actions/runs/41956648677) |
+  | `SnakyCertificate` | not set | 4 | 9221 | 12450 | out of memory at 307 s | [41956661967](https://github.com/marleymcwilliams/LibSpec/actions/runs/41956661967) |
+  | `KaplanskyDirectFiniteness` | 2 | 1 | 468 | 2505 | accepted in 933 s | [41956622679](https://github.com/marleymcwilliams/LibSpec/actions/runs/41956622679) |
+  | `KaplanskyDirectFiniteness` | not set | 1 | 651 | 2465 | accepted in 892 s | [41956635090](https://github.com/marleymcwilliams/LibSpec/actions/runs/41956635090) |
+
+- **The 11.** In every one the setting reached the sandbox, and the sampler saw at most 2 Lean processes at once. "Before" is the second attempt, in run 41891664929; "—" means nanoda didn't run.
+
+  | Challenge | Result | Seconds | Stage it stopped in | Lake's job count then (before) | Largest Lean process | nanoda | Whole unit |
+  | --- | --- | --- | --- | --- | --- | --- | --- |
+  | `HoneycombBridgeMassSupport` | accepted | 1838 | | all 9021 (8937 of 9007) | 8759 | 1373 | 10487 |
+  | `SnakyCertificate` | accepted | 1142 | | all 8974 (8956 of 8974) | 9219 | 6029 | 11597 |
+  | `PlanarPacking` | tooLarge | 18001 | `lake build` | 4150 of 4330 (3860 of 4330) | 4805 | — | 9297 |
+  | `SubexponentialSAT` | outOfMemory | 12602 | `lake build` | 11936 of 11978 (11756 of 12014) | 10130 | — | 12783 |
+  | `ContinuumCoulombHardness` | outOfMemory | 6300 | `lake build` | 10778 of 10820 (10771 of 10849) | 11025 | — | 12749 |
+  | `TamingCompatibility` | outOfMemory | 3430 | nanoda | all 9505 (9231 of 9505) | 7863 | 10292 | 12392 |
+  | `CycleCliqueRamsey` | outOfMemory | 2486 | `lake build` | 9105 of 9187 (9096 of 9190) | 6501 | — | 13057 |
+  | `CoarseAssembly` | outOfMemory | 1223 | `lake build` | 9044 of 9270 (9205 of 9270) | 10822 | — | 12854 |
+  | `SnakyTwentyOne` | outOfMemory | 1213 | `lake build` | 9014 of 9017 (9014 of 9017) | 11386 | — | 12571 |
+  | `NuclearUltrapower` | outOfMemory | 1202 | `lake build` | 8954 of 8962 (8954 of 8962) | 11544 | — | 13055 |
+  | `UniversalTensorSquares` | outOfMemory | 1200 | `lake build` | 9118 of 9496 (9108 of 9496) | 6548 | — | 12850 |
+
+- **Two were accepted** by both kernels: `SnakyCertificate`, as in the control, and `HoneycombBridgeMassSupport`.
+- **`PlanarPacking` didn't run out of memory this time.** The 5-hour cap stopped it, still in `lake build`, 290 of Lake's jobs further on than before. It was first in its job, so it's too large to check yet, and waits.
+- **`TamingCompatibility` finished its build,** and the limit stopped it in nanoda's stage, with nanoda at 10292 MiB. Comparator runs nanoda before Lean's kernel, so that never ran. The setting doesn't reach nanoda, which Comparator runs with 4 threads.
+- **Seven still stopped in `lake build`.** In five, one Lean process alone reached 10130 to 11544 MiB, over three quarters of the limit. In `CycleCliqueRamsey` and `UniversalTensorSquares`, no Lean process passed 6548 MiB, so at the unit's peak more than 6000 MiB was in its other processes. `SnakyTwentyOne` and `NuclearUltrapower` stopped at the same job count as the time before.
+- **What these numbers can't say:** whether one Lean process at a time would fit, or how much any of them needs. The sampler looks every 5 seconds, so a kill can land between looks, and every peak stops at the limit.
+- **Time:** nine ran longer before they stopped or finished than the time before. `CoarseAssembly` stopped sooner, at a lower job count, and `NuclearUltrapower` at about the same time.
+- **Runner image:** every job ran on `ubuntu-24.04`, ten on its build `20261101.360.1` and `HoneycombBridgeMassSupport`'s on `20261025.353.1`.
+- **Every earlier attempt stays listed,** the 11's second attempts as `outOfMemory`.
+
+**Where that leaves the report.**
+- **In the report,** 328 manuscripts have `formal_proof` known, every challenge accepted, and 16 have it unknown: 11 stopped by the memory limit and 5 too large to check yet. The other 380 have no challenge. The report names the reason for each. The first reruns moved 11 manuscripts to known, and this round moved 4 more, family 237's, whose last unknown challenge was `HoneycombBridgeMassSupport`. `SnakyCertificate`'s acceptance leaves "Snaky in 21 Maker moves" unknown, since `SnakyTwentyOne` still is.
+- **What's next, on Marley's calls on #100 and #103:** the three too large to check yet wait: `ErdosReciprocal` (family 159) on Marley's call, and `MUBSix` and `PlanarPacking` as the rules say, each first in its own job. `SquareDifference` doesn't rerun, and there's no bigger runner for now. Whether swap is tried for the eight this round left out of memory is Marley's call. v1.1 can ship with the rest unknown.
 
 **Lewis & Clark's BLT cluster, for heavy builds, if its OS can run current Lean.**
 - **It can.** It runs Ubuntu 20.04 and SLURM, as you've confirmed. Its documentation ([About the cluster](https://watzek.github.io/BLTdocs/about-the-cluster.html)) is out of date: it still says "The cluster runs the CentOS Linux operating system, version 7.4", with Sun Grid Engine and a 25 GB quota per user. It has 144 cores and 1,500 GB of memory across one login node and three workers.

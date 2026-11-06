@@ -2429,7 +2429,7 @@
    ]
   },
   {
-   "comparator": "outOfMemory",
+   "comparator": "accepted",
    "family": "237",
    "name": "HoneycombBridgeMassSupport",
    "permittedAxioms": [
@@ -3912,7 +3912,7 @@
    ]
   },
   {
-   "comparator": "outOfMemory",
+   "comparator": "tooLarge",
    "family": "090",
    "name": "PlanarPacking",
    "permittedAxioms": [
@@ -4799,7 +4799,7 @@
    ]
   },
   {
-   "comparator": "outOfMemory",
+   "comparator": "accepted",
    "family": "187",
    "name": "SnakyCertificate",
    "permittedAxioms": [

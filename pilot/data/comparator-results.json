@@ -865,6 +865,93 @@
    ],
    "noLog": [],
    "notFinished": []
+  },
+  {
+   "run": 42065367459,
+   "url": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459",
+   "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+   "attempts": 1,
+   "logs": [
+    {
+     "job": 127381052510,
+     "attempt": 1,
+     "shard": "solo-PlanarPacking",
+     "file": "run-42065367459-job-127381052510-solo-PlanarPacking.log",
+     "sha256": "ce2af319b6a42b7aa9a935e5c3d051e2438d55619218162f953ad651917b2ab9"
+    },
+    {
+     "job": 127381052614,
+     "attempt": 1,
+     "shard": "solo-ContinuumCoulombHardness",
+     "file": "run-42065367459-job-127381052614-solo-ContinuumCoulombHardness.log",
+     "sha256": "75883ca57b429b007ece10ac443bd10a00b1cd56d41660b480754515d0bafdd7"
+    },
+    {
+     "job": 127381052631,
+     "attempt": 1,
+     "shard": "solo-SnakyTwentyOne",
+     "file": "run-42065367459-job-127381052631-solo-SnakyTwentyOne.log",
+     "sha256": "de51eb19c619b7b0bffea9fc73fdba9d8c99223b42ba3462452ab773186e8cd2"
+    },
+    {
+     "job": 127381052656,
+     "attempt": 1,
+     "shard": "solo-TamingCompatibility",
+     "file": "run-42065367459-job-127381052656-solo-TamingCompatibility.log",
+     "sha256": "ac590486f86c913a6a9760091e597d64ae0238a36d34e6a197c17d5cda8c1dd2"
+    },
+    {
+     "job": 127381052673,
+     "attempt": 1,
+     "shard": "solo-NuclearUltrapower",
+     "file": "run-42065367459-job-127381052673-solo-NuclearUltrapower.log",
+     "sha256": "28c6a68c83d893267923210a65df73d6b601bca6312aebfa5d1a788e712059a7"
+    },
+    {
+     "job": 127381052780,
+     "attempt": 1,
+     "shard": "solo-UniversalTensorSquares",
+     "file": "run-42065367459-job-127381052780-solo-UniversalTensorSquares.log",
+     "sha256": "fabdb3685495c19e145c66206b35394df5906f13ab6ef7a3e40779aa8de1eae5"
+    },
+    {
+     "job": 127381052835,
+     "attempt": 1,
+     "shard": "solo-HoneycombBridgeMassSupport",
+     "file": "run-42065367459-job-127381052835-solo-HoneycombBridgeMassSupport.log",
+     "sha256": "33dbb21a4a747149b6ddd2ddd3f2500db90fe038f1537fdbf46546087ec68b32"
+    },
+    {
+     "job": 127381052881,
+     "attempt": 1,
+     "shard": "solo-SnakyCertificate",
+     "file": "run-42065367459-job-127381052881-solo-SnakyCertificate.log",
+     "sha256": "38a36c2c6bda4935bc5a637ad541f225050e19a1cf7feaa75006ed89d0e4e4c6"
+    },
+    {
+     "job": 127381052939,
+     "attempt": 1,
+     "shard": "solo-SubexponentialSAT",
+     "file": "run-42065367459-job-127381052939-solo-SubexponentialSAT.log",
+     "sha256": "fa68f9a836da030554802a6e64139274239e3682a1e5195a3c753cbdcac7f5cd"
+    },
+    {
+     "job": 127381052979,
+     "attempt": 1,
+     "shard": "solo-CoarseAssembly",
+     "file": "run-42065367459-job-127381052979-solo-CoarseAssembly.log",
+     "sha256": "d354d9d9a4dddf4915b4fa3043418a947456da4ebe5d2d5c69229a1af3f024e7"
+    },
+    {
+     "job": 127381053239,
+     "attempt": 1,
+     "shard": "solo-CycleCliqueRamsey",
+     "file": "run-42065367459-job-127381053239-solo-CycleCliqueRamsey.log",
+     "sha256": "6c95ee8eeff7731ffe7e02cc68859a03fa7ccb9cbc21692c49f96bf15a589bef"
+    }
+   ],
+   "noLog": [],
+   "notFinished": []
   }
  ],
  "results": {
@@ -1038,7 +1125,7 @@
   "HenonEmden": "accepted",
   "HilbertCrouzeix": "accepted",
   "HoneycombBridgeFiniteness": "accepted",
-  "HoneycombBridgeMassSupport": "outOfMemory",
+  "HoneycombBridgeMassSupport": "accepted",
   "HoneycombFreeEnergy": "accepted",
   "HotSpots": "accepted",
   "HyperbolicCones": "accepted",
@@ -1141,7 +1228,7 @@
   "PlanarFalconer": "accepted",
   "PlanarFirstPassage": "accepted",
   "PlanarL1": "accepted",
-  "PlanarPacking": "outOfMemory",
+  "PlanarPacking": "tooLarge",
   "PlanarUnitDistances": "accepted",
   "PlaneColoring": "accepted",
   "PolycyclicRecognition": "accepted",
@@ -1204,7 +1291,7 @@
   "SmoothInitialForm": "accepted",
   "SmoothObstruction": "accepted",
   "SmoothYau": "accepted",
-  "SnakyCertificate": "outOfMemory",
+  "SnakyCertificate": "accepted",
   "SnakyConditional": "accepted",
   "SnakyTwentyOne": "outOfMemory",
   "SoftChannel204": "accepted",
@@ -2490,13 +2577,14 @@
    "name": "CoarseAssembly",
    "shard": "solo-CoarseAssembly",
    "status": "outOfMemory",
-   "seconds": 1731,
+   "seconds": 1223,
    "capSeconds": 18000,
-   "run": 41891664929,
+   "run": 42065367459,
    "attempt": 1,
-   "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
-   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243518",
+   "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052979",
    "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+   "sample": "threads=2 lean_max=2 lean_anon_mb=10822 lean_rss_mb=12141 nanoda_anon_mb=0 unit_anon_mb=12854 samples=244",
    "attempts": [
     {
      "shard": "b23",
@@ -2518,6 +2606,18 @@
      "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
      "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243518",
      "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1"
+    },
+    {
+     "shard": "solo-CoarseAssembly",
+     "status": "outOfMemory",
+     "seconds": 1223,
+     "capSeconds": 18000,
+     "run": 42065367459,
+     "attempt": 1,
+     "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+     "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052979",
+     "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+     "sample": "threads=2 lean_max=2 lean_anon_mb=10822 lean_rss_mb=12141 nanoda_anon_mb=0 unit_anon_mb=12854 samples=244"
     }
    ]
   },
@@ -2790,13 +2890,14 @@
    "name": "ContinuumCoulombHardness",
    "shard": "solo-ContinuumCoulombHardness",
    "status": "outOfMemory",
-   "seconds": 4833,
+   "seconds": 6300,
    "capSeconds": 18000,
-   "run": 41891664929,
+   "run": 42065367459,
    "attempt": 1,
-   "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
-   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243708",
+   "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052614",
    "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+   "sample": "threads=2 lean_max=2 lean_anon_mb=11025 lean_rss_mb=12348 nanoda_anon_mb=0 unit_anon_mb=12749 samples=1259",
    "attempts": [
     {
      "shard": "b08",
@@ -2818,6 +2919,18 @@
      "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
      "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243708",
      "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1"
+    },
+    {
+     "shard": "solo-ContinuumCoulombHardness",
+     "status": "outOfMemory",
+     "seconds": 6300,
+     "capSeconds": 18000,
+     "run": 42065367459,
+     "attempt": 1,
+     "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+     "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052614",
+     "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+     "sample": "threads=2 lean_max=2 lean_anon_mb=11025 lean_rss_mb=12348 nanoda_anon_mb=0 unit_anon_mb=12749 samples=1259"
     }
    ]
   },
@@ -3193,13 +3306,14 @@
    "name": "CycleCliqueRamsey",
    "shard": "solo-CycleCliqueRamsey",
    "status": "outOfMemory",
-   "seconds": 1075,
+   "seconds": 2486,
    "capSeconds": 18000,
-   "run": 41891664929,
+   "run": 42065367459,
    "attempt": 1,
-   "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
-   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243976",
+   "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381053239",
    "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+   "sample": "threads=2 lean_max=2 lean_anon_mb=6501 lean_rss_mb=8646 nanoda_anon_mb=0 unit_anon_mb=13057 samples=497",
    "attempts": [
     {
      "shard": "f189",
@@ -3221,6 +3335,18 @@
      "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
      "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243976",
      "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1"
+    },
+    {
+     "shard": "solo-CycleCliqueRamsey",
+     "status": "outOfMemory",
+     "seconds": 2486,
+     "capSeconds": 18000,
+     "run": 42065367459,
+     "attempt": 1,
+     "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+     "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381053239",
+     "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+     "sample": "threads=2 lean_max=2 lean_anon_mb=6501 lean_rss_mb=8646 nanoda_anon_mb=0 unit_anon_mb=13057 samples=497"
     }
    ]
   },
@@ -5263,14 +5389,15 @@
   {
    "name": "HoneycombBridgeMassSupport",
    "shard": "solo-HoneycombBridgeMassSupport",
-   "status": "outOfMemory",
-   "seconds": 501,
+   "status": "accepted",
+   "seconds": 1838,
    "capSeconds": 18000,
-   "run": 41891664929,
+   "run": 42065367459,
    "attempt": 1,
-   "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
-   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243771",
-   "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+   "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052835",
+   "unit": "result=success code=exited status=0 peak_mb=13312 oom_kills=0",
+   "sample": "threads=2 lean_max=2 lean_anon_mb=8759 lean_rss_mb=10180 nanoda_anon_mb=1373 unit_anon_mb=10487 samples=367",
    "attempts": [
     {
      "shard": "b15",
@@ -5292,6 +5419,18 @@
      "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
      "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243771",
      "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1"
+    },
+    {
+     "shard": "solo-HoneycombBridgeMassSupport",
+     "status": "accepted",
+     "seconds": 1838,
+     "capSeconds": 18000,
+     "run": 42065367459,
+     "attempt": 1,
+     "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+     "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052835",
+     "unit": "result=success code=exited status=0 peak_mb=13312 oom_kills=0",
+     "sample": "threads=2 lean_max=2 lean_anon_mb=8759 lean_rss_mb=10180 nanoda_anon_mb=1373 unit_anon_mb=10487 samples=367"
     }
    ]
   },
@@ -7079,13 +7218,14 @@
    "name": "NuclearUltrapower",
    "shard": "solo-NuclearUltrapower",
    "status": "outOfMemory",
-   "seconds": 1242,
+   "seconds": 1202,
    "capSeconds": 18000,
-   "run": 41891664929,
+   "run": 42065367459,
    "attempt": 1,
-   "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
-   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243777",
+   "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052673",
    "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+   "sample": "threads=2 lean_max=2 lean_anon_mb=11544 lean_rss_mb=12961 nanoda_anon_mb=0 unit_anon_mb=13055 samples=240",
    "attempts": [
     {
      "shard": "b25",
@@ -7107,6 +7247,18 @@
      "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
      "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243777",
      "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1"
+    },
+    {
+     "shard": "solo-NuclearUltrapower",
+     "status": "outOfMemory",
+     "seconds": 1202,
+     "capSeconds": 18000,
+     "run": 42065367459,
+     "attempt": 1,
+     "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+     "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052673",
+     "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+     "sample": "threads=2 lean_max=2 lean_anon_mb=11544 lean_rss_mb=12961 nanoda_anon_mb=0 unit_anon_mb=13055 samples=240"
     }
    ]
   },
@@ -7786,14 +7938,15 @@
   {
    "name": "PlanarPacking",
    "shard": "solo-PlanarPacking",
-   "status": "outOfMemory",
-   "seconds": 2945,
+   "status": "tooLarge",
+   "seconds": 18001,
    "capSeconds": 18000,
-   "run": 41891664929,
+   "run": 42065367459,
    "attempt": 1,
-   "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
-   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243685",
-   "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+   "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052510",
+   "unit": "result=timeout code=killed status=TERM peak_mb=12841 oom_kills=0",
+   "sample": "threads=2 lean_max=2 lean_anon_mb=4805 lean_rss_mb=8558 nanoda_anon_mb=0 unit_anon_mb=9297 samples=3598",
    "attempts": [
     {
      "shard": "c-PlanarPacking",
@@ -7815,6 +7968,18 @@
      "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
      "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243685",
      "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1"
+    },
+    {
+     "shard": "solo-PlanarPacking",
+     "status": "tooLarge",
+     "seconds": 18001,
+     "capSeconds": 18000,
+     "run": 42065367459,
+     "attempt": 1,
+     "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+     "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052510",
+     "unit": "result=timeout code=killed status=TERM peak_mb=12841 oom_kills=0",
+     "sample": "threads=2 lean_max=2 lean_anon_mb=4805 lean_rss_mb=8558 nanoda_anon_mb=0 unit_anon_mb=9297 samples=3598"
     }
    ]
   },
@@ -9529,14 +9694,15 @@
   {
    "name": "SnakyCertificate",
    "shard": "solo-SnakyCertificate",
-   "status": "outOfMemory",
-   "seconds": 282,
+   "status": "accepted",
+   "seconds": 1142,
    "capSeconds": 18000,
-   "run": 41891664929,
+   "run": 42065367459,
    "attempt": 1,
-   "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
-   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243772",
-   "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+   "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052881",
+   "unit": "result=success code=exited status=0 peak_mb=13303 oom_kills=0",
+   "sample": "threads=2 lean_max=2 lean_anon_mb=9219 lean_rss_mb=11673 nanoda_anon_mb=6029 unit_anon_mb=11597 samples=228",
    "attempts": [
     {
      "shard": "b13",
@@ -9558,6 +9724,18 @@
      "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
      "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243772",
      "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1"
+    },
+    {
+     "shard": "solo-SnakyCertificate",
+     "status": "accepted",
+     "seconds": 1142,
+     "capSeconds": 18000,
+     "run": 42065367459,
+     "attempt": 1,
+     "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+     "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052881",
+     "unit": "result=success code=exited status=0 peak_mb=13303 oom_kills=0",
+     "sample": "threads=2 lean_max=2 lean_anon_mb=9219 lean_rss_mb=11673 nanoda_anon_mb=6029 unit_anon_mb=11597 samples=228"
     }
    ]
   },
@@ -9588,13 +9766,14 @@
    "name": "SnakyTwentyOne",
    "shard": "solo-SnakyTwentyOne",
    "status": "outOfMemory",
-   "seconds": 684,
+   "seconds": 1213,
    "capSeconds": 18000,
-   "run": 41891664929,
+   "run": 42065367459,
    "attempt": 1,
-   "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
-   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243562",
+   "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052631",
    "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+   "sample": "threads=2 lean_max=2 lean_anon_mb=11386 lean_rss_mb=13149 nanoda_anon_mb=0 unit_anon_mb=12571 samples=242",
    "attempts": [
     {
      "shard": "b13",
@@ -9616,6 +9795,18 @@
      "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
      "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243562",
      "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1"
+    },
+    {
+     "shard": "solo-SnakyTwentyOne",
+     "status": "outOfMemory",
+     "seconds": 1213,
+     "capSeconds": 18000,
+     "run": 42065367459,
+     "attempt": 1,
+     "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+     "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052631",
+     "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+     "sample": "threads=2 lean_max=2 lean_anon_mb=11386 lean_rss_mb=13149 nanoda_anon_mb=0 unit_anon_mb=12571 samples=242"
     }
    ]
   },
@@ -10096,13 +10287,14 @@
    "name": "SubexponentialSAT",
    "shard": "solo-SubexponentialSAT",
    "status": "outOfMemory",
-   "seconds": 5938,
+   "seconds": 12602,
    "capSeconds": 18000,
-   "run": 41891664929,
+   "run": 42065367459,
    "attempt": 1,
-   "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
-   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243737",
+   "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052939",
    "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+   "sample": "threads=2 lean_max=2 lean_anon_mb=10130 lean_rss_mb=12098 nanoda_anon_mb=0 unit_anon_mb=12783 samples=2519",
    "attempts": [
     {
      "shard": "f378",
@@ -10124,6 +10316,18 @@
      "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
      "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243737",
      "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1"
+    },
+    {
+     "shard": "solo-SubexponentialSAT",
+     "status": "outOfMemory",
+     "seconds": 12602,
+     "capSeconds": 18000,
+     "run": 42065367459,
+     "attempt": 1,
+     "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+     "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052939",
+     "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+     "sample": "threads=2 lean_max=2 lean_anon_mb=10130 lean_rss_mb=12098 nanoda_anon_mb=0 unit_anon_mb=12783 samples=2519"
     }
    ]
   },
@@ -10457,13 +10661,14 @@
    "name": "TamingCompatibility",
    "shard": "solo-TamingCompatibility",
    "status": "outOfMemory",
-   "seconds": 1575,
+   "seconds": 3430,
    "capSeconds": 18000,
-   "run": 41891664929,
+   "run": 42065367459,
    "attempt": 1,
-   "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
-   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243762",
+   "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052656",
    "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+   "sample": "threads=2 lean_max=2 lean_anon_mb=7863 lean_rss_mb=11413 nanoda_anon_mb=10292 unit_anon_mb=12392 samples=685",
    "attempts": [
     {
      "shard": "b21",
@@ -10485,6 +10690,18 @@
      "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
      "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243762",
      "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1"
+    },
+    {
+     "shard": "solo-TamingCompatibility",
+     "status": "outOfMemory",
+     "seconds": 3430,
+     "capSeconds": 18000,
+     "run": 42065367459,
+     "attempt": 1,
+     "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+     "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052656",
+     "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+     "sample": "threads=2 lean_max=2 lean_anon_mb=7863 lean_rss_mb=11413 nanoda_anon_mb=10292 unit_anon_mb=12392 samples=685"
     }
    ]
   },
@@ -11417,13 +11634,14 @@
    "name": "UniversalTensorSquares",
    "shard": "solo-UniversalTensorSquares",
    "status": "outOfMemory",
-   "seconds": 994,
+   "seconds": 1200,
    "capSeconds": 18000,
-   "run": 41891664929,
+   "run": 42065367459,
    "attempt": 1,
-   "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
-   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243701",
+   "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+   "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052780",
    "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+   "sample": "threads=2 lean_max=2 lean_anon_mb=6548 lean_rss_mb=11292 nanoda_anon_mb=0 unit_anon_mb=12850 samples=239",
    "attempts": [
     {
      "shard": "b13",
@@ -11445,6 +11663,18 @@
      "libspecCommit": "8badfa78abbbdb6692c9d5a82ea9b01f5bbe277d",
      "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929/job/126793243701",
      "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1"
+    },
+    {
+     "shard": "solo-UniversalTensorSquares",
+     "status": "outOfMemory",
+     "seconds": 1200,
+     "capSeconds": 18000,
+     "run": 42065367459,
+     "attempt": 1,
+     "libspecCommit": "b58db931ecfd312df46051df9f4ff286e22b00dd",
+     "job": "https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459/job/127381052780",
+     "unit": "result=oom-kill code=killed status=TERM peak_mb=13312 oom_kills=1",
+     "sample": "threads=2 lean_max=2 lean_anon_mb=6548 lean_rss_mb=11292 nanoda_anon_mb=0 unit_anon_mb=12850 samples=239"
     }
    ]
   },

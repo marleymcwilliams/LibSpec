@@ -2,7 +2,7 @@
 
 openai/math at `7ef5c0c`, θ = 0 on every axis, no leases. It grades 724 manuscripts: the 721 that `CONTENTS.md` lists, and the 3 withdrawn ones it no longer lists. Every verdict is proved by the kernel (`JSG.Pilot.CatalogueCalibration`): none is accepted today, so each report says what evidence is missing.
 
-Comparator results come from our trusted shard runs, [run 41146560423](https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423), [run 41170918445](https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445), [run 41181960510](https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510), [run 41222068108](https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108) and [run 41891664929](https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929). Of the 418 challenges, 404 were accepted, 2 were too large to check yet and 12 were stopped by the memory limit; none was rejected. Running out of memory, a build error, a timeout or the kernels disagreeing leaves `formal_proof` unknown, never failing.
+Comparator results come from our trusted shard runs, [run 41146560423](https://github.com/marleymcwilliams/LibSpec/actions/runs/41146560423), [run 41170918445](https://github.com/marleymcwilliams/LibSpec/actions/runs/41170918445), [run 41181960510](https://github.com/marleymcwilliams/LibSpec/actions/runs/41181960510), [run 41222068108](https://github.com/marleymcwilliams/LibSpec/actions/runs/41222068108), [run 41891664929](https://github.com/marleymcwilliams/LibSpec/actions/runs/41891664929) and [run 42065367459](https://github.com/marleymcwilliams/LibSpec/actions/runs/42065367459). Of the 418 challenges, 406 were accepted, 3 were too large to check yet and 9 were stopped by the memory limit; none was rejected. Running out of memory, a build error, a timeout or the kernels disagreeing leaves `formal_proof` unknown, never failing.
 
 ## What's missing, by axis
 
@@ -12,7 +12,7 @@ A report names every axis that holds its manuscript back, so a manuscript counts
 | --- | --- | --- |
 | `withdrawn` | 3 | its authors withdrew it on October 6, 2026: 3 |
 | `dependency_withdrawn` | 724 | unknown: its dependencies aren't read yet: 722; through Algebraicity of Weil classes on split abelian eightfolds: 2 |
-| `formal_proof` | 400 | unknown: no formalization: 380; unknown: the memory limit stopped it: 17; unknown: too large to check yet: 3 |
+| `formal_proof` | 396 | unknown: no formalization: 380; unknown: the memory limit stopped it: 11; unknown: too large to check yet: 5 |
 | `statement_fidelity` | 724 | unknown: no named reviewer has checked its statement: 724 |
 | `axioms` | 380 | unknown: no challenge: 380 |
 | `independent_review` | 724 | unknown: 724 |
@@ -22,12 +22,12 @@ A report names every axis that holds its manuscript back, so a manuscript counts
 
 Every manuscript's report is one of these.
 
-1. **324 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `statement_fidelity` (unknown: no named reviewer has checked its statement), `independent_review` (unknown), `novelty` (unknown)
+1. **328 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `statement_fidelity` (unknown: no named reviewer has checked its statement), `independent_review` (unknown), `novelty` (unknown)
 2. **377 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: no formalization), `statement_fidelity` (unknown: no named reviewer has checked its statement), `axioms` (unknown: no challenge), `independent_review` (unknown), `novelty` (unknown)
-3. **17 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: the memory limit stopped it), `statement_fidelity` (unknown: no named reviewer has checked its statement), `independent_review` (unknown), `novelty` (unknown)
-4. **2 manuscripts:** not accepted: evidence incomplete on `withdrawn` (its authors withdrew it on October 6, 2026), `dependency_withdrawn` (through Algebraicity of Weil classes on split abelian eightfolds), `formal_proof` (unknown: no formalization), `statement_fidelity` (unknown: no named reviewer has checked its statement), `axioms` (unknown: no challenge), `independent_review` (unknown), `novelty` (unknown)
-5. **1 manuscript:** not accepted: evidence incomplete on `withdrawn` (its authors withdrew it on October 6, 2026), `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: no formalization), `statement_fidelity` (unknown: no named reviewer has checked its statement), `axioms` (unknown: no challenge), `independent_review` (unknown), `novelty` (unknown)
-6. **3 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: too large to check yet), `statement_fidelity` (unknown: no named reviewer has checked its statement), `independent_review` (unknown), `novelty` (unknown)
+3. **11 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: the memory limit stopped it), `statement_fidelity` (unknown: no named reviewer has checked its statement), `independent_review` (unknown), `novelty` (unknown)
+4. **5 manuscripts:** not accepted: evidence incomplete on `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: too large to check yet), `statement_fidelity` (unknown: no named reviewer has checked its statement), `independent_review` (unknown), `novelty` (unknown)
+5. **2 manuscripts:** not accepted: evidence incomplete on `withdrawn` (its authors withdrew it on October 6, 2026), `dependency_withdrawn` (through Algebraicity of Weil classes on split abelian eightfolds), `formal_proof` (unknown: no formalization), `statement_fidelity` (unknown: no named reviewer has checked its statement), `axioms` (unknown: no challenge), `independent_review` (unknown), `novelty` (unknown)
+6. **1 manuscript:** not accepted: evidence incomplete on `withdrawn` (its authors withdrew it on October 6, 2026), `dependency_withdrawn` (unknown: its dependencies aren't read yet), `formal_proof` (unknown: no formalization), `statement_fidelity` (unknown: no named reviewer has checked its statement), `axioms` (unknown: no challenge), `independent_review` (unknown), `novelty` (unknown)
 
 ## Every manuscript
 
@@ -35,9 +35,9 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 
 | Family | Manuscript | Challenges | Report |
 | --- | --- | --- | --- |
-| — | Algebraicity of Kuga-Satake Correspondences for K3 Surfaces | 0 | 4 |
-| — | Algebraicity of Weil classes on split abelian eightfolds | 0 | 5 |
-| — | The rational Hodge conjecture for products of K3 surfaces | 0 | 4 |
+| — | Algebraicity of Kuga-Satake Correspondences for K3 Surfaces | 0 | 5 |
+| — | Algebraicity of Weil classes on split abelian eightfolds | 0 | 6 |
+| — | The rational Hodge conjecture for products of K3 surfaces | 0 | 5 |
 | 001 | Milne's rationality conjecture for abelian varieties | 0 | 2 |
 | 002 | Exact Birch–Swinnerton-Dyer Formula from Low Selmer Corank | 0 | 2 |
 | 002 | The Selmer converse for elliptic curves at every prime | 0 | 2 |
@@ -216,8 +216,8 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 088 | Petty’s projection-volume conjecture in dimensions at least four | 3 | 1 |
 | 089 | $L_1$ Embeddings of Graphs of Bounded Treewidth | 2 | 1 |
 | 089 | Planar Graph Metrics Embed into $L_1$ with Constant Distortion | 2 | 1 |
-| 090 | A sharp Fourier certificate for planar circle packing | 4 | 3 |
-| 090 | An atomic certificate for triangular-lattice universal optimality | 4 | 3 |
+| 090 | A sharp Fourier certificate for planar circle packing | 4 | 4 |
+| 090 | An atomic certificate for triangular-lattice universal optimality | 4 | 4 |
 | 090 | Triangular minimality for planar Coulomb renormalized energy | 0 | 2 |
 | 090 | Universal optimality of the triangular lattice | 0 | 2 |
 | 091 | The logarithmic Brunn–Minkowski conjecture | 1 | 1 |
@@ -337,7 +337,7 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 157 | A counterexample to the Colin de Verdière chromatic conjecture | 0 | 2 |
 | 157 | A linear list-coloring bound in terms of the Hadwiger number | 2 | 1 |
 | 158 | The Euclidean plane is not five-colorable | 2 | 1 |
-| 159 | Quasipolynomial Bounds for Arithmetic Progressions | 1 | 6 |
+| 159 | Quasipolynomial Bounds for Arithmetic Progressions | 1 | 4 |
 | 160 | Quantitative Superexponential Bounds for van der Waerden Numbers | 1 | 1 |
 | 161 | A counterexample to Sidorenko's conjecture | 1 | 1 |
 | 162 | A counterexample to Ryser's covering conjecture | 3 | 1 |
@@ -489,16 +489,16 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 235 | Variance of the Random k-SAT Hitting Time | 4 | 1 |
 | 236 | The sharp factor-of-IID threshold for the free Ising model on regular trees | 1 | 1 |
 | 237 | Cap-selected amplitudes and triangle chords for honeycomb walks | 0 | 2 |
-| 237 | Critical honeycomb chords with prescribed boundary endpoints | 4 | 3 |
-| 237 | Critical strip-crossing mass on the honeycomb lattice | 4 | 3 |
+| 237 | Critical honeycomb chords with prescribed boundary endpoints | 4 | 1 |
+| 237 | Critical strip-crossing mass on the honeycomb lattice | 4 | 1 |
 | 237 | Cylinder amplitudes and logarithmic bridge-length windows on the honeycomb lattice | 0 | 2 |
 | 237 | Cylinder loop weights and planar nesting | 0 | 2 |
 | 237 | Disk transfer representations and confined bridge mass | 0 | 2 |
 | 237 | Marked polygon correlations and one-arc bounds | 0 | 2 |
 | 237 | Mass and covering exponents for fixed-length honeycomb walks | 0 | 2 |
-| 237 | Polynomial vacuum representations and bridge mass for honeycomb walks | 4 | 3 |
+| 237 | Polynomial vacuum representations and bridge mass for honeycomb walks | 4 | 1 |
 | 237 | Radial transfer estimates and polygon length laws for honeycomb walks | 0 | 2 |
-| 237 | Renewal and changes of law for critical honeycomb walks | 4 | 3 |
+| 237 | Renewal and changes of law for critical honeycomb walks | 4 | 1 |
 | 237 | Signed cylinder propagation and marked polygons on the honeycomb lattice | 0 | 2 |
 | 237 | Uniform marked-polygon estimates and sharp finite bridge moments | 0 | 2 |
 | 238 | A strict four-row permanent inequality and permutation moments | 13 | 1 |
@@ -571,8 +571,8 @@ By family. The withdrawn ones, which `CONTENTS.md` no longer lists, come first. 
 | 264 | Quantitative Near-Kerr Evolution and Generic C² Future Inextendibility | 0 | 2 |
 | 265 | A two-dimensional area law from a global spectral gap | 0 | 2 |
 | 265 | Polynomial PEPS approximation of gapped square-grid ground states | 0 | 2 |
-| 266 | Exact Fourier certificates for complex Hadamard matrices of order six | 2 | 6 |
-| 266 | The maximum number of mutually unbiased bases in dimension six | 2 | 6 |
+| 266 | Exact Fourier certificates for complex Hadamard matrices of order six | 2 | 4 |
+| 266 | The maximum number of mutually unbiased bases in dimension six | 2 | 4 |
 | 267 | A density-uniform condensate bound for dilute Bose gases | 0 | 2 |
 | 267 | Bose–Einstein condensation at positive temperature in the dilute hard-sphere gas | 0 | 2 |
 | 267 | Ground-state condensation in the dilute hard-sphere gas | 1 | 1 |
