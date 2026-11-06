@@ -359,9 +359,23 @@ The goal is to grade claims beyond openai/math, and to calibrate the gate on cla
 - **Anthropic's 3-SAT paper,** "A 2^o(n) Time Algorithm for 3-SAT", in `anthropics/formal-math` under `eth/`, Apache-2.0. Its Lean formalization comes with a challenge file and a Comparator config. It pins Lean `v4.33.1`, not our `v4.34.1`, so Comparator's tools must be built for that toolchain too.
 - **Astra's ten,** OpenAI's results of August 2026: a manuscript and a repository of Lean proofs. Their layout and license need checking first.
 
-**Calibration sources,** whose papers are known to be withdrawn or retracted:
+**Calibration sources,** for papers known to be withdrawn or retracted, and for results known to be true:
 - **arXiv withdrawals.** A withdrawn paper stays listed, with its metadata, and arXiv serves metadata over OAI-PMH. How a withdrawal shows in that metadata needs checking first.
 - **Crossref's Retraction Watch data.** It has been open since 2023: as a CSV updated every working day, at `gitlab.com/crossref/retraction-watch-data`, and in the update metadata of Crossref's REST API.
+- **The Stacks Project, for the must-pass set.** Its results are known to be true, and each has a precise, stable tag, so they're candidates for the must-pass set. They come from two pools, in this order:
+  1. **Theorems tagged `@[stacks]` in our pinned Mathlib, `d13f23b`:** at least 364 distinct tags. They're trusted, and on our toolchain.
+     - **Fewer than 364 are on theorems.** A rough count on 2026-11-06 found 393 distinct tags in all, but only about 215 on a theorem or lemma. The rest tag definitions, instances, classes and structures, which can't be must-pass results, so step 1 counts theorems alone.
+  2. **Axiom's StacksCore, `github.com/AxiomMath/Stacks`:** at least 205 distinct tags, in 445 files.
+     - **Pin `012108f` or later.** The first commit, `f8e70c5`, didn't build.
+     - **Its toolchain is Lean `v4.34.0-rc2`, with Mathlib `16edf57`,** so Comparator's tools need a build of their own for it.
+     - **Its license is Apache-2.0,** and it has no CI.
+     - **Only its own authors have reviewed it:** its `formalization.yaml` says "self-assessed".
+     - **It would also test the pipeline on an outside release.**
+  - **StacksFrontier isn't a candidate:** 62,527 files, written by AI and not reviewed by people.
+  - **Each candidate needs** a challenge we write, a trusted Comparator run, and a statement check by a named reviewer under Phase 8's protocol. It also needs your rulings, which go in the queue when the work starts: on a record per tag, and on what counts as `independent_review` and `novelty` for a result from a reference work.
+  - **A tag is excluded** if its Lean statement departs from the Stacks text, or covers only part of it.
+  - **Axiom's source text is pinned at Stacks commit `a5811b23`.** Its license, the GFDL, is checked at step 1.
+  - **These facts are as your reviewer read them on 2026-11-05,** before Phase 8's protocol exists, and they're to be checked again at step 1. Any later build of Axiom's repository runs only in the sandboxed Actions jobs, never on your PC or on BLT.
 
 A sample of withdrawn or retracted mathematics papers then becomes a must-fail set at scale. Each must be not accepted on known axes alone, proved by the kernel, which tests the collectors' detection as much as the gate. A must-pass set from outside is harder. It needs results with a complete formalization, a checked statement and a published review, and choosing them is yours.
 
