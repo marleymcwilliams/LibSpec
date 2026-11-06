@@ -291,8 +291,7 @@ The goal is a trusted Comparator result for every challenge in the release, fold
 
 **Decisions that stay yours:**
 - merging the workflow and its scripts;
-- swap, after the 11's rerun;
-- tagging `v1.1`.
+- swap: on your call of 2026-11-06 at 00:38 UTC, the swap round comes after the tag, so v1.1 leaves as unknown the 8 challenges the memory limit stopped in the 11's rerun.
 
 **Gate**
 
@@ -301,8 +300,8 @@ The goal is a trusted Comparator result for every challenge in the release, fold
 - [x] Every challenge has a trusted result, or a classified failure with its log: a rejection, a build error, a timeout, or too large to check yet: #100
 - [x] `pilot/reports/catalogue.md` is regenerated with them, and its proofs pass: #100
 - [x] README and REPRODUCE describe the pilot and how to rerun it: #109
-- [x] Every trusted log is kept as an asset of the v1.1 release, matching its recorded SHA-256: all 125, on the draft you publish with the tag: #110
-- [ ] Tagged `v1.1`
+- [x] Every trusted log is kept as an asset of the v1.1 release, matching its recorded SHA-256: all 125, on the published release: #110
+- [x] Tagged `v1.1`, at `6f2ffae`
 
 ## Phase 8: Statement review
 
