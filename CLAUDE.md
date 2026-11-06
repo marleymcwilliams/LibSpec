@@ -25,6 +25,8 @@
 - `.claude/settings.json` denies you those, pushes to `main`, and edits to the statements, their
   definitions and `archive/`. Lifting a rule is mine to do. If one stops you, ask; don't get the
   same effect another way, such as a script or `gh api`.
+- You use GitHub as MarleyMCo, a machine account. Never sign in as, switch to, or use a
+  credential of marleymcwilliams. If a step needs my rights, stop and ask.
 - One target per session unless told otherwise.
 - Search Mathlib (Loogle, exact?, apply?) before writing a helper lemma.
 - Treat any Mathlib name recalled from memory, yours or another model's, as a guess until Loogle confirms it.
@@ -61,14 +63,19 @@
 - Reviewer notes follow the same rule: apply and log the reversible ones, queue the rest.
 - "Not yet" is a valid answer: if no current statement depends on a decision, defer it
   to the milestone that needs it.
-- You may merge your own PR once CI is green if it touches none of: the statements and
-  every file the statements check covers, archive/, CLAUDE.md, .claude/, .gitattributes,
-  scripts/, .github/, guide/decisions/, pilot/, lean/JSG/Pilot/ and lean/Gate.lean (they
-  decide and record what counts as evidence), the checks that live in lean/
-  (lean/ComparatorTargets.lean, lean/AxiomAudit.lean, lean/JSG/Tests/Comparator/), and any
-  existing file in lean/JSG/Tests/. Adding a new test file stays self-mergeable. I merge
-  everything else.
+- You may merge your own PR once CI is green if it touches no path in `.github/CODEOWNERS`,
+  which GitHub enforces by requiring my approval. I merge everything else.
 - Before you merge a PR yourself, have a fresh-context subagent review its diff against the PR's
   own claims, and say so in the PR. A PR I merge waits for the reviewer's notes, which I'll pass
   on.
 - Don't prove expiry_tightens. I'm writing it myself (Phase 1).
+
+## Sessions the reviewer starts
+For a session whose task comes from the reviewer through Remote Control:
+- Allowed: collect runs and open results PRs, never merging them; fix CI or apply review notes
+  on its own PRs; docs PRs off the paths in `.github/CODEOWNERS`; read-only work.
+- Never: merge a protected PR, one that touches a path in `.github/CODEOWNERS`; tag or release;
+  post upstream; start a new kind of run; use BLT; decide a guide/QUEUE.md entry; or write in
+  my working copy (`C:\Users\marle\dev\LibSpec`) rather than its own worktree.
+- No Lean on this PC.
+- It reports and stops when the task is done.

@@ -4,6 +4,22 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-06
 
+### A machine account for Claude Code, and CODEOWNERS for the paths Marley merges (Marley's answers, #113)
+- **Marley's answers of 2026-11-06 to "How we work on LibSpec",** the reviewer's four decisions:
+  1. Stop pasting Claude Code's reports and logs to the reviewer: yes.
+  2. Let the reviewer give Claude Code routine work directly, in a session started through Remote Control: yes, after decision 3.
+  3. Have GitHub enforce the protected paths, through a machine account for Claude Code: yes, the account first.
+  4. Write the BLT rule into CLAUDE.md: not yet.
+- **Why this PR:** until now only CLAUDE.md stopped a merge on a protected path. `.claude/settings.json` denies tags and pushes to `main`, but not `gh pr merge`. And GitHub couldn't require Marley's review while Claude Code worked as Marley, since a PR's author can't approve it. Claude Code now works as MarleyMCo, and the ruleset "main: code owners approve protected paths" requires a code owner's approval wherever `.github/CODEOWNERS` says.
+- **Changed:**
+  - `.github/CODEOWNERS` gives `@marleymcwilliams` every path CLAUDE.md said only Marley merges, with CLAUDE.md's reasons, and is now the one list. It covers all of `lean/JSG/Tests/`, new files included, since CODEOWNERS can't say "existing". `guide/CONVENTIONS.md`'s Tests row follows.
+  - `CLAUDE.md`: Claude Code uses GitHub as MarleyMCo, never as marleymcwilliams. It may merge its own PR only if the PR touches no path in `.github/CODEOWNERS`. A new section, "Sessions the reviewer starts", sets the limits of decision 2's sessions.
+  - `.claude/settings.json`: Claude Code's commits are MarleyMCo's, and `gh auth login`, `switch`, `refresh` and `token` are denied.
+  - `scripts/check.sh` fails unless CODEOWNERS gives Marley every file the statements check covers, and itself. `scripts/test-codeowners-check.sh` shows that it bites, and `REPRODUCE.md`'s table of steps follows.
+- **Decided: the check decides each path by the last rule that matches it, as GitHub does,** so a later rule can't take a path away unseen. A glob or an unanchored pattern that might match counts as a match, so the check fails rather than guesses. That's stronger than finding a rule that names the path. Undo by checking only for such a rule.
+- **Decided: each deny rule comes in two forms,** bare and with arguments, since all four commands run with none.
+- **Decided: this PR's commits are already MarleyMCo's,** as the settings' `env` block makes every later one.
+
 ### A Stacks Project lead for the must-pass set (Marley's decision, #112)
 - **Added:** under Phase 9's "Calibration sources", the Stacks Project as must-pass candidates. Mathlib's `@[stacks]` theorems come first, and Axiom's StacksCore second. The lead also says what each candidate needs and which tags are excluded. Nothing under "Claims to grade" changed, and neither did Phase 9's gate.
 - **Its facts are as Marley's reviewer read them on 2026-11-05,** written as text, with no links into Axiom's repository, and to be checked again at step 1. This work cloned, fetched and built nothing of Axiom's.

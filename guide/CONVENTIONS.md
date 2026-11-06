@@ -12,7 +12,7 @@ How files, branches, pull requests and theorems are named in LibSpec. These are 
 | Lean modules | `UpperCamel.lean`, one directory per layer, and a root file of the same name that imports every module in it | `JSG/Pilot/Core.lean`, imported by `JSG/Pilot.lean` |
 | Proof files | `JSG/Proofs/Milestone<N>.lean`, restating each frozen theorem under its exact name | `Milestone3.lean` |
 | Helper lemmas | `JSG/Lemmas/<Topic>.lean`, never in a proof file | `KLFisher.lean`, `Twins.lean` |
-| Tests | `JSG/Tests/<Topic>.lean`; a change to an existing one is a pull request you merge, and adding a new one isn't | `Mutants.lean`, `Differential.lean` |
+| Tests | `JSG/Tests/<Topic>.lean`; any change there, a new file included, is a pull request you merge (`.github/CODEOWNERS`) | `Mutants.lean`, `Differential.lean` |
 | Generated Lean | a first line naming the generator and its input, and "Don't edit it by hand" | `JSG/Pilot/Catalogue.lean` |
 | Shell scripts | `kebab-case.sh`, in `scripts/` | `comparator-full.sh` |
 | Python | `snake_case.py`: in `scripts/` for checks, in `pilot/` for the pilot | `sirusc_adapter.py`, `to_lean.py` |
