@@ -364,7 +364,7 @@ The goal is to grade claims beyond openai/math, and to calibrate the gate on cla
 - **Crossref's Retraction Watch data.** It has been open since 2023: as a CSV updated every working day, at `gitlab.com/crossref/retraction-watch-data`, and in the update metadata of Crossref's REST API.
 - **The Stacks Project, for the must-pass set.** Its results are known to be true, and each has a precise, stable tag, so they're candidates for the must-pass set. They come from two pools, in this order:
   1. **Theorems tagged `@[stacks]` in our pinned Mathlib, `d13f23b`:** at least 364 distinct tags. They're trusted, and on our toolchain.
-     - **Fewer of them are on theorems.** A rough count on 2026-11-06 found 393 distinct tags in all, but only 211 on a theorem or lemma. The rest tag definitions, instances, classes and structures, which can't be must-pass results, so step 1 counts theorems alone.
+     - **Fewer than 364 are on theorems.** A rough count on 2026-11-06 found 393 distinct tags in all, but only about 215 on a theorem or lemma. The rest tag definitions, instances, classes and structures, which can't be must-pass results, so step 1 counts theorems alone.
   2. **Axiom's StacksCore, `github.com/AxiomMath/Stacks`:** at least 205 distinct tags, in 445 files.
      - **Pin `012108f` or later.** The first commit, `f8e70c5`, didn't build.
      - **Its toolchain is Lean `v4.34.0-rc2`, with Mathlib `16edf57`,** so Comparator's tools need a build of their own for it.
