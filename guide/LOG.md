@@ -10,6 +10,7 @@ Decisions Claude Code made without asking, because they are reversible and don't
 - **`gh release verify v1.1` passed:** "Resolved tag v1.1 to sha1:09bcc82b5a241c6fe8f0c8b989e6e811fd1336d0", "Loaded attestation from GitHub API", "✓ Release v1.1 verified!". The attestation lists the same 125 assets, each with the digest the results file records.
 - **Recorded in the guide:** Phase 7's last gate box is ticked, and its swap line records Marley's call of 2026-11-06 at 00:38 UTC. `REPRODUCE.md` has a row for the full-strength run at the tag commit, [42138237336](https://github.com/marleymcwilliams/LibSpec/actions/runs/42138237336), and its "Which version" names v1.1.
 - **Decided: the new row names the sandbox check,** `scripts/sandbox-check.sh`, which shows landrun in force. The rows for 2026-11-04 and 2026-11-05 don't name it, though their runs had it too, and they're left as they were. Undo by dropping the clause.
+- **Brought up to date while there, found by the review:** step 6 of `REPRODUCE.md` said the download finds no release until v1.1 is published. It now says the commands download the logs and check each against its recorded SHA-256. Run as written against the published release, they print `125 logs, 0 differ []`.
 
 ## 2026-11-05
 
