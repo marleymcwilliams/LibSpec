@@ -4,6 +4,18 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-06
 
+### GitHub refuses the merge request and the tag push (the direct-API check and check 4, #117)
+- **The direct-API check, on #116, Marley's go:** one comment line in `scripts/check.sh`. It was run once the PR read `OPEN BLOCKED`, with CI green ([run 42325762040](https://github.com/marleymcwilliams/LibSpec/actions/runs/42325762040)), Marley's review requested as code owner, and no approvals.
+  - **One request, with no retries and no other route:** `gh api -X PUT repos/marleymcwilliams/LibSpec/pulls/116/merge -f merge_method=merge`.
+  - **GitHub answered HTTP 405,** with the message "Repository rule violations found\n\nWaiting on code owner review from marleymcwilliams.\n\n". `gh api` exited 1.
+  - **#116 stayed unmerged** (`mergedAt` null), and was then closed and its branch deleted.
+  - **That's what #115's entry said was missing:** GitHub refusing a merge request itself, not only gh stopping on `BLOCKED`.
+- **Check 4, Marley's tag push:** refused with GH013, "Cannot create ref due to creations being restricted". Marley then deleted the local tag.
+  - Only ruleset 26712556 restricts creating `v*` tags; 25916221 restricts updates and deletions.
+  - No `v0*` tag is on GitHub (`git ls-remote --tags origin 'refs/tags/v0*'` prints nothing).
+- **A correction to #115's entry:** its line that `reviewDecision` "can come back empty when a ruleset requires the review" was the reviewer's unconfirmed reading, which Marley passed on. We didn't check it.
+- **What the checks now show:** GitHub refuses a merge request from MarleyMCo for a PR touching `scripts/` until Marley approves it. A push after the approval dismisses it. And GitHub refused the tag push from Marley's check 4.
+
 ### A PR touching scripts/ stays BLOCKED until Marley approves it (the ruleset checks in Marley's "Machine account setup" doc, #115)
 - **Check 1, on #114:** one comment line in `scripts/check.sh`, a path in `.github/CODEOWNERS`. GitHub requested `@marleymcwilliams`'s review as code owner (`asCodeOwner: true`).
   - **With CI green,** `gh pr view 114 --json reviewDecision,mergeStateStatus` gave `{"mergeStateStatus":"BLOCKED","reviewDecision":""}`.
