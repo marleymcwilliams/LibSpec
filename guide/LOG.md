@@ -4,6 +4,25 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-06
 
+### A PR touching scripts/ stays BLOCKED until Marley approves it (the ruleset checks in Marley's "Machine account setup" doc, #115)
+- **Check 1, on #114:** one comment line in `scripts/check.sh`, a path in `.github/CODEOWNERS`. GitHub requested `@marleymcwilliams`'s review as code owner (`asCodeOwner: true`).
+  - **With CI green,** `gh pr view 114 --json reviewDecision,mergeStateStatus` gave `{"mergeStateStatus":"BLOCKED","reviewDecision":""}`.
+  - **Claude Code stopped and asked,** since `reviewDecision` wasn't the expected `REVIEW_REQUIRED`. Marley's answer: it can come back empty when a ruleset requires the review, and `BLOCKED`, with the code owner's review requested, is the state wanted.
+  - **`gh pr merge 114 --merge`,** with no `--auto` or `--admin`, stopped with exit 1: "X Pull request marleymcwilliams/LibSpec#114 is not mergeable: the base branch policy prohibits the merge."
+  - **That message is gh's own.** gh reads GitHub's `BLOCKED` state and stops before it sends a merge request.
+- **Check 2:**
+  - **Marley approved #114 on `b24926a`,** and it went from `BLOCKED` to `CLEAN`. So the missing approval was what blocked it.
+  - **One more comment line, pushed as `cbbd003`,** dismissed the approval: the review now reads `DISMISSED`.
+  - **With CI green again,** the view gave the same `{"mergeStateStatus":"BLOCKED","reviewDecision":""}`, and `gh pr merge` stopped the same way, exit 1.
+  - **#114 was then closed unmerged,** and its branch deleted.
+- **What this shows:** with CI green, GitHub marks a PR that touches `scripts/` `BLOCKED` until Marley approves it, and a push after the approval dismisses it. Without `--admin`, `gh pr merge` won't merge a `BLOCKED` PR. With it, gh skips its own check and sends the request. Both rulesets on `main` report that MarleyMCo can't bypass them (`current_user_can_bypass: never`).
+- **What it doesn't show:** GitHub refusing a merge request itself, since gh stopped before sending one. And no protected path but `scripts/` was tried.
+- **Check 3 is this entry's own merge.** It tests that a PR off the protected paths merges with no approval. `guide/LOG.md` isn't in `.github/CODEOWNERS`, so Claude Code merges it itself once CI is green and a fresh-context review is done.
+- **Still to come, the fourth check:** from the working copy, where git pushes as MarleyMCo, Marley pushes a tag `v0-ruleset-check`.
+  - **The creation rule of ruleset 26712556** ("tags: only Marley creates or changes v* and statements-v*") should refuse it.
+  - **If the push got through,** ruleset 25916221 ("freeze statements and release tags") would keep the tag: it forbids deleting any `v*` tag, with no bypass, so removing the tag would need that rule lifted first.
+  - **This check is Marley's,** since Claude Code's deny rules stop it from tagging.
+
 ### A machine account for Claude Code, and CODEOWNERS for the paths Marley merges (Marley's answers, #113)
 - **Marley's answers of 2026-11-06 to "How we work on LibSpec",** the reviewer's four decisions:
   1. Stop pasting Claude Code's reports and logs to the reviewer: yes.
