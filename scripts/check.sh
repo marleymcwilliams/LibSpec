@@ -3,6 +3,7 @@
 # check, and links.
 # Runs locally (Git Bash on Windows) and in CI. Exits non-zero on any failure.
 # Ruleset check 1, never to be merged: a change to scripts/ needs a code owner's approval.
+# Ruleset check 2, never to be merged: a push after that approval dismisses it.
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
