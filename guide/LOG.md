@@ -20,7 +20,7 @@ Decisions Claude Code made without asking, because they are reversible and don't
 - **Check 3 is this entry's own merge.** It tests that a PR off the protected paths merges with no approval. `guide/LOG.md` isn't in `.github/CODEOWNERS`, so Claude Code merges it itself once CI is green and a fresh-context review is done.
 - **Still to come, the fourth check:** from the working copy, where git pushes as MarleyMCo, Marley pushes a tag `v0-ruleset-check`.
   - **The creation rule of ruleset 26712556** ("tags: only Marley creates or changes v* and statements-v*") should refuse it.
-  - **If the push got through,** ruleset 25916221 ("freeze statements and release tags") would keep the tag: it forbids deleting any `v*` tag, with no bypass, so removing the tag would need that rule lifted first.
+  - **If the push got through,** ruleset 25916221 ("freeze statements and release tags") would keep the tag. It forbids deleting any `v*` tag, and MarleyMCo can't bypass it. When it was set up, it had no bypass actors (the `statements-v1` entry below), so removing the tag would need that rule lifted first.
   - **This check is Marley's,** since Claude Code's deny rules stop it from tagging.
 
 ### A machine account for Claude Code, and CODEOWNERS for the paths Marley merges (Marley's answers, #113)
