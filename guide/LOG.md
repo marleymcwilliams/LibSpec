@@ -4,7 +4,7 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-06
 
-### GitHub refuses the merge request and the tag push (the direct-API check and check 4, #117)
+### GitHub refuses the merge request, and Marley reports the tag push refused (the direct-API check and check 4, #117)
 - **The direct-API check, on #116, on Marley's go:** one comment line in `scripts/check.sh`. It was run once the PR read `OPEN BLOCKED`, with CI green ([run 42325762040](https://github.com/marleymcwilliams/LibSpec/actions/runs/42325762040)), Marley's review requested as code owner, and no approvals.
   - **One request, with no retries and no other route:** `gh api -X PUT repos/marleymcwilliams/LibSpec/pulls/116/merge -f merge_method=merge`.
   - **GitHub answered HTTP 405,** with the message "Repository rule violations found\n\nWaiting on code owner review from marleymcwilliams.\n\n". `gh api` exited 1.
