@@ -2,6 +2,7 @@
 # Build, forbidden-token scan, axiom audit, statements-unchanged check, CODEOWNERS check, archive
 # check, and links.
 # Runs locally (Git Bash on Windows) and in CI. Exits non-zero on any failure.
+# Ruleset check (API), never to be merged: GitHub's merge endpoint must refuse this change.
 set -euo pipefail
 
 root="$(cd "$(dirname "$0")/.." && pwd)"
