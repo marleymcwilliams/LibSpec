@@ -316,12 +316,15 @@ Comparator checks a proof against its challenge's statement, but not that the st
    - **What to check:** quantifiers, hypotheses, edge cases, and any definition that would make the statement trivial.
    - **What to record:** the reviewer's name, the date, the challenge and commit, and a verdict: it states the claim, it states a weaker or a different claim, or the reviewer can't tell. Each verdict comes with a sentence saying why.
 2. **Extend the raw record.** `Raw.fidelityBy` holds only a reviewer's name, so today a review can only show that a statement is faithful. A review that finds a mismatch must count as evidence that fails. So `Raw` gains the verdict, and its sentence goes into the report. That changes the pilot's own module, which isn't frozen.
-3. **Record reviews in GitHub issue forms,** as you decided: one issue per review, so each carries its reviewer's identity, its timestamps and its history. The form asks for the protocol's fields, and a collector reads the issues into `pilot/data/`. A read-only page can display them later, with the paper's claim, the challenge's statement and its definitions side by side.
-4. **Pilot the protocol on six challenges:** the four Comparator accepted in #83, and the ETH and local-smoothing challenges, `SubexponentialSAT` and `LocalSmoothing`. Record how long each review takes.
+3. **Record reviews in GitHub issue forms,** as you decided: one issue per review, so each carries its reviewer's identity, its timestamps and its history. The form asks for the protocol's fields, and a collector reads the issues into `pilot/data/`. The collector counts a verdict only if the issue's author is on the protocol's list of named reviewers and made the issue's last edit, since MarleyMCo can edit anyone's issue. A read-only page can display them later, with the paper's claim, the challenge's statement and its definitions side by side.
+4. **Pilot the protocol on seven manuscripts.** Record how long each review takes.
+   - The four whose challenges Comparator accepted in #83: "Catalan's constant is irrational" (`Catalan`), "The joint Dickman law for consecutive integers" (`JointDickman`), "The Deligne-Drinfeld conjecture" (`DeligneDrinfeld`) and "The Bogomolov-Pop reconstruction theorem" (`BogomolovPopInjectivity`).
+   - The ETH and local-smoothing manuscripts: "The Exponential Time Hypothesis is False" (`SubexponentialSAT`) and "Local smoothing for the Euclidean wave equation" (`LocalSmoothing`). `LocalSmoothing` is also linked to a second manuscript in family 079, "Critical local smoothing for the three-dimensional wave equation", which this pilot doesn't review.
+   - Family 343's "Symplectic Ball Packings in Higher Dimensions", with its two challenges `BallPacking` and `BallPackingNecessity`, both accepted by Comparator (`pilot/data/catalogue.json`). The six challenges above are each the only challenge in their family, so none tests a manuscript with several challenges, which is the protocol's unit of review.
 5. **Calibrate it** with a synthetic challenge whose statement is subtly weaker than its paper's claim. Its review must not count as faithful.
 
 **Resources:**
-- **Reviewers' time, above all.** Yours too, if you review. The six reviews in step 4 measure the cost before any more are asked for.
+- **Reviewers' time, above all.** Yours too, if you review. The seven reviews in step 4 measure the cost before any more are asked for.
 - **Actions** for the collector.
 - **BLT:** none.
 
@@ -341,7 +344,7 @@ Comparator checks a proof against its challenge's statement, but not that the st
 
 - [ ] The protocol is approved and in the guide
 - [ ] An issue form records a review, and the collector reads it into the report
-- [ ] Six challenges are reviewed under the protocol, with the time each took
+- [ ] Seven manuscripts are reviewed under the protocol, with their challenges and the time each review took
 - [ ] The synthetic weaker statement is not counted as faithful, and its reason shows in the report
 
 ## Phase 9: More sources

@@ -25,10 +25,12 @@
 /.github/ @marleymcwilliams
 /guide/decisions/ @marleymcwilliams
 
-# "They decide and record what counts as evidence."
+# "They decide and record what counts as evidence." The review protocol decides what counts as
+# evidence on statement_fidelity, and it holds the named reviewers' list.
 /pilot/ @marleymcwilliams
 /lean/JSG/Pilot/ @marleymcwilliams
 /lean/Gate.lean @marleymcwilliams
+/guide/REVIEW_PROTOCOL.md @marleymcwilliams
 
 # The harness: it holds the corpus and the executable mutants the differential tests rest on,
 # and the commands lean/Gate.lean runs.
