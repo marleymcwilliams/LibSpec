@@ -37,6 +37,7 @@ Then, as needed: [DEFECTS.md](DEFECTS.md) for what the corpus gets wrong, [SOURC
 | [CONVENTIONS.md](CONVENTIONS.md) | How files, branches, pull requests, theorems and tags are named |
 | [EXECUTABLE_GATE.md](EXECUTABLE_GATE.md) | The executable gate: the twins, the harness, the pilot, where things run, and its decisions |
 | [STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md) | Each statement beside its source, with its mutant and witness |
+| [REVIEW_PROTOCOL.md](REVIEW_PROTOCOL.md) | Draft, awaiting approval: how a named reviewer checks that a pilot challenge states its paper's claim, and the verdicts (Phase 8) |
 | [MILESTONE_1.md](MILESTONE_1.md)–[MILESTONE_4.md](MILESTONE_4.md) | Each milestone's proofs, its gate record and its closing note |
 | [CHANGELOG.md](CHANGELOG.md) | What each statements version changed, and whether it tightens or weakens |
 | [QUEUE.md](QUEUE.md) | Questions waiting for the human, at most three open, and the answers given |
