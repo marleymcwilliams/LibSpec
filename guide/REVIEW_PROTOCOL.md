@@ -12,6 +12,7 @@ Only a review by someone on this list counts. Marley adds each reviewer, by GitH
 
 | GitHub login | Added |
 |---|---|
+| `marleymcwilliams` | 2026-11-08 |
 
 Reviews are published under the reviewer's GitHub identity: each is a GitHub issue the reviewer files (step 3), and the report names them. So taking part needs their consent, given before they're added here.
 
@@ -61,7 +62,7 @@ So a challenge that states only part of the claim, or a companion result, is nev
 
 Each verdict is on the set of challenges linked to the manuscript, taken together.
 
-- **They state the claim.** Together, the challenges say what the paper's top-line claim says, no more and no less. This is the only verdict that can make `statement_fidelity` known to be 0, so it carries the most weight, and its sentence says what the reviewer checked.
+- **They state the claim.** Together, the challenges say what the paper's top-line claim says, no less; anything more they state is a companion result. This is the only verdict that can make `statement_fidelity` known to be 0, so it carries the most weight, and its sentence says what the reviewer checked.
 - **They state a weaker or a different claim.** Together, the challenges prove something, but not the paper's claim: a part of the claim that no challenge states, or a challenge whose part differs from the paper's. A proof of them is no evidence for the paper's claim, so this verdict, uncontested, counts as evidence that fails. Its sentence names the difference: the missing part, or the quantifier, hypothesis, edge case or definition.
 - **The reviewer can't tell.** The reviewer couldn't settle it, for example because the paper's claim is unclear or the definitions are too deep to follow. Its sentence says what stopped them, so a later review can start there. It confirms nothing, so it can't make the statement count as faithful.
 
