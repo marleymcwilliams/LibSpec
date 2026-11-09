@@ -52,6 +52,8 @@
 # 16G, are optional. Tests may set PILOT_PLAN, PILOT_BUDGET, PILOT_MIN_START, PILOT_MEMORY_MAX and
 # PILOT_SAMPLE_SECONDS (scripts/test-pilot-shard.sh).
 set -euo pipefail
+# in_wrapper's settings come only from this script, never from the environment it was started in.
+unset SWAP MEMORY MAX_SECONDS UNIT_END
 
 shard="$1"
 release="$2"
@@ -181,7 +183,7 @@ if [ "$swap_max" != 0 ]; then
     { echo "FAIL: a unit with a 256 MB memory limit and 256 MB of swap couldn't allocate 384 MB: $(helper unit "$swap_probe")"; exit 1; }
   swapped="$(helper swap-line "$swap_probe" 256M | sed -n 's/.* swap_peak_mb=\([0-9]*\)$/\1/p')"
   [ "${swapped:-0}" -ge 64 ] ||
-    { echo "FAIL: that unit put ${swapped:-no} MB in swap, not the 128 MB it had to"; exit 1; }
+    { echo "FAIL: that unit put ${swapped:-no} MB in swap, not the at least 64 MB it had to"; exit 1; }
   echo "ok: a unit with a 256 MB memory limit and 256 MB of swap allocated 384 MB, $swapped MB of it in swap"
   swap_oom="$out/logs/swap-oom-probe.unit"
   if UNIT_END="$swap_oom" MEMORY=256M SWAP=256M in_wrapper python3 -c "$allocate" 1024 2> /dev/null; then

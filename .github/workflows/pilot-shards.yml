@@ -176,7 +176,7 @@ jobs:
 
       # The self-test's swap checks need swap on the runner: one swapfile of 1 GB, and no other.
       - name: Swap for the self-test
-        run: bash scripts/pilot-swap.sh 1
+        run: bash scripts/pilot-swap.sh 1 2
 
       - name: Every outcome, with a fake comparator
         shell: bash

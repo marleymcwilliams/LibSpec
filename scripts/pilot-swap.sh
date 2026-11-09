@@ -5,16 +5,19 @@
 # one swapfile made here, and a run's swap is what its input says. With 0 it changes nothing: the
 # challenges' units then get MemorySwapMax=0, so the runner's own swap never reaches them.
 #
-# It refuses unless / keeps 40 GB free besides the swapfile: a solo shard's build took about 24 GB
-# of / in run 42540237805, which had 104 GB free after the job freed disk space.
+# It refuses unless / keeps SPARE_GB free besides the swapfile, 40 by default: a solo shard's build
+# took about 24 GB of / in run 42540237805, which had 104 GB free after the job freed disk space.
+# The self-test, which builds nothing, passes 2.
 #
-# usage: bash scripts/pilot-swap.sh GB
+# usage: bash scripts/pilot-swap.sh GB [SPARE_GB]
 set -euo pipefail
 
 gb="$1"
-spare_gb=40
+spare_gb="${2:-40}"
 file=/pilot.swap
 [[ "$gb" =~ ^(0|[1-9][0-9]?)$ ]] || { echo "FAIL: swap_gb must be a whole number from 0 to 99"; exit 1; }
+[[ "$spare_gb" =~ ^[0-9]+$ ]] || { echo "FAIL: SPARE_GB must be a whole number"; exit 1; }
+echo "/ has $(df -h --output=avail / | tail -n 1 | tr -d ' ') free"
 
 echo "before:"
 free -h

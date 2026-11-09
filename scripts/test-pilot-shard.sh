@@ -122,11 +122,11 @@ SH
 chmod +x "$t/bin/comparator"
 
 # run <shard> <full cap> <budget> <min start>: pilot-shard.sh on a shard, with the fake first on PATH.
-# An empty full cap leaves PILOT_FULL_CAP unset, and SWAP, if set, is PILOT_SWAP_MAX.
+# An empty full cap leaves PILOT_FULL_CAP unset, and SWAP_SETTING, if set, is PILOT_SWAP_MAX.
 run() {
   local opt=()
   if [ -n "$2" ]; then opt+=(PILOT_FULL_CAP="$2"); fi
-  if [ -n "${SWAP:-}" ]; then opt+=(PILOT_SWAP_MAX="$SWAP"); fi
+  if [ -n "${SWAP_SETTING:-}" ]; then opt+=(PILOT_SWAP_MAX="$SWAP_SETTING"); fi
   env JOB_START="$(date +%s)" PATH="$t/bin:$PATH" PILOT_PLAN="$t/plan.json" PILOT_FROZEN="$t/frozen.txt" \
     PILOT_TRUSTED_LIB="$t/trusted" PILOT_BUDGET="$3" PILOT_MIN_START="$4" ${opt[@]+"${opt[@]}"} \
     PILOT_MEMORY_MAX=300M PILOT_SAMPLE_SECONDS=1 PILOT_LEAN_THREADS="${THREADS:-}" \
@@ -208,6 +208,12 @@ check "the challenge put nothing in swap" "$(grep -c '^swap: Quick2: allowance=0
 check "its result line says no swap" \
   "$(grep -cE '^result: Quick2: accepted in [0-9]+ s \(cap [0-9]+ s\), swap 0, ' "$t/defaults.log" || true)" 1
 check "its results.json entry says no swap" "$(field defaults Quick2 swapMax)" 0
+# in_wrapper's own variables, set in the environment pilot-shard.sh starts in, must not reach it.
+SWAP=512M MEMORY=1G run defaults "" 1000 5
+check "a SWAP in the environment doesn't reach the probes" \
+  "$(grep -c "^ok: the memory probes' units may use no swap (memory.swap.max=0)$" "$t/defaults.log" || true)" 1
+check "nor the challenges" \
+  "$(grep -c "^ok: each challenge's unit may use 0 of swap (memory.swap.max=0)$" "$t/defaults.log" || true)" 1
 
 echo "== Swap"
 swap_kb="$(awk '/^SwapTotal:/ {print $2}' /proc/meminfo)"
@@ -219,7 +225,7 @@ if systemd-run --user --quiet --collect --wait --pipe --property=MemoryMax=256M 
 else
   check "a unit with a 256 MB memory limit that may swap allocates 512 MB" stopped allocated
 fi
-SWAP=512M run swap 120 1000 5
+SWAP_SETTING=512M run swap 120 1000 5
 check "the setting is recorded" "$(grep -c "^swap: 512M for each challenge's unit, none for the probes$" "$t/swap.log" || true)" 1
 check "with swap for the challenges, the probes' units still may use none" \
   "$(grep -c "^ok: the memory probes' units may use no swap (memory.swap.max=0)$" "$t/swap.log" || true)" 1
@@ -241,8 +247,8 @@ run swap 120 1000 5
 check "without swap, the same challenge is outOfMemory" "$(status swap NeedsSwap)" outOfMemory
 check "and its result line says no swap" \
   "$(grep -cE '^result: NeedsSwap: outOfMemory in [0-9]+ s \(cap 120 s\), swap 0, ' "$t/swap.log" || true)" 1
-refused "a swap setting that isn't a size is refused" 'SWAP="16G; echo forged" run swap 120 1000 5'
-refused "a swap setting in T is refused" 'SWAP=1T run swap 120 1000 5'
+refused "a swap setting that isn't a size is refused" 'SWAP_SETTING="16G; echo forged" run swap 120 1000 5'
+refused "a swap setting in T is refused" 'SWAP_SETTING=1T run swap 120 1000 5'
 refused "a full cap that isn't a number is refused" 'run swap 12x 1000 5'
 
 echo "== The timeouts"
