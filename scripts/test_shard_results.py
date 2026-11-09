@@ -54,6 +54,15 @@ except SystemExit:
 for line, want in (("result: X: outOfMemory in 5 s (cap 9 s), 1 MB free; y", "outOfMemory"),
                    ("result: X: notStarted, with 1 s of the job left", "notStarted")):
     check(f"{want} is read", sr.RESULT.match(line).group(2), want)
+# scripts/pilot-shard.sh now puts the swap allowance after the cap. The collector still reads the
+# status, the seconds and the cap.
+for line in ("result: X: tooLarge in 20000 s (cap 20000 s), swap 16G, 1 MB free; y",
+             "result: X: notStarted, with 1 s of the job left, swap 0"):
+    m = sr.RESULT.match(line)
+    check(f"a result line with its swap is read: {line[10:30]}", m and m.group(2), line.split()[2].rstrip(","))
+check("its seconds and cap are read",
+      sr.RESULT.match("result: X: tooLarge in 20000 s (cap 20000 s), swap 16G, 1 MB free; y").group(3, 4),
+      ("20000", "20000"))
 check("a unit line is read",
       sr.UNIT.match("unit: X: result=oom-kill code=killed status=KILL peak_mb=13312 oom_kills=1").group(2),
       "result=oom-kill code=killed status=KILL peak_mb=13312 oom_kills=1")

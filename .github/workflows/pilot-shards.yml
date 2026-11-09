@@ -20,6 +20,12 @@ name: Pilot shards
 #
 # lean_threads sets LEAN_NUM_THREADS for the challenges. Left empty, Lean chooses.
 #
+# swap_gb gives each shard runner that many GB of swap (scripts/pilot-swap.sh) and lets each
+# challenge's unit use it, on top of its 13 GB memory limit. At 0, the default, nothing changes.
+# cap_seconds is the full cap on one challenge, 18000 (5 hours) by default, and at most 20400, the
+# job's budget. A challenge never gets more than what's left of that budget when it starts, which
+# for a solo shard is about 20000 s. Every result line records both.
+#
 # A pull request that changes this workflow or its scripts runs the control shard. Read each
 # shard's results from the unmarked lines of its job's log, which only that job writes
 # (pilot/shard_results.py).
@@ -35,6 +41,12 @@ on:
       lean_threads:
         description: "LEAN_NUM_THREADS for the challenges, or empty for Lean's default"
         default: ''
+      swap_gb:
+        description: "GB of swap each challenge's unit may use, on top of its 13 GB; 0 for none"
+        default: '0'
+      cap_seconds:
+        description: 'The full cap on one challenge, in seconds, at most 20400 (the job budget)'
+        default: '18000'
   pull_request:
     paths:
       - .github/workflows/pilot-shards.yml
@@ -49,6 +61,7 @@ on:
       - scripts/pilot-trusted-lib.sh
       - scripts/pilot_resolve.lean
       - scripts/pilot-unit-end.sh
+      - scripts/pilot-swap.sh
       - scripts/test_shard_results.py
       - scripts/build-comparator-tools.sh
       - pilot/shard_results.py
@@ -161,6 +174,10 @@ jobs:
           echo "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus" >> "$GITHUB_ENV"
           XDG_RUNTIME_DIR="/run/user/$uid" systemctl --user is-system-running --wait || true
 
+      # The self-test's swap checks need swap on the runner: one swapfile of 1 GB, and no other.
+      - name: Swap for the self-test
+        run: bash scripts/pilot-swap.sh 1 2
+
       - name: Every outcome, with a fake comparator
         shell: bash
         run: |
@@ -193,6 +210,18 @@ jobs:
           echo "before: $(df -h --output=avail / | tail -n 1) free"
           sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
           echo "after: $(df -h --output=avail / | tail -n 1) free"
+
+      - name: Swap for the challenges, and the cap
+        env:
+          SWAP_GB: ${{ github.event.inputs.swap_gb || '0' }}
+          CAP_SECONDS: ${{ github.event.inputs.cap_seconds || '18000' }}
+        run: |
+          [[ "$CAP_SECONDS" =~ ^[1-9][0-9]*$ ]] && [ "$CAP_SECONDS" -le 20400 ] ||
+            { echo "FAIL: cap_seconds must be a whole number of seconds from 1 to 20400"; exit 1; }
+          bash scripts/pilot-swap.sh "$SWAP_GB"
+          if [ "$SWAP_GB" = 0 ]; then swap_max=0; else swap_max="${SWAP_GB}G"; fi
+          echo "PILOT_SWAP_MAX=$swap_max" >> "$GITHUB_ENV"
+          echo "PILOT_FULL_CAP=$CAP_SECONDS" >> "$GITHUB_ENV"
 
       - name: Restore the Lean toolchain (restore only)
         id: elan-cache
@@ -323,7 +352,7 @@ jobs:
           {
             echo "### Shard $SHARD"
             echo '```'
-            grep -E '^(shard|kernel|lean threads|result|unit|sample|ok|FAIL|REFUSED|note):|pilot-shard.sh: done' \
+            grep -E '^(shard|kernel|lean threads|full cap|swap|result|unit|sample|ok|FAIL|REFUSED|note):|pilot-shard.sh: done' \
               "$RUNNER_TEMP/results/shard.log" || true
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"

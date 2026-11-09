@@ -8,10 +8,11 @@ usage: python3 scripts/pilot_shard.py challenges PLAN SHARD
        python3 scripts/pilot_shard.py resolution TRUSTED_DIR TOOLCHAIN_LIB RESOLVER
        python3 scripts/pilot_shard.py classify LOG EXIT_FILE ELAPSED CAP FULL_CAP FIRST UNIT_FILE
        python3 scripts/pilot_shard.py unit UNIT_FILE
+       python3 scripts/pilot_shard.py swap-line UNIT_FILE SWAP_MAX
        python3 scripts/pilot_shard.py unit-out-of-memory UNIT_FILE
        python3 scripts/pilot_shard.py sample CGROUP_FILE OUT SECONDS THREADS
        python3 scripts/pilot_shard.py sample-line OUT
-       python3 scripts/pilot_shard.py results RESULTS.tsv SHARD OUT.json
+       python3 scripts/pilot_shard.py results RESULTS.tsv SHARD OUT.json [SWAP_MAX]
 
 A shard is a name from pilot/data/shard-plan.json, or solo-<Challenge> for one challenge rerun in
 a job of its own. A result is one of:
@@ -24,8 +25,8 @@ a job of its own. A result is one of:
   kernel counted an OOM kill in the unit's cgroup. It stays unknown;
 - buildError: anything else that stopped it, such as a failed build or export, a crash, or a
   kill by a signal, nanoda's included;
-- tooLarge: it timed out as the first challenge in its job, or with the full 5-hour cap
-  ("too large to check yet");
+- tooLarge: it timed out as the first challenge in its job, or with the full cap, 5 hours unless
+  the run raised it ("too large to check yet", at the capSeconds its result records);
 - cutOff: it timed out with less than the full cap, after other challenges in its job, so it
   gets one rerun in a job of its own;
 - notStarted: its job ran out of time before it began, so it gets a rerun too.
@@ -65,7 +66,10 @@ LEAN_REFUSALS = ("Lean default kernel rejects the solution",
                  "Quotient post-check rejects the solution")
 LEAN_ACCEPTS = "Lean default kernel accepts the solution"
 CORE = ("Init", "Std", "Lean", "Lake")
-UNIT_END = re.compile(r"result=(\S+) code=(\S+) status=(\S+) peak_bytes=(\d+|-) oom_kills=(\d+|-)")
+UNIT_END = re.compile(r"result=(\S+) code=(\S+) status=(\S+) peak_bytes=(\d+|-) oom_kills=(\d+|-)"
+                      r" swap_peak_bytes=(\d+|-)")
+# A swap allowance as scripts/pilot-shard.sh takes it: 0, or a size in M or G, as systemd reads it.
+SWAP_MAX = re.compile(r"^(0|[1-9][0-9]*[MG])$")
 
 
 def challenges(plan, shard):
@@ -171,10 +175,10 @@ def unit_end(path):
     m = UNIT_END.fullmatch(open(path, encoding="utf-8", errors="replace").read().strip())
     if not m:
         return None
-    result, code, status, peak, kills = m.groups()
-    return {"result": result, "code": code, "status": status,
-            "peak_mb": peak if peak == "-" else str(int(peak) // (1024 * 1024)),
-            "oom_kills": kills}
+    result, code, status, peak, kills, swap = m.groups()
+    mb = lambda b: b if b == "-" else str(int(b) // (1024 * 1024))
+    return {"result": result, "code": code, "status": status, "peak_mb": mb(peak),
+            "oom_kills": kills, "swap_peak_mb": mb(swap)}
 
 
 def unit_line(path):
@@ -183,6 +187,15 @@ def unit_line(path):
     if end is None:
         return "not recorded"
     return " ".join(f"{k}={end[k]}" for k in ("result", "code", "status", "peak_mb", "oom_kills"))
+
+
+def swap_line(path, allowance):
+    """The part of a challenge's "swap:" line after its name: the swap its unit was allowed, and
+    the most of its memory that was in swap at once."""
+    if not SWAP_MAX.match(allowance):
+        sys.exit(f"not a swap allowance: {allowance!r}")
+    end = unit_end(path)
+    return f"allowance={allowance} swap_peak_mb={end['swap_peak_mb'] if end else '-'}"
 
 
 def out_of_memory(end):
@@ -301,7 +314,11 @@ def classify(log, exit_file, elapsed, cap, full_cap, first, unit_file):
     return "buildError", "Comparator stopped before comparing"
 
 
-def results(tsv, shard, out):
+def results(tsv, shard, out, swap_max="0"):
+    """results.json for a shard. swapMax is the swap each challenge's unit was allowed, the same
+    for the whole job, so that a result under swap can't be read as one without."""
+    if not SWAP_MAX.match(swap_max):
+        sys.exit(f"not a swap allowance: {swap_max!r}")
     rows = [l.rstrip("\n").split("\t") for l in open(tsv, encoding="utf-8") if l.strip()]
     doc = {
         "shard": shard,
@@ -309,7 +326,8 @@ def results(tsv, shard, out):
         "run": os.environ.get("GITHUB_RUN_ID"),
         "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT"),
         "challenges": [{"name": n, "status": s, "seconds": int(t), "capSeconds": int(c),
-                        "freeMBAfter": int(f), "detail": d} for n, s, t, c, f, d in rows],
+                        "swapMax": swap_max, "freeMBAfter": int(f), "detail": d}
+                       for n, s, t, c, f, d in rows],
     }
     json.dump(doc, open(out, "w", encoding="utf-8"), indent=2)
 
@@ -328,6 +346,8 @@ def main():
         print("\t".join(classify(*args)))
     elif cmd == "unit":
         print(unit_line(*args))
+    elif cmd == "swap-line":
+        print(swap_line(*args))
     elif cmd == "unit-out-of-memory":
         sys.exit(0 if out_of_memory(unit_end(*args)) else 1)
     elif cmd == "sample":
@@ -337,8 +357,8 @@ def main():
     elif cmd == "results":
         results(*args)
     else:
-        sys.exit(f"usage: {sys.argv[0]} challenges|config|leanpath|resolution|classify|unit|sample|sample-line|"
-                 "unit-out-of-memory|results ...")
+        sys.exit(f"usage: {sys.argv[0]} challenges|config|leanpath|resolution|classify|unit|swap-line|"
+                 "sample|sample-line|unit-out-of-memory|results ...")
 
 
 if __name__ == "__main__":
