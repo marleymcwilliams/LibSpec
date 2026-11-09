@@ -6,12 +6,14 @@
 # SERVICE_RESULT, EXIT_CODE and EXIT_STATUS are systemd's. memory.peak and memory.events are the
 # kernel's, for the unit's own cgroup. memory.peak counts page cache, which the kernel reclaims
 # before it kills anything, so a high peak alone doesn't mean the unit ran out of memory; the
-# oom_kill count and SERVICE_RESULT=oom-kill do. This runs outside Comparator's sandbox, so
+# oom_kill count and SERVICE_RESULT=oom-kill do. memory.swap.peak is the most of the unit's memory
+# that was in swap at once: 0 when its unit may use no swap. This runs outside Comparator's sandbox, so
 # nothing the release builds can write the file or choose its values.
 #
 # usage: pilot-unit-end.sh FILE
 cgroup="/sys/fs/cgroup$(cut -d: -f3 /proc/self/cgroup)"
 peak="$(cat "$cgroup/memory.peak" 2> /dev/null)"
+swap="$(cat "$cgroup/memory.swap.peak" 2> /dev/null)"
 kills="$(sed -n 's/^oom_kill //p' "$cgroup/memory.events" 2> /dev/null)"
-printf 'result=%s code=%s status=%s peak_bytes=%s oom_kills=%s\n' \
-  "${SERVICE_RESULT:--}" "${EXIT_CODE:--}" "${EXIT_STATUS:--}" "${peak:--}" "${kills:--}" > "$1"
+printf 'result=%s code=%s status=%s peak_bytes=%s oom_kills=%s swap_peak_bytes=%s\n' \
+  "${SERVICE_RESULT:--}" "${EXIT_CODE:--}" "${EXIT_STATUS:--}" "${peak:--}" "${kills:--}" "${swap:--}" > "$1"

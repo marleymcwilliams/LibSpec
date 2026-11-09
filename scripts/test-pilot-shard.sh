@@ -9,6 +9,15 @@
 #   killed some other way), tooLarge (first in its job with less than the full cap, and later
 #   with the full cap), cutOff, and notStarted;
 # - that each challenge's unit: line says how its unit ended, in systemd's words;
+# - the defaults: with no PILOT_SWAP_MAX or PILOT_FULL_CAP, the full cap is 18000 s and every unit,
+#   each challenge's included, has memory.swap.max=0, as before these settings existed;
+# - swap: with PILOT_SWAP_MAX set, a challenge that needs more than its memory limit, but less than
+#   that and its swap, is accepted, and the same challenge without swap is outOfMemory. The memory
+#   probes still run with memory.swap.max=0, so they can't pass because their unit swapped: a unit
+#   that may swap gets past the same limit. The swap probes pass, and each result records its swap;
+# - a raised full cap: a timeout first in its job is still tooLarge, at the cap its result records,
+#   and with a full cap above the job's budget a later timeout is cutOff, never tooLarge. Bad cap
+#   and swap settings are refused;
 # - that each challenge's sample: line counts the Lean processes a unit ran at once, and that
 #   PILOT_LEAN_THREADS reaches the unit and the sandbox, and a bad value is refused;
 # - that a line the fake prints to forge a result, a unit line, a sample line or a GitHub workflow
@@ -46,7 +55,8 @@ echo trusted > "$math/lib/lean/Mathlib.olean"
 echo trusted > "$math/lib/lean/Mathlib/Basic.olean"
 echo trusted > "$other/lib/lean/FrozenPkg/Some.olean"
 names=(Accepts Mismatch AxiomBad LeanRefuses NanodaOnly NanodaKilled BuildFails Crashes
-       OutOfMemory UnitKilled Forged Hangs Quick HangsFull Quick2 HangsLater Never ThreeLeans)
+       OutOfMemory UnitKilled Forged Hangs Quick HangsFull Quick2 HangsLater Never ThreeLeans
+       NeedsSwap)
 for n in "${names[@]}"; do
   printf '{"challenge_module": "CC.%s", "solution_module": "OAI.%s", "theorem_names": ["%s"], "permitted_axioms": ["propext"]}\n' \
     "$n" "$n" "$n" > "$lean/ComparatorChallenges/$n.json"
@@ -59,7 +69,9 @@ cat > "$t/plan.json" <<'JSON'
   "first": {"challenges": ["Hangs"]},
   "full": {"challenges": ["Quick2", "HangsFull"]},
   "cut": {"challenges": ["Quick", "HangsLater", "Never"]},
-  "threads": {"challenges": ["ThreeLeans"]}}}
+  "threads": {"challenges": ["ThreeLeans"]},
+  "defaults": {"challenges": ["Quick2"]},
+  "swap": {"challenges": ["NeedsSwap"]}}}
 JSON
 printf '%s\n' "$math" "$other" > "$t/frozen.txt"
 while IFS= read -r d; do sudo chattr -R +i "$d"; done < "$t/frozen.txt"
@@ -89,6 +101,9 @@ case "$what" in
     echo "uncaught exception: Child exited with 1" >&2; exit 1 ;;
   Crashes) built; kill -SEGV $$ ;;
   OutOfMemory) built; exec python3 -c 'b = bytearray(2 << 30)' ;;
+  NeedsSwap) built
+    python3 -c 'b = bytearray(450 << 20); b[::4096] = b"x" * len(b[::4096])' || exit 1
+    say "Your solution is okay!"; exit 0 ;;
   UnitKilled) built; kill -KILL "$PPID"; sleep 100000 ;;
   ThreeLeans) built; say "LEAN_NUM_THREADS=${LEAN_NUM_THREADS:-unset}"
     lean="$(dirname "$0")/../fake-lean/lean"
@@ -97,6 +112,7 @@ case "$what" in
   Forged) say "result: Forged: accepted in 1 s (cap 18000 s), 1 MB free" "::error::forged" \
       "unit: Forged: result=oom-kill code=killed status=KILL peak_mb=1 oom_kills=1" \
       "sample: Forged: threads=9 lean_max=9 lean_anon_mb=9 lean_rss_mb=9 nanoda_anon_mb=9 unit_anon_mb=9 samples=9" \
+      "swap: Forged: allowance=99G swap_peak_mb=9" \
       "Lean default kernel rejects the solution" "Your solution is okay!"
     echo "uncaught exception: Child exited with 1" >&2; exit 1 ;;
   Hangs|HangsFull|HangsLater) sleep 100000 ;;
@@ -106,14 +122,22 @@ SH
 chmod +x "$t/bin/comparator"
 
 # run <shard> <full cap> <budget> <min start>: pilot-shard.sh on a shard, with the fake first on PATH.
+# An empty full cap leaves PILOT_FULL_CAP unset, and SWAP, if set, is PILOT_SWAP_MAX.
 run() {
-  JOB_START="$(date +%s)" PATH="$t/bin:$PATH" PILOT_PLAN="$t/plan.json" PILOT_FROZEN="$t/frozen.txt" \
-    PILOT_TRUSTED_LIB="$t/trusted" PILOT_FULL_CAP="$2" PILOT_BUDGET="$3" PILOT_MIN_START="$4" \
+  local opt=()
+  if [ -n "$2" ]; then opt+=(PILOT_FULL_CAP="$2"); fi
+  if [ -n "${SWAP:-}" ]; then opt+=(PILOT_SWAP_MAX="$SWAP"); fi
+  env JOB_START="$(date +%s)" PATH="$t/bin:$PATH" PILOT_PLAN="$t/plan.json" PILOT_FROZEN="$t/frozen.txt" \
+    PILOT_TRUSTED_LIB="$t/trusted" PILOT_BUDGET="$3" PILOT_MIN_START="$4" ${opt[@]+"${opt[@]}"} \
     PILOT_MEMORY_MAX=300M PILOT_SAMPLE_SECONDS=1 PILOT_LEAN_THREADS="${THREADS:-}" \
     bash "$root/scripts/pilot-shard.sh" "$1" "$t/release" "$t/out-$1" > "$t/$1.log" 2>&1 ||
     { cat "$t/$1.log"; echo "FAIL: pilot-shard.sh stopped on shard $1"; exit 1; }
 }
-status() { python3 -c 'import json, sys; d = json.load(open(sys.argv[1])); print({c["name"]: c["status"] for c in d["challenges"]}[sys.argv[2]])' "$t/out-$1/results.json" "$2"; }
+status() { field "$1" "$2" status; }
+# field <shard> <challenge> <key>: a field of the challenge's entry in its shard's results.json.
+field() { python3 -c 'import json, sys; d = json.load(open(sys.argv[1])); print({c["name"]: c for c in d["challenges"]}[sys.argv[2]][sys.argv[3]])' "$t/out-$1/results.json" "$2" "$3"; }
+# refused <what> <command>: the command, run in a subshell, must fail.
+refused() { if (eval "$2") > /dev/null 2>&1; then check "$1" passed refused; else check "$1" refused refused; fi; }
 
 # unit_line <shard> <challenge>: how its unit ended, without the memory figures.
 unit_line() { sed -n "s/^unit: $2: \(result=[^ ]* code=[^ ]* status=[^ ]*\) .*/\1/p" "$t/$1.log"; }
@@ -145,6 +169,9 @@ check "the forged lines do appear, marked" \
   "$(grep -c '^    comparator| result: Forged: accepted' "$t/outcomes.log" || true)" 1
 check "the sandbox and memory probes passed" \
   "$(grep -cE '^ok: (inside landrun|a memory limit)' "$t/outcomes.log" || true)" 3
+check "every challenge has a swap line, each allowed none" \
+  "$(grep -c '^swap: [A-Za-z]*: allowance=0 swap_peak_mb=' "$t/outcomes.log" || true)" 11
+check "a forged swap line appears only marked" "$(grep -c '^swap: Forged: allowance=99G' "$t/outcomes.log" || true)" 0
 check "the exports resolved the trusted copies, before and after each challenge" \
   "$(grep -c '^ok: the exports resolve' "$t/outcomes.log" || true)" 12
 
@@ -167,6 +194,57 @@ else
 fi
 check "no sampler outlives its challenge" "$(pgrep -fc 'pilot_shard\.py sample' || true)" 0
 
+echo "== The defaults are the settings of before"
+run defaults "" 1000 5
+check "with no PILOT_FULL_CAP, the full cap is 5 hours" "$(grep -c '^full cap: 18000 s$' "$t/defaults.log" || true)" 1
+check "with no PILOT_SWAP_MAX, no swap" \
+  "$(grep -c "^swap: 0 for each challenge's unit, none for the probes$" "$t/defaults.log" || true)" 1
+check "the probes' units may use no swap, as the kernel reads it" \
+  "$(grep -c "^ok: the memory probes' units may use no swap (memory.swap.max=0)$" "$t/defaults.log" || true)" 1
+check "a challenge's unit may use no swap, as the kernel reads it" \
+  "$(grep -c "^ok: each challenge's unit may use 0 of swap (memory.swap.max=0)$" "$t/defaults.log" || true)" 1
+check "no swap probes run without swap" "$(grep -c '256 MB of swap' "$t/defaults.log" || true)" 0
+check "the challenge put nothing in swap" "$(grep -c '^swap: Quick2: allowance=0 swap_peak_mb=0$' "$t/defaults.log" || true)" 1
+check "its result line says no swap" \
+  "$(grep -cE '^result: Quick2: accepted in [0-9]+ s \(cap [0-9]+ s\), swap 0, ' "$t/defaults.log" || true)" 1
+check "its results.json entry says no swap" "$(field defaults Quick2 swapMax)" 0
+
+echo "== Swap"
+swap_kb="$(awk '/^SwapTotal:/ {print $2}' /proc/meminfo)"
+check "the runner has swap for these checks (scripts/pilot-swap.sh 1)" "$((swap_kb >= 900 * 1024))" 1
+# Why the probes run with none: a unit with the same memory limit that may swap gets past it.
+if systemd-run --user --quiet --collect --wait --pipe --property=MemoryMax=256M \
+    python3 -c 'b = bytearray(512 << 20); b[::4096] = b"x" * len(b[::4096])' 2> /dev/null; then
+  check "a unit with a 256 MB memory limit that may swap allocates 512 MB" allocated allocated
+else
+  check "a unit with a 256 MB memory limit that may swap allocates 512 MB" stopped allocated
+fi
+SWAP=512M run swap 120 1000 5
+check "the setting is recorded" "$(grep -c "^swap: 512M for each challenge's unit, none for the probes$" "$t/swap.log" || true)" 1
+check "with swap for the challenges, the probes' units still may use none" \
+  "$(grep -c "^ok: the memory probes' units may use no swap (memory.swap.max=0)$" "$t/swap.log" || true)" 1
+check "so the memory limit's probes pass with no swap" \
+  "$(grep -cE "^ok: (a memory limit on the wrapper's unit is enforced \(each challenge gets 300M, and 512M of swap\)|a unit the memory limit stops is recorded as out of memory: result=oom-kill)" "$t/swap.log" || true)" 2
+check "a challenge's unit may use 512M of swap, as the kernel reads it" \
+  "$(grep -c "^ok: each challenge's unit may use 512M of swap (memory.swap.max=536870912)$" "$t/swap.log" || true)" 1
+check "the swap probe shows swap reaches a unit" \
+  "$(grep -c '^ok: a unit with a 256 MB memory limit and 256 MB of swap allocated 384 MB, [0-9]* MB of it in swap$' "$t/swap.log" || true)" 1
+check "the swap probe shows the memory limit, with swap, still stops a unit and is recorded" \
+  "$(grep -c '^ok: with swap, the memory limit still stops a unit, recorded as out of memory: result=oom-kill' "$t/swap.log" || true)" 1
+check "with swap, a challenge that needs more than its memory limit is accepted" "$(status swap NeedsSwap)" accepted
+check "its swap line records the allowance, and that it swapped" \
+  "$(sed -n 's/^swap: NeedsSwap: allowance=512M swap_peak_mb=\([0-9]*\)$/\1/p' "$t/swap.log" | awk '{print ($1 >= 64)}')" 1
+check "its result line records the swap" \
+  "$(grep -cE '^result: NeedsSwap: accepted in [0-9]+ s \(cap 120 s\), swap 512M, ' "$t/swap.log" || true)" 1
+check "its results.json entry records the swap" "$(field swap NeedsSwap swapMax)" 512M
+run swap 120 1000 5
+check "without swap, the same challenge is outOfMemory" "$(status swap NeedsSwap)" outOfMemory
+check "and its result line says no swap" \
+  "$(grep -cE '^result: NeedsSwap: outOfMemory in [0-9]+ s \(cap 120 s\), swap 0, ' "$t/swap.log" || true)" 1
+refused "a swap setting that isn't a size is refused" 'SWAP="16G; echo forged" run swap 120 1000 5'
+refused "a swap setting in T is refused" 'SWAP=1T run swap 120 1000 5'
+refused "a full cap that isn't a number is refused" 'run swap 12x 1000 5'
+
 echo "== The timeouts"
 run first 60 50 5
 check "a timeout first in its job, below the full cap, is tooLarge" "$(status first Hangs)" tooLarge
@@ -174,6 +252,14 @@ check "the time limit's stop says so" \
   "$(sed -n 's/^unit: Hangs: \(result=[^ ]*\) .*/\1/p' "$t/first.log")" "result=timeout"
 run full 30 1000 5
 check "a later timeout at the full cap is tooLarge" "$(status full HangsFull)" tooLarge
+run first 100000 50 5
+check "with a raised full cap, a timeout first in its job is still tooLarge" "$(status first Hangs)" tooLarge
+check "its results.json records the cap its result line gives" "$(field first Hangs capSeconds)" \
+  "$(sed -n 's/^result: Hangs: tooLarge in [0-9]* s (cap \([0-9]*\) s).*/\1/p' "$t/first.log")"
+check "that cap is what was left of the job, not the raised full cap" "$(($(field first Hangs capSeconds) <= 50))" 1
+run full 100000 60 5
+check "with a full cap above the job's budget, a later timeout is cutOff, never tooLarge" \
+  "$(status full HangsFull)" cutOff
 run cut 100 170 20
 check "a quick challenge is accepted" "$(status cut Quick)" accepted
 check "a later timeout below the full cap is cutOff" "$(status cut HangsLater)" cutOff
