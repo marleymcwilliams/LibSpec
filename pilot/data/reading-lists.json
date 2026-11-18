@@ -1,0 +1,955 @@
+{
+ "source": {
+  "repository": "https://github.com/openai/math",
+  "commit": "7ef5c0cc5ca4b0e072b7a050fca09ab24bc6fa3a",
+  "license": "Apache-2.0",
+  "read": "as text: the .lean files under lean/ that these challenge files import, at any depth, and lean/lake-manifest.json"
+ },
+ "generatedBy": "pilot/reading_list.py",
+ "note": "Where a reviewer starts, never a check: text can't see instances found by type-class search, notation, macros or opened names, and it can't tell which of a file's declarations a statement really uses. Nothing reads this list.",
+ "leanRoots": [
+  "Init",
+  "Lake",
+  "Lean",
+  "Std"
+ ],
+ "mathlibPackages": [
+  "aesop",
+  "batteries",
+  "Cli",
+  "importGraph",
+  "LeanSearchClient",
+  "mathlib",
+  "plausible",
+  "proofwidgets",
+  "Qq"
+ ],
+ "releaseManifest": "lean/lake-manifest.json",
+ "challenges": [
+  {
+   "name": "Catalan",
+   "module": "ComparatorChallenges.Catalan",
+   "path": "lean/ComparatorChallenges/Catalan.lean",
+   "manuscripts": [
+    "Catalan's constant is irrational"
+   ],
+   "fileCount": 1,
+   "files": [
+    {
+     "module": "ComparatorChallenges.Catalan",
+     "depth": 0
+    }
+   ],
+   "outside": {
+    "lean": [],
+    "mathlib": [
+     "Mathlib"
+    ],
+    "other": []
+   },
+   "axioms": []
+  },
+  {
+   "name": "JointDickman",
+   "module": "ComparatorChallenges.JointDickman",
+   "path": "lean/ComparatorChallenges/JointDickman.lean",
+   "manuscripts": [
+    "The joint Dickman law for consecutive integers"
+   ],
+   "fileCount": 1,
+   "files": [
+    {
+     "module": "ComparatorChallenges.JointDickman",
+     "depth": 0
+    }
+   ],
+   "outside": {
+    "lean": [],
+    "mathlib": [
+     "Mathlib"
+    ],
+    "other": []
+   },
+   "axioms": []
+  },
+  {
+   "name": "DeligneDrinfeld",
+   "module": "ComparatorChallenges.DeligneDrinfeld",
+   "path": "lean/ComparatorChallenges/DeligneDrinfeld.lean",
+   "manuscripts": [
+    "The Deligne-Drinfeld conjecture"
+   ],
+   "fileCount": 1,
+   "files": [
+    {
+     "module": "ComparatorChallenges.DeligneDrinfeld",
+     "depth": 0
+    }
+   ],
+   "outside": {
+    "lean": [],
+    "mathlib": [
+     "Mathlib"
+    ],
+    "other": []
+   },
+   "axioms": []
+  },
+  {
+   "name": "BogomolovPopInjectivity",
+   "module": "ComparatorChallenges.BogomolovPopInjectivity",
+   "path": "lean/ComparatorChallenges/BogomolovPopInjectivity.lean",
+   "manuscripts": [
+    "The Bogomolov-Pop reconstruction theorem"
+   ],
+   "fileCount": 1,
+   "files": [
+    {
+     "module": "ComparatorChallenges.BogomolovPopInjectivity",
+     "depth": 0
+    }
+   ],
+   "outside": {
+    "lean": [],
+    "mathlib": [
+     "Mathlib"
+    ],
+    "other": []
+   },
+   "axioms": []
+  },
+  {
+   "name": "SubexponentialSAT",
+   "module": "ComparatorChallenges.SubexponentialSAT",
+   "path": "lean/ComparatorChallenges/SubexponentialSAT.lean",
+   "manuscripts": [
+    "The Exponential Time Hypothesis is False"
+   ],
+   "fileCount": 1,
+   "files": [
+    {
+     "module": "ComparatorChallenges.SubexponentialSAT",
+     "depth": 0
+    }
+   ],
+   "outside": {
+    "lean": [],
+    "mathlib": [
+     "Mathlib"
+    ],
+    "other": []
+   },
+   "axioms": []
+  },
+  {
+   "name": "LocalSmoothing",
+   "module": "ComparatorChallenges.LocalSmoothing",
+   "path": "lean/ComparatorChallenges/LocalSmoothing.lean",
+   "manuscripts": [
+    "Critical local smoothing for the three-dimensional wave equation",
+    "Local smoothing for the Euclidean wave equation"
+   ],
+   "fileCount": 1,
+   "files": [
+    {
+     "module": "ComparatorChallenges.LocalSmoothing",
+     "depth": 0
+    }
+   ],
+   "outside": {
+    "lean": [],
+    "mathlib": [
+     "Mathlib"
+    ],
+    "other": []
+   },
+   "axioms": []
+  },
+  {
+   "name": "BallPacking",
+   "module": "ComparatorChallenges.BallPacking",
+   "path": "lean/ComparatorChallenges/BallPacking.lean",
+   "manuscripts": [
+    "Symplectic Ball Packings in Higher Dimensions"
+   ],
+   "fileCount": 1,
+   "files": [
+    {
+     "module": "ComparatorChallenges.BallPacking",
+     "depth": 0
+    }
+   ],
+   "outside": {
+    "lean": [],
+    "mathlib": [
+     "Mathlib"
+    ],
+    "other": []
+   },
+   "axioms": []
+  },
+  {
+   "name": "BallPackingNecessity",
+   "module": "ComparatorChallenges.BallPackingNecessity",
+   "path": "lean/ComparatorChallenges/BallPackingNecessity.lean",
+   "manuscripts": [
+    "Symplectic Ball Packings in Higher Dimensions"
+   ],
+   "fileCount": 1,
+   "files": [
+    {
+     "module": "ComparatorChallenges.BallPackingNecessity",
+     "depth": 0
+    }
+   ],
+   "outside": {
+    "lean": [],
+    "mathlib": [
+     "Mathlib"
+    ],
+    "other": []
+   },
+   "axioms": []
+  }
+ ],
+ "files": {
+  "ComparatorChallenges.BallPacking": {
+   "path": "lean/ComparatorChallenges/BallPacking.lean",
+   "declarations": [
+    {
+     "kind": "abbrev",
+     "name": "OAI.HigherDimensionalBallPacking.Phase",
+     "line": 8
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.capacity",
+     "line": 10
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.closedBall",
+     "line": 13
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.openBall",
+     "line": 15
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.standardForm",
+     "line": 17
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.SymplecticOn",
+     "line": 20
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.HasPacking",
+     "line": 26
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.PackingInequalities",
+     "line": 33
+    }
+   ],
+   "axioms": [],
+   "theorems": 1,
+   "lemmas": 0
+  },
+  "ComparatorChallenges.BallPackingNecessity": {
+   "path": "lean/ComparatorChallenges/BallPackingNecessity.lean",
+   "declarations": [
+    {
+     "kind": "abbrev",
+     "name": "OAI.HigherDimensionalBallPacking.Phase",
+     "line": 8
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.capacity",
+     "line": 10
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.closedBall",
+     "line": 13
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.openBall",
+     "line": 15
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.standardForm",
+     "line": 17
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.SymplecticOn",
+     "line": 21
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.HasPacking",
+     "line": 28
+    },
+    {
+     "kind": "def",
+     "name": "OAI.HigherDimensionalBallPacking.PackingInequalities",
+     "line": 35
+    }
+   ],
+   "axioms": [],
+   "theorems": 1,
+   "lemmas": 0
+  },
+  "ComparatorChallenges.BogomolovPopInjectivity": {
+   "path": "lean/ComparatorChallenges/BogomolovPopInjectivity.lean",
+   "declarations": [
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.proEllKernel",
+     "line": 8
+    },
+    {
+     "kind": "instance",
+     "name": "OAI.BogomolovPop.proEllKernel_normal",
+     "line": 11
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.BogomolovPop.ProEll",
+     "line": 17
+    },
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.closedGammaThree",
+     "line": 20
+    },
+    {
+     "kind": "instance",
+     "name": "OAI.BogomolovPop.closedGammaThree_normal",
+     "line": 24
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.BogomolovPop.PiA",
+     "line": 29
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.BogomolovPop.PiC",
+     "line": 31
+    },
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.centralProjection",
+     "line": 38
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.BogomolovPop.Delta",
+     "line": 41
+    },
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.sourceCommutator",
+     "line": 43
+    },
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.abelianLift",
+     "line": 45
+    },
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.bracket",
+     "line": 51
+    },
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.BracketCompatible",
+     "line": 57
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.BogomolovPop.PerfectFieldClosure",
+     "line": 62
+    },
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.PerfectIsom",
+     "line": 64
+    },
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.FrobeniusStep",
+     "line": 70
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.BogomolovPop.IsomF",
+     "line": 75
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.BogomolovPop.IsomC",
+     "line": 79
+    },
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.ScalarStep",
+     "line": 82
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.BogomolovPop.IsomCUnits",
+     "line": 88
+    },
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.absoluteToPiA",
+     "line": 91
+    },
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.absoluteAction",
+     "line": 95
+    },
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.PullbackGraph",
+     "line": 100
+    },
+    {
+     "kind": "def",
+     "name": "OAI.BogomolovPop.PhiGraph",
+     "line": 111
+    }
+   ],
+   "axioms": [],
+   "theorems": 3,
+   "lemmas": 0
+  },
+  "ComparatorChallenges.Catalan": {
+   "path": "lean/ComparatorChallenges/Catalan.lean",
+   "declarations": [],
+   "axioms": [],
+   "theorems": 1,
+   "lemmas": 0
+  },
+  "ComparatorChallenges.DeligneDrinfeld": {
+   "path": "lean/ComparatorChallenges/DeligneDrinfeld.lean",
+   "declarations": [
+    {
+     "kind": "abbrev",
+     "name": "OAI.DeligneDrinfeld.L",
+     "line": 8
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.x",
+     "line": 9
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.y",
+     "line": 10
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.eval",
+     "line": 12
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.DeligneDrinfeld.Edge",
+     "line": 15
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.DeligneDrinfeld.BraidFree",
+     "line": 16
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.chord",
+     "line": 18
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.braidRelations",
+     "line": 22
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.braidIdeal",
+     "line": 29
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.DeligneDrinfeld.T4",
+     "line": 32
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.t",
+     "line": 33
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.IsSolution",
+     "line": 35
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.W",
+     "line": 42
+    },
+    {
+     "kind": "structure",
+     "name": "OAI.DeligneDrinfeld.Tangent",
+     "line": 75
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.Tangent.equiv",
+     "line": 79
+    },
+    {
+     "kind": "instance",
+     "name": null,
+     "line": 85
+    },
+    {
+     "kind": "instance",
+     "name": null,
+     "line": 86
+    },
+    {
+     "kind": "instance",
+     "name": null,
+     "line": 87
+    },
+    {
+     "kind": "instance",
+     "name": null,
+     "line": 91
+    },
+    {
+     "kind": "instance",
+     "name": null,
+     "line": 130
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.tangentLift",
+     "line": 139
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.D",
+     "line": 142
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.ihara",
+     "line": 144
+    },
+    {
+     "kind": "inductive",
+     "name": "OAI.DeligneDrinfeld.WeightedWord",
+     "line": 146
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.weightPiece",
+     "line": 151
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.DeligneDrinfeld.OddFree",
+     "line": 154
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.oddWeight",
+     "line": 155
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.DeligneDrinfeld.Fn",
+     "line": 156
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.DeligneDrinfeld.Ln",
+     "line": 157
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.DeligneDrinfeld.Wn",
+     "line": 158
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.Graded",
+     "line": 160
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.DeligneDrinfeld.OddCompletion",
+     "line": 163
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.DeligneDrinfeld.WCompletion",
+     "line": 164
+    },
+    {
+     "kind": "instance",
+     "name": null,
+     "line": 166
+    },
+    {
+     "kind": "instance",
+     "name": null,
+     "line": 167
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.completed",
+     "line": 169
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.completedInv",
+     "line": 172
+    },
+    {
+     "kind": "def",
+     "name": "OAI.DeligneDrinfeld.MainStatement",
+     "line": 178
+    }
+   ],
+   "axioms": [],
+   "theorems": 1,
+   "lemmas": 0
+  },
+  "ComparatorChallenges.JointDickman": {
+   "path": "lean/ComparatorChallenges/JointDickman.lean",
+   "declarations": [
+    {
+     "kind": "def",
+     "name": "OAI.Erdos970.NumberTheoryLean.DelayConstruction.kernel",
+     "line": 9
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Erdos970.NumberTheoryLean.DelayConstruction.stepApprox",
+     "line": 11
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Erdos970.NumberTheoryLean.DelayConstruction.delay",
+     "line": 15
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Erdos970.NumberTheoryLean.Dickman.rho",
+     "line": 22
+    },
+    {
+     "kind": "def",
+     "name": "OAI.JointDickman.empiricalCount",
+     "line": 28
+    },
+    {
+     "kind": "def",
+     "name": "OAI.JointDickman.realDensity",
+     "line": 33
+    }
+   ],
+   "axioms": [],
+   "theorems": 3,
+   "lemmas": 0
+  },
+  "ComparatorChallenges.LocalSmoothing": {
+   "path": "lean/ComparatorChallenges/LocalSmoothing.lean",
+   "declarations": [
+    {
+     "kind": "abbrev",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.Space",
+     "line": 17
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.angularFourier",
+     "line": 19
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.angularInverse",
+     "line": 22
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.halfWaveIntegral",
+     "line": 26
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.besselPotential",
+     "line": 30
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.observationMeasure",
+     "line": 33
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.Implications.sphereMeasure",
+     "line": 39
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.Implications.sphericalExtension",
+     "line": 42
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.Implications.conjugateExponent",
+     "line": 45
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.Implications.bochnerRieszSymbol",
+     "line": 48
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.Implications.bochnerRiesz",
+     "line": 51
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.Implications.unitSegment",
+     "line": 54
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.Implications.tube",
+     "line": 58
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.Implications.kakeyaMaximal",
+     "line": 61
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.Implications.IsKakeyaSet",
+     "line": 65
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Analysis.Fourier.LocalSmoothing.Comparator.Stein.literalSteinSquareFunction",
+     "line": 73
+    }
+   ],
+   "axioms": [],
+   "theorems": 6,
+   "lemmas": 0
+  },
+  "ComparatorChallenges.SubexponentialSAT": {
+   "path": "lean/ComparatorChallenges/SubexponentialSAT.lean",
+   "declarations": [
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.BinaryArithmetic.bitVal",
+     "line": 5
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.BinaryArithmetic.toNat",
+     "line": 7
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.Algorithms.SubexponentialSAT.SAT.Assignment",
+     "line": 17
+    },
+    {
+     "kind": "structure",
+     "name": "OAI.Algorithms.SubexponentialSAT.SAT.Literal",
+     "line": 19
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.Algorithms.SubexponentialSAT.SAT.Clause",
+     "line": 24
+    },
+    {
+     "kind": "abbrev",
+     "name": "OAI.Algorithms.SubexponentialSAT.SAT.CNF",
+     "line": 25
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SAT.Literal.eval",
+     "line": 29
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SAT.Clause.eval",
+     "line": 32
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SAT.CNF.eval",
+     "line": 35
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SAT.WidthAtMost",
+     "line": 38
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SAT.satisfyingAssignments",
+     "line": 44
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SAT.count",
+     "line": 47
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.Encoding.encodeNat",
+     "line": 55
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.Encoding.frame",
+     "line": 57
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.Encoding.encodeList",
+     "line": 60
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.Encoding.literalCode",
+     "line": 64
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.Encoding.clauseNumbers",
+     "line": 67
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.Encoding.cnfNumbers",
+     "line": 70
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.Encoding.encodeCNFBody",
+     "line": 73
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.Encoding.encodeCNF",
+     "line": 76
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.Encoding.formulaBitLength",
+     "line": 79
+    },
+    {
+     "kind": "inductive",
+     "name": "OAI.Algorithms.SubexponentialSAT.Computation.Trace",
+     "line": 87
+    },
+    {
+     "kind": "structure",
+     "name": "OAI.Algorithms.SubexponentialSAT.Computation.PrimitiveMachine",
+     "line": 92
+    },
+    {
+     "kind": "structure",
+     "name": "OAI.Algorithms.SubexponentialSAT.Computation.PrimitiveMachine.Cfg",
+     "line": 103
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.Computation.PrimitiveMachine.step",
+     "line": 107
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.Computation.PrimitiveMachine.init",
+     "line": 121
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SqrtLog.Statement.runtimeScale",
+     "line": 132
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SqrtLog.Statement.runtimeBound",
+     "line": 136
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.countWord",
+     "line": 147
+    },
+    {
+     "kind": "structure",
+     "name": "OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.LocatedCfg",
+     "line": 149
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.locatedInit",
+     "line": 155
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.headDisplacement",
+     "line": 161
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.LocatedCfg.monitor",
+     "line": 166
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.locatedStep",
+     "line": 184
+    },
+    {
+     "kind": "def",
+     "name": "OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.visitedSpace",
+     "line": 188
+    }
+   ],
+   "axioms": [],
+   "theorems": 1,
+   "lemmas": 0
+  }
+ }
+}

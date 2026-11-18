@@ -4,6 +4,36 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-18
 
+### A reading list for each Phase 8 challenge, read as text (route B)
+- **What it is:** for each challenge of Phase 8's step 4, `pilot/reading_list.py` lists the challenge file and the release's own files it imports, at any depth, with what each declares. It writes `pilot/data/reading-lists.json`, and its `--report` form renders `pilot/reports/reading-lists.md` from that JSON. It's route B of the reviewer's scope plan of 2026-11-14, which Marley approved on 2026-11-18. It's where a reviewer starts, never a check, and nothing reads it. `guide/REVIEW_PROTOCOL.md` points to the report at the end of "What to read" step 3.
+- **The eight counts:** no challenge file imports any of the release's other files. Each imports Mathlib alone, so each list holds one file, the challenge file:
+  - Catalan 1, where `pilot/data/shards.json` counts 989;
+  - JointDickman 1, against 1,793;
+  - DeligneDrinfeld 1, against 22;
+  - BogomolovPopInjectivity 1, against 6;
+  - SubexponentialSAT 1, against 3,092;
+  - LocalSmoothing 1, against 2,262;
+  - BallPacking 1, against 170;
+  - BallPackingNecessity 1, against 66.
+
+  `shards.json` counts the solutions' imports too. From the challenge files alone, neither PrimeNumberTheoremAnd nor StrongPNT shows up, nor does any other package that isn't Mathlib's. So the definitions a reviewer reads are in the challenge files: 95 `def`s, 24 `abbrev`s, 5 structures, 2 inductives and 9 instances across the eight, beside 17 theorems. No notation, macro or axiom was found.
+- **Decided: the file names** `pilot/reading_list.py`, `pilot/data/reading-lists.json`, `pilot/reports/reading-lists.md` and `scripts/test_reading_list.py`. The report comes from a second mode of the script, `--report`, not from a second script. Undo by renaming them.
+- **Decided: the declaration kinds.** They're the ones asked for, with `notation3` and `elab_rules` added to notation and macros, since they're the same kind of command.
+  - A name keeps the namespaces its file's text opens, and `_root_.` drops them.
+  - A notation or macro is listed with its first line, so a reviewer can search for its symbol.
+  - Undo by changing `NOTATION` in the script.
+- **Decided: what counts as Mathlib's.** It's a root that matches, ignoring case, a package in LibSpec's own `lean/lake-manifest.json`, which lists Mathlib and the eight packages it requires. Lean's own are `Init`, `Std`, `Lean` and `Lake`. Undo by changing the rule in `build`.
+- **Decided: the report's layout.**
+  - Its first line names its generator and its input. Then it says what the list is and isn't, and gives a table of the eight.
+  - Each challenge then has a section. It gives the manuscripts, the count, the packages outside the checkout that aren't Mathlib's, any axiom, and the challenge file's declarations in full. Every other file follows by depth, each in a collapsed block.
+  - Each file links to the release at the pinned commit.
+  - The report came to 14 KB, so the 1 MB rule, names only past depth 2, wasn't needed. The tests check it anyway.
+  - Undo by changing `report` in the script.
+- **Decided: each path in the JSON is the file's path in the release,** `lean/...`, so that it opens at the pin.
+- **The release's checkout** was in a new folder outside the repository, files only. 29 of its paths passed Windows' limit, so `core.longpaths` was set in that checkout's repository alone.
+- **Not changed:** `pilot/imports.py`, `pilot/data/shards.json`, any workflow, and anything the gate reads.
+- **To undo:** revert the PR.
+
 ### How the project is described, and Marley's answers to the reviewer's scope plans
 - **Marley's answers of 2026-11-18,** to the reviewer's plans of 2026-11-14:
   - **Descriptions:** the wording rules, the plain, technical and engineers' descriptions and the proof points go in `guide/CONVENTIONS.md`, with the three corrections the reviewer's check found.

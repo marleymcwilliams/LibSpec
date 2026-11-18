@@ -23,6 +23,7 @@
 # - that a line the fake prints to forge a result, a unit line, a sample line or a GitHub workflow
 #   command appears only marked;
 # - the results collector's rules (scripts/test_shard_results.py);
+# - the reading lists' rules (scripts/test_reading_list.py), which need no release;
 # - that the sandbox check fails when landrun sandboxes nothing, and when a directory listed as
 #   frozen can be written;
 # - that from inside landrun a build can plant a Mathlib/ and an Init/ in the release's build
@@ -144,6 +145,9 @@ unit_line() { sed -n "s/^unit: $2: \(result=[^ ]* code=[^ ]* status=[^ ]*\) .*/\
 
 echo "== The collector's rules"
 python3 -B "$root/scripts/test_shard_results.py" || { echo "FAIL: the collector's rules"; fail=1; }
+
+echo "== The reading lists' rules"
+python3 -B "$root/scripts/test_reading_list.py" || { echo "FAIL: the reading lists' rules"; fail=1; }
 
 echo "== The outcomes"
 run outcomes 120 1000 5

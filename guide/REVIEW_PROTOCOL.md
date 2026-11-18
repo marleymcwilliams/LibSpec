@@ -33,7 +33,7 @@ So a challenge that states only part of the claim, or a companion result, is nev
 
 1. **The manuscript's top-line claim,** under `preprints/` at the pinned commit. The challenges have to state this claim, not only lemmas on the way to it, so it's the reference the rest is compared with.
 2. **Every challenge linked to the manuscript,** `lean/ComparatorChallenges/<name>.lean` at the same commit. They're the statements Comparator checks a proof against, and so the statements whose meaning a review can vouch for.
-3. **Every definition those challenges use that isn't Mathlib's,** wherever the release defines it. A challenge's own definitions can hide what it claims: a theorem that reads like the paper's can say something else through a definition it names. So the reviewer reads them, not just the theorems.
+3. **Every definition those challenges use that isn't Mathlib's,** wherever the release defines it. A challenge's own definitions can hide what it claims: a theorem that reads like the paper's can say something else through a definition it names. So the reviewer reads them, not just the theorems. For the eight challenges of Phase 8's step 4 ([ROADMAP.md](ROADMAP.md)), [pilot/reports/reading-lists.md](../pilot/reports/reading-lists.md) lists each challenge file and the release's files it imports, with what each declares. It's where to start, not a check: text can't see instances or notation, so the reviewer still follows names by eye, and reads any package it names outside the checkout.
 
 ## What to check
 
