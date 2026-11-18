@@ -1,8 +1,8 @@
 # LibSpec
 
-Exploration of liberal governance principles within a lean verification paradigm.
+A fail-closed evidence gate for AI-generated mathematics.
 
-LibSpec takes the JSG/SIRUS governance corpus, a set of papers and specs on graded evidence, runtime gates and policy, and asks which of its claims can be stated precisely and proved in Lean 4. The claims that can be are frozen as Lean statements, proved, and checked by machine. Everything else is labelled with the reason it isn't a Lean claim: it belongs to CI, it's a per-instance certificate, it's open mathematics, or it's a declared norm.
+LibSpec grades mathematical claims by their evidence. Each claim is graded on seven kinds of evidence, among them whether a formal proof checks, whether its statement says what the paper claims, and whether it has been reviewed or withdrawn. The gate accepts a claim only when every kind is known to be good, and its report says what's missing. The gate's rules are specified in Lean 4, and its 34 theorems are proved and machine-checked. They grew out of the JSG/SIRUS corpus, a set of papers on graded evidence and runtime gates, kept in `archive/` as provenance.
 
 ## Status
 
