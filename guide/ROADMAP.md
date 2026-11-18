@@ -31,13 +31,15 @@ flowchart TB
   p8 --> g8{"Reviews recorded and reported"}
   g8 --> p9["Phase 9: More sources"]
   p9 --> g9{"Sources graded, calibration proved"}
-  gm4 --> p10["Phase 10: Obligation and Loader twins"]
-  p10 --> g10{"Milestone 5's gate, differential tests in CI"}
+  gm4 --> m5["Milestone 5: The core's gap statements"]
+  m5 --> gm5{"lake build green, no sorry"}
+  gm4 -.-> p10["Phase 10: Obligation and Loader twins, deferred"]
+  p10 --> g10{"Milestone 6's gate, differential tests in CI"}
 ```
 
-*project roadmap · 11 phases and Milestone 4, 11 gates, 4 closing options*
+*project roadmap · 11 phases and Milestones 4 and 5, 12 gates, 4 closing options*
 
-Each diamond is a gate: the checklist at the end of that phase's section. Phase 1 feeds the same gate as Phase 2, because reviewing statements takes both. At v1.0 you chose the executable gate, and Phases 7–10 carry it to real claims.
+Each diamond is a gate: the checklist at the end of that phase's section. Phase 1 feeds the same gate as Phase 2, because reviewing statements takes both. At v1.0 you chose the executable gate, and Phases 7–9 carry it to real claims. Milestone 5 hardens the part of the model they use, and the dotted arrow marks Phase 10 as deferred.
 
 ## Ground rules
 
@@ -211,9 +213,11 @@ The goal is a tagged release that a stranger could clone and check. After it, yo
 
 ## After Milestone 4: grading real claims
 
-Four phases take the executable gate to real claims. Their goal is a gate that grades a claim and says exactly what evidence is missing. The pilot's report on openai/math already has that shape: none of its 724 manuscripts is accepted, and each report names the axes that hold it back (`pilot/reports/catalogue.md`). Each phase fills in evidence that's missing, and ends at a gate like the earlier ones.
+Three phases take the executable gate to real claims, and a milestone hardens the part of the model they use. The phases' goal is a gate that grades a claim and says exactly what evidence is missing. The pilot's report on openai/math already has that shape: none of its 724 manuscripts is accepted, and each report names the axes that hold it back (`pilot/reports/catalogue.md`). Each phase fills in evidence that's missing, and ends at a gate like the earlier ones.
 
-Phases 7–9 run in order, since each needs the one before: Phase 8 reviews the challenges Phase 7 checks, and Phase 9's new sources need both. Phase 10 depends only on Milestone 4, so it can run beside them when review time allows. Both it and Phase 8 ask for your review, so they're better run one after the other.
+**What the model is for.** On 2026-11-13 you decided it: the central model is for grading claims, as the pilot does. The pilot's values are codes with an order and no unit, so the part of the model in use is the ordinal core: floors, unknowns, θ, `combine` and the verdict. That part gets the hardening, starting with Milestone 5's three statements. Budgets, residuals, leases, the frontier charge and the Loader have no consumer yet. Their theorems stay proved and frozen, and Phase 10 waits until an axis with a real unit has a user. Generalizing the whole corpus is deferred, not dropped.
+
+Phases 7–9 run in order, since each needs the one before: Phase 8 reviews the challenges Phase 7 checks, and Phase 9's new sources need both. Milestone 5 depends only on Milestone 4, so it can run beside them when review time allows. Both it and Phase 8 ask for your review, so they're better run one after the other. Phase 10 is deferred, as above.
 
 ### What the phases draw on
 
@@ -413,9 +417,43 @@ A sample of withdrawn or retracted mathematics papers then becomes a must-fail s
 - [ ] Every withdrawn or retracted paper in the calibration sample is not accepted on known axes alone, proved by the kernel
 - [ ] Every new source's challenges have a trusted Comparator result, or a classified failure
 
+## Milestone 5: The core's gap statements
+
+The goal is three new frozen statements about the ordinal core, the part of the model the pilot uses, each with a mutant and a witness, proved at the milestone gate. They take `statements-v5`.
+
+The 34 frozen theorems include the core's algebra and its executable twins. None of the 34 ties a grade to the true values behind it, says how the verdict behaves as evidence narrows, or tells a rejection that's final from one that only lacks evidence. These three do. They're candidates until your review of the draft settles what each states:
+
+- **C, soundness against the world.** Suppose each stage's interval encloses its true value, and true values compose no worse than `combine` assumes. Then an accepted grade bounds the true composed value by θ. It's the only one of the three that says what an accept means.
+- **D, the information order.** `combine` respects narrowing, and narrowing an accepted grade keeps it accepted. C's proof needs the first half.
+- **G, definite rejection.** If some axis has its lower end above θ, every narrowing rejects. Otherwise some narrowing accepts. So the gate can tell evidence that fails from evidence that's missing, which Phase 8's step 2 needs for a review that finds a mismatch.
+
+**Steps:**
+
+1. **Draft `statements-v5`:** C, D and G, a mutant and a witness for each, and a provability check, in a draft PR as for v2–v4. Two of the mutants are already in `Tests/Mutants.lean`: `jsgVSeq` for C and `verdictLo` for D.
+2. **Milestone 5** proves them, at the milestone gate.
+
+**Resources:**
+- **Actions,** and not much of them.
+- **Your review of `statements-v5`:** three statements, where `statements-v4` had eight.
+
+**Risks:**
+- **C's hypotheses carry its meaning.** If nothing real can satisfy them, C is true and says nothing. So the draft names what supplies each hypothesis for the pilot's axes.
+- **C as drafted covers budget axes too,** and `jsgVSeq` lives on one. Budgets have no consumer yet, so the draft has to say whether C is stated for `combine` as frozen or for floors alone.
+
+**Decisions that stay yours:**
+- what `statements-v5` states, and its tag;
+- whether C covers budget axes.
+
+**Gate**
+
+- [ ] Tagged `statements-v5`
+- [ ] The milestone gate, for Milestone 5
+
 ## Phase 10: The obligation and Loader twins
 
 The goal is executable twins of typed obligations and of the concrete Loader, each proved to agree with its frozen definition, once SirusSC's loader is under test. Q11 deferred them until there was an implementation to test them against.
+
+**Deferred on 2026-11-13.** You decided that the model is for grading claims, and the obligation layer and the Loader have no consumer yet. So this phase waits until an axis with a real unit has a user. Their theorems stay proved and frozen. Milestone 5's gap statements take `statements-v5`, so this phase's draft becomes `statements-v6`, and its proofs Milestone 6.
 
 **Steps:**
 
@@ -423,13 +461,13 @@ The goal is executable twins of typed obligations and of the concrete Loader, ea
    - with fewer inputs than guards, it skips the rest silently (IDEAS.md);
    - its I1–I10 are different checks from SCp3's, under the same numbers;
    - its rank vector is never updated.
-2. **Draft `statements-v5`:** twins of the obligation layer and of `LoaderStep`, their agreement theorems, a mutant and a witness for each, and a provability check, in a draft PR as for v2–v4. The concrete Loader is generic in its cryptographic primitives (Q7), so its twin needs stand-ins for them.
-3. **Milestone 5** proves them, at the milestone gate.
+2. **Draft `statements-v6`:** twins of the obligation layer and of `LoaderStep`, their agreement theorems, a mutant and a witness for each, and a provability check, in a draft PR as for v2–v4. The concrete Loader is generic in its cryptographic primitives (Q7), so its twin needs stand-ins for them.
+3. **Milestone 6** proves them, at the milestone gate.
 4. **Test SirusSC's loader against the twins.** It must disagree exactly where its defects predict, with every new mutant as a negative control.
 
 **Resources:**
 - **Actions,** and not much of them.
-- **Your review of `statements-v5`,** the largest review these phases ask for after Phase 8's.
+- **Your review of `statements-v6`,** the largest review these phases ask for after Phase 8's.
 
 **Risks:**
 - **SirusSC's loader is far from SCp3.** Its checks and their numbering differ, so its model may grow large.
@@ -437,13 +475,13 @@ The goal is executable twins of typed obligations and of the concrete Loader, ea
 - **The twins could drift toward the code,** mirroring what SirusSC does rather than what the frozen definitions say. That's why they're proved to agree with the definitions, and only then tested against the code.
 
 **Decisions that stay yours:**
-- what `statements-v5` states, and its tag;
+- what `statements-v6` states, and its tag;
 - whether SirusSC's loader is the implementation to test;
 - any Norm-layer value a statement needs.
 
 **Gate**
 
-- [ ] The milestone gate, for Milestone 5
+- [ ] The milestone gate, for Milestone 6
 - [ ] The differential test runs in CI, with SirusSC's loader disagreeing exactly where its defects predict, and every new mutant as a negative control
 
 ## The master guide's checklist

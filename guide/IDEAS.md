@@ -49,6 +49,17 @@ New ideas land here, never in the current milestone (stop rule 2).
 - **A build-cost model that fits.** For family 189 the estimates by source size and by module count differ by a factor of 30 to 100. Timing the five largest families, then fitting build time to both measures, would replace the ranges with a single estimate.
 - **Two claims of one result.** OpenAI's "The Exponential Time Hypothesis is False" and Anthropic's 3-SAT paper claim the same refutation, both found on October 16. The gate grades each on its own. Whether `novelty` should see the other is a question for when that axis has a source.
 
+## Found while deciding what the model is for
+
+- **Proof analytics.** A possible later study: statistics over a body of formal proofs, here what AI-generated formal proofs rely on. That means which Mathlib areas, which shared lemmas, how much automation, and which definitions of their own. It isn't part of Phase 9's core. The term is "proof analytics", not "proof mining", which in logic names Kohlenbach's program for extracting bounds from proofs.
+- **The trust model carries over to open-problem research.** The search itself needn't be trusted, under the same four rules:
+  - the untrusted search emits certificates, and a small checker proved in Lean checks them;
+  - the claim and its encoding are stated and reviewed before the search starts;
+  - runs are pinned, hashed and logged;
+  - anything not certified stays unknown.
+
+  Busy Beaver is an example only, and these are leads, not checked by this repo. As Marley read them on 2026-11-12, from <https://wiki.bbchallenge.org/wiki/BB(6)> and <https://arxiv.org/abs/2509.12337>: BB(6) is blocked by Collatz-like problems such as Antihydra, not by compute; compute shrinks the list of undecided machines; and bbchallenge verifies its decisions in Rocq.
+
 ## Certificates
 
 - Reach's `check_positive_real` (`archive/Reach/jsg-lab/src/jsg/control/pr_checks.py`) reports positive realness without a certificate in two ways. It returns PR whenever the KYP LMI solve ends `optimal_inaccurate` (`if prob.status in (cp.OPTIMAL, cp.OPTIMAL_INACCURATE): return True, float(eps_min)`, lines 40–41), reporting the requested `eps_min` as the margin; an inaccurate solve is not a witness. Otherwise, even when the solver reports the LMI infeasible, it falls back to a 256-point frequency grid on the band (`margin = _phase_grid_margin(sys, band)`, then `return bool(margin >= eps_min), …`, lines 43–44), and a grid samples finitely many frequencies. An exact-rational checker in Lean, the Certificates option, should reject both: a ready-made negative control. Its test asserts only `ok in (True, False)`.

@@ -2,6 +2,23 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-11-13
+
+### What the model is for, and the roadmap after it (Marley's answers of 2026-11-11 and 2026-11-13)
+- **Marley's answer of 2026-11-13 to "what is the central model for?":** grading claims, as the pilot does. The question is decision 0 of the reviewer's hardening plan.
+  - The ordinal core gets the hardening: floors, unknowns, θ, `combine` and the verdict.
+  - Three gap statements, the plan's candidates C, D and G, are drafted first, as `statements-v5`.
+  - The plan's candidates A, B, E and F, and Phase 10, wait until an axis with a real unit has a user. Their theorems stay proved and frozen, and Phase 10's draft becomes `statements-v6`.
+  - Budgets, residuals, leases, the charge and the Loader get the label "no consumer yet" in a "Checked by" column the plan adds to the layer map. This PR doesn't add that column.
+  - Generalizing the whole corpus is deferred, not dropped.
+- **Marley's answer of 2026-11-11, the plan's decision 1:** the gap statements come before Phase 10's twins, in the order C, D, G.
+- **Changed in `guide/ROADMAP.md`:** a new section, "Milestone 5: The core's gap statements"; a paragraph on what the model is for, under "After Milestone 4"; Phase 10 marked deferred, with `statements-v6` and Milestone 6; and the chart and its caption.
+- **Changed in `guide/IDEAS.md`:** a new section with the two ideas Marley asked to have logged: proof analytics, and the trust model carried over to open-problem research. Its Busy Beaver example is recorded as leads, as Marley read them, and wasn't checked.
+- **Decided: the milestones follow the statements' numbers.** Milestone 5 proves `statements-v5`, so Phase 10's proofs become Milestone 6. Marley gave the statements' numbers only. Undo by restoring "Milestone 5" in Phase 10 and renaming the new section.
+- **The README's first line and opening paragraph,** Marley's text of 2026-11-13, go in a PR of their own, which Marley merges.
+- **Not changed:** no Lean file, statement, check or script, and nothing in `guide/LAYER_MAP.md` or `CLAUDE.md`.
+- **To undo:** revert the PR.
+
 ## 2026-11-09
 
 ### Pilot Shards gets swap_gb and cap_seconds, for the seven run 42540237805 left unknown
