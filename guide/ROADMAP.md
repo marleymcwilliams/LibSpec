@@ -346,7 +346,7 @@ Comparator checks a proof against its challenge's statement, but not that the st
 
 **Gate**
 
-- [ ] The protocol is approved and in the guide
+- [x] The protocol is approved and in the guide: #119
 - [ ] An issue form records a review, and the collector reads it into the report
 - [ ] Seven manuscripts are reviewed under the protocol, with their challenges and the time each review took
 - [ ] The synthetic weaker statement is not counted as faithful, and its reason shows in the report

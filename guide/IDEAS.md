@@ -58,7 +58,7 @@ New ideas land here, never in the current milestone (stop rule 2).
   - runs are pinned, hashed and logged;
   - anything not certified stays unknown.
 
-  Busy Beaver is an example only, and these are leads, not checked by this repo. As Marley read them on 2026-11-12, from <https://wiki.bbchallenge.org/wiki/BB(6)> and <https://arxiv.org/abs/2509.12337>: BB(6) is blocked by Collatz-like problems such as Antihydra, not by compute; compute shrinks the list of undecided machines; and bbchallenge verifies its decisions in Rocq.
+  Busy Beaver is an example only, and these are leads, not checked by this repo. As Marley's second reviewer read them on 2026-11-12, through a fetch agent, from <https://wiki.bbchallenge.org/wiki/BB(6)> and <https://arxiv.org/abs/2509.12337>: BB(6) is blocked by Collatz-like problems such as Antihydra, not by compute; compute shrinks the list of undecided machines; and bbchallenge verifies its decisions in Rocq.
 
 ## Certificates
 

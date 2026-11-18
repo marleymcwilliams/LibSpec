@@ -1,6 +1,6 @@
 # The guide, and a map of the repository
 
-LibSpec states a governance-and-evidence calculus in Lean, proves it, and runs it as an executable gate on real claims. This page maps every file outside `archive/` and says what to read first. The repository's own [README](../README.md) says what is proved, and [REPRODUCE.md](../REPRODUCE.md) says how to check it.
+LibSpec states a calculus of graded evidence in Lean, proves it, and runs it as an executable gate on real claims. This page maps every file outside `archive/` and says what to read first. The repository's own [README](../README.md) says what is proved, and [REPRODUCE.md](../REPRODUCE.md) says how to check it.
 
 ## Reading order
 
