@@ -2,6 +2,33 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-11-18
+
+### How the project is described, and Marley's answers to the reviewer's scope plans
+- **Marley's answers of 2026-11-18,** to the reviewer's plans of 2026-11-14:
+  - **Descriptions:** the wording rules, the plain, technical and engineers' descriptions and the proof points go in `guide/CONVENTIONS.md`, with the three corrections the reviewer's check found.
+  - **Reading list:** route B now, for the eight challenges of Phase 8's step 4: the release's own files each challenge file imports, read as text. Route A, from Comparator's export, comes later, on the next trusted run that touches them. B's list is where a reviewer starts, never a check, since text can't see instances or notation.
+  - **BLT:** Marley runs eight read-only commands on a compute node. The ask to BLT's admin for an isolated node waits until there's steady work for it.
+  - **The name:** LibSpec stays, for now, with no rename and no test of one. Both candidates, Assay and ClaimGate, clash with existing projects, and the README's first line already says what the project does.
+- **Changed in `guide/CONVENTIONS.md`:** a new section, "Describing the project", with the rules, the three descriptions, the proof points, and where each number comes from, as of v1.1.
+- **The three corrections:**
+  - the plain description's "The computer-checked parts all held up" hid the 12 proofs that couldn't finish and the 380 manuscripts with no formal proof;
+  - the technical description's "34 theorems about them" are the whole model's, not only the gate's rules;
+  - "guarded acceptance" names only the accept half in JCGM 106:2012, whose reject half is "guarded rejection".
+- **Changed to follow the rules:**
+  - `README.md`'s sentence on the 34 theorems, which had the second correction's looseness;
+  - `guide/README.md`'s first line, which said "governance-and-evidence calculus";
+  - `guide/IDEAS.md`, which now says that Marley's second reviewer read the Busy Beaver pages, through a fetch agent.
+- **Corrected:** the 2026-11-13 entry below says the Busy Beaver example was recorded "as Marley read them". Marley's second reviewer read those pages, through a fetch agent.
+- **Ticked in `guide/ROADMAP.md`:** Phase 8's first gate line, "The protocol is approved and in the guide", for #119, merged on 2026-11-09.
+- **Decided, in the wording:**
+  - In the plain description, "but none" begins a new sentence, "None", since the corrected clause already has a "though".
+  - The engineers' description leaves out "which candidate G formalizes". G is planned for `statements-v5` and isn't a statement yet, and its note says so.
+  - `guide/README.md` now says "a calculus of graded evidence".
+  - Undo any of them by restoring the old words.
+- **Not changed:** no Lean file, statement, check or script, and no path in `.github/CODEOWNERS`.
+- **To undo:** revert the PR.
+
 ## 2026-11-13
 
 ### What the model is for, and the roadmap after it (Marley's answers of 2026-11-11 and 2026-11-13)

@@ -1,6 +1,6 @@
 # Conventions
 
-How files, branches, pull requests and theorems are named in LibSpec. These are the habits LibSpec's pull requests settled into, written down so that new work follows them. The rules for who may change what are in [CLAUDE.md](../CLAUDE.md), and they win over anything here.
+How files, branches, pull requests and theorems are named in LibSpec, and how the project is described. These are the habits LibSpec's pull requests settled into, written down so that new work follows them. The rules for who may change what are in [CLAUDE.md](../CLAUDE.md), and they win over anything here.
 
 ## Files
 
@@ -69,3 +69,44 @@ Only `JSG.lean`, the library's root, imports `JSG.Statements`. Proof files impor
 - **[QUEUE.md](QUEUE.md):** `### Q<N>. <the question>?`, with a recommended answer, what breaks if it's wrong, and whether it can be undone. At most three are open, and an answered entry moves under `## Answered`, with your answer.
 - **[IDEAS.md](IDEAS.md):** a `## Found while <doing what>` section per piece of work, with one bold lead-in per idea.
 - **[CHANGELOG.md](CHANGELOG.md):** a section per statements version, saying for each change whether it tightens or weakens.
+
+## Describing the project
+
+Marley's rules of 2026-11-13, for outward text: the README, the repository's About line, release notes, a report's opening lines, upstream posts, and anything sent to people. The guide's own records keep the corpus's names where they name a source.
+
+- **It grades the evidence.** Never say it verifies, confirms or debunks anyone's mathematics.
+- **Standard terms lead.** JSG and SIRUS appear only as provenance labels, and "governance" not at all.
+- **Who did what stays.** The README keeps its statement of who did what, in Credits.
+
+Copy a description from here rather than rewrite it. Each number is as of v1.1, and the note under each description says where its numbers come from, so they change together.
+
+**Plain:**
+
+> You've probably seen headlines about AI solving math problems. I'm building a fact-checker for those claims: it sorts out which ones are actually established and which are still missing something. I ran it on about 700 papers one AI company released. Every formal proof our machines could check held up, though only about half the papers come with one. None of the papers is fully established yet, mainly because nobody has confirmed that the computer checked what each paper actually claims.
+
+Its numbers: 724 manuscripts, 344 of them with at least one formal proof ([catalogue.md](../pilot/reports/catalogue.md)), and 406 proofs accepted, none rejected and 12 unfinished ([comparator-results.json](../pilot/data/comparator-results.json)).
+
+**Technical,** which the README's opening says in fewer words:
+
+> A fail-closed evidence gate for AI-generated mathematics. Each claim is graded on seven kinds of evidence, among them whether a machine-checked proof exists, whether the formal statement matches the paper, whether it has been independently reviewed, and whether it or anything it rests on has been withdrawn. A claim is accepted only when every kind is known to be good, and anything unknown counts against it. The gate's rules are specified in Lean 4, as part of a model whose 34 frozen theorems are all proved. The pilot graded all 724 manuscripts in OpenAI's openai/math release. The 406 formal proofs that fit within our runners' limits passed two independent proof checkers in a sandbox, none failed, and 12 exceeded the limits. No manuscript can be accepted yet, because nothing yet checks that a statement says what its paper claims, and no independent reviews or priority checks exist yet. The next phase builds the first of those checks.
+
+Its sources:
+
+- the seven kinds are the axes in `lean/JSG/Pilot/Core.lean`, where θ is 0 on each, so an unknown rejects;
+- the 34 theorems are in `lean/JSG/Statements.lean`;
+- the release is openai/math at commit `7ef5c0c`, and its 724 manuscripts are in [catalogue.md](../pilot/reports/catalogue.md);
+- the 406, the none and the 12 are in [comparator-results.json](../pilot/data/comparator-results.json);
+- the two checkers are Lean's kernel and nanoda, and the sandbox is Comparator's landrun sandbox ([EXECUTABLE_GATE.md](EXECUTABLE_GATE.md) §4);
+- the next phase is Phase 8 in [ROADMAP.md](ROADMAP.md).
+
+**For engineers:**
+
+> It's guarded acceptance and guarded rejection from conformity assessment, with the zone between them left undecided. Accept only when the whole uncertainty interval is inside the limit, reject outright only when it's wholly outside, and report anything between as indeterminate.
+
+Its sources: both terms are from JCGM 106:2012, opened on 2026-11-14, which treats rules with two outcomes only. The undecided zone is a lead from ISO 14253-1:2017, which nobody here has read. In LibSpec, a report already tells evidence that fails from evidence that's unknown (`Release.why` in `lean/JSG/Pilot/Core.lean`). Candidate G, planned for `statements-v5` (Milestone 5 in [ROADMAP.md](ROADMAP.md)), would prove that a failure is final.
+
+**Proof points:**
+
+- **Every proof that fit within the limits was checked by two independent kernels, with public, hashed logs.** The 125 job logs are assets of the v1.1 release, and the results file holds each one's SHA-256 ([REPRODUCE.md](../REPRODUCE.md), "Check the kept logs").
+- **Two problems found in the tools were reported upstream.** Both on 2026-11-08: a new issue, lean4#16347, and our data added to an existing one, lean4#16290 ([LOG.md](LOG.md)).
+- **Every claim's report says what's missing.** Each of the 724 manuscripts gets one of six reports, naming the axes that hold it back ([catalogue.md](../pilot/reports/catalogue.md)).
