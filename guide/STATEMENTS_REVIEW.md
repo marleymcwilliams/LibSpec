@@ -1,6 +1,6 @@
 # Statements review: mutants and witnesses
 
-Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement. The [statements-v2](#statements-v2), [statements-v3](#statements-v3) and [statements-v4](#statements-v4) sections at the end do the same for the seven, three and eight theorems those versions add.
+Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement. The [statements-v2](#statements-v2), [statements-v3](#statements-v3), [statements-v4](#statements-v4) and [statements-v5](#statements-v5) sections at the end do the same for the seven, three, eight and four theorems those versions add.
 
 **How to read it.**
 - **Same Prop:** the mutant refutes the statement's own named definition with the mutant plugged in.
@@ -788,3 +788,138 @@ Several witnesses use their mutant's counterexample, so the same input separates
 | `xthreads_agrees` | θ = 10 with stages 3 then 4, which thread, and θ = 1 with stages 2 then 0, which don't |
 | `xwidth_agrees` | the known ∞: both widths are 0 |
 | `xleaseVerdict_agrees` | [0, 5] leased 1 under θ = 10: both sides reject, and `decide +kernel` computes the twin's verdict |
+
+## statements-v5
+
+Review support for the `statements-v5` proposal, read the same way as above. Its four theorems are in section 16 of `lean/JSG/Statements.lean`, their definitions in the same section of `lean/JSG/Defs.lean`, and their controls in the "statements-v5" part of `lean/JSG/Tests/Mutants.lean`, which still imports only the definitions. All four are stated and not yet proved: Milestone 5 proves them. Two of the mutants are v1's, and the other two rest on readings of `archive/`, not on quotes, and say so.
+
+**Scope** ([Q16](QUEUE.md)). v5 states Milestone 5's candidates C, D and G about the ordinal core, the part of the model the pilot uses ([ROADMAP.md](ROADMAP.md#milestone-5-the-cores-gap-statements)). None of the 34 frozen theorems ties a grade to the true values behind it, says how the verdict behaves as evidence narrows, or tells a definite rejection from one that only lacks evidence. D has two halves with different hypotheses, so it's two theorems, and v5 adds four. They use four new definitions:
+- **`Narrows g' g`:** on every axis, g′'s interval lies inside g's, so g′ knows at least as much.
+- **`Encloses g x`:** each axis's interval contains that axis's value.
+- **`ComposesNoWorse`:** a composite's true value is at most the larger of its parts' on a floor, and at most their sum on a budget.
+- **`DefinitelyFails θ g`:** some axis's lower end is above its threshold.
+
+**Context.** Section 16 uses section 1's `variable {ι : Type} (kind : ι → Kind)`. `accept_bounds_truth` and `combine_respects_narrowing` take `kind`, and the other two don't need it. Unlike v4's twin verdicts, none needs `[Fintype ι]`, since the frozen `verdict` decides "every axis" classically.
+
+**Fixtures.** One axis (`Unit`), as before: `k x` is the known x, `zeroOne` is [0, 1], `θone` is θ = 1, and `budget` and `floor` make the axis a budget or a floor. v5 adds one, `unk`, the unknown on the single axis.
+
+| Theorem | The mutant refutes | What differs from the statement | The defect it comes from |
+| --- | --- | --- | --- |
+| `accept_bounds_truth` | Restated copy, two mutants | `combine kind` → `jsgVSeq`, on a budget axis; or → `dropCombine floor`, where an unknown stage drops out | JSG V §2, whose vertical operator takes the max on every coordinate, ledger and CVaR included (v1's `interchange` mutant). The second is the reading of SirusSC's `q.py` in the next row |
+| `combine_respects_narrowing` | Restated copy | `combine kind` → `dropCombine floor` | SirusSC `specchain/algebra/q.py`: `hetero_join` and `sequential` read an axis a grade leaves out as the identity, though SCp1's Remark 2.4 says missing evidence must descend to ⊥. A reading, not a quote |
+| `narrowing_keeps_accept` | Restated copy | `verdict` → `verdictLo`, which reads `lo` | v1's `verdict_sound` mutant, from "Unknown sits below every value" in [DEFECTS.md](DEFECTS.md): SCp1 Def 2.1 and SirusSC's `Q.leq` |
+| `definitelyFails_spec` | Restated copy | `DefinitelyFails` → `rejectIsFinal`, which counts every rejected grade as a definite failure | SCp1 Assumption 6.2, I9 and Proposition 15.1, which give a missing input the same RejectionCert as a failing one. A reading, not a quote |
+
+**What this means.**
+- **No `statements-v1`–`v4` statement or definition changes.** Each v5 theorem is new, and so is every definition it uses.
+- **C's hypotheses carry its meaning.** Enclosure is measured, not proved, so `accept_bounds_truth` takes it as a hypothesis, with how true values compose. Lean proves what follows from enclosure, not that it holds ([GLOSSARY.md](GLOSSARY.md#unified-core-objects-v2), "Positive controls"). §35 says what supplies the hypotheses on the pilot's axes.
+- **D says more evidence can't hurt.** Narrowing a stage narrows what it combines into, and an accepted grade stays accepted however it narrows. With C's composition hypothesis, the two halves also give C, since the point at each true value narrows its stage's grade.
+- **G tells definite rejections from the rest.** A grade fails definitely exactly when every grade that narrows it is rejected. Any other rejection is one that more evidence can undo. The pilot's report already makes that split, axis by axis (§38).
+- **The proofs are short.** The provability check proves all four in about 40 lines of tactics, with no helper lemma ([Provability check](#provability-check-v5)).
+
+### 35. `accept_bounds_truth`: restated copy, two mutants
+```lean
+-- Statement
+theorem accept_bounds_truth (θ : ι → ENNReal) (g h : Grade ι) (x y z : ι → ENNReal)
+    (hx : Encloses g x) (hy : Encloses h y)
+    (hz : ∀ i, ComposesNoWorse (kind i) (x i) (y i) (z i))
+    (hacc : verdict θ (combine kind g h) = .accept) : ∀ i, z i ≤ θ i
+-- Mutant: JSG V's rule, max on every axis in sequence, on a budget axis
+theorem accept_bounds_truth_mutant :
+    ¬ ∀ (θ : Unit → ENNReal) (g h : Grade Unit) (x y z : Unit → ENNReal),
+      Encloses g x → Encloses h y → (∀ i, ComposesNoWorse (budget i) (x i) (y i) (z i)) →
+      verdict θ (jsgVSeq g h) = .accept → ∀ i, z i ≤ θ i
+-- Mutant: an unknown stage that drops out of the combination, on a floor
+theorem accept_bounds_truth_dropCombine_mutant :
+    ¬ ∀ (θ : Unit → ENNReal) (g h : Grade Unit) (x y z : Unit → ENNReal),
+      Encloses g x → Encloses h y → (∀ i, ComposesNoWorse (floor i) (x i) (y i) (z i)) →
+      verdict θ (dropCombine floor g h) = .accept → ∀ i, z i ≤ θ i
+```
+
+Under θ = 1, `jsgVSeq` combines two stages that each cost 1 into [1, 1], which is accepted, though together they cost 2. On a floor, `dropCombine` combines the known 1 with the unknown, whose true value is 2, into [1, 1], which is accepted, though the composed true value is 2. The second mutant is the one C would keep if it covered floors alone ([Q16](QUEUE.md)).
+
+**What supplies C's hypotheses on the pilot's axes.** C needs each grade to enclose its stage's true values, and the true values to compose no worse than `combine` assumes. The pilot's seven axes are floors, and `ownGrade` in `lean/JSG/Pilot/Core.lean` gives each the values below, from the manuscript's own record:
+
+| Axis | Known values | The check behind them |
+| --- | --- | --- |
+| `withdrawn` | ∞ if the manuscript has a withdrawal notice, and 0 otherwise | The collectors' reading of withdrawal notices |
+| `dependency_withdrawn` | 0 once its dependencies have been read, or its formalization is complete, and unknown otherwise. The closure then combines in what each dependency passes on, ∞ from one that is withdrawn | The collectors' reading of dependencies, with the closure |
+| `formal_proof` | 0 if Comparator accepted every challenge, and 1 if it rejected one; unknown otherwise, or with no challenge | Phase 7's trusted Comparator runs |
+| `statement_fidelity` | 0 once a named reviewer has confirmed that the challenges state the top-line claim, and unknown otherwise | Phase 8's named reviewers |
+| `axioms` | 0 if every challenge permits exactly the three axioms, and 1 if one doesn't; unknown with no challenge | The challenges' configurations |
+| `independent_review` | 0 once a review is published, and unknown otherwise | Nothing yet |
+| `novelty` | 0 once its priority has been checked against the literature, and unknown otherwise | Nothing yet |
+
+An unknown encloses any value, so it needs nothing. A known value encloses the truth if the check behind it is right, which is what that check is trusted for, and not something Lean proves. The floor clause holds when a manuscript is no better than the worst of its own record and what its dependencies carry, which is how Q14's carry-over rule reads. All of this is a reading, not a proof.
+
+**C's limits.**
+- **Two stages, once.** C combines two grades once. A window folds many, and the pilot's closure also masks what carries ([Q14](QUEUE.md)). Neither is stated ([IDEAS.md](IDEAS.md#found-while-drafting-statements-v5)).
+- **The twins.** The pilot computes with twins, which reach C through `xcombine_agrees` and `xverdict_agrees`: the twin verdict of a twin combination is the frozen verdict of the frozen combination of their casts.
+
+**Why the budget clause is needed.** On a budget, C needs the true values to be subadditive, and value-at-risk isn't. Two independent losses of 1, each with probability 0.04, each have a 95% value-at-risk of 0, since each is 0 with probability 0.96. Their sum is 0 only with probability 0.9216, so its 95% value-at-risk is 1. Grades of [0, 0] enclose both stages' values and combine to [0, 0], which θ = 1/2 accepts, though the composed value is 1. `ComposesNoWorse` rules that out, as [GLOSSARY.md](GLOSSARY.md#unified-core-objects-v2) does by asking every budget axis to be subadditive, as CVaR is.
+
+### 36. `combine_respects_narrowing`: restated copy
+```lean
+-- Statement
+theorem combine_respects_narrowing {g g' h h' : Grade ι} (hg : Narrows g' g)
+    (hh : Narrows h' h) : Narrows (combine kind g' h') (combine kind g h)
+-- Mutant: an unknown stage that drops out of the combination, on a floor
+theorem combine_respects_narrowing_mutant :
+    ¬ ∀ g g' h h' : Grade Unit, Narrows g' g → Narrows h' h →
+      Narrows (dropCombine floor g' h') (dropCombine floor g h)
+```
+
+On a floor, `dropCombine` gives [1, 1] for the known 1 with the unknown, and [2, 2] with the known 2, which narrows the unknown, in its place. [2, 2] isn't inside [1, 1], so more evidence moved the combination outside what it claimed. `combine` gives [1, ∞] and [2, 2], and [2, 2] is inside [1, ∞].
+
+**Source, a reading.** In SirusSC's `specchain/algebra/q.py`, a grade maps axes to values, and `hetero_join` and `sequential` (lines 42–84) read an axis a grade leaves out as the identity: 0 on a sum axis, and −∞ on a max axis. So a stage with no evidence on an axis drops out of the combination there. SCp1's Remark 2.4 says that "any appearance of unknown/missing/invalid evidence must descend to ⊥ and persist through aggregation". Two things qualify the reading:
+- **An explicit ⊥ absorbs.** Both functions return ⊥ when either side holds it. v4's `absorbCombine` reads the unknown that way (§29), and so does v2's `pointsOnly` (§18). `dropCombine` reads it as an axis left out instead. Both are readings of the same code, which has both ways to represent missing evidence.
+- **Undeclared axes.** SCp1's Definition 7.1 gives the axes a stage doesn't declare the identity on purpose, and the code can't tell such an axis from one whose evidence is missing.
+
+### 37. `narrowing_keeps_accept`: restated copy
+```lean
+-- Statement
+theorem narrowing_keeps_accept (θ : ι → ENNReal) {g g' : Grade ι}
+    (hacc : verdict θ g = .accept) (hn : Narrows g' g) : verdict θ g' = .accept
+-- Mutant: a verdict that reads lo
+theorem narrowing_keeps_accept_mutant :
+    ¬ ∀ (θ : Unit → ENNReal) (g g' : Grade Unit),
+      verdictLo θ g = .accept → Narrows g' g → verdictLo θ g' = .accept
+```
+
+Under θ = 1, `verdictLo` accepts the unknown, whose lower end 0 is within θ, but rejects the known 2, which narrows it. So more evidence turns its acceptance into a rejection. The verdict reads `hi`, which narrowing can only lower. **Source:** v1's `verdict_sound` mutant (§4).
+
+### 38. `definitelyFails_spec`: restated copy
+```lean
+-- Statement
+theorem definitelyFails_spec (θ : ι → ENNReal) (g : Grade ι) :
+    DefinitelyFails θ g ↔ ∀ g' : Grade ι, Narrows g' g → verdict θ g' = .reject
+-- Mutant: SCp1's single kind of rejection, which counts every rejected grade as definite
+theorem definitelyFails_spec_mutant :
+    ¬ ∀ (θ : Unit → ENNReal) (g : Grade Unit),
+      rejectIsFinal θ g ↔ ∀ g' : Grade Unit, Narrows g' g → verdict θ g' = .reject
+```
+
+Under θ = 1, `rejectIsFinal` counts the unknown as a definite failure, since its upper end, ∞, is above θ. But the known 1 narrows the unknown and is accepted, so more evidence can undo that rejection.
+
+**Source, a reading.** In SCp1, a ⊥ priced input "forces the guard to fail (deterministic rejection with a RejectionCert)" (Assumption 6.2), "any ⊥ in priced inputs triggers rejection" (I9), and Proposition 15.1 says "There is no third case". A RejectionCert records kind, predicate_id, failing_witness_hash, seed_snapshot, parent_tip, time and stage, but no cause. So a missing input and a failing one earn the same rejection. SirusSC's loader adds a reason code, such as `C_UNK_PRICED`, that SCp1's certificate doesn't have.
+
+**G and the pilot's report.** `Release.why` in `lean/JSG/Pilot/Core.lean` already gives `.evidence` when an axis's own lower end is above θ, and `.unknown` when only its upper end is, and `.through` a dependency for the same split in what that dependency carries. G is that split, frozen, for a whole grade. It isn't proved for the twins, or for `Release.why` ([IDEAS.md](IDEAS.md#found-while-drafting-statements-v5)).
+
+### Provability check (v5)
+
+All four theorems are proved in an uncommitted scratch file: first before the copy, against the two sections in the context each has at the end of its file, and again after it, against the real `JSG.Statements`. Each proof is against its frozen statement, since an `example` checks by `rfl` that their types are equal, and each uses only propext, Classical.choice and Quot.sound. They take about 40 lines of tactics, with no helper lemma, and open `verdict` with `unfold` and `split_ifs`, as Milestones 1 and 2 do:
+- **`accept_bounds_truth`:** the accept bounds each axis's combined upper end by θ. On a floor, z ≤ max(x, y), which is at most the larger upper end, by `max_le_max`; on a budget, the same with `add_le_add`.
+- **`combine_respects_narrowing`:** case by case on the axis's kind, by `max_le_max` and `add_le_add` on each end.
+- **`narrowing_keeps_accept`:** each narrowed upper end is at most the accepted one.
+- **`definitelyFails_spec`:** if θ is below some lower end, it's below every narrowing's upper end on that axis, so every narrowing is rejected. Otherwise the point at each axis's lower end narrows the grade and is accepted.
+
+### Witnesses (v5)
+
+Each witness proves every hypothesis of its theorem, in order, then the conclusion, at one instance. Two use their mutant's inputs, so the same input separates the statement from its mutant.
+
+| Theorem | Hypotheses | Instance |
+| --- | --- | --- |
+| `accept_bounds_truth` | `hx`, `hy`, `hz`, `hacc` | the first mutant's inputs with `combine`, under θ = 2: on a budget, two costs of 1 add to [2, 2], which is accepted, and the true total, 2, is within θ |
+| `combine_respects_narrowing` | `hg`, `hh` | the mutant's inputs with `combine`, on a floor: the known 1 with the unknown is [1, ∞], and with the known 2 it's [2, 2], which lies inside it |
+| `narrowing_keeps_accept` | `hacc`, `hn` | θ = 1: [0, 1] is accepted, and so is the known 1, which narrows it |
+| `definitelyFails_spec` | none, so both sides of the iff | θ = 0: the known 1, where both sides hold, and [0, 1], where neither does, since the known 0 narrows it and is accepted |

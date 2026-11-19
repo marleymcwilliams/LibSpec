@@ -2,6 +2,28 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-11-19
+
+### statements-v5 drafted
+- **Scope:** step 1 of Milestone 5, which Marley's decision of 2026-11-13 put first. Candidates C, D and G become four frozen theorems: `accept_bounds_truth`, `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`. D has two halves with different hypotheses, so it's two theorems. Their four definitions are `Narrows`, `Encloses`, `ComposesNoWorse` and `DefinitelyFails`. Both sections are Marley's text, appended as section 16 of `Defs.lean` and `Statements.lean` under a note that nothing above changed, and both compiled as written.
+- **The copy route:** this draft had no permission to edit the frozen files, and Claude Code wrote neither. Everything that could fail ran first, in scratch files outside the repository: the sections in the context each has at the end of its file, the provability check, and the controls. Then each file, with its section inserted before `end JSG`, went in the git directory's `statements-v5/` folder, and Marley copied the two into place. Against `origin/main` they add 27 and 41 lines and remove none, and each equals its copy byte for byte.
+- **The form, queued as Q16:** C for `combine` as frozen, so on budgets as well as floors; D as two theorems; G as an iff; and two stages combined once.
+- **Mutants and their sources:**
+  - `accept_bounds_truth`: JSG V's rule, `jsgVSeq`, on a budget axis, and `dropCombine` on a floor, the mutant C would keep for floors alone;
+  - `combine_respects_narrowing`: `dropCombine`, from SirusSC's `q.py`, which reads an axis a grade leaves out as the identity;
+  - `narrowing_keeps_accept`: `verdictLo`, v1's `verdict_sound` mutant;
+  - `definitelyFails_spec`: `rejectIsFinal`, from SCp1's single kind of rejection.
+
+  The SirusSC and SCp1 sources are readings, checked against `archive/` as text before the copy, and their docstrings say so. `q.py` also lets an explicit ⊥ absorb, which is how v4's `absorbCombine` reads the unknown, and the review section says how the two readings fit. Three sources join DEFECTS.md: JSG V's max in sequence, SirusSC's missing axis, and SCp1's single rejection.
+- **Provability check:** all four are proved in an uncommitted scratch file, before the copy against the sections in their end-of-file context, and after it against the real `JSG.Statements`. Each proof is checked by `rfl` on its type, and uses only the three axioms. The controls compiled with no warnings, alone and inside `Mutants.lean`.
+- **Decided: the fixture `unk`,** the unknown on the single axis, and the names `dropCombine`, `rejectIsFinal` and `accept_bounds_truth_dropCombine_mutant`. Undo by renaming them.
+- **Docs:** CHANGELOG, QUEUE (Q16), ROADMAP, LAYER_MAP, GLOSSARY, DEFECTS, STATEMENTS_REVIEW, IDEAS, README and REPRODUCE. Each describes the four as stated and not yet proved. README's opening paragraph and `guide/CONVENTIONS.md` keep "34", as Marley asked.
+- **Corrected along the way:**
+  - REPRODUCE said the statements step prints `ok (statements-v3)` at v1.0. That has been false since `statements-v4` was tagged, since `check.sh` compares against the newest tag. It now says the step fails at v1.0 and v1.1.
+  - ROADMAP said C's proof needs D's first half. The provability check proves C directly, so it now says C also follows from both halves.
+  - ROADMAP's "After Milestone 4" counted Milestone 5's statements as three.
+- **To undo:** close the PR before the tag. Once `statements-v5` is tagged, removing a statement is a weakening, which needs a signed decision.
+
 ## 2026-11-18
 
 ### A reading list for each Phase 8 challenge, read as text (route B)

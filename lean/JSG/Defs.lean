@@ -440,4 +440,31 @@ def XBound.width (b : XBound) : WithTop ℚ≥0 := b.hi - b.lo
 def xleaseVerdict [Fintype ι] (θ β : ι → WithTop ℚ≥0) (g : XGrade ι) : Decision :=
   if ∀ i, (g i).hi ≤ θ i ∧ (g i).width ≤ β i then .accept else .reject
 
+/-! ## statements-v5
+
+Section 16 was added for `statements-v5` (guide/CHANGELOG.md); nothing above it changed. -/
+
+/-! ## 16. Narrowing, enclosure and definite failure (guide/ROADMAP.md, Milestone 5) -/
+
+/-- One grade narrows another when, on every axis, its interval lies inside the other's: it
+    knows at least as much. Every grade narrows the grade that is unknown on every axis, and the
+    only grade that narrows a point is that point. -/
+def Narrows (g' g : Grade ι) : Prop := ∀ i, (g i).lo ≤ (g' i).lo ∧ (g' i).hi ≤ (g i).hi
+
+/-- A grade encloses values when each axis's interval contains that axis's value. For the true
+    values, that is guide/GLOSSARY.md's enclosure, lo ≤ truth ≤ hi, which is measured, not
+    proved, so the statements take it as a hypothesis. -/
+def Encloses (g : Grade ι) (x : ι → ENNReal) : Prop := ∀ i, (g i).lo ≤ x i ∧ x i ≤ (g i).hi
+
+/-- True values compose no worse than `combine` assumes: a composite's true value is at most
+    the larger of its parts' on a floor, and at most their sum on a budget. On a budget that is
+    subadditivity, the side condition guide/GLOSSARY.md puts on every budget axis. -/
+def ComposesNoWorse : Kind → ENNReal → ENNReal → ENNReal → Prop
+  | .floor,  x, y, z => z ≤ max x y
+  | .budget, x, y, z => z ≤ x + y
+
+/-- A grade fails definitely when some axis's lower end is above its threshold: no narrowing
+    can bring that axis back within it. -/
+def DefinitelyFails (θ : ι → ENNReal) (g : Grade ι) : Prop := ∃ i, θ i < (g i).lo
+
 end JSG

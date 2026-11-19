@@ -60,6 +60,12 @@ New ideas land here, never in the current milestone (stop rule 2).
 
   Busy Beaver is an example only, and these are leads, not checked by this repo. As Marley's second reviewer read them on 2026-11-12, through a fetch agent, from <https://wiki.bbchallenge.org/wiki/BB(6)> and <https://arxiv.org/abs/2509.12337>: BB(6) is blocked by Collatz-like problems such as Antihydra, not by compute; compute shrinks the list of undecided machines; and bbchallenge verifies its decisions in Rocq.
 
+## Found while drafting statements-v5
+
+- **C over a window and over the pilot's closure.** `accept_bounds_truth` combines two grades once. Its proof shows that the combined upper end bounds the composite's true value, and that extends to a window's fold by induction, with `ComposesNoWorse` at each step. The pilot's closure also masks what carries (Q14), so a version for it needs a hypothesis about the masking: that a doubt the rule drops, past a complete formalization, is one the manuscript's own record has settled.
+- **G on the twins, tied to the report.** `Release.why` gives `.evidence` when an axis's own lower end is above θ, and `.unknown` when only its upper end is. A theorem that a report with an `.evidence` axis means the twin grade fails definitely, through `xcombine_agrees`, `xverdict_agrees` and `definitelyFails_spec`, would make the report's two words claims that Lean checks.
+- **`dropCombine` as an executable mutant.** The harness's mutants in `lean/JSG/Harness/Mutants.lean` include `absorbCombine`, where ⊥ absorbs, but not an unknown stage that drops out. A twin of `dropCombine` there would show whether the differential corpus catches it too.
+
 ## Certificates
 
 - Reach's `check_positive_real` (`archive/Reach/jsg-lab/src/jsg/control/pr_checks.py`) reports positive realness without a certificate in two ways. It returns PR whenever the KYP LMI solve ends `optimal_inaccurate` (`if prob.status in (cp.OPTIMAL, cp.OPTIMAL_INACCURATE): return True, float(eps_min)`, lines 40–41), reporting the requested `eps_min` as the margin; an inaccurate solve is not a witness. Otherwise, even when the solver reports the LMI infeasible, it falls back to a 256-point frequency grid on the band (`margin = _phase_grid_margin(sys, band)`, then `return bool(margin >= eps_min), …`, lines 43–44), and a grid samples finitely many frequencies. An exact-rational checker in Lean, the Certificates option, should reject both: a ready-made negative control. Its test asserts only `ok in (True, False)`.

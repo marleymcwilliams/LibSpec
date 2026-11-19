@@ -6,14 +6,18 @@ LibSpec grades mathematical claims by their evidence. Each claim is graded on se
 
 ## Status
 
-**All 34 frozen theorems are proved.**
+**As of v1.1** (the tag `v1.1`, at `6f2ffae`), **all 34 frozen theorems are proved.**
 - **Comparator** checks each proof against its frozen statement, and allows only `propext`, `Classical.choice` and `Quot.sound`.
 - **Controls:** each theorem has a mutant, a plausible wrong version proved to fail it, and a witness, an instance proved to satisfy it.
 - **Frozen versions:** the statements were frozen in four versions, `statements-v1` to `statements-v4`, each before its proofs were written. No statement was changed to make a proof go through.
 
-**v1.0** (the tag `v1.0`, at `0c36127`) had the first 26, frozen in `statements-v1` to `statements-v3`. Since then, `statements-v4` has added eight more. They are executable twins of the core's graded values, combine, verdict, residual threading, widths and leases, each with a theorem that it agrees with its frozen definition ([the executable gate](guide/EXECUTABLE_GATE.md), [the changelog](guide/CHANGELOG.md)). Milestone 4 proved them, and the full-strength Comparator run passes on `main` with all 34. The harness now runs the twins, and differential tests check another implementation against them, with every twinned mutant as a negative control ([REPRODUCE.md](REPRODUCE.md), step 5).
+**v1.0** (the tag `v1.0`, at `0c36127`) had the first 26, frozen in `statements-v1` to `statements-v3`. Since then, `statements-v4` has added eight more. They are executable twins of the core's graded values, combine, verdict, residual threading, widths and leases, each with a theorem that it agrees with its frozen definition ([the executable gate](guide/EXECUTABLE_GATE.md), [the changelog](guide/CHANGELOG.md)). Milestone 4 proved them, and the full-strength Comparator run passes at v1.1 with all 34. The harness now runs the twins, and differential tests check another implementation against them, with every twinned mutant as a negative control ([REPRODUCE.md](REPRODUCE.md), step 5).
 
 **The pilot, which v1.1 adds,** runs that gate on a real release, [openai/math](https://github.com/openai/math) at `7ef5c0c`. It grades 724 manuscripts, and [its report](pilot/reports/catalogue.md) gives each one's verdict and the evidence it's missing. None is accepted today. Three were withdrawn by their authors. For the others, that's about missing evidence, not a finding against the mathematics: no named reviewer has checked any statement against its paper, and independent review and novelty are unknown for all of them. Comparator ran on each Lean challenge in trusted jobs on GitHub Actions. Runs that finished used both kernels, and the report gives the reason for each manuscript affected. An acceptance means both kernels accept the proof of the statement Comparator exported, not that the statement says what the paper claims. [The executable gate](guide/EXECUTABLE_GATE.md#4-where-things-run) lists what those runs still trust, and [REPRODUCE.md](REPRODUCE.md#6-the-pilot-the-gate-on-a-real-release), step 6, shows how to check them or rerun them.
+
+**Since v1.1,** `statements-v5` adds four frozen theorems about the ordinal core, the part of the model the pilot uses: what an accept says about the true values behind a grade, how the verdict behaves as evidence narrows, and when a rejection is definite ([the roadmap](guide/ROADMAP.md#milestone-5-the-cores-gap-statements), [the changelog](guide/CHANGELOG.md)). So `main` holds 38 frozen theorems, of which 34 are proved. Until Milestone 5 proves the other four:
+- Comparator's everyday run lists them as not yet proved, and still passes;
+- the full-strength run fails, since it requires every frozen theorem to be proved.
 
 To check v1.0 itself, check out its tag ([REPRODUCE.md](REPRODUCE.md)).
 
