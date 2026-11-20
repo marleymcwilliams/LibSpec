@@ -2,6 +2,14 @@
 
 Every statements version after `statements-v1` records here whether it tightens or weakens the statements, and so does every change in between to a file the statements check covers: `lean/JSG/Defs.lean`, `lean/JSG/Statements.lean`, their project imports, `lean/lean-toolchain`, `lean/lake-manifest.json` and `lean/lakefile.toml`, so Lean and Mathlib upgrades count too. A weakening also needs a signed decision (`guide/decisions/RAILS.md`).
 
+## statements-v5
+
+Tightens: it only adds statements. Four theorems for Milestone 5's candidates C, D and G, and the four definitions they use, go in a new section 16 of `lean/JSG/Defs.lean` and `lean/JSG/Statements.lean` (guide/ROADMAP.md, Milestone 5; QUEUE.md, Q16). No `statements-v1`–`v4` definition or statement changes, so the 34 proofs of Milestones 1–4 stand as they are. The four are stated and not yet proved: Milestone 5 proves them.
+
+- **C, what an accept means:** `accept_bounds_truth`, on floors and budgets alike. Its hypotheses are that each stage's grade encloses its true values (`Encloses`), and that true values compose no worse than `combine` assumes (`ComposesNoWorse`).
+- **D, the information order** (`Narrows`): `combine_respects_narrowing` and `narrowing_keeps_accept`, a theorem for each half, since their hypotheses differ.
+- **G, definite rejection:** `definitelyFails_spec`, an iff for `DefinitelyFails`.
+
 ## statements-v4
 
 Tightens: it only adds statements. Executable twins of the core's definitions, each with a theorem that it agrees with its frozen definition, go in a new section 15 of `lean/JSG/Defs.lean` and `lean/JSG/Statements.lean` (guide/EXECUTABLE_GATE.md §1; QUEUE.md, Q11 and Q15). The twins compute in `WithTop ℚ≥0`. No `statements-v1`–`v3` definition or statement changes, so the 26 proofs of Milestones 1–3 stand as they are.

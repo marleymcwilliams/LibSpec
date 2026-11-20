@@ -341,4 +341,45 @@ theorem xleaseVerdict_agrees [Fintype ι] (θ β : ι → WithTop ℚ≥0) (g : 
 -- Mutant: SirusSC's `QPrime`, which never reads a width, run on the twins: [0, 5] leased 1
 -- passes under θ = 10.
 
+/-! ## statements-v5
+
+Section 16 was added for `statements-v5` (guide/CHANGELOG.md); nothing above it changed. -/
+
+/-! ## 16. Narrowing, enclosure and definite failure (guide/ROADMAP.md, Milestone 5) -/
+
+/-- What an accept means: suppose two stages' grades enclose their true values, and the true
+    values compose no worse than `combine` assumes. If the verdict accepts the combined grade,
+    the true composed value is within θ on every axis. -/
+theorem accept_bounds_truth (θ : ι → ENNReal) (g h : Grade ι) (x y z : ι → ENNReal)
+    (hx : Encloses g x) (hy : Encloses h y)
+    (hz : ∀ i, ComposesNoWorse (kind i) (x i) (y i) (z i))
+    (hacc : verdict θ (combine kind g h) = .accept) : ∀ i, z i ≤ θ i := by sorry
+-- Mutant: JSG V's rule, max on every axis in sequence (`jsgVSeq`), on a budget axis. Two
+-- stages that each cost 1 combine to [1, 1], which passes θ = 1, though together they cost 2.
+
+/-- `combine` respects narrowing: narrowing either grade narrows their combination, so more
+    evidence about a stage can only narrow the grade it combines into. -/
+theorem combine_respects_narrowing {g g' h h' : Grade ι} (hg : Narrows g' g)
+    (hh : Narrows h' h) : Narrows (combine kind g' h') (combine kind g h) := by sorry
+-- Mutant: an unknown stage that drops out of the combination, as an axis a grade leaves out
+-- does in SirusSC's `Q`. On a floor, the known 1 with the unknown gives [1, 1], but with the
+-- known 2 in place of the unknown it gives [2, 2], outside [1, 1].
+
+/-- Narrowing keeps an acceptance: however an accepted grade's intervals narrow, the verdict
+    still accepts, so more evidence never turns an acceptance into a rejection. -/
+theorem narrowing_keeps_accept (θ : ι → ENNReal) {g g' : Grade ι}
+    (hacc : verdict θ g = .accept) (hn : Narrows g' g) : verdict θ g' = .accept := by sorry
+-- Mutant: a verdict that reads `lo` (`verdictLo`). It accepts the unknown under θ = 1, but
+-- rejects [2, 2], which narrows it.
+
+/-- Definite rejection: a grade fails definitely, with some axis's lower end above its
+    threshold, exactly when every grade that narrows it is rejected. Otherwise the point at
+    each axis's lower end narrows it and is accepted, so any rejection it gets is one that more
+    evidence can undo. -/
+theorem definitelyFails_spec (θ : ι → ENNReal) (g : Grade ι) :
+    DefinitelyFails θ g ↔ ∀ g' : Grade ι, Narrows g' g → verdict θ g' = .reject := by sorry
+-- Mutant: SCp1's single kind of rejection, which a missing input earns as a failing one does:
+-- a test that counts every rejected grade as a definite failure. Under θ = 1 it counts the
+-- unknown, though the known 1 narrows the unknown and is accepted.
+
 end JSG

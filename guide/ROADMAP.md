@@ -215,7 +215,7 @@ The goal is a tagged release that a stranger could clone and check. After it, yo
 
 Three phases take the executable gate to real claims, and a milestone hardens the part of the model they use. The phases' goal is a gate that grades a claim and says exactly what evidence is missing. The pilot's report on openai/math already has that shape: none of its 724 manuscripts is accepted, and each report names the axes that hold it back (`pilot/reports/catalogue.md`). Each phase fills in evidence that's missing, and ends at a gate like the earlier ones.
 
-**What the model is for.** On 2026-11-13 you decided it: the central model is for grading claims, as the pilot does. The pilot's values are codes with an order and no unit, so the part of the model in use is the ordinal core: floors, unknowns, θ, `combine` and the verdict. That part gets the hardening, starting with Milestone 5's three statements. Budgets, residuals, leases, the frontier charge and the Loader have no consumer yet. Their theorems stay proved and frozen, and Phase 10 waits until an axis with a real unit has a user. Generalizing the whole corpus is deferred, not dropped.
+**What the model is for.** On 2026-11-13 you decided it: the central model is for grading claims, as the pilot does. The pilot's values are codes with an order and no unit, so the part of the model in use is the ordinal core: floors, unknowns, θ, `combine` and the verdict. That part gets the hardening, starting with Milestone 5's four theorems. Budgets, residuals, leases, the frontier charge and the Loader have no consumer yet. Their theorems stay proved and frozen, and Phase 10 waits until an axis with a real unit has a user. Generalizing the whole corpus is deferred, not dropped.
 
 Phases 7–9 run in order, since each needs the one before: Phase 8 reviews the challenges Phase 7 checks, and Phase 9's new sources need both. Milestone 5 depends only on Milestone 4, so it can run beside them when review time allows. Both it and Phase 8 ask for your review, so they're better run one after the other. Phase 10 is deferred, as above.
 
@@ -419,13 +419,13 @@ A sample of withdrawn or retracted mathematics papers then becomes a must-fail s
 
 ## Milestone 5: The core's gap statements
 
-The goal is three new frozen statements about the ordinal core, the part of the model the pilot uses, each with a mutant and a witness, proved at the milestone gate. They take `statements-v5`.
+The goal is four new frozen theorems about the ordinal core, the part of the model the pilot uses, each with a mutant and a witness, proved at the milestone gate: `accept_bounds_truth`, `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`. They take `statements-v5`.
 
-The 34 frozen theorems include the core's algebra and its executable twins. None of the 34 ties a grade to the true values behind it, says how the verdict behaves as evidence narrows, or tells a rejection that's final from one that only lacks evidence. These three do. They're candidates until your review of the draft settles what each states:
+The 34 frozen theorems include the core's algebra and its executable twins. None of the 34 ties a grade to the true values behind it, says how the verdict behaves as evidence narrows, or tells a rejection that's final from one that only lacks evidence. These four do. They're candidates until your review of the draft settles what each states ([QUEUE.md](QUEUE.md), Q16):
 
-- **C, soundness against the world.** Suppose each stage's interval encloses its true value, and true values compose no worse than `combine` assumes. Then an accepted grade bounds the true composed value by θ. It's the only one of the three that says what an accept means.
-- **D, the information order.** `combine` respects narrowing, and narrowing an accepted grade keeps it accepted. C's proof needs the first half.
-- **G, definite rejection.** If some axis has its lower end above θ, every narrowing rejects. Otherwise some narrowing accepts. So the gate can tell evidence that fails from evidence that's missing, which Phase 8's step 2 needs for a review that finds a mismatch.
+- **C, soundness against the world** (`accept_bounds_truth`). Suppose each stage's interval encloses its true value, and true values compose no worse than `combine` assumes. Then an accepted grade bounds the true composed value by θ. It's the only one of the four that says what an accept means.
+- **D, the information order** (`combine_respects_narrowing`, `narrowing_keeps_accept`). `combine` respects narrowing, and narrowing an accepted grade keeps it accepted. The halves have different hypotheses, so each is a theorem. C also follows from both halves and its composition hypothesis, though the draft's provability check proves it directly.
+- **G, definite rejection** (`definitelyFails_spec`). If some axis has its lower end above θ, every narrowing rejects. Otherwise some narrowing accepts. So the gate can tell evidence that fails from evidence that's missing, which Phase 8's step 2 needs for a review that finds a mismatch.
 
 **Steps:**
 
@@ -434,15 +434,21 @@ The 34 frozen theorems include the core's algebra and its executable twins. None
 
 **Resources:**
 - **Actions,** and not much of them.
-- **Your review of `statements-v5`:** three statements, where `statements-v4` had eight.
+- **Your review of `statements-v5`:** four theorems, where `statements-v4` had eight.
 
 **Risks:**
 - **C's hypotheses carry its meaning.** If nothing real can satisfy them, C is true and says nothing. So the draft names what supplies each hypothesis for the pilot's axes.
-- **C as drafted covers budget axes too,** and `jsgVSeq` lives on one. Budgets have no consumer yet, so the draft has to say whether C is stated for `combine` as frozen or for floors alone.
+- **C as drafted covers budget axes too,** and `jsgVSeq` lives on one. Budgets have no consumer yet, so the draft has to say whether C is stated for `combine` as frozen or for floors alone. It states C for `combine` as frozen, and asks you in [QUEUE.md](QUEUE.md), Q16.
 
 **Decisions that stay yours:**
 - what `statements-v5` states, and its tag;
-- whether C covers budget axes.
+- whether C covers budget axes (Q16).
+
+**Milestone 5 notes**, for the milestone's closing note:
+
+- The full-strength Comparator run takes every frozen theorem as a target. Once `statements-v5` is tagged, it fails until Milestone 5 is proved, and the everyday run lists the four as not yet proved.
+- README and REPRODUCE describe the four as pending. The closing PR updates their status and records a full-strength run on `main`. README's opening paragraph, your approved wording, still says all 34 frozen theorems are proved, and the draft recommends changing it in that PR too.
+- The proofs come from the draft's provability check: about 40 lines of tactics, with no helper lemma, for `lean/JSG/Proofs/Milestone5.lean`.
 
 **Gate**
 

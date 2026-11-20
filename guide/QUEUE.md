@@ -8,6 +8,21 @@ None right now.
 
 ## Answered
 
+### Q16. The form of the statements-v5 gap statements
+
+**Answered 2026-11-20: yes, as drafted:** C for `combine` as frozen, on floors and budgets alike; D as two theorems; G as an iff; two stages combined once.
+
+- **Question:** The `statements-v5` draft states Milestone 5's candidates in a form that needs your approval:
+  - **C covers both kinds of axis.** `accept_bounds_truth` is stated for `combine` as frozen, and its budget clause is the subadditivity [GLOSSARY.md](GLOSSARY.md#canonical-glossary) already asks of every budget axis.
+  - **D is two theorems,** `combine_respects_narrowing` and `narrowing_keeps_accept`, since its halves have different hypotheses. So v5 adds four statements, and the frozen count goes from 34 to 38.
+  - **G is an iff:** a grade fails definitely exactly when every grade that narrows it is rejected.
+  - **Two stages.** C combines two grades once, not a window's many or the pilot's closure.
+- **Recommended answer:** Yes, as drafted.
+- **What breaks if wrong:**
+  - C for floors alone would add the hypothesis that every axis is a floor. The pilot's seven axes are floors, so it loses nothing today. But `jsgVSeq` lives on a budget axis, so C would keep the drop-out mutant instead, and a budget axis that gets a user would need a new statement.
+  - If C's hypotheses can't be met on an axis, C says nothing there. [STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md#statements-v5) names what supplies them on the pilot's axes.
+- **Can it be undone:** Yes, freely until `statements-v5` is tagged. After that, adding a statement is a tightening, and changing one is a weakening, which needs a signed decision.
+
 ### Q14. Which axes carry a dependency's doubt?
 
 **Answered 2026-10-29: yes, with one change for consistency:** `dependency_withdrawn` carries unless the manuscript's own formalization is complete and its statement has been checked. Then Lean has re-established the result independently, so a withdrawn dependency can't undermine it. Under θ = 0 this changes no verdict today.

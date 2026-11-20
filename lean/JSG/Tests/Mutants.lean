@@ -1783,4 +1783,144 @@ theorem xleaseVerdict_agrees_witness :
   simp [leaseVerdict, xZeroFive, XGrade.toGrade, XBound.toBound, Bound.width, xcast_zero,
     xcast_one, xcast_ofNat]
 
+/-! ## statements-v5
+
+Controls for the theorems added in `statements-v5`, in the same style, with one more fixture:
+the unknown on the single axis. Two of the mutants are v1's: JSG V's rule `jsgVSeq`, from
+`interchange`, and `verdictLo`, from `verdict_sound`. The other two rest on readings of
+`archive/`, not on quotes, and say so: `dropCombine`, from SirusSC's `Q`, and `rejectIsFinal`,
+from SCp1's single kind of rejection. `accept_bounds_truth` has a mutant on each kind of
+axis. -/
+
+/-- The unknown on the single axis. -/
+def unk : Grade Unit := fun _ => Bound.unknown
+
+/-- Mutant: an unknown stage drops out of the combination; otherwise `combineAxis` applies.
+    SirusSC's `Q` treats an axis a grade leaves out this way: `hetero_join` and `sequential` in
+    `specchain/algebra/q.py` read it as the identity, 0 on a sum axis and −∞ on a max axis,
+    though SCp1's Remark 2.4 says missing evidence must descend to ⊥. An explicit ⊥ absorbs
+    there instead, which is how `absorbCombine` reads the unknown. A reading, not a quote. -/
+noncomputable def dropCombine {ι : Type} (kind : ι → Kind) (g h : Grade ι) : Grade ι := by
+  classical
+  exact fun i =>
+    if (g i).lo = 0 ∧ (g i).hi = ⊤ then h i
+    else if (h i).lo = 0 ∧ (h i).hi = ⊤ then g i
+    else combineAxis (kind i) (g i) (h i)
+
+/-- Mutant: a test that counts every rejected grade as a definite failure. It is SCp1's single
+    kind of rejection, which a missing input earns as a failing one does: its Assumption 6.2,
+    I9 and Proposition 15.1 give both the same RejectionCert ("There is no third case"). A
+    reading, not a quote. -/
+def rejectIsFinal {ι : Type} (θ : ι → ENNReal) (g : Grade ι) : Prop := ∃ i, θ i < (g i).hi
+
+/-! ## accept_bounds_truth -/
+
+/-- JSG V's rule on a budget axis, under θ = 1: two stages that each cost 1 combine to [1, 1],
+    which is accepted, though together they cost 2. -/
+theorem accept_bounds_truth_mutant :
+    ¬ ∀ (θ : Unit → ENNReal) (g h : Grade Unit) (x y z : Unit → ENNReal),
+      Encloses g x → Encloses h y → (∀ i, ComposesNoWorse (budget i) (x i) (y i) (z i)) →
+      verdict θ (jsgVSeq g h) = .accept → ∀ i, z i ≤ θ i := by
+  intro hc
+  have := hc θone (k 1) (k 1) (fun _ => 1) (fun _ => 1) (fun _ => 2)
+    (fun _ => ⟨le_rfl, le_rfl⟩) (fun _ => ⟨le_rfl, le_rfl⟩)
+    (fun _ => by norm_num [ComposesNoWorse, budget])
+    (by simp [verdict, jsgVSeq, combineAxis, θone, k, Bound.known]) ()
+  norm_num [θone] at this
+
+/-- `dropCombine` on a floor, under θ = 1: the known 1 with the unknown, whose true value is 2,
+    gives [1, 1], which is accepted, though the composed true value is 2. It's the mutant
+    `accept_bounds_truth` would keep if it covered floors alone. -/
+theorem accept_bounds_truth_dropCombine_mutant :
+    ¬ ∀ (θ : Unit → ENNReal) (g h : Grade Unit) (x y z : Unit → ENNReal),
+      Encloses g x → Encloses h y → (∀ i, ComposesNoWorse (floor i) (x i) (y i) (z i)) →
+      verdict θ (dropCombine floor g h) = .accept → ∀ i, z i ≤ θ i := by
+  intro hc
+  have := hc θone (k 1) unk (fun _ => 1) (fun _ => 2) (fun _ => 2)
+    (fun _ => ⟨le_rfl, le_rfl⟩) (fun _ => ⟨zero_le, le_top⟩) (fun _ => le_max_right _ _)
+    (by simp [verdict, dropCombine, θone, k, unk, Bound.known, Bound.unknown]) ()
+  norm_num [θone] at this
+
+/-- Witness for `accept_bounds_truth` (the first mutant's inputs, with `combine`, under θ = 2):
+    every hypothesis and the conclusion. The two costs add to [2, 2], which is accepted, and the
+    true total, 2, is within θ. -/
+theorem accept_bounds_truth_witness :
+    Encloses (k 1) (fun _ => 1) ∧ Encloses (k 1) (fun _ => 1)
+      ∧ (∀ i, ComposesNoWorse (budget i) 1 1 2)
+      ∧ verdict (fun _ => 2) (combine budget (k 1) (k 1)) = .accept
+      ∧ ∀ _ : Unit, (2 : ENNReal) ≤ 2 := by
+  refine ⟨fun _ => ⟨le_rfl, le_rfl⟩, fun _ => ⟨le_rfl, le_rfl⟩, fun _ => ?_, ?_, fun _ => le_rfl⟩
+  · norm_num [ComposesNoWorse, budget]
+  · norm_num [verdict, combine, combineAxis, budget, k, Bound.known]
+
+/-! ## combine_respects_narrowing -/
+
+/-- `dropCombine` on a floor: the known 1 with the unknown gives [1, 1], but with the known 2,
+    which narrows the unknown, it gives [2, 2], outside [1, 1]. -/
+theorem combine_respects_narrowing_mutant :
+    ¬ ∀ g g' h h' : Grade Unit, Narrows g' g → Narrows h' h →
+      Narrows (dropCombine floor g' h') (dropCombine floor g h) := by
+  intro hc
+  have := (hc (k 1) (k 1) unk (k 2) (fun _ => ⟨le_rfl, le_rfl⟩) (fun _ => ⟨zero_le, le_top⟩)
+    ()).2
+  norm_num [dropCombine, combineAxis, floor, k, unk, Bound.known, Bound.unknown] at this
+
+/-- Witness for `combine_respects_narrowing` (the mutant's inputs, with `combine`): both
+    hypotheses and the conclusion. On a floor, [2, 2] lies inside [1, ∞]. -/
+theorem combine_respects_narrowing_witness :
+    Narrows (k 1) (k 1) ∧ Narrows (k 2) unk
+      ∧ Narrows (combine floor (k 1) (k 2)) (combine floor (k 1) unk) := by
+  refine ⟨fun _ => ⟨le_rfl, le_rfl⟩, fun _ => ⟨zero_le, le_top⟩, fun _ => ?_⟩
+  norm_num [combine, combineAxis, floor, k, unk, Bound.known, Bound.unknown]
+
+/-! ## narrowing_keeps_accept -/
+
+/-- `verdictLo` under θ = 1: it accepts the unknown, but rejects the known 2, which narrows
+    it. -/
+theorem narrowing_keeps_accept_mutant :
+    ¬ ∀ (θ : Unit → ENNReal) (g g' : Grade Unit),
+      verdictLo θ g = .accept → Narrows g' g → verdictLo θ g' = .accept := by
+  intro hc
+  have := hc θone unk (k 2) (by simp [verdictLo, θone, unk, Bound.unknown])
+    (fun _ => ⟨zero_le, le_top⟩)
+  norm_num [verdictLo, θone, k, Bound.known] at this
+
+/-- Witness for `narrowing_keeps_accept` (θ = 1; [0, 1], narrowed to the known 1): both
+    hypotheses and the conclusion. -/
+theorem narrowing_keeps_accept_witness :
+    verdict θone zeroOne = .accept ∧ Narrows (k 1) zeroOne ∧ verdict θone (k 1) = .accept := by
+  refine ⟨?_, fun _ => ⟨zero_le, le_rfl⟩, ?_⟩
+  · simp [verdict, θone, zeroOne]
+  · simp [verdict, θone, k, Bound.known]
+
+/-! ## definitelyFails_spec -/
+
+/-- `rejectIsFinal` under θ = 1: it counts the unknown as a definite failure, though the known
+    1 narrows the unknown and is accepted. -/
+theorem definitelyFails_spec_mutant :
+    ¬ ∀ (θ : Unit → ENNReal) (g : Grade Unit),
+      rejectIsFinal θ g ↔ ∀ g' : Grade Unit, Narrows g' g → verdict θ g' = .reject := by
+  intro hc
+  have := (hc θone unk).mp ⟨(), by simp [θone, unk, Bound.unknown]⟩ (k 1)
+    (fun _ => ⟨zero_le, le_top⟩)
+  simp [verdict, θone, k, Bound.known] at this
+
+/-- Witness for `definitelyFails_spec` under θ = 0: the known 1, where both sides hold, and
+    [0, 1], where neither does, since the known 0 narrows it and is accepted. -/
+theorem definitelyFails_spec_witness :
+    (DefinitelyFails (fun _ => 0) (k 1)
+        ∧ ∀ g' : Grade Unit, Narrows g' (k 1) → verdict (fun _ => 0) g' = .reject)
+      ∧ (¬ DefinitelyFails (fun _ => 0) zeroOne
+        ∧ ¬ ∀ g' : Grade Unit, Narrows g' zeroOne → verdict (fun _ => 0) g' = .reject) := by
+  refine ⟨⟨⟨(), by simp [k, Bound.known]⟩, fun g' hn => ?_⟩, ?_, fun h => ?_⟩
+  · have h1 : (1 : ENNReal) ≤ (g' ()).hi := le_trans (hn ()).1 (g' ()).le
+    unfold verdict
+    split_ifs with hall
+    · exact absurd (le_trans h1 (hall ())) (by norm_num)
+    · rfl
+  · rintro ⟨_, hlt⟩
+    simp [zeroOne] at hlt
+  · have := h (k 0) (fun _ => ⟨le_rfl, zero_le⟩)
+    simp [verdict, k, Bound.known] at this
+
 end JSG.Tests.Mutants
