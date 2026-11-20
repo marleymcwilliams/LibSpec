@@ -4,9 +4,19 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-20
 
+### Milestone 5's four theorems proved
+- **The proofs:** `accept_bounds_truth`, `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`, in a new `lean/JSG/Proofs/Milestone5.lean`, in statement order. They're the `statements-v5` provability check's, tactic for tactic, under the frozen names: about 40 lines, with no helper lemma, so the file imports `JSG.Defs` alone. `JSG.Solution` imports it, so Comparator and the axiom audit reach it.
+- **One PR for all four,** at Marley's request, since together they're about 40 lines. `guide/MILESTONE_5.md` gives each its five-line explanation.
+- **Checks: CI builds it, Marley's call.** About 5.5 GB of memory was free, short of the 8 GB local Lean needs, so nothing was built locally, and the scratch `rfl` type check and axiom audit didn't run. CI's build, axiom audit and Comparator step cover them. Locally, each restated signature matches its frozen statement character for character, and `check.sh`'s steps that need no Lean pass, the statements check with "ok (statements-v5)". The provability check compiled these proofs on 2026-11-19 against the real `JSG.Statements`, with `rfl` checks on their types, only the three axioms and no warnings, and nothing under `lean/` has changed since.
+- **Decided: `guide/README.md`'s map lists `MILESTONE_5.md`,** since the note now exists. Undo by restoring `MILESTONE_4.md` in its two places.
+- **Also:** ROADMAP's Milestone 5 says Q16 was answered on 2026-11-20, yes, as drafted, and ticks the tag, at `5006a21`. Its milestone gate box waits for the closing PR. STATEMENTS_REVIEW's §38 says `C_UNK_PRICED` is a reason code SCp1's certificate doesn't require, since SCp1 lists the certificate's fields as "at least".
+- **Left for the closing PR:** MILESTONE_5.md's gate record and closing note, the layer map, README and REPRODUCE, after a full-strength Comparator run on `main`. GLOSSARY and STATEMENTS_REVIEW's v5 opening paragraph also still call the four not yet proved.
+- **To undo:** revert the PR.
+
 ### Two corrections to the statements-v5 draft (the reviewer's notes on #126)
 - **Corrected: what SCp1's RejectionCert records.** DEFECTS.md's row on SCp1's single kind of rejection, and STATEMENTS_REVIEW.md §38, said the certificate has no field for the cause. But SCp1 lists the fields it has "at least", and one of them, `predicate_id`, is the "identifier of the violated invariant", which is a cause. The reading rests on something narrower, and both now say it: a ⊥ priced input and a failing value violate the same guard (Assumption 6.2, I9), so no field SCp1 requires tells them apart. Checked against `archive/SirusSC/papers/SCp1.pdf`. §38 still calls it a reading.
 - **Corrected: who wrote the sections.** The 2026-11-19 entry said both sections are Marley's text. The reviewer drafted them, and Marley supplied them and copied them in, so the entry now says that. README's "Marley wrote or approved every frozen statement" already covers this, and stays as it is.
+- **To undo:** revert the corrections in `5006a21`.
 
 ## 2026-11-19
 
