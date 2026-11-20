@@ -4,6 +4,17 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-20
 
+### Milestone 5 closed: its gate record, closing note and layer map
+- **Gate:** `guide/MILESTONE_5.md` records how each item of ROADMAP's "Gate for every milestone" is met, citing `main`'s CI run 44794745372 on #127's merge, `f194ab5`, and the full-strength run 44797372577 on the same commit. The reviewer read both runs' logs, and the record cites what they found; the logs weren't fetched here. The note's four "Proved in #N." now say #127, and its opening no longer says the gate record and closing note are still to come.
+- **Full-strength run:** Marley started run 44797372577 by hand on `main`, after #127's merge. It passed with all 38 frozen theorems, and REPRODUCE records it.
+- **Closing note:** Marley's, drafted by the reviewer, and used verbatim.
+- **Layer map:** the gap statements' row says Proved, names its four theorems and keeps its limits: enclosure and how true values compose are hypotheses, and two stages are combined once. Like the other Proved rows, it now points to `Milestone5.lean` and `MILESTONE_5.md`, in place of the statements, the review, Q16 and the roadmap. Its paragraph on `statements-v5` says Milestone 5 proved them.
+- **Status:** README and REPRODUCE now say 38 frozen theorems, all proved, with v1.0's 26 and v1.1's 34 told apart. README's opening paragraph says 38 too, as Marley asked; `guide/CONVENTIONS.md` keeps 34, since its numbers are all as of v1.1. GLOSSARY, STATEMENTS_REVIEW and CHANGELOG say Milestone 5 proved the four. ROADMAP ticks the milestone gate and "Lean milestone 5", and marks Milestone 5's notes done.
+- **Decided: ROADMAP's checklist counts Milestone 5.** Its opening said the checklist's done milestones are "Phases 3–5 and Milestone 4", which the new "Lean milestone 5" line made false, so it now says "Milestones 4 and 5". Undo it together with that line.
+- **Left as they are:** the other places that say "not yet proved" name Comparator's list of frozen theorems not yet proved, or are ROADMAP's Milestone 4 and 5 notes, which say what was pending and are marked done. MILESTONE_5.md's opening keeps "Milestone 5 proves", in the present tense, as the other milestone notes' openings do.
+- **Reviewer notes applied:** the changelog's `statements-v5` entry says "the four", since "them" read as the 34 proofs of Milestones 1–4, and ROADMAP's note names #128 now that it's open.
+- **To undo:** revert the PR.
+
 ### Milestone 5's four theorems proved
 - **The proofs:** `accept_bounds_truth`, `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`, in a new `lean/JSG/Proofs/Milestone5.lean`, in statement order. They're the `statements-v5` provability check's, tactic for tactic, under the frozen names: about 40 lines, with no helper lemma, so the file imports `JSG.Defs` alone. `JSG.Solution` imports it, so Comparator and the axiom audit reach it.
 - **One PR for all four,** at Marley's request, since together they're about 40 lines. `guide/MILESTONE_5.md` gives each its five-line explanation.

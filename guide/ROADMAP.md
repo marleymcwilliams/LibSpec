@@ -446,14 +446,14 @@ The 34 frozen theorems include the core's algebra and its executable twins. None
 
 **Milestone 5 notes**, for the milestone's closing note:
 
-- The full-strength Comparator run takes every frozen theorem as a target. Once `statements-v5` is tagged, it fails until Milestone 5 is proved, and the everyday run lists the four as not yet proved.
-- README and REPRODUCE describe the four as pending. The closing PR updates their status and records a full-strength run on `main`. README's opening paragraph, your approved wording, still says all 34 frozen theorems are proved, and the draft recommends changing it in that PR too.
-- The proofs come from the draft's provability check: about 40 lines of tactics, with no helper lemma, for `lean/JSG/Proofs/Milestone5.lean`.
+- The full-strength Comparator run takes every frozen theorem as a target. Once `statements-v5` is tagged, it fails until Milestone 5 is proved, and the everyday run lists the four as not yet proved. Done: after #127, both pass on `main` with all 38: the everyday run in 44794745372, the full-strength run in 44797372577.
+- README and REPRODUCE describe the four as pending. The closing PR updates their status and records a full-strength run on `main`. README's opening paragraph, your approved wording, still says all 34 frozen theorems are proved, and the draft recommends changing it in that PR too. Done: in #128, with run 44797372577. README's opening paragraph now says 38, as you asked.
+- The proofs come from the draft's provability check: about 40 lines of tactics, with no helper lemma, for `lean/JSG/Proofs/Milestone5.lean`. Done: in #127, about 40 lines with no helper lemma.
 
 **Gate**
 
 - [x] Tagged `statements-v5`, at `5006a21`
-- [ ] The milestone gate, for Milestone 5
+- [x] The milestone gate, for Milestone 5: [MILESTONE_5.md](MILESTONE_5.md#gate)
 
 ## Phase 10: The obligation and Loader twins
 
@@ -492,7 +492,7 @@ The goal is executable twins of typed obligations and of the concrete Loader, ea
 
 ## The master guide's checklist
 
-MASTER_GUIDE.md kept a checklist of its own, merged here so that there is one roadmap. Its four open items are still open, and no phase above holds them yet. Its done items are this roadmap's gates too: the decisions are Phase 2's, recorded in [decisions/RAILS.md](decisions/RAILS.md), and the milestones are Phases 3–5 and Milestone 4.
+MASTER_GUIDE.md kept a checklist of its own, merged here so that there is one roadmap. Its four open items are still open, and no phase above holds them yet. Its done items are this roadmap's gates too: the decisions are Phase 2's, recorded in [decisions/RAILS.md](decisions/RAILS.md), and the milestones are Phases 3–5 and Milestones 4 and 5.
 
 - [ ] Freeze the glossary and run one rename pass: 𝒰 for Ω, proof\_surface, Amber, invariant prefixes, combine for join
 - [ ] CI: fail the build on any `b3:…` placeholder, on any must-fail removed without a signed weakening, and on any theorem without a mutant
@@ -505,6 +505,7 @@ MASTER_GUIDE.md kept a checklist of its own, merged here so that there is one ro
 - [x] Lean milestone 2: typed obligations, Loader safety and progress, frontier charge, policy lattice, the must-fail gate ([MILESTONE_2.md](MILESTONE_2.md))
 - [x] Lean milestone 3 (analysis): CVaR tail-to-level, the corrected dwell bound, the local KL–Fisher bound and the DRO envelope identity ([MILESTONE_3.md](MILESTONE_3.md))
 - [x] Lean milestone 4 (executable twins): graded values, combine, verdict, residual threading, widths and leases, each proved to agree with its frozen definition ([MILESTONE_4.md](MILESTONE_4.md))
+- [x] Lean milestone 5 (the core's gap statements): what an accept means for the true values, narrowing, and definite rejection ([MILESTONE_5.md](MILESTONE_5.md))
 
 ## One sitting with Claude Code
 
