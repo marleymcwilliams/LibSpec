@@ -2,10 +2,16 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-11-20
+
+### Two corrections to the statements-v5 draft (the reviewer's notes on #126)
+- **Corrected: what SCp1's RejectionCert records.** DEFECTS.md's row on SCp1's single kind of rejection, and STATEMENTS_REVIEW.md §38, said the certificate has no field for the cause. But SCp1 lists the fields it has "at least", and one of them, `predicate_id`, is the "identifier of the violated invariant", which is a cause. The reading rests on something narrower, and both now say it: a ⊥ priced input and a failing value violate the same guard (Assumption 6.2, I9), so no field SCp1 requires tells them apart. Checked against `archive/SirusSC/papers/SCp1.pdf`. §38 still calls it a reading.
+- **Corrected: who wrote the sections.** The 2026-11-19 entry said both sections are Marley's text. The reviewer drafted them, and Marley supplied them and copied them in, so the entry now says that. README's "Marley wrote or approved every frozen statement" already covers this, and stays as it is.
+
 ## 2026-11-19
 
 ### statements-v5 drafted
-- **Scope:** step 1 of Milestone 5, which Marley's decision of 2026-11-13 put first. Candidates C, D and G become four frozen theorems: `accept_bounds_truth`, `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`. D has two halves with different hypotheses, so it's two theorems. Their four definitions are `Narrows`, `Encloses`, `ComposesNoWorse` and `DefinitelyFails`. Both sections are Marley's text, appended as section 16 of `Defs.lean` and `Statements.lean` under a note that nothing above changed, and both compiled as written.
+- **Scope:** step 1 of Milestone 5, which Marley's decision of 2026-11-13 put first. Candidates C, D and G become four frozen theorems: `accept_bounds_truth`, `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`. D has two halves with different hypotheses, so it's two theorems. Their four definitions are `Narrows`, `Encloses`, `ComposesNoWorse` and `DefinitelyFails`. Both sections are the text Marley supplied, drafted by the reviewer. They're appended as section 16 of `Defs.lean` and `Statements.lean` under a note that nothing above changed, and both compiled as written.
 - **The copy route:** this draft had no permission to edit the frozen files, and Claude Code wrote neither. Everything that could fail ran first, in scratch files outside the repository: the sections in the context each has at the end of its file, the provability check, and the controls. Then each file, with its section inserted before `end JSG`, went in the git directory's `statements-v5/` folder, and Marley copied the two into place. Against `origin/main` they add 27 and 41 lines and remove none, and each equals its copy byte for byte.
 - **The form, queued as Q16:** C for `combine` as frozen, so on budgets as well as floors; D as two theorems; G as an iff; and two stages combined once.
 - **Mutants and their sources:**
