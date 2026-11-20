@@ -10,7 +10,7 @@ LibSpec states a calculus of graded evidence in Lean, proves it, and runs it as 
 3. [GLOSSARY.md](GLOSSARY.md): the canonical terms, and the four core objects they name.
 4. [LAYER_MAP.md](LAYER_MAP.md): every component of the corpus, what justifies it, and its status.
 5. [EXECUTABLE_GATE.md](EXECUTABLE_GATE.md): the twins, the harness and the openai/math pilot.
-6. The milestone notes, [MILESTONE_1.md](MILESTONE_1.md) to [MILESTONE_4.md](MILESTONE_4.md), for what each proof shows and doesn't.
+6. The milestone notes, [MILESTONE_1.md](MILESTONE_1.md) to [MILESTONE_5.md](MILESTONE_5.md), for what each proof shows and doesn't.
 7. [`pilot/reports/catalogue.md`](../pilot/reports/catalogue.md), for the gate's verdict on a real release.
 
 Then, as needed: [DEFECTS.md](DEFECTS.md) for what the corpus gets wrong, [SOURCES.md](SOURCES.md) for where each part came from, and [STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md) for why each statement says what it says.
@@ -38,7 +38,7 @@ Then, as needed: [DEFECTS.md](DEFECTS.md) for what the corpus gets wrong, [SOURC
 | [EXECUTABLE_GATE.md](EXECUTABLE_GATE.md) | The executable gate: the twins, the harness, the pilot, where things run, and its decisions |
 | [STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md) | Each statement beside its source, with its mutant and witness |
 | [REVIEW_PROTOCOL.md](REVIEW_PROTOCOL.md) | How a named reviewer checks that a manuscript's challenges state its claim, and the verdicts (Phase 8) |
-| [MILESTONE_1.md](MILESTONE_1.md)–[MILESTONE_4.md](MILESTONE_4.md) | Each milestone's proofs, its gate record and its closing note |
+| [MILESTONE_1.md](MILESTONE_1.md)–[MILESTONE_5.md](MILESTONE_5.md) | Each milestone's proofs, its gate record and its closing note |
 | [CHANGELOG.md](CHANGELOG.md) | What each statements version changed, and whether it tightens or weakens |
 | [QUEUE.md](QUEUE.md) | Questions waiting for the human, at most three open, and the answers given |
 | [LOG.md](LOG.md) | Every reversible decision, by date, newest first |

@@ -421,7 +421,7 @@ A sample of withdrawn or retracted mathematics papers then becomes a must-fail s
 
 The goal is four new frozen theorems about the ordinal core, the part of the model the pilot uses, each with a mutant and a witness, proved at the milestone gate: `accept_bounds_truth`, `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`. They take `statements-v5`.
 
-The 34 frozen theorems include the core's algebra and its executable twins. None of the 34 ties a grade to the true values behind it, says how the verdict behaves as evidence narrows, or tells a rejection that's final from one that only lacks evidence. These four do. They're candidates until your review of the draft settles what each states ([QUEUE.md](QUEUE.md), Q16):
+The 34 frozen theorems include the core's algebra and its executable twins. None of the 34 ties a grade to the true values behind it, says how the verdict behaves as evidence narrows, or tells a rejection that's final from one that only lacks evidence. These four do. What each states was settled when Q16 was answered on 2026-11-20, yes, as drafted ([QUEUE.md](QUEUE.md), Q16):
 
 - **C, soundness against the world** (`accept_bounds_truth`). Suppose each stage's interval encloses its true value, and true values compose no worse than `combine` assumes. Then an accepted grade bounds the true composed value by θ. It's the only one of the four that says what an accept means.
 - **D, the information order** (`combine_respects_narrowing`, `narrowing_keeps_accept`). `combine` respects narrowing, and narrowing an accepted grade keeps it accepted. The halves have different hypotheses, so each is a theorem. C also follows from both halves and its composition hypothesis, though the draft's provability check proves it directly.
@@ -438,11 +438,11 @@ The 34 frozen theorems include the core's algebra and its executable twins. None
 
 **Risks:**
 - **C's hypotheses carry its meaning.** If nothing real can satisfy them, C is true and says nothing. So the draft names what supplies each hypothesis for the pilot's axes.
-- **C as drafted covers budget axes too,** and `jsgVSeq` lives on one. Budgets have no consumer yet, so the draft has to say whether C is stated for `combine` as frozen or for floors alone. It states C for `combine` as frozen, and asks you in [QUEUE.md](QUEUE.md), Q16.
+- **C as drafted covers budget axes too,** and `jsgVSeq` lives on one. Budgets have no consumer yet, so the draft had to say whether C is stated for `combine` as frozen or for floors alone. It states C for `combine` as frozen, and Q16 was answered on 2026-11-20, yes, as drafted ([QUEUE.md](QUEUE.md), Q16).
 
 **Decisions that stay yours:**
 - what `statements-v5` states, and its tag;
-- whether C covers budget axes (Q16).
+- whether C covers budget axes (Q16, answered on 2026-11-20: yes, as drafted).
 
 **Milestone 5 notes**, for the milestone's closing note:
 
@@ -452,7 +452,7 @@ The 34 frozen theorems include the core's algebra and its executable twins. None
 
 **Gate**
 
-- [ ] Tagged `statements-v5`
+- [x] Tagged `statements-v5`, at `5006a21`
 - [ ] The milestone gate, for Milestone 5
 
 ## Phase 10: The obligation and Loader twins
