@@ -791,7 +791,7 @@ Several witnesses use their mutant's counterexample, so the same input separates
 
 ## statements-v5
 
-Review support for the `statements-v5` proposal, read the same way as above. Its four theorems are in section 16 of `lean/JSG/Statements.lean`, their definitions in the same section of `lean/JSG/Defs.lean`, and their controls in the "statements-v5" part of `lean/JSG/Tests/Mutants.lean`, which still imports only the definitions. All four are stated and not yet proved: Milestone 5 proves them. Two of the mutants are v1's, and the other two rest on readings of `archive/`, not on quotes, and say so.
+Review support for the `statements-v5` proposal, read the same way as above. Its four theorems are in section 16 of `lean/JSG/Statements.lean`, their definitions in the same section of `lean/JSG/Defs.lean`, and their controls in the "statements-v5" part of `lean/JSG/Tests/Mutants.lean`, which still imports only the definitions. [Milestone 5](MILESTONE_5.md) proved all four. Two of the mutants are v1's, and the other two rest on readings of `archive/`, not on quotes, and say so.
 
 **Scope** ([Q16](QUEUE.md)). v5 states Milestone 5's candidates C, D and G about the ordinal core, the part of the model the pilot uses ([ROADMAP.md](ROADMAP.md#milestone-5-the-cores-gap-statements)). None of the 34 frozen theorems ties a grade to the true values behind it, says how the verdict behaves as evidence narrows, or tells a definite rejection from one that only lacks evidence. D has two halves with different hypotheses, so it's two theorems, and v5 adds four. They use four new definitions:
 - **`Narrows g' g`:** on every axis, g′'s interval lies inside g's, so g′ knows at least as much.
