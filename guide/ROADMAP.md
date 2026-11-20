@@ -447,7 +447,7 @@ The 34 frozen theorems include the core's algebra and its executable twins. None
 **Milestone 5 notes**, for the milestone's closing note:
 
 - The full-strength Comparator run takes every frozen theorem as a target. Once `statements-v5` is tagged, it fails until Milestone 5 is proved, and the everyday run lists the four as not yet proved. Done: after #127, both pass on `main` with all 38: the everyday run in 44794745372, the full-strength run in 44797372577.
-- README and REPRODUCE describe the four as pending. The closing PR updates their status and records a full-strength run on `main`. README's opening paragraph, your approved wording, still says all 34 frozen theorems are proved, and the draft recommends changing it in that PR too. Done: in the closing PR, with run 44797372577. README's opening paragraph now says 38, as you asked.
+- README and REPRODUCE describe the four as pending. The closing PR updates their status and records a full-strength run on `main`. README's opening paragraph, your approved wording, still says all 34 frozen theorems are proved, and the draft recommends changing it in that PR too. Done: in #128, with run 44797372577. README's opening paragraph now says 38, as you asked.
 - The proofs come from the draft's provability check: about 40 lines of tactics, with no helper lemma, for `lean/JSG/Proofs/Milestone5.lean`. Done: in #127, about 40 lines with no helper lemma.
 
 **Gate**

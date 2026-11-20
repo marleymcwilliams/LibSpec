@@ -12,6 +12,7 @@ Decisions Claude Code made without asking, because they are reversible and don't
 - **Status:** README and REPRODUCE now say 38 frozen theorems, all proved, with v1.0's 26 and v1.1's 34 told apart. README's opening paragraph says 38 too, as Marley asked; `guide/CONVENTIONS.md` keeps 34, since its numbers are all as of v1.1. GLOSSARY, STATEMENTS_REVIEW and CHANGELOG say Milestone 5 proved the four. ROADMAP ticks the milestone gate and "Lean milestone 5", and marks Milestone 5's notes done.
 - **Decided: ROADMAP's checklist counts Milestone 5.** Its opening said the checklist's done milestones are "Phases 3–5 and Milestone 4", which the new "Lean milestone 5" line made false, so it now says "Milestones 4 and 5". Undo it together with that line.
 - **Left as they are:** the other places that say "not yet proved" name Comparator's list of frozen theorems not yet proved, or are ROADMAP's Milestone 4 and 5 notes, which say what was pending and are marked done. MILESTONE_5.md's opening keeps "Milestone 5 proves", in the present tense, as the other milestone notes' openings do.
+- **Reviewer notes applied:** the changelog's `statements-v5` entry says "the four", since "them" read as the 34 proofs of Milestones 1–4, and ROADMAP's note names #128 now that it's open.
 - **To undo:** revert the PR.
 
 ### Milestone 5's four theorems proved
