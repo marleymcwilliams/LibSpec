@@ -13,18 +13,18 @@ may change. The relations:
    order files are fetched in. Nothing either script writes may change.
 3. Through to_lean.py: fields added to the collected data, and its manuscripts and challenges
    reordered.
-Two are narrower than that, since the whole relation fails (the pull request's "Decisions for
-me"):
-- A metric in a README is tested below its heading line, and on that line after the title's
-  link. collect.py reads the title, and whether the README is a withdrawal notice, from its
-  first line alone, so a badge above the heading hides both: a withdrawn manuscript is then
-  collected as not withdrawn, or with --all as an earlier version, and not graded. A section of
-  its own is tested at the end of every README, and below the heading only where there's no
-  notice, since collect.py reads a notice's links up to the first "## ", so such a section
-  above them cuts them off.
-- A manuscript's challenges, reordered, give the same Raw only up to their order. The grade
-  reads them as a set (Raw.formal and Raw.axiomsOk, in Core.lean), though the report's words
-  give their reasons in that order (whyWords, in Words.lean). collect.py writes them sorted.
+In a README, relation 1 holds in two parts. Where collect.py can read the README with a metric
+in it, the metric changes no record: below the heading line, and as a section of its own
+anywhere but between a withdrawal notice's heading and its links. Where it can't, collect.py
+stops: it exits non-zero, names the README and writes nothing. That's anything above the
+heading, such as a confidence line or badge, a blank line, a byte-order mark or an HTML comment;
+anything else on the heading line, such as a badge, a link or a link to a PDF beside the README
+before the title's link, or a badge after it; and a section of its own between a withdrawal
+notice's heading and its links. collect.py's HEADING and readme_facts state the rule.
+One relation is narrower than that, since the whole relation fails (#130's "Decisions for me"):
+a manuscript's challenges, reordered, give the same Raw only up to their order. The grade reads
+them as a set (Raw.formal and Raw.axiomsOk, in Core.lean), though the report's words give their
+reasons in that order (whyWords, in Words.lean). collect.py writes them sorted.
 The tests run both scripts' main() on a release in miniature, built below, with only the
 fetching replaced: GitHub's answers, and, to change the order files are fetched in,
 collect.py's prefetch. Nothing is fetched, and nothing from a release runs. Run them with
@@ -103,7 +103,8 @@ def backwards(xs):
 # Beta's folder holds parentheses, as one in the release does. Three manuscripts are withdrawn,
 # and CONTENTS.md doesn't list them: Kuga's notice links Weil, and Hodge's links both, so a
 # notice has two links. Alpha and Delta have earlier versions. The Orphan challenge and a docs
-# page's link to a missing folder are unlinked.
+# page's link to a missing folder are unlinked. As at the pin, each README's heading links its
+# title to a PDF beside it, and each notice ends with a section that links its own archived PDF.
 COMMIT = collect.COMMIT
 ALPHA = "Alpha-sums-of-squares-October-7-2026"
 ALPHA_EARLIER = "Alpha-sums-of-squares-September-24-2026"
@@ -170,10 +171,11 @@ def release(families=same, within=same, docs=same, notice=same, keys=same, readm
                                  f"preprints/{x}/)" for x in notice(NOTICES[f]))
             body = ("**Withdrawn on October 6, 2026.** The authors withdraw it" +
                     (f": its proof rests on {links}." if links else "."))
-            text = (f"# [Withdrawal notice: {title}]({f}.pdf)\n\n{body}\n\n"
-                    "## The original abstract\n\nWe prove it.\n")
+            text = (f"# [Withdrawal notice: {title}](paper.pdf)\n\n{body}\n\n"
+                    f"## Archived manuscript\n\n[Pre-withdrawal PDF](https://github.com/openai/"
+                    f"math/blob/{COMMIT}/preprints/{f}/paper.pdf)\n")
         else:
-            text = f"# [{title}]({f}.pdf)\n\nWe prove it.\n\n## Abstract\n\nIn full.\n"
+            text = f"# [{title}](paper.pdf)\n\nWe prove it.\n\n## Abstract\n\nIn full.\n"
         files[f"preprints/{f}/README.md"] = readme(f, text) if readme else text
     return files
 
@@ -222,16 +224,19 @@ class GitHub:
 
 
 def run(module, argv):
-    """A script's main() with these arguments: what it writes, as bytes."""
+    """A script's main() with these arguments: what it writes, as bytes. It's kept in written
+    too, so that what a script wrote before it stopped is known."""
+    global written
     out = io.TextIOWrapper(io.BytesIO(), encoding="utf-8", newline="\n")
     saved = sys.stdout, sys.argv
     sys.stdout, sys.argv = out, [module.__name__ + ".py", *argv]
     try:
         module.main()
-        out.flush()
-        return out.buffer.getvalue()
     finally:
+        out.flush()
+        written = out.buffer.getvalue()
         sys.stdout, sys.argv = saved
+    return written
 
 
 def collected(files, mode, results=None, listing=same, keys=same, fetching=None):
@@ -389,9 +394,6 @@ try:
           lambda: no_record_changes(readmes(below_heading(LINE))))
     check("a confidence badge just below every README's heading changes no record and no Raw",
           lambda: no_record_changes(readmes(below_heading(BADGE))))
-    check("a confidence badge on every README's heading line, after the title's link, changes "
-          "no record and no Raw",
-          lambda: no_record_changes(readmes(on_heading(BADGE))))
     check("a review section of its own just below the heading of every README without a "
           "withdrawal notice changes no record and no Raw",
           lambda: no_record_changes(readmes(below_heading(SECTION), lambda f: f not in NOTICES)))
@@ -406,6 +408,68 @@ try:
     check("another review status in lean/formalization.yaml changes the source block alone",
           lambda: no_record_changes(release(review="verified"), also=lambda out: (
               json.loads(out)["source"]["formalizationReview"], "verified")))
+
+    # Where collect.py can't read a README with a metric in it, it stops. Each placement is tried
+    # in each README that each mode reads and that it fits, one README at a time.
+    README_PATH = re.compile(r"preprints/([^/]+)/README\.md")
+    read_in = {mode: [m.group(1) for p in json.loads(base[mode])["source"]["read"]
+                      for m in [README_PATH.fullmatch(p)] if m] for mode in MODES}
+
+    def stops(edit, which=lambda f: True):
+        """In each mode, for each README it reads that which picks, with that README alone edited:
+        whether collect.py exits non-zero, whether its message names the README, and what it
+        wrote."""
+        got, want = {}, {}
+        for mode in MODES:
+            for f in filter(which, read_in[mode]):
+                files = readmes(edit, lambda g: g == f)
+                assert files != BASE, "the README wasn't changed"
+                path = f"preprints/{f}/README.md"
+                try:
+                    collected(files, mode)
+                    got[f"{mode}: {path}"] = "it didn't stop"
+                except SystemExit as e:
+                    status = 0 if e.code is None else e.code if isinstance(e.code, int) else 1
+                    got[f"{mode}: {path}"] = {"exits non-zero": status != 0,
+                                              "names the README": path in str(e.code),
+                                              "writes": written}
+                want[f"{mode}: {path}"] = {"exits non-zero": True, "names the README": True,
+                                           "writes": b""}
+        assert want, "no README was tried"
+        return got, want
+
+    COMMENT = "<!-- Reviewed and verified. Confidence: 97%. -->"
+    LINK = "[Confidence: 97%](https://example.org/reviews/1)"
+    REPORT = "[Referee report: accept](report.pdf)"
+
+    def above(extra):
+        return lambda text: extra + "\n\n" + text
+
+    def before_title(extra):
+        return lambda text: text.replace("# [", "# " + extra + " [", 1)
+
+    check("a confidence line above any README's heading makes collect.py stop, name the README "
+          "and write nothing", lambda: stops(above(LINE)))
+    check("a confidence badge above any README's heading makes collect.py stop, name the README "
+          "and write nothing", lambda: stops(above(BADGE)))
+    check("a confidence badge on any README's heading line, before the title's link, makes "
+          "collect.py stop, name the README and write nothing", lambda: stops(before_title(BADGE)))
+    check("a confidence link on any README's heading line, before the title's link, makes "
+          "collect.py stop, name the README and write nothing", lambda: stops(before_title(LINK)))
+    check("a link to a PDF beside the README, on any README's heading line just before the "
+          "title's link, makes collect.py stop, name the README and write nothing",
+          lambda: stops(before_title(REPORT)))
+    check("a confidence badge on any README's heading line, after the title's link, makes "
+          "collect.py stop, name the README and write nothing", lambda: stops(on_heading(BADGE)))
+    check("a byte-order mark before any README's heading makes collect.py stop, name the README "
+          "and write nothing", lambda: stops(lambda text: "\ufeff" + text))
+    check("a blank line before any README's heading makes collect.py stop, name the README and "
+          "write nothing", lambda: stops(lambda text: "\n" + text))
+    check("an HTML comment before any README's heading makes collect.py stop, name the README "
+          "and write nothing", lambda: stops(lambda text: COMMENT + "\n" + text))
+    check("a review section of its own between a withdrawal notice's heading and its links makes "
+          "collect.py stop, name the README and write nothing",
+          lambda: stops(below_heading(SECTION), lambda f: NOTICES.get(f)))
 
     # 2. Reordering the input.
     def nothing_changes(files=None, results=None, **how):

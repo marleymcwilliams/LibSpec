@@ -4,6 +4,17 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-22
 
+### The collector stops on a README it can't read
+- **Decided: the stopping rule.** `pilot/collect.py` stops, exits non-zero, names the README and writes nothing in two cases:
+  - **The first line isn't the README's heading alone.** The heading is `# [`, then `Withdrawal notice: ` for a withdrawn manuscript, then a title with no square bracket, linked to a PDF beside the README: a name ending `.pdf`, with no `/`, parenthesis or space. Nothing else may be on that line, trailing whitespace aside.
+  - **A withdrawal notice links another preprint after its first `## ` section,** since a notice's links are read only up to there. A link to its own folder doesn't count, since each notice at the pin links its archived PDF there.
+
+  It reads nothing another way, so where it doesn't stop, it writes what it wrote before. The PR lists the checks.
+- **The rerun at the pin:** REPRODUCE's "Check the Lean data against the recorded facts", with the new collector and every file fetched afresh, left `git diff` empty. So the rule stops on no README at the pin.
+- **REPRODUCE:** `check.sh` runs eight steps, and its table has a row for the new step, "The pilot's Python", before Links.
+- **Reviewer note applied:** a link to a PDF beside the README, put before the title's link, passed the heading check, so the heading line must now hold the heading alone.
+- **To undo:** revert the PR.
+
 ### Metamorphic tests for the pilot's collectors
 - **Decided: the relations.** `scripts/test_collect.py` checks that adding a metric, or reordering the input, changes no manuscript's or challenge's record in `pilot/collect.py`'s output and no Raw `pilot/to_lean.py` writes, and that fields added to the collected data, or its manuscripts and challenges reordered, change no Raw. The PR lists each case.
 - **Decided: where they run.** `scripts/check.sh` runs them, with `scripts/test_reading_list.py` and `scripts/test_shard_results.py`, so CI runs all three on every pull request and push to `main`.

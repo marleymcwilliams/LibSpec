@@ -49,7 +49,7 @@ From the repository root:
 bash scripts/check.sh
 ```
 
-It runs seven steps and ends with `check.sh: passed`:
+It runs eight steps and ends with `check.sh: passed`:
 
 | Step | What it checks | What you should see |
 | --- | --- | --- |
@@ -59,6 +59,7 @@ It runs seven steps and ends with `check.sh: passed`:
 | Statements unchanged | `Defs.lean`, `Statements.lean`, their imports, the toolchain, the Mathlib pin and the lakefile, against the latest `statements-v*` tag | `ok (statements-v5): …` on `main`. It compares against the newest tag, so at v1.0 or v1.1 it fails, since a later version added statements they don't have |
 | CODEOWNERS | `.github/CODEOWNERS` gives `@marleymcwilliams` every file the statements check covers, and itself, by the path or a directory above it (`scripts/codeowners_check.py`), and that check fails on CODEOWNERS files of its own when it should (`scripts/test-codeowners-check.sh`). v1.0 and v1.1 don't have this step | `ok: @marleymcwilliams owns all 6: …`, then an `ok` for each case |
 | `archive/` unchanged | `archive/` is the tree it's frozen at, committed and in the working tree (`scripts/archive-check.sh`), and that check fails on a throwaway repository when it should (`scripts/test-archive-check.sh`). v1.0 doesn't have this step | `ok: archive/ is tree c2f6dac…, with nothing uncommitted`, then an `ok` for each case |
+| The pilot's Python | the collectors' metamorphic tests, on a release in miniature with no network: a metric or a reordering changes no record, and a README the collector can't read stops it (`scripts/test_collect.py`). Then the reading lists' and the results collector's rules (`scripts/test_reading_list.py` and `scripts/test_shard_results.py`). v1.0 and v1.1 don't have this step. On Windows, run it with `PYTHON=python` | an `ok` for each check, then `test_collect.py: passed`, `test_reading_list.py: passed` and `test_shard_results.py: passed` |
 | Links | every relative link in the Markdown outside `archive/`, and the heading its anchor names (`scripts/check-links.py`). v1.0 doesn't have this step. On Windows, run it with `PYTHON=python` | `… links checked, 0 broken` |
 
 To replay every module through Lean's kernel as well, as CI does:
