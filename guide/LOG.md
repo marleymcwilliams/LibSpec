@@ -2,6 +2,12 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-11-21
+
+### What checks each layer-map row
+- **Decided:** each layer-map row's Checked by entry, by the rules in the PR; the full list is in the PR body.
+- **To undo:** revert the PR.
+
 ## 2026-11-20
 
 ### Milestone 5 closed: its gate record, closing note and layer map
