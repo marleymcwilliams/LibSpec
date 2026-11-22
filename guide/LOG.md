@@ -2,6 +2,15 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-11-22
+
+### Metamorphic tests for the pilot's collectors
+- **Decided: the relations.** `scripts/test_collect.py` checks that adding a metric, or reordering the input, changes no manuscript's or challenge's record in `pilot/collect.py`'s output and no Raw `pilot/to_lean.py` writes, and that fields added to the collected data, or its manuscripts and challenges reordered, change no Raw. The PR lists each case.
+- **Decided: where they run.** `scripts/check.sh` runs them, with `scripts/test_reading_list.py` and `scripts/test_shard_results.py`, so CI runs all three on every pull request and push to `main`.
+- **Narrowed, since the whole relation fails:** a metric in a README is tested below its heading line, or after the title's link on it, and a section of its own anywhere but between a withdrawal notice's heading and its links. A manuscript's challenges, reordered, give the same Raw only up to their order, which the grade reads as a set. Both failures are in the PR's "Decisions for me".
+- **Reviewer note on #129:** the layer map's sentence on the Checked by column now comes after the one on the other rows, so "Every other row" follows the sentence on Proved rows again.
+- **To undo:** revert the PR.
+
 ## 2026-11-21
 
 ### What checks each layer-map row
