@@ -13,6 +13,10 @@ the output names the source, the commit and the license.
 Each record holds only facts. The pilot's Lean module turns them into grades
 (lean/JSG/Pilot/Core.lean), so nothing the verdict depends on is computed here.
 
+It stops on a README it can't be sure it has read, rather than misread it: one whose first line
+isn't its heading, and a withdrawal notice that links another preprint after its first section
+(readme_facts). It exits non-zero, names the README and writes nothing.
+
 - --all: every manuscript CONTENTS.md lists, and every preprints/ folder whose README carries
   a withdrawal notice. Any other folder is an earlier version of a listed manuscript; it is
   recorded under earlierVersions, with the listed folders of the same title, and not graded.
@@ -45,6 +49,10 @@ THREE_AXIOMS = {"propext", "Quot.sound", "Classical.choice"}
 FOLDER_LINK = r"preprints/([^/\s]+)/"
 DATED = re.compile(r"-(January|February|March|April|May|June|July|August|September|October|"
                    r"November|December)-\d{1,2}-\d{4}$")
+# A README's first line is its heading: "# [", then "Withdrawal notice: " if the manuscript is
+# withdrawn, then its title, which holds no square bracket, linked to a PDF beside the README.
+# Anything may follow on that line. Every README at the pin begins so.
+HEADING = re.compile(r"# \[(Withdrawal notice: )?[^\[\]]*\]\([^/()\s]+\.pdf\)")
 
 read_paths = []
 cache_dir = None
@@ -127,10 +135,21 @@ def contents_map(text):
     return out
 
 
-def readme_facts(text):
+def unreadable(folder, why):
+    """Stops on a README it can't be sure it has read, naming it, before anything is written."""
+    sys.exit(f"collect.py: stopped at preprints/{folder}/README.md: {why}")
+
+
+def readme_facts(text, folder):
     """A preprint README: its title, its withdrawal date if it has a notice, and the preprint
-    folders the notice links to."""
+    folders the notice links to. It stops on a README whose first line isn't its heading
+    (HEADING), and on a notice that links another preprint after its first section, since a
+    notice's links are read only up to there."""
     first = text.split("\n", 1)[0]
+    if not HEADING.match(first):
+        unreadable(folder, "its first line isn't a heading it can read, \"# [Title](paper.pdf)\" "
+                           "or \"# [Withdrawal notice: Title](paper.pdf)\", so it can't tell "
+                           "whether the manuscript is withdrawn")
     m = re.match(r"# \[(Withdrawal notice: )?(.*?)\]\(", first)
     withdrawn = bool(m and m.group(1))
     title = m.group(2) if m else None
@@ -141,6 +160,11 @@ def readme_facts(text):
         date = d.group(1) if d else "undated"
         notice = text.split("\n## ", 1)[0]
         links = sorted(set(re.findall(FOLDER_LINK, notice)))
+        later = sorted(set(re.findall(FOLDER_LINK, text[len(notice):])) - {folder})
+        if later:
+            unreadable(folder, f"it's a withdrawal notice that links {', '.join(later)} after "
+                               "its first section, and a notice's links are read only up to "
+                               "there, so it can't be sure which links are the notice's")
     return {"title": title, "withdrawnOn": date, "noticeLinks": links}
 
 
@@ -178,7 +202,7 @@ def main():
     def readme(f):
         if f not in readmes:
             text = fetch(f"preprints/{f}/README.md")
-            readmes[f] = readme_facts(text) if text is not None else {
+            readmes[f] = readme_facts(text, f) if text is not None else {
                 "title": None, "withdrawnOn": None, "noticeLinks": []}
         return readmes[f]
 
