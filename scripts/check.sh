@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build, forbidden-token scan, axiom audit, statements-unchanged check, CODEOWNERS check, archive
-# check, and links.
+# check, the pilot's Python tests, and links.
 # Runs locally (Git Bash on Windows) and in CI. Exits non-zero on any failure.
 set -euo pipefail
 
@@ -117,6 +117,14 @@ bash "$root/scripts/test-codeowners-check.sh" || fail=1
 step "archive/ unchanged (scripts/archive-check.sh), and that check has teeth"
 bash "$root/scripts/archive-check.sh" || fail=1
 bash "$root/scripts/test-archive-check.sh" || fail=1
+
+# The pilot's Python, on synthetic input and with no network. The reading lists' and the results
+# collector's tests also run in the shard workflow's self-test, but that runs only when started by
+# hand or on a pull request that changes a path the workflow lists, and never on main.
+step "The pilot's Python: the collectors' metamorphic tests (scripts/test_collect.py), and the reading lists' and the results collector's rules"
+for t in test_collect.py test_reading_list.py test_shard_results.py; do
+  "${PYTHON:-python3}" -B "$root/scripts/$t" || fail=1
+done
 
 step "Links in the Markdown, outside archive/ (scripts/check-links.py)"
 "${PYTHON:-python3}" "$root/scripts/check-links.py" "$root" || fail=1
