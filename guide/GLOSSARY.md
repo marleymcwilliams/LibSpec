@@ -6,31 +6,33 @@ The canon's terms, each defined once, and the four core objects they name. The r
 
 Twenty-three terms, each with one home. The SIRUS name waits: not yet, since no v1 statement depends on it.
 
-| Canonical term | Meaning | Replaces or aliases | Home |
-| --- | --- | --- | --- |
-| Graded values **G** | Per-axis intervals \[lo, hi\] in \[0, ∞\]; the verdict reads hi; ordered by badness (endpoints) and by information (narrower is better) | "Q" in JSG V, the PDE paper and SCp2 | Core v2 |
-| Floor axes **M** | Per-window rates; combined by max | max-channels, Q\_max | Core v2 |
-| Budget axes **S** | Cumulative spends; combined by +; each carries a subadditivity side condition | sum-channels, Q\_sum, ledger and CVaR axes | Core v2 |
-| Unknown | The interval \[0, ∞\]; a lease β allows width up to β, and anything wider is a breach | ⊤unk (JSG V, PDE); ⊥ in SCp1 and SCp2, placed below every value (a known defect); "third value" (SIRUS spec) | Core v2; PDE I4b |
-| Combine **⊕** | Endpointwise max on M, + on S; a commutative monoid, not a join (on S, g ⊕ g = 2g) | "Parallel join"; horizontal ⊙ (JSG V); ∧ (PDE; SCp1, Def 2.2); ⊎ and ⊙ (SCp2) | Core v2 |
-| Sequential composition | Resolved: the same ⊕; sequence and parallel differ only in data flow | vertical ∧ (JSG V); ∧ (SCp1, Prop 7.4, where it is ⊕); ⋆ (SCp2, whose "∧ ≡ ⋆" misreads SCp1) | Core v2 |
-| Residual **θ ⊸ g** | Budget left for later stages: θ ⊖ g on S; θ on M when g ≤ θ | None | Core v2 |
-| Decision **D** | {REJECT < ACCEPT}; no third value | "Q" in the SIRUS spec | SIRUS spec §1.2 |
-| Verdict map **δ\_θ** | Indicator of the down-set of θ, read on upper endpoints | Implicit threshold checks | Core v2 |
-| Definite failure | A grade fails definitely when some axis's lower end is above its threshold. Then every grade that narrows it is rejected; any other rejection is one that more evidence can undo | None: SCp1 gives a missing input and a failing one the same rejection | New: `statements-v5` (`DefinitelyFails`, and `definitelyFails_spec`, proved in Milestone 5) |
-| Receipted result **R** | (grade, receipt address, metrics). The decision is derived as δ\_θ(grade), never stored, and metrics cannot influence the grade | Q′ | SIRUS spec §1.4 |
-| Obligations **Σ** | Typed: each has a witness type and an authority stage; progress is the Dershowitz–Manna order | Typed effects | Core v2 |
-| Must-pass set **MP** | Inputs the gate must ACCEPT; disjoint from the must-fail set | None | Core v2 |
-| Frontier charge **Δ\_fr** | Total variation A · Σ‖jump\_k‖ at the finest resolution; additive, so regrouping can't change it | C\_fr, frontier spend, C\_salt, the subadditive merged-crossing debit | Core v2 |
-| **proof\_surface** | Window or run digest binding the guard IDs in fixed order | proof\_print, proof print | SCp1 |
-| Guard order | EF → DRO → PR → CBF → ω | None | JSG III |
-| **ω stage** | Automata verdict over KPI row hashes; the fifth guard | "Ω" in the SIRUS pipeline | JSG III |
-| Uncertainty set **𝒰** | Model-uncertainty set for PR/GKYP witnesses and degraded profiles | "Ω" in JSG II–IV, including Ω\_wc | JSG IV §Ω contract |
-| Clamp states | Green, Amber, Red | "Yellow" | JSG IV |
-| Invariant families | Prefix by family: H1–H5 (governor, JSG III list), A1–A5 (PDE acceptance), L1–L10 (Loader), T11–T13 (tail contracts) | I₁–I₅ (three incompatible versions); I1–I13 | New |
-| Policy lattice **⪰** | Dials in a complete lattice, larger is stricter; E(t) = baseline ⊓ active weakenings; threshold dials store their inverse | "Strictest unexpired policy P\*"; ThresholdChange VC semantics | Core v2 |
-| **SIRUS** (this project) | The governance and evidence spec | Also the name of Bénard et al.'s random-forest rule-set algorithm; the two were merged in MDmaster | Not yet: no v1 statement depends on it |
-| Content address | BLAKE3-256 of canonical bytes | `b3:…` placeholders (849 in the master spec) | SIRUS spec §0.5 |
+The standard name is the established term where there is one, and a source is named only where it was opened and read. None means no established term fits.
+
+| Canonical term | Standard name | Meaning | Replaces or aliases | Home |
+| --- | --- | --- | --- | --- |
+| Graded values **G** | Intervals, as in interval arithmetic. The word collides with GRADE, medicine's ratings of evidence | Per-axis intervals \[lo, hi\] in \[0, ∞\]; the verdict reads hi; ordered by badness (endpoints) and by information (narrower is better) | "Q" in JSG V, the PDE paper and SCp2 | Core v2 |
+| Floor axes **M** | Bottleneck axes: a worst-case rate, combined by max | Per-window rates; combined by max | max-channels, Q\_max | Core v2 |
+| Budget axes **S** | Additive cost axes: a cumulative budget, combined by + | Cumulative spends; combined by +; each carries a subadditivity side condition | sum-channels, Q\_sum, ledger and CVaR axes | Core v2 |
+| Unknown | Top (⊤), as in abstract interpretation (Cousot & Cousot 1977): a fail-safe default (Saltzer & Schroeder 1975). "Lease" collides: a lease is limited in time (Gray & Cheriton 1989), and this one isn't | The interval \[0, ∞\]; a lease β allows width up to β, and anything wider is a breach | ⊤unk (JSG V, PDE); ⊥ in SCp1 and SCp2, placed below every value (a known defect); "third value" (SIRUS spec) | Core v2; PDE I4b |
+| Combine **⊕** | The interval extensions of max and + | Endpointwise max on M, + on S; a commutative monoid, not a join (on S, g ⊕ g = 2g) | "Parallel join"; horizontal ⊙ (JSG V); ∧ (PDE; SCp1, Def 2.2); ⊎ and ⊙ (SCp2) | Core v2 |
+| Sequential composition | None: it's combine | Resolved: the same ⊕; sequence and parallel differ only in data flow | vertical ∧ (JSG V); ∧ (SCp1, Prop 7.4, where it is ⊕); ⋆ (SCp2, whose "∧ ≡ ⋆" misreads SCp1) | Core v2 |
+| Residual **θ ⊸ g** | Truncated subtraction (monus) | Budget left for later stages: θ ⊖ g on S; θ on M when g ≤ θ | None | Core v2 |
+| Decision **D** | A two-valued verdict. Some runtime monitors add a third, inconclusive one (Bauer, Leucker & Schallhart) | {REJECT < ACCEPT}; no third value | "Q" in the SIRUS spec | SIRUS spec §1.2 |
+| Verdict map **δ\_θ** | A conjunctive screen on worst cases: robust satisficing, in Ben-Haim's info-gap terms | Indicator of the down-set of θ, read on upper endpoints | Implicit threshold checks | Core v2 |
+| Definite failure | Guarded rejection, in JCGM 106:2012's terms | A grade fails definitely when some axis's lower end is above its threshold. Then every grade that narrows it is rejected; any other rejection is one that more evidence can undo | None: SCp1 gives a missing input and a failing one the same rejection | New: `statements-v5` (`DefinitelyFails`, and `definitelyFails_spec`, proved in Milestone 5) |
+| Receipted result **R** | None | (grade, receipt address, metrics). The decision is derived as δ\_θ(grade), never stored, and metrics cannot influence the grade | Q′ | SIRUS spec §1.4 |
+| Obligations **Σ** | None: proof obligations are only a loose analogy | Typed: each has a witness type and an authority stage; progress is the Dershowitz–Manna order | Typed effects | Core v2 |
+| Must-pass set **MP** | Positive controls. "Calibrated" collides with calibration in statistics (Dawid 1982) | Inputs the gate must ACCEPT; disjoint from the must-fail set | None | Core v2 |
+| Frontier charge **Δ\_fr** | Total variation over one partition, so a lower bound on it | Total variation A · Σ‖jump\_k‖ at the finest resolution; additive, so regrouping can't change it | C\_fr, frontier spend, C\_salt, the subadditive merged-crossing debit | Core v2 |
+| **proof\_surface** | None | Window or run digest binding the guard IDs in fixed order | proof\_print, proof print | SCp1 |
+| Guard order | None | EF → DRO → PR → CBF → ω | None | JSG III |
+| **ω stage** | None | Automata verdict over KPI row hashes; the fifth guard | "Ω" in the SIRUS pipeline | JSG III |
+| Uncertainty set **𝒰** | Already standard | Model-uncertainty set for PR/GKYP witnesses and degraded profiles | "Ω" in JSG II–IV, including Ω\_wc | JSG IV §Ω contract |
+| Clamp states | None | Green, Amber, Red | "Yellow" | JSG IV |
+| Invariant families | None | Prefix by family: H1–H5 (governor, JSG III list), A1–A5 (PDE acceptance), L1–L10 (Loader), T11–T13 (tail contracts) | I₁–I₅ (three incompatible versions); I1–I13 | New |
+| Policy lattice **⪰** | A lattice model of policy | Dials in a complete lattice, larger is stricter; E(t) = baseline ⊓ active weakenings; threshold dials store their inverse | "Strictest unexpired policy P\*"; ThresholdChange VC semantics | Core v2 |
+| **SIRUS** (this project) | None. Bénard et al.'s SIRUS is a "Stable and Interpretable RUle Set" | The governance and evidence spec | Also the name of Bénard et al.'s random-forest rule-set algorithm; the two were merged in MDmaster | Not yet: no v1 statement depends on it |
+| Content address | Already standard: content addressing | BLAKE3-256 of canonical bytes | `b3:…` placeholders (849 in the master spec) | SIRUS spec §0.5 |
 
 ## Unified core objects (v2)
 
