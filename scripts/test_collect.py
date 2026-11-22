@@ -14,13 +14,13 @@ may change. The relations:
 3. Through to_lean.py: fields added to the collected data, and its manuscripts and challenges
    reordered.
 In a README, relation 1 holds in two parts. Where collect.py can read the README with a metric
-in it, the metric changes no record: below the heading line, on it after the title's link, and
-as a section of its own anywhere but between a withdrawal notice's heading and its links. Where
-it can't, collect.py stops: it exits non-zero, names the README and writes nothing. That's
-anything above the heading, such as a confidence line or badge, a blank line, a byte-order mark
-or an HTML comment; a badge or a link on the heading line, before the title's link; and a
-section of its own between a withdrawal notice's heading and its links. collect.py's HEADING and
-readme_facts state the rule.
+in it, the metric changes no record: below the heading line, and as a section of its own
+anywhere but between a withdrawal notice's heading and its links. Where it can't, collect.py
+stops: it exits non-zero, names the README and writes nothing. That's anything above the
+heading, such as a confidence line or badge, a blank line, a byte-order mark or an HTML comment;
+anything else on the heading line, such as a badge, a link or a link to a PDF beside the README
+before the title's link, or a badge after it; and a section of its own between a withdrawal
+notice's heading and its links. collect.py's HEADING and readme_facts state the rule.
 One relation is narrower than that, since the whole relation fails (#130's "Decisions for me"):
 a manuscript's challenges, reordered, give the same Raw only up to their order. The grade reads
 them as a set (Raw.formal and Raw.axiomsOk, in Core.lean), though the report's words give their
@@ -394,9 +394,6 @@ try:
           lambda: no_record_changes(readmes(below_heading(LINE))))
     check("a confidence badge just below every README's heading changes no record and no Raw",
           lambda: no_record_changes(readmes(below_heading(BADGE))))
-    check("a confidence badge on every README's heading line, after the title's link, changes "
-          "no record and no Raw",
-          lambda: no_record_changes(readmes(on_heading(BADGE))))
     check("a review section of its own just below the heading of every README without a "
           "withdrawal notice changes no record and no Raw",
           lambda: no_record_changes(readmes(below_heading(SECTION), lambda f: f not in NOTICES)))
@@ -443,6 +440,7 @@ try:
 
     COMMENT = "<!-- Reviewed and verified. Confidence: 97%. -->"
     LINK = "[Confidence: 97%](https://example.org/reviews/1)"
+    REPORT = "[Referee report: accept](report.pdf)"
 
     def above(extra):
         return lambda text: extra + "\n\n" + text
@@ -458,6 +456,11 @@ try:
           "collect.py stop, name the README and write nothing", lambda: stops(before_title(BADGE)))
     check("a confidence link on any README's heading line, before the title's link, makes "
           "collect.py stop, name the README and write nothing", lambda: stops(before_title(LINK)))
+    check("a link to a PDF beside the README, on any README's heading line just before the "
+          "title's link, makes collect.py stop, name the README and write nothing",
+          lambda: stops(before_title(REPORT)))
+    check("a confidence badge on any README's heading line, after the title's link, makes "
+          "collect.py stop, name the README and write nothing", lambda: stops(on_heading(BADGE)))
     check("a byte-order mark before any README's heading makes collect.py stop, name the README "
           "and write nothing", lambda: stops(lambda text: "\ufeff" + text))
     check("a blank line before any README's heading makes collect.py stop, name the README and "

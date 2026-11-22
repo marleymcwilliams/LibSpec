@@ -6,12 +6,13 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ### The collector stops on a README it can't read
 - **Decided: the stopping rule.** `pilot/collect.py` stops, exits non-zero, names the README and writes nothing in two cases:
-  - **The first line isn't the README's heading.** The heading is `# [`, then `Withdrawal notice: ` for a withdrawn manuscript, then a title with no square bracket, linked to a PDF beside the README: a name ending `.pdf`, with no `/`, parenthesis or space. Anything may follow on that line.
+  - **The first line isn't the README's heading alone.** The heading is `# [`, then `Withdrawal notice: ` for a withdrawn manuscript, then a title with no square bracket, linked to a PDF beside the README: a name ending `.pdf`, with no `/`, parenthesis or space. Nothing else may be on that line, trailing whitespace aside.
   - **A withdrawal notice links another preprint after its first `## ` section,** since a notice's links are read only up to there. A link to its own folder doesn't count, since each notice at the pin links its archived PDF there.
 
   It reads nothing another way, so where it doesn't stop, it writes what it wrote before. The PR lists the checks.
 - **The rerun at the pin:** REPRODUCE's "Check the Lean data against the recorded facts", with the new collector and every file fetched afresh, left `git diff` empty. So the rule stops on no README at the pin.
 - **REPRODUCE:** `check.sh` runs eight steps, and its table has a row for the new step, "The pilot's Python", before Links.
+- **Reviewer note applied:** a link to a PDF beside the README, put before the title's link, passed the heading check, so the heading line must now hold the heading alone.
 - **To undo:** revert the PR.
 
 ### Metamorphic tests for the pilot's collectors
