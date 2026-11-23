@@ -3,6 +3,7 @@ import JSG.Tests.Mutants
 import JSG.Tests.Calibration
 import JSG.Tests.ConcreteLoader
 import JSG.Tests.Differential
+import JSG.Tests.Gamers
 
 /-!
 Root of the test modules, for the axiom audit (`lean/AxiomAudit.lean`). Import every

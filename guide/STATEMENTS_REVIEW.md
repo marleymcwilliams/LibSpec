@@ -1,6 +1,6 @@
 # Statements review: mutants and witnesses
 
-Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement. The [statements-v2](#statements-v2), [statements-v3](#statements-v3), [statements-v4](#statements-v4) and [statements-v5](#statements-v5) sections at the end do the same for the seven, three, eight and four theorems those versions add.
+Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement. The [statements-v2](#statements-v2), [statements-v3](#statements-v3), [statements-v4](#statements-v4) and [statements-v5](#statements-v5) sections at the end do the same for the seven, three, eight and four theorems those versions add. The last section, [Gamers and the kill matrix](#gamers-and-the-kill-matrix-the-ordinal-core), tests the other direction for the ordinal core's ten theorems: definitions that satisfy them yet do what the corpus forbids, and which one-change mutants they kill.
 
 **How to read it.**
 - **Same Prop:** the mutant refutes the statement's own named definition with the mutant plugged in.
@@ -923,3 +923,115 @@ Each witness proves every hypothesis of its theorem, in order, then the conclusi
 | `combine_respects_narrowing` | `hg`, `hh` | the mutant's inputs with `combine`, on a floor: the known 1 with the unknown is [1, ∞], and with the known 2 it's [2, 2], which lies inside it |
 | `narrowing_keeps_accept` | `hacc`, `hn` | θ = 1: [0, 1] is accepted, and so is the known 1, which narrows it |
 | `definitelyFails_spec` | none, so both sides of the iff | θ = 0: the known 1, where both sides hold, and [0, 1], where neither does, since the known 0 narrows it and is accepted |
+
+## Gamers and the kill matrix: the ordinal core
+
+Mutants show that a statement can fail. This section tests the other direction, for the ten theorems of the ordinal core, which decision 0 hardens ([ROADMAP.md](ROADMAP.md#after-milestone-4-grading-real-claims)): `combine_comm`, `combine_assoc`, `interchange`, `verdict_sound`, `verdict_complete`, `no_flip`, `accept_bounds_truth`, `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`.
+- **A gamer** is a definition that satisfies every restated copy, yet does what a passage of `archive/` says the model must not.
+- **A survivor** is a first-order mutant that no theorem kills: behaviour no statement pins down.
+
+Both are in `lean/JSG/Tests/Gamers.lean`, which imports only the definitions and `JSG.Tests.Mutants`, as `Mutants.lean` imports only the definitions.
+
+**Left out.** The twins' agreement theorems (§§27–34): they kill any mutant whose twin isn't changed with it, which says nothing about behaviour. By decision 0, budgets, residuals, leases, obligations, the frontier charge and the Loader wait, and so do `LoaderStep`'s guards and Milestone 2's gamer, a last stage that clears everything.
+
+### Gamers
+
+A fresh-context subagent looked for one gamer in each layer: graded values and `combine`, the verdict, and narrowing and definite failure. It was given only the ten theorems, their definitions, and the passages of `archive/` this review cites for them, as data. It ran nothing and opened no file. It found four, two in the first layer. `Gamers.lean` builds each, with a proof of every copy that mentions what it changes and one instance of what it does wrong. Two of them are survivors of the matrix below too, found independently, since the subagent saw no mutant.
+
+| Gamer | What it changes | The passage it goes against | What it does wrong | Origin |
+| --- | --- | --- | --- | --- |
+| `unknownZero` | `Bound.unknown` is the known 0 | SCp1's Remark 2.4: missing evidence "must descend to ⊥ and persist through aggregation"; JSG V's (V2): "Optional missing metrics map to [the unknown] at their coordinates (fail-closed)" | on a budget under θ = 5, the unknown with the known 3 gives [3, 3], which is accepted; the frozen unknown gives [3, ∞], which is rejected | real: SirusSC's `Q` reads a missing coordinate as its axis's identity, 0 or −∞, and `loader.py`'s guard looks only for the ⊥ sentinel |
+| `floorAdd` | `combineAxis`'s floor case sums, as its budget case does | SCp1's Proposition 2.3(c): "Axiswise idempotence: (q ∧ q)ᵢ = qᵢ iff i ∈ M", and a floor is a max-axis | on a floor under θ = 7, two stages at the known 5 give [10, 10], which is rejected; the frozen [5, 5] is accepted | real: SirusSC's `Q.sequential` sums "on both axis families". It is `scp2Seq` in both places, and `interchange_scp2_mutant` kills that only when parallel composition takes the max |
+| `pointsVerdict` | the verdict accepts only points within θ | SCp1's rejection certificate names "the violated invariant", and its Proposition 15.1 says "There is no third case". A reading, not a quote | under θ = 10, [2, 3] is rejected though no axis is over θ, and the known 3, its worst case, is accepted; `verdict` accepts [2, 3] | real: v2's `pointsOnly`, read from SirusSC's `Q`, with no lease (`pointsVerdict_eq`) |
+| `narrowsHiInside` | a narrowing need only keep its upper end inside | SCp1's Definition 7.1: "x ⪯ x′ ⇒ A_S(x) ≤_Q A_S(x′)", read as: more input never falls below what was established. A reading, not a quote | under θ = 5, [0, 8] narrows the known 8, which fails definitely, and the accepted known 0 narrows [0, 8], so two rounds of "more evidence" accept a known violation | invented: a one-token slip |
+
+**What else the subagent found.**
+- **`DefinitelyFails` has no gamer:** `definitelyFails_spec` fixes it once `Narrows` and `verdict` are fixed.
+- **A gamer of the verdict can only reject more:** by `verdict_sound`, whatever it accepts, `verdict` accepts too.
+- **Two more of its candidates survive the ten.** It didn't count them as gamers, and they're leads here:
+  - forgetting a floor's lower end, `lo := 0` in the floor case: invented, and it breaks SCp1's Proposition 2.3(d), "q ∧ e = q";
+  - [0, ∞] whenever an operand's upper end is ∞: JSG V asks for exactly this ("any composition with [the unknown] yields [the unknown]"), and [DEFECTS.md](DEFECTS.md) records the same absorption in SirusSC as a defect. Only `xcombine_agrees`, a twin's theorem, kills the like mutant `absorbCombine` (§29).
+
+### The mutants and the bounds
+
+- **What's mutated:** the definitions the ten theorems use, one change at a time: `combineAxis`'s floor case, `Bound.unknown`, `verdict`, `Narrows`, `Encloses`, `ComposesNoWorse`'s floor case and `DefinitelyFails`.
+- **The operators:**
+  - the plan's four: max and + swapped, `hi` and `lo` swapped, ≤ and < swapped, and one conjunct dropped. The verdict's check is a conjunct per axis, so dropping one skips an axis, and on one axis the verdict then accepts every grade.
+  - one more, since decision 0 names unknowns and none of the four reaches them: `Bound.unknown`'s ⊤ becomes 0, so missing evidence reads as zero ([DEFECTS.md](DEFECTS.md), "Unknown sits below every value").
+- **The search** ran in an uncommitted Python script that models the seven definitions and the ten copies, and checks first that the frozen definitions satisfy every copy. Its bounds:
+  - one axis, with interval ends in {0, 1, 2, ∞}, and thresholds and true values in {0, 1, 2, 3, 4, ∞};
+  - two axes, for the copies that read several, with ends, thresholds and true values in {0, 1, 2, ∞};
+  - in `definitelyFails_spec`'s copy, "every grade that narrows it" ranges over the grid's grades.
+
+  The copies about `combine` hold or fail axis by axis, so one axis covers them.
+- **A kill** proves a copy's negation at one instance, on one axis, by `simp` or `norm_num`, as `Mutants.lean` does. A survivor's copies are proved to hold, on any axes, so it is no artefact of the grid.
+
+### The matrix
+
+One row per mutant. "Proved" marks a copy proved to hold for the mutant; the others it survives were searched, with no counterexample within the bounds. A theorem that doesn't mention the changed definition is left out of its row: its copy is the frozen theorem itself.
+
+| Mutant | Its change | Killed by | Survives |
+| --- | --- | --- | --- |
+| — | `combineAxis`'s floor case, + in the lower end | can't be built: [1, 1] with [1, 1] gives [2, 1] | — |
+| `floorHiAdd` | `combineAxis`'s floor case, + in the upper end | none: a survivor | `combine_comm`, `combine_assoc`, `interchange`, `accept_bounds_truth` and `combine_respects_narrowing`, all proved |
+| `floorLoLeftHi` | the floor case's lower end reads `a.hi` for `a.lo` | `combine_comm`, `combine_respects_narrowing` | `combine_assoc`, `interchange`, `accept_bounds_truth` (proved) |
+| `floorLoRightHi` | the floor case's lower end reads `b.hi` for `b.lo` | `combine_comm`, `combine_respects_narrowing` | `combine_assoc`, `interchange`, `accept_bounds_truth` (proved) |
+| `floorHiLeftLo` | the floor case's upper end reads `a.lo` for `a.hi` | `combine_comm`, `accept_bounds_truth`, `combine_respects_narrowing` | `combine_assoc`, `interchange` |
+| `floorHiRightLo` | the floor case's upper end reads `b.lo` for `b.hi` | `combine_comm`, `accept_bounds_truth`, `combine_respects_narrowing` | `combine_assoc`, `interchange` |
+| — | the floor case's two ends swapped | can't be built: [0, 0] with [0, 1] gives [1, 0] | — |
+| `unknownZero` | `Bound.unknown`'s ⊤ read as 0: [0, 0] | none: a survivor, and a gamer | all ten, since none mentions `Bound.unknown` |
+| — | `Bound.unknown`'s ends swapped, [∞, 0] | can't be built | — |
+| `verdictLo` (`Mutants.lean`) | `verdict` reads `lo` for `hi` | `verdict_sound` and `narrowing_keeps_accept` (both in `Mutants.lean`), `accept_bounds_truth` | `verdict_complete`, `no_flip` (proved), `definitelyFails_spec` |
+| `verdictLt` | `verdict`'s ≤ to < | `verdict_complete`, `definitelyFails_spec` | `verdict_sound`, `no_flip` and `accept_bounds_truth`, all proved; `narrowing_keeps_accept` |
+| `verdictSkip` | `verdict` skips one axis's check; on one axis it accepts every grade | `verdict_sound`, `accept_bounds_truth`, `definitelyFails_spec` | `verdict_complete`, `no_flip` (proved), `narrowing_keeps_accept` |
+| `narrowsToHi` | `Narrows`' first conjunct reads `g`'s `hi` for its `lo` | `definitelyFails_spec` | `combine_respects_narrowing`, `narrowing_keeps_accept` (proved) |
+| `narrowsHiInside` | `Narrows`' first conjunct reads `g'`'s `hi` for its `lo` | none: a survivor, and a gamer | `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`, all proved |
+| `narrowsLoInside` | `Narrows`' second conjunct reads `g'`'s `lo` for its `hi` | `narrowing_keeps_accept` | `combine_respects_narrowing`, `definitelyFails_spec` (proved) |
+| `narrowsToLo` | `Narrows`' second conjunct reads `g`'s `lo` for its `hi` | none: a survivor | `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`, all proved |
+| `narrowsLoStrict` | `Narrows`' first conjunct, ≤ to < | `definitelyFails_spec` | `combine_respects_narrowing`, `narrowing_keeps_accept` (proved) |
+| `narrowsHiStrict` | `Narrows`' second conjunct, ≤ to < | `definitelyFails_spec` | `combine_respects_narrowing`, `narrowing_keeps_accept` (proved) |
+| `narrowsLoOnly` | `Narrows`' second conjunct dropped | `narrowing_keeps_accept` | `combine_respects_narrowing`, `definitelyFails_spec` (proved) |
+| `narrowsHiOnly` | `Narrows`' first conjunct dropped | `definitelyFails_spec` | `combine_respects_narrowing`, `narrowing_keeps_accept` (proved) |
+| — | `Encloses`' first conjunct reads `hi` for `lo` | can't be killed: it only strengthens a hypothesis | `accept_bounds_truth` |
+| — | `Encloses`' second conjunct reads `lo` for `hi` | can't be killed: it only strengthens a hypothesis | `accept_bounds_truth` |
+| — | `Encloses`' first conjunct, ≤ to < | can't be killed: it only strengthens a hypothesis | `accept_bounds_truth` |
+| — | `Encloses`' second conjunct, ≤ to < | can't be killed: it only strengthens a hypothesis | `accept_bounds_truth` |
+| `enclosesHiOnly` | `Encloses`' first conjunct dropped | none: a survivor, in a hypothesis | `accept_bounds_truth`, proved |
+| `enclosesLoOnly` | `Encloses`' second conjunct dropped | `accept_bounds_truth` | — |
+| `composesSum` | `ComposesNoWorse`'s floor case, max to + | `accept_bounds_truth` | — |
+| — | `ComposesNoWorse`'s floor case, ≤ to < | can't be killed: it only strengthens a hypothesis | `accept_bounds_truth` |
+| `rejectIsFinal` (`Mutants.lean`) | `DefinitelyFails` reads `hi` for `lo` | `definitelyFails_spec` (in `Mutants.lean`) | — |
+| `definitelyFailsLe` | `DefinitelyFails`' < to ≤ | `definitelyFails_spec` | — |
+
+**In numbers.** 30 mutants: 17 killed, 5 survivors, 5 that only strengthen a hypothesis of `accept_bounds_truth` and so can't be killed, 3 that can't be built, and none equivalent. The 17 take 28 kills: 25 proved in `Gamers.lean` and 3 already in `Mutants.lean`.
+
+### What each finding means
+
+The pilot computes with the twins, so a frozen definition's change reaches its verdicts only through its twin. The twins' agreement theorems ask the twin to change with it, so each finding below assumes it does. `Narrows`, `Encloses`, `ComposesNoWorse` and `DefinitelyFails` have no twin, and the pilot computes none of them. Under θ = 0 on every axis ([Q12](QUEUE.md), `θ0` in `lean/JSG/Pilot/Core.lean`), a grade is accepted only when every axis is the known 0, so most of what tells these findings apart is invisible there. Decision 0's test applies: a candidate that no pilot verdict can tell apart is a recorded limit until a threshold above 0 has a user.
+
+**`unknownZero`, a gamer and a survivor: missing evidence read as zero.**
+- **Why it survives:** no theorem of the ten mentions `Bound.unknown`. `verdict_sound` replaced `verdict_unknown` after [Q4](QUEUE.md). It covers every grade over its threshold, unknowns included, but no longer says what the unknown is. Of the 38 frozen theorems, only `xunknown_agrees` mentions it, and it ties it to the twin, so a change to both survives all 38.
+- **Pilot verdicts: 721 of 724 change.** With its twin changed with it, every unknown axis passes θ = 0. Each manuscript whose report lists only unknowns would be accepted: reports 1–4 in `pilot/reports/catalogue.md`. Only the three withdrawn manuscripts would still fail, on their known `withdrawn` axis.
+- **Recommendation: a statement candidate.** Every grade narrows the grade that is unknown on every axis, as `Narrows`' docstring already says. It kills `unknownZero`, since the known 1 doesn't narrow [0, 0], and `narrowsToLo` too. It pins the unknown exactly, since the only bound that every bound narrows is [0, ∞].
+
+**`floorAdd`, a gamer, and `floorHiAdd`, a survivor: a floor that adds.** `floorAdd` sums both ends, and `floorHiAdd` only the upper end.
+- **Pilot verdicts: none change.** On [0, ∞], a + b is 0 exactly when max(a, b) is, so under θ = 0 an end passes under one rule exactly when it does under the other. Above 0 both only reject more: under θ = 1, [0, 1] with itself gives [0, 2], which is rejected, where the frozen [0, 1] is accepted.
+- **Recommendation: a recorded limit.** If a threshold above 0 gets a user, the statement that would kill both is SCp1's Proposition 2.3(c), axiswise idempotence: on a floor, a grade combined with itself is that grade.
+
+**`pointsVerdict`, a gamer: only complete evidence accepted.**
+- **Pilot verdicts: none change.** Under θ = 0, a grade with every upper end within θ is the known 0 on every axis, a point, which `pointsVerdict` accepts too. Above 0 it only rejects more, as the subagent found every gamer of the verdict must.
+- **Recommendation: a recorded limit.** The statement that would kill it is `verdict_sound`'s converse: a grade whose upper ends are all within their thresholds is accepted. `verdict_complete` says that only for points.
+
+**`narrowsHiInside`, a gamer and a survivor: a narrowing need only keep its upper end inside.**
+- **What it permits:** D and G hold for a narrowing that may lower a lower end, so the theorems don't say that more evidence keeps what was known. Under it, a known violation can be narrowed, in two rounds, to an acceptance.
+- **Pilot verdicts: none change,** since the pilot never computes `Narrows`.
+- **Recommendation: a recorded limit.** The statement that would kill it is `Narrows`' docstring's other claim: the only grade that narrows a point is that point.
+
+**`narrowsToLo`, a survivor: a grade's only narrowing is the point at its lower end.**
+- **Pilot verdicts: none change,** as for `narrowsHiInside`.
+- **Recommendation:** no candidate of its own. The candidate for `unknownZero` kills it, since under it only the known 0 narrows the unknown.
+
+**`enclosesHiOnly`, a survivor: a grade need only bound its true value from above.**
+- **Could `accept_bounds_truth` be stronger? Yes.** It holds with this weaker hypothesis, proved on any axes, since its proof never reads a lower end. The four mutants that strengthen `Encloses`, and the one that strengthens `ComposesNoWorse`, can't be killed.
+- **Pilot verdicts: none change.** Enclosure is a hypothesis about the true values, not something the pilot computes.
+- **Recommendation: a recorded limit.** A stronger C would change nothing the pilot shows. Enclosure's lower half would matter to a statement about definite failure: if a grade encloses the true values and fails definitely, some true value is over its threshold. That statement would kill `enclosesHiOnly`, and would make the report's "evidence" a claim about the truth. It changes no verdict either, so it is a recorded limit too.
