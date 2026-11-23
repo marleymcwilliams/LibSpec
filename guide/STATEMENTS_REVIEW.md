@@ -1,6 +1,6 @@
 # Statements review: mutants and witnesses
 
-Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement. The [statements-v2](#statements-v2), [statements-v3](#statements-v3), [statements-v4](#statements-v4) and [statements-v5](#statements-v5) sections at the end do the same for the seven, three, eight and four theorems those versions add. The last section, [Gamers and the kill matrix](#gamers-and-the-kill-matrix-the-ordinal-core), tests the other direction for the ordinal core's ten theorems: definitions that satisfy them yet do what the corpus forbids, and which one-change mutants they kill.
+Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement. The [statements-v2](#statements-v2), [statements-v3](#statements-v3), [statements-v4](#statements-v4) and [statements-v5](#statements-v5) sections at the end do the same for the seven, three, eight and four theorems those versions add. The section after them, [Gamers and the kill matrix](#gamers-and-the-kill-matrix-the-ordinal-core), tests the other direction for the ordinal core's ten theorems: definitions that satisfy them yet do what the corpus forbids, and which one-change mutants they kill. The last section, [Independent readings](#independent-readings-the-ordinal-core), reads the same ten statements twice more, once from the statement alone and once from its source alone, and records each difference as a lead.
 
 **How to read it.**
 - **Same Prop:** the mutant refutes the statement's own named definition with the mutant plugged in.
@@ -974,24 +974,24 @@ One row per mutant. "Proved" marks a copy proved to hold for the mutant; the oth
 | --- | --- | --- | --- |
 | — | `combineAxis`'s floor case, + in the lower end | can't be built: [1, 1] with [1, 1] gives [2, 1] | — |
 | `floorHiAdd` | `combineAxis`'s floor case, + in the upper end | none: a survivor | `combine_comm`, `combine_assoc`, `interchange`, `accept_bounds_truth` and `combine_respects_narrowing`, all proved |
-| `floorLoLeftHi` | the floor case's lower end reads `a.hi` for `a.lo` | `combine_comm`, `combine_respects_narrowing` | `combine_assoc`, `interchange`, `accept_bounds_truth` (proved) |
-| `floorLoRightHi` | the floor case's lower end reads `b.hi` for `b.lo` | `combine_comm`, `combine_respects_narrowing` | `combine_assoc`, `interchange`, `accept_bounds_truth` (proved) |
+| `floorLoLeftHi` | the floor case's lower end reads `a.hi` for `a.lo` | `combine_comm`, `combine_respects_narrowing` | `accept_bounds_truth`, proved; `combine_assoc` and `interchange`, searched |
+| `floorLoRightHi` | the floor case's lower end reads `b.hi` for `b.lo` | `combine_comm`, `combine_respects_narrowing` | `accept_bounds_truth`, proved; `combine_assoc` and `interchange`, searched |
 | `floorHiLeftLo` | the floor case's upper end reads `a.lo` for `a.hi` | `combine_comm`, `accept_bounds_truth`, `combine_respects_narrowing` | `combine_assoc`, `interchange` |
 | `floorHiRightLo` | the floor case's upper end reads `b.lo` for `b.hi` | `combine_comm`, `accept_bounds_truth`, `combine_respects_narrowing` | `combine_assoc`, `interchange` |
 | — | the floor case's two ends swapped | can't be built: [0, 0] with [0, 1] gives [1, 0] | — |
 | `unknownZero` | `Bound.unknown`'s ⊤ read as 0: [0, 0] | none: a survivor, and a gamer | all ten, since none mentions `Bound.unknown` |
 | — | `Bound.unknown`'s ends swapped, [∞, 0] | can't be built | — |
-| `verdictLo` (`Mutants.lean`) | `verdict` reads `lo` for `hi` | `verdict_sound` and `narrowing_keeps_accept` (both in `Mutants.lean`), `accept_bounds_truth` | `verdict_complete`, `no_flip` (proved), `definitelyFails_spec` |
+| `verdictLo` (`Mutants.lean`) | `verdict` reads `lo` for `hi` | `verdict_sound` and `narrowing_keeps_accept` (both in `Mutants.lean`), `accept_bounds_truth` | `no_flip`, proved; `verdict_complete` and `definitelyFails_spec`, searched |
 | `verdictLt` | `verdict`'s ≤ to < | `verdict_complete`, `definitelyFails_spec` | `verdict_sound`, `no_flip` and `accept_bounds_truth`, all proved; `narrowing_keeps_accept` |
-| `verdictSkip` | `verdict` skips one axis's check; on one axis it accepts every grade | `verdict_sound`, `accept_bounds_truth`, `definitelyFails_spec` | `verdict_complete`, `no_flip` (proved), `narrowing_keeps_accept` |
-| `narrowsToHi` | `Narrows`' first conjunct reads `g`'s `hi` for its `lo` | `definitelyFails_spec` | `combine_respects_narrowing`, `narrowing_keeps_accept` (proved) |
+| `verdictSkip` | `verdict` skips one axis's check; on one axis it accepts every grade | `verdict_sound`, `accept_bounds_truth`, `definitelyFails_spec` | `no_flip`, proved; `verdict_complete` and `narrowing_keeps_accept`, searched |
+| `narrowsToHi` | `Narrows`' first conjunct reads `g`'s `hi` for its `lo` | `definitelyFails_spec` | `narrowing_keeps_accept`, proved; `combine_respects_narrowing`, searched |
 | `narrowsHiInside` | `Narrows`' first conjunct reads `g'`'s `hi` for its `lo` | none: a survivor, and a gamer | `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`, all proved |
-| `narrowsLoInside` | `Narrows`' second conjunct reads `g'`'s `lo` for its `hi` | `narrowing_keeps_accept` | `combine_respects_narrowing`, `definitelyFails_spec` (proved) |
+| `narrowsLoInside` | `Narrows`' second conjunct reads `g'`'s `lo` for its `hi` | `narrowing_keeps_accept` | `definitelyFails_spec`, proved; `combine_respects_narrowing`, searched |
 | `narrowsToLo` | `Narrows`' second conjunct reads `g`'s `lo` for its `hi` | none: a survivor | `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`, all proved |
-| `narrowsLoStrict` | `Narrows`' first conjunct, ≤ to < | `definitelyFails_spec` | `combine_respects_narrowing`, `narrowing_keeps_accept` (proved) |
-| `narrowsHiStrict` | `Narrows`' second conjunct, ≤ to < | `definitelyFails_spec` | `combine_respects_narrowing`, `narrowing_keeps_accept` (proved) |
-| `narrowsLoOnly` | `Narrows`' second conjunct dropped | `narrowing_keeps_accept` | `combine_respects_narrowing`, `definitelyFails_spec` (proved) |
-| `narrowsHiOnly` | `Narrows`' first conjunct dropped | `definitelyFails_spec` | `combine_respects_narrowing`, `narrowing_keeps_accept` (proved) |
+| `narrowsLoStrict` | `Narrows`' first conjunct, ≤ to < | `definitelyFails_spec` | `narrowing_keeps_accept`, proved; `combine_respects_narrowing`, searched |
+| `narrowsHiStrict` | `Narrows`' second conjunct, ≤ to < | `definitelyFails_spec` | `narrowing_keeps_accept`, proved; `combine_respects_narrowing`, searched |
+| `narrowsLoOnly` | `Narrows`' second conjunct dropped | `narrowing_keeps_accept` | `definitelyFails_spec`, proved; `combine_respects_narrowing`, searched |
+| `narrowsHiOnly` | `Narrows`' first conjunct dropped | `definitelyFails_spec` | `narrowing_keeps_accept`, proved; `combine_respects_narrowing`, searched |
 | — | `Encloses`' first conjunct reads `hi` for `lo` | can't be killed: it only strengthens a hypothesis | `accept_bounds_truth` |
 | — | `Encloses`' second conjunct reads `lo` for `hi` | can't be killed: it only strengthens a hypothesis | `accept_bounds_truth` |
 | — | `Encloses`' first conjunct, ≤ to < | can't be killed: it only strengthens a hypothesis | `accept_bounds_truth` |
@@ -1035,3 +1035,58 @@ The pilot computes with the twins, so a frozen definition's change reaches its v
 - **Could `accept_bounds_truth` be stronger? Yes.** It holds with this weaker hypothesis, proved on any axes, since its proof never reads a lower end. The four mutants that strengthen `Encloses`, and the one that strengthens `ComposesNoWorse`, can't be killed.
 - **Pilot verdicts: none change.** Enclosure is a hypothesis about the true values, not something the pilot computes.
 - **Recommendation: a recorded limit.** A stronger C would change nothing the pilot shows. Enclosure's lower half would matter to a statement about definite failure: if a grade encloses the true values and fails definitely, some true value is over its threshold. That statement would kill `enclosesHiOnly`, and would make the report's "evidence" a claim about the truth. It changes no verdict either, so it is a recorded limit too.
+
+## Independent readings: the ordinal core
+
+The mutants and the gamers test what a statement rules out. This section reads what each of the ten says, twice, with fresh-context subagents, one theorem each. Each got only its inputs, pasted into its prompt, and was told to open no file. Each made one tool call, the one that returned its answer.
+- **A back-translation.** A subagent got the frozen statement, with its name replaced by `T`, and the definitions it uses from `Defs.lean`, with every docstring and comment removed. It wrote in plain words what `T` claims and what it leaves out. Each answer is compared with the theorem's docstring and with its source.
+- **A second formalization.** Another subagent got only the source and the same definitions, and wrote its own Lean statement. All ten type-checked as written. `lean/JSG/Tests/Readings.lean` states each, and its frozen statement, as a predicate on the definition the theorem constrains: `combine`, `verdict` or `DefinitelyFails`, with every other definition fixed. It proves the two equivalent, or gives a definition for each direction where neither implies the other.
+
+**The sources.** For the first six theorems, the passage the layer map's Source column names, read from `archive/` as data. JSG V §2, "The Algebra of Acceptance" (`archive/Buckshot_Roulette/JSGV.tex`), went with the preamble's definitions of the macros it uses. The SIRUS spec's §1.2–1.4 are in `archive/Markdown/SIRUS_SPEC_MASTER.md`. C, D and G have no source in the corpus, so their subagents got [ROADMAP.md](ROADMAP.md#milestone-5-the-cores-gap-statements)'s Milestone 5 bullet, verbatim, which was written knowing their statements. Where one source makes several claims, the prompt named the one to formalize in the source's words, such as "the passage's claim that its aggregation operators are commutative".
+
+Both checks produce leads, never fidelity: by the hardening plan's decision 2, a model's review never counts toward `statement_fidelity`, and these subagents share a model with whoever drafted the statements, so a match is weak evidence.
+
+| Theorem | Source | Back-translation | Second formalization |
+| --- | --- | --- | --- |
+| `combine_comm` | JSG V §2 | matches | equivalent: the same statement |
+| `combine_assoc` | JSG V §2 | matches | equivalent: the same statement |
+| `interchange` | JSG V §2 | lead 1: with one operator, the law follows from `combine_comm` and `combine_assoc`, where JSG V's relates two | different: JSG V's lax law. `combineFlipped` satisfies only the frozen statement, and `mulPlus` only the second |
+| `verdict_sound` | SIRUS §1.2–1.3 | lead 2: under θ = ∞ the unknown is accepted, where SIRUS rejects every missing observation | equivalent: the same statement, and its notes raise θ = ∞ too |
+| `verdict_complete` | SIRUS §1.2–1.3 | lead 3: the passage has no rule that forces ACCEPT | different: §1.2's monotonicity law, read as narrowing keeping an acceptance. `alwaysReject` satisfies only that reading, and `verdictLo` only the frozen statement |
+| `no_flip` | SIRUS §1.4 | lead 4: the passage's rule is the hypothesis, so the statement holds for every verdict | equivalent: both hold for every verdict |
+| `accept_bounds_truth` | Milestone 5, C | matches | equivalent: the same statement |
+| `combine_respects_narrowing` | Milestone 5, D | matches | equivalent: the same statement |
+| `narrowing_keeps_accept` | Milestone 5, D | matches | equivalent: the same statement |
+| `definitelyFails_spec` | Milestone 5, G | matches | equivalent: the bullet's two sentences as two halves, which make the iff since a verdict has two values |
+
+**In numbers.** The back-translations: 6 match, and 4 are leads. The second formalizations: 8 equivalent, none stronger or weaker, and 2 different. Six of the eight equivalent ones are the frozen statement up to names.
+
+### What each lead means
+
+The pilot computes with the twins, under θ = 0 on every axis ([Q12](QUEUE.md)). None of the four leads changes a pilot verdict.
+
+**Lead 1, `interchange`: one operator, where JSG V has two.**
+- **The readings:** with `seqComp` and `parComp` both `combine`, the back-translation found that `T` is the medial law of one operation, which follows from commutativity and associativity. The second formalization stated JSG V's own law: an inequality between the max on every axis, in sequence, and `combine`, in parallel.
+- **Known:** [Q1](QUEUE.md) chose this form in 2026-10, so that JSG V's rule could be stated, as `interchange_mutant`. It says the one-operator law "can't fail for any commutative, associative `combine`".
+- **New here:** JSG V's lax law holds for the frozen `combine` (`interchangeSecond_combine`), so the frozen definitions satisfy both readings.
+- **Recommendation:** a note for the next statements version. The docstring could say that both compositions are `combine`, so the equation follows from `combine_comm` and `combine_assoc`, as Q1 records.
+
+**Lead 2, `verdict_sound`: the unknown under an infinite threshold.**
+- **The readings:** both raise it. Under θ = ∞, `T` never fires, and `verdict` accepts the unknown. SIRUS §1.3's fail-closed rule says missing observations "MUST yield `REJECT`", with no exception.
+- **Known, and deliberate:** the docstring says the unknown rejects "whenever its threshold is finite". Milestone 1's must-pass control `unknown_on_infinite_threshold_passes`, in `Tests/Calibration.lean`, requires the acceptance: "with no limit on the axis, even [0, ∞] is within it".
+- **Recommendation:** nothing.
+
+**Lead 3, `verdict_complete`: its cited source doesn't state it.**
+- **The readings:** the layer map cites SIRUS §1.2–1.3 for both verdict theorems. Their rules limit when ACCEPT is allowed, and none requires it. The second formalization's subagent said so, and formalized the one rule it read as requiring an ACCEPT: §1.2's monotonicity law, as narrowing keeping an acceptance, which is `narrowing_keeps_accept`'s claim.
+- **Where completeness comes from:** core v2's positive controls ([GLOSSARY.md](GLOSSARY.md#unified-core-objects-v2)), which ask for "a completeness lemma: complete evidence whose values are within θ is accepted", against the gate that rejects everything.
+- **Recommendation:** nothing for the statement. The layer map's Source cell for the verdict row could add core v2's positive controls, as the gap statements' row does, in a later docs change.
+
+**Lead 4, `no_flip`: the passage's rule is the hypothesis.**
+- **The readings:** `T` assumes a grader that ignores metrics (`Noninterfering`), so it holds for every verdict, as `no_flip_holds_any` in `Gamers.lean` shows. The second formalization put SIRUS §1.4's homomorphism rule in the same hypothesis. So the two are equivalent only because both always hold. The back-translation adds that metrics copied into the record, or built into the grader, aren't screened.
+- **Known since v1:** [§7](#7-no_flip-not-refuted-the-hypothesis-fails-instead) above, and the layer map: "no real grader shown noninterfering yet". The collectors' metamorphic tests check the property on the pilot's own collectors.
+- **Recommendation:** nothing.
+
+**Also found, not leads.**
+- **JSG V's monoid laws** give an identity, the all-zero grade, and the vertical operator's idempotence. No frozen theorem states either. Idempotence on floors is the gamers section's candidate against `floorAdd`.
+- **`accept_bounds_truth` reads no lower end,** as the back-translation noted. It's the gamers section's `enclosesHiOnly`.
+- **A narrowing may be any sub-interval,** a point included, whether or not evidence could reach it, as `definitelyFails_spec`'s back-translation noted. D's and G's docstrings read a narrowing as more evidence, as `Narrows`' docstring does.
