@@ -4,6 +4,18 @@ Decisions Claude Code made without asking, because they are reversible and don't
 
 ## 2026-11-22
 
+### Gamers and a kill matrix for the ordinal core
+- **Decided: the operators.** The plan's four, one change at a time: max and + swapped, `hi` and `lo` swapped, ≤ and < swapped, and one conjunct dropped. Plus one for unknowns: `Bound.unknown`'s ⊤ read as 0. The verdict's check counts as a conjunct per axis, so dropping one skips an axis.
+- **Decided: the bounds.** An uncommitted Python model of the definitions and the ten copies, searched on one axis, with ends in {0, 1, 2, ∞} and thresholds and true values in {0, 1, 2, 3, 4, ∞}, and on two axes with all three in {0, 1, 2, ∞}. Each kill is proved in Lean, and so is every copy a survivor or a gamer passes.
+- **Couldn't be built:** + in the floor case's lower end, the floor case's two ends swapped, and `Bound.unknown`'s ends swapped. **Equivalent:** none.
+- **Left out:**
+  - the twins' agreement theorems, which kill any mutant whose twin isn't changed with it, and, by decision 0, everything outside the ordinal core;
+  - five mutants that only strengthen a hypothesis of `accept_bounds_truth`, listed as unkillable;
+  - two candidates the gamer subagent found surviving but didn't count as gamers, which are leads, not built;
+  - proofs that a killed mutant passes its other copies, except where one line or a shared lemma gives one. The rest were searched.
+- **The PR and STATEMENTS_REVIEW.md's new section** give the matrix, the gamers and what each finding means.
+- **To undo:** revert the PR.
+
 ### The collector stops on a README it can't read
 - **Decided: the stopping rule.** `pilot/collect.py` stops, exits non-zero, names the README and writes nothing in two cases:
   - **The first line isn't the README's heading alone.** The heading is `# [`, then `Withdrawal notice: ` for a withdrawn manuscript, then a title with no square bracket, linked to a PDF beside the README: a name ending `.pdf`, with no `/`, parenthesis or space. Nothing else may be on that line, trailing whitespace aside.
