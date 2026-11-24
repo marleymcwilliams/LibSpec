@@ -2,7 +2,7 @@
 
 This takes a fresh machine through building everything, running the checks, and reading off what is proved and what isn't. Each step says what you should see.
 
-**Which version.** It describes `main`: 38 frozen theorems, all proved. v1.0, the tag `v1.0`, had the first 26. `statements-v4` added eight more, which Milestone 4 proved ([the executable gate](guide/EXECUTABLE_GATE.md)). v1.1, the tag `v1.1` at `6f2ffae`, has all 34 proved and adds the pilot. `statements-v5` added four more, which Milestone 5 proved ([the roadmap](guide/ROADMAP.md#milestone-5-the-cores-gap-statements)). Where v1.0 or v1.1 differs, the step says so. The pilot in step 6 is what v1.1 adds.
+**Which version.** It describes `main`: 39 frozen theorems, all proved. v1.0, the tag `v1.0`, had the first 26. `statements-v4` added eight more, which Milestone 4 proved ([the executable gate](guide/EXECUTABLE_GATE.md)). v1.1, the tag `v1.1` at `6f2ffae`, has all 34 proved and adds the pilot. `statements-v5` added four more, which Milestone 5 proved ([the roadmap](guide/ROADMAP.md#milestone-5-the-cores-gap-statements)). `statements-v6` added one more, proved in the same PR ([the changelog](guide/CHANGELOG.md#statements-v6)). Where v1.0 or v1.1 differs, the step says so. The pilot in step 6 is what v1.1 adds.
 
 ## What you need
 
@@ -56,7 +56,7 @@ It runs eight steps and ends with `check.sh: passed`:
 | Build | `lake build` again, which is quick once step 2 has run | no errors |
 | Forbidden tokens | no `sorry`, `admit`, `axiom` or native evaluation in `Proofs/`, `Lemmas/`, `Tests/`, `Harness/` or `Pilot/`, or in `lean/Gate.lean` | `ok` |
 | Axiom audit | `#print axioms` on every theorem in `Proofs/`, `Lemmas/`, `Tests/`, `Harness/` and `Pilot/` (`lean/AxiomAudit.lean`) | each theorem lists only `propext`, `Classical.choice` and `Quot.sound`, then `ok` |
-| Statements unchanged | `Defs.lean`, `Statements.lean`, their imports, the toolchain, the Mathlib pin and the lakefile, against the latest `statements-v*` tag | `ok (statements-v5): …` on `main`. It compares against the newest tag, so at v1.0 or v1.1 it fails, since a later version added statements they don't have |
+| Statements unchanged | `Defs.lean`, `Statements.lean`, their imports, the toolchain, the Mathlib pin and the lakefile, against the latest `statements-v*` tag | `ok (statements-v6): …` on `main`. It compares against the newest tag, so at v1.0 or v1.1 it fails, since a later version added statements they don't have |
 | CODEOWNERS | `.github/CODEOWNERS` gives `@marleymcwilliams` every file the statements check covers, and itself, by the path or a directory above it (`scripts/codeowners_check.py`), and that check fails on CODEOWNERS files of its own when it should (`scripts/test-codeowners-check.sh`). v1.0 and v1.1 don't have this step | `ok: @marleymcwilliams owns all 6: …`, then an `ok` for each case |
 | `archive/` unchanged | `archive/` is the tree it's frozen at, committed and in the working tree (`scripts/archive-check.sh`), and that check fails on a throwaway repository when it should (`scripts/test-archive-check.sh`). v1.0 doesn't have this step | `ok: archive/ is tree c2f6dac…, with nothing uncommitted`, then an `ok` for each case |
 | The pilot's Python | the collectors' metamorphic tests, on a release in miniature with no network: a metric or a reordering changes no record, and a README the collector can't read stops it (`scripts/test_collect.py`). Then the reading lists' and the results collector's rules (`scripts/test_reading_list.py` and `scripts/test_shard_results.py`). v1.0 and v1.1 don't have this step. On Windows, run it with `PYTHON=python` | an `ok` for each check, then `test_collect.py: passed`, `test_reading_list.py: passed` and `test_shard_results.py: passed` |
@@ -100,7 +100,7 @@ There are two ways to run it:
   PATH="$HOME/comparator-full-tools/bin:$PATH" bash scripts/comparator-full.sh
   ```
 
-  On `main` it ends with `comparator-full.sh: passed (38 theorems, Lean kernel and nanoda, full sandbox)`, at v1.1 with the same line for 34 theorems, and at v1.0 for 26. Don't run step 2 first: Comparator's guarantee assumes the proofs were never built outside its sandbox, and the script stops if they were.
+  On `main` it ends with `comparator-full.sh: passed (39 theorems, Lean kernel and nanoda, full sandbox)`, at v1.1 with the same line for 34 theorems, and at v1.0 for 26. Don't run step 2 first: Comparator's guarantee assumes the proofs were never built outside its sandbox, and the script stops if they were.
 
   `lake exe cache get` itself is allowed: it downloads Mathlib, not the proofs. On WSL, enable systemd first (`systemd=true` under `[boot]` in `/etc/wsl.conf`, then `wsl --shutdown`). landrun also needs a kernel with Landlock; if WSL's kernel lacks it, the self-test fails before anything is checked.
 

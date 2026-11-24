@@ -2,6 +2,10 @@
 
 Every statements version after `statements-v1` records here whether it tightens or weakens the statements, and so does every change in between to a file the statements check covers: `lean/JSG/Defs.lean`, `lean/JSG/Statements.lean`, their project imports, `lean/lean-toolchain`, `lean/lake-manifest.json` and `lean/lakefile.toml`, so Lean and Mathlib upgrades count too. A weakening also needs a signed decision (`guide/decisions/RAILS.md`).
 
+## statements-v6
+
+Tightens: it only adds a statement. `narrows_unknown`, that every grade narrows the grade that is unknown on every axis, goes in a new section 17 of `lean/JSG/Statements.lean`. It uses no new definition, so `lean/JSG/Defs.lean` doesn't change (QUEUE.md, Q17). It's the gamers' candidate 1 (STATEMENTS_REVIEW.md, the gamers section), and it pins the unknown, which no statement had done since Q4. No `statements-v1`–`v5` statement changes, so the 38 proofs stand as they are. Its proof is in `lean/JSG/Proofs/Milestone5.lean`, committed after the tagged commit, in the same PR.
+
 ## statements-v5
 
 Tightens: it only adds statements. Four theorems for Milestone 5's candidates C, D and G, and the four definitions they use, go in a new section 16 of `lean/JSG/Defs.lean` and `lean/JSG/Statements.lean` (guide/ROADMAP.md, Milestone 5; QUEUE.md, Q16). No `statements-v1`–`v4` definition or statement changes, so the 34 proofs of Milestones 1–4 stand as they are. Milestone 5 proved the four (#127).

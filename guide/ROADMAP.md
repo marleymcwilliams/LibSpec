@@ -459,7 +459,7 @@ The 34 frozen theorems include the core's algebra and its executable twins. None
 
 The goal is executable twins of typed obligations and of the concrete Loader, each proved to agree with its frozen definition, once SirusSC's loader is under test. Q11 deferred them until there was an implementation to test them against.
 
-**Deferred on 2026-11-13.** You decided that the model is for grading claims, and the obligation layer and the Loader have no consumer yet. So this phase waits until an axis with a real unit has a user. Their theorems stay proved and frozen. Milestone 5's gap statements take `statements-v5`, so this phase's draft becomes `statements-v6`, and its proofs Milestone 6.
+**Deferred on 2026-11-13.** You decided that the model is for grading claims, and the obligation layer and the Loader have no consumer yet. So this phase waits until an axis with a real unit has a user. Their theorems stay proved and frozen. Milestone 5's gap statements take `statements-v5`, and `statements-v6` went to the statement that pins the unknown (QUEUE.md, Q17), so this phase's draft becomes `statements-v7`, and its proofs Milestone 6.
 
 **Steps:**
 
@@ -467,13 +467,13 @@ The goal is executable twins of typed obligations and of the concrete Loader, ea
    - with fewer inputs than guards, it skips the rest silently (IDEAS.md);
    - its I1–I10 are different checks from SCp3's, under the same numbers;
    - its rank vector is never updated.
-2. **Draft `statements-v6`:** twins of the obligation layer and of `LoaderStep`, their agreement theorems, a mutant and a witness for each, and a provability check, in a draft PR as for v2–v4. The concrete Loader is generic in its cryptographic primitives (Q7), so its twin needs stand-ins for them.
+2. **Draft `statements-v7`:** twins of the obligation layer and of `LoaderStep`, their agreement theorems, a mutant and a witness for each, and a provability check, in a draft PR as for v2–v4. The concrete Loader is generic in its cryptographic primitives (Q7), so its twin needs stand-ins for them.
 3. **Milestone 6** proves them, at the milestone gate.
 4. **Test SirusSC's loader against the twins.** It must disagree exactly where its defects predict, with every new mutant as a negative control.
 
 **Resources:**
 - **Actions,** and not much of them.
-- **Your review of `statements-v6`,** the largest review these phases ask for after Phase 8's.
+- **Your review of `statements-v7`,** the largest review these phases ask for after Phase 8's.
 
 **Risks:**
 - **SirusSC's loader is far from SCp3.** Its checks and their numbering differ, so its model may grow large.
@@ -481,7 +481,7 @@ The goal is executable twins of typed obligations and of the concrete Loader, ea
 - **The twins could drift toward the code,** mirroring what SirusSC does rather than what the frozen definitions say. That's why they're proved to agree with the definitions, and only then tested against the code.
 
 **Decisions that stay yours:**
-- what `statements-v6` states, and its tag;
+- what `statements-v7` states, and its tag;
 - whether SirusSC's loader is the implementation to test;
 - any Norm-layer value a statement needs.
 

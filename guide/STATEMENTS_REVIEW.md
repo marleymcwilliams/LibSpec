@@ -1,6 +1,6 @@
 # Statements review: mutants and witnesses
 
-Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement. The [statements-v2](#statements-v2), [statements-v3](#statements-v3), [statements-v4](#statements-v4) and [statements-v5](#statements-v5) sections at the end do the same for the seven, three, eight and four theorems those versions add. The section after them, [Gamers and the kill matrix](#gamers-and-the-kill-matrix-the-ordinal-core), tests the other direction for the ordinal core's ten theorems: definitions that satisfy them yet do what the corpus forbids, and which one-change mutants they kill. The last section, [Independent readings](#independent-readings-the-ordinal-core), reads the same ten statements twice more, once from the statement alone and once from its source alone, and records each difference as a lead.
+Review support before `statements-v1` is tagged. Nothing here changes a statement. Updated for the Q2, Q3 and Q4 restatements of `bridge`, the must-fail gate and the verdict. For each of the 16 theorems in `lean/JSG/Statements.lean`, it shows the Prop its mutant refutes in `lean/JSG/Tests/Mutants.lean`, next to the statement. The [statements-v2](#statements-v2), [statements-v3](#statements-v3), [statements-v4](#statements-v4), [statements-v5](#statements-v5) and [statements-v6](#statements-v6) sections at the end do the same for the seven, three, eight, four and one theorems those versions add. The section after them, [Gamers and the kill matrix](#gamers-and-the-kill-matrix-the-ordinal-core), tests the other direction for the ordinal core's ten theorems: definitions that satisfy them yet do what the corpus forbids, and which one-change mutants they kill. The last section, [Independent readings](#independent-readings-the-ordinal-core), reads the same ten statements twice more, once from the statement alone and once from its source alone, and records each difference as a lead.
 
 **How to read it.**
 - **Same Prop:** the mutant refutes the statement's own named definition with the mutant plugged in.
@@ -924,6 +924,43 @@ Each witness proves every hypothesis of its theorem, in order, then the conclusi
 | `narrowing_keeps_accept` | `hacc`, `hn` | θ = 1: [0, 1] is accepted, and so is the known 1, which narrows it |
 | `definitelyFails_spec` | none, so both sides of the iff | θ = 0: the known 1, where both sides hold, and [0, 1], where neither does, since the known 0 narrows it and is accepted |
 
+## statements-v6
+
+Review support for the `statements-v6` proposal, read the same way as above. Its one theorem is in section 17 of `lean/JSG/Statements.lean`. Its controls are in the "statements-v6" part of `lean/JSG/Tests/Mutants.lean`, which still imports only the definitions, and in the last part of `lean/JSG/Tests/Gamers.lean`. It uses no new definition, so `lean/JSG/Defs.lean` doesn't change. Its proof is one line, committed in the same PR after the tagged commit.
+
+**Scope** ([Q17](QUEUE.md)). Since Q4 replaced `verdict_unknown` with `verdict_sound`, no frozen theorem has said what the unknown is. So reading it as zero survives every theorem of the ordinal core ([the gamers section's finding on `unknownZero`](#what-each-finding-means)). v6 states the gamers' candidate 1, `narrows_unknown`: every grade narrows the grade that is unknown on every axis.
+
+**Context.** Section 17 uses section 1's `variable {ι : Type} (kind : ι → Kind)`, and doesn't need `kind`.
+
+**Fixtures.** v5's, on one axis: `k x` is the known x, and `unk` is the unknown.
+
+| Theorem | The mutant refutes | What differs from the statement | The defect it comes from |
+| --- | --- | --- | --- |
+| `narrows_unknown` | Restated copy | `Bound.unknown` → `bottomBound`, the known 0 | "Unknown sits below every value" in [DEFECTS.md](DEFECTS.md): SCp1's order puts ⊥ below every value, and SirusSC's `Q.leq` lets ⊥ pass any bound. It's v4's `bottomUnknown` before the cast (§28), and the gamers' `unknownZero` |
+
+### 39. `narrows_unknown`: restated copy
+```lean
+-- Statement
+theorem narrows_unknown (g : Grade ι) : Narrows g (fun _ => Bound.unknown)
+-- Mutant: the unknown at the bottom of the order, [0, 0]
+theorem narrows_unknown_mutant : ¬ ∀ g : Grade Unit, Narrows g (fun _ => bottomBound)
+```
+
+The known 1 narrows the unknown, [0, ∞], but not [0, 0], since its upper end, 1, is above 0.
+
+**What it adds.**
+- **It pins the unknown.** [0, ∞] is the only bound that every bound narrows. With `xunknown_agrees`, it pins the twin too.
+- **It kills two survivors of the gamers' matrix:** `unknownZero`, the same change as its mutant, and `narrowsToLo` (`narrows_unknown_kills_narrowsToLo`, in `Gamers.lean`).
+- **It makes the first claim of `Narrows`' docstring a theorem.** The second, that only a point narrows a point, stays a docstring claim. It's the gamers' recorded limit for `narrowsHiInside`, and v6 leaves it out.
+
+### Provability check (v6)
+
+`narrows_unknown` is proved in an uncommitted scratch file: first before the copy, with section 17 in the context it has at the end of the file, and again after it, against the real `JSG.Statements`. The proof is against the frozen statement, since an `example` checks by `rfl` that their types are equal, and it uses only propext, Classical.choice and Quot.sound. It's one line, `fun _ => ⟨zero_le, le_top⟩`: on every axis, the unknown's lower end is 0 and its upper end ∞. It's in `lean/JSG/Proofs/Milestone5.lean`.
+
+### Witness (v6)
+
+`narrows_unknown_witness`: the known 1 narrows `unk`. The theorem has no hypotheses, so its conclusion at one instance is all a witness needs.
+
 ## Gamers and the kill matrix: the ordinal core
 
 Mutants show that a statement can fail. This section tests the other direction, for the ten theorems of the ordinal core, which decision 0 hardens ([ROADMAP.md](ROADMAP.md#after-milestone-4-grading-real-claims)): `combine_comm`, `combine_assoc`, `interchange`, `verdict_sound`, `verdict_complete`, `no_flip`, `accept_bounds_truth`, `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`.
@@ -936,7 +973,7 @@ Both are in `lean/JSG/Tests/Gamers.lean`, which imports only the definitions and
 
 ### Gamers
 
-A fresh-context subagent looked for one gamer in each layer: graded values and `combine`, the verdict, and narrowing and definite failure. It was given only the ten theorems, their definitions, and the passages of `archive/` this review cites for them, as data. It ran nothing and opened no file. It found four, two in the first layer. `Gamers.lean` builds each, with a proof of every copy that mentions what it changes and one instance of what it does wrong. Two of them are survivors of the matrix below too, found independently, since the subagent saw no mutant.
+A fresh-context subagent looked for one gamer in each layer: graded values and `combine`, the verdict, and narrowing and definite failure. It was given only the ten theorems, their definitions, and the passages of `archive/` this review cites for them, as data. It ran nothing and opened no file. Like every subagent here, it also had Claude Code's own context, which includes the repository's CLAUDE.md, and CLAUDE.md quotes no statement. It found four, two in the first layer. `Gamers.lean` builds each, with a proof of every copy that mentions what it changes and one instance of what it does wrong. Two of them are survivors of the matrix below too, found independently, since the subagent saw no mutant.
 
 | Gamer | What it changes | The passage it goes against | What it does wrong | Origin |
 | --- | --- | --- | --- | --- |
@@ -1012,7 +1049,7 @@ The pilot computes with the twins, so a frozen definition's change reaches its v
 **`unknownZero`, a gamer and a survivor: missing evidence read as zero.**
 - **Why it survives:** no theorem of the ten mentions `Bound.unknown`. `verdict_sound` replaced `verdict_unknown` after [Q4](QUEUE.md). It covers every grade over its threshold, unknowns included, but no longer says what the unknown is. Of the 38 frozen theorems, only `xunknown_agrees` mentions it, and it ties it to the twin, so a change to both survives all 38.
 - **Pilot verdicts: 721 of 724 change.** With its twin changed with it, every unknown axis passes θ = 0. Each manuscript whose report lists only unknowns would be accepted: reports 1–4 in `pilot/reports/catalogue.md`. Only the three withdrawn manuscripts would still fail, on their known `withdrawn` axis.
-- **Recommendation: a statement candidate.** Every grade narrows the grade that is unknown on every axis, as `Narrows`' docstring already says. It kills `unknownZero`, since the known 1 doesn't narrow [0, 0], and `narrowsToLo` too. It pins the unknown exactly, since the only bound that every bound narrows is [0, ∞].
+- **Recommendation: a statement candidate.** `statements-v6` states it, as `narrows_unknown` ([§39](#39-narrows_unknown-restated-copy)). Every grade narrows the grade that is unknown on every axis, as `Narrows`' docstring already says. It kills `unknownZero`, since the known 1 doesn't narrow [0, 0], and `narrowsToLo` too. It pins the unknown exactly, since the only bound that every bound narrows is [0, ∞].
 
 **`floorAdd`, a gamer, and `floorHiAdd`, a survivor: a floor that adds.** `floorAdd` sums both ends, and `floorHiAdd` only the upper end.
 - **Pilot verdicts: none change.** On [0, ∞], a + b is 0 exactly when max(a, b) is, so under θ = 0 an end passes under one rule exactly when it does under the other. Above 0 both only reject more: under θ = 1, [0, 1] with itself gives [0, 2], which is rejected, where the frozen [0, 1] is accepted.
@@ -1038,7 +1075,7 @@ The pilot computes with the twins, so a frozen definition's change reaches its v
 
 ## Independent readings: the ordinal core
 
-The mutants and the gamers test what a statement rules out. This section reads what each of the ten says, twice, with fresh-context subagents, one theorem each. Each got only its inputs, pasted into its prompt, and was told to open no file. Each made one tool call, the one that returned its answer.
+The mutants and the gamers test what a statement rules out. This section reads what each of the ten says, twice, with fresh-context subagents, one theorem each. Each got only its inputs, pasted into its prompt, and was told to open no file. Each made one tool call, the one that returned its answer. Each also had Claude Code's own context, which includes the repository's CLAUDE.md: one answer ends with the session note CLAUDE.md asks for. CLAUDE.md quotes no statement.
 - **A back-translation.** A subagent got the frozen statement, with its name replaced by `T`, and the definitions it uses from `Defs.lean`, with every docstring and comment removed. It wrote in plain words what `T` claims and what it leaves out. Each answer is compared with the theorem's docstring and with its source.
 - **A second formalization.** Another subagent got only the source and the same definitions, and wrote its own Lean statement. All ten type-checked as written. `lean/JSG/Tests/Readings.lean` states each, and its frozen statement, as a predicate on the definition the theorem constrains: `combine`, `verdict` or `DefinitelyFails`, with every other definition fixed. It proves the two equivalent, or gives a definition for each direction where neither implies the other.
 

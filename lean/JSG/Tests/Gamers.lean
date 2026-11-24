@@ -13,6 +13,9 @@ search's bounds, the matrix and what each finding means.
   copy's negation at one instance, on one axis, as `JSG.Tests.Mutants` does. A **survivor** is a
   mutant no theorem kills, and each copy that mentions what it changes is proved to hold for it.
 
+Its last part is `statements-v6`'s: `narrows_unknown`, which that version adds, kills the
+survivor `narrowsToLo`.
+
 Like `JSG.Tests.Mutants`, this file imports only the definitions and those controls, so nothing
 here leans on the proofs of the frozen theorems.
 -/
@@ -794,5 +797,19 @@ theorem definitelyFails_spec_kills_definitelyFailsLe :
   intro hc
   have := (hc (fun _ => 0) (k 0)).mp ⟨(), le_rfl⟩ (k 0) (fun _ => ⟨le_rfl, le_rfl⟩)
   simp [verdict, k, Bound.known] at this
+
+/-! ## statements-v6: `narrows_unknown`
+
+`statements-v6` adds `narrows_unknown`: every grade narrows the grade that is unknown on every
+axis. Of the matrix's survivors, it kills `unknownZero`, the same change as its mutant in
+`JSG.Tests.Mutants`, and `narrowsToLo`, below. -/
+
+/-- Under `narrowsToLo`, only the point at a grade's lower end narrows it, so the known 1 doesn't
+    narrow the unknown. -/
+theorem narrows_unknown_kills_narrowsToLo :
+    ¬ ∀ g : Grade Unit, narrowsToLo g (fun _ => Bound.unknown) := by
+  intro h
+  have := (h (k 1) ()).2
+  norm_num [k, Bound.known, Bound.unknown] at this
 
 end JSG.Tests.Gamers

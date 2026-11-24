@@ -8,6 +8,15 @@ None right now.
 
 ## Answered
 
+### Q17. Pin the unknown in statements-v6
+
+**Answered 2026-11-23: yes,** on the reviewer's decision card while #132 was in review, batched with #133's results. The draft states it as one theorem, `narrows_unknown`, and your tag of `statements-v6` approves that form.
+
+- **Question:** Should `statements-v6` add the gamers' candidate 1: every grade narrows the grade that is unknown on every axis? Since Q4 replaced `verdict_unknown` with `verdict_sound`, no frozen theorem has said what the unknown is.
+- **Recommended answer:** Yes. It pins the unknown to [0, ∞], the only bound every bound narrows, and `Narrows`' docstring already says it.
+- **What breaks if wrong:** Nothing the pilot shows today, since `Defs.lean` is frozen at the tag. Without it, a definition that read the unknown and its twin as zero would pass every frozen theorem. [STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md#what-each-finding-means), in its finding on `unknownZero`, says what that would do to the pilot's verdicts.
+- **Can it be undone:** Yes, freely until `statements-v6` is tagged. After that, removing or changing it is a weakening, which needs a signed decision.
+
 ### Q16. The form of the statements-v5 gap statements
 
 **Answered 2026-11-20: yes, as drafted:** C for `combine` as frozen, on floors and budgets alike; D as two theorems; G as an iff; two stages combined once.

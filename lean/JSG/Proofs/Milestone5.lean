@@ -5,7 +5,8 @@ Milestone 5 proofs: the core's gap statements that `statements-v5` added. They s
 accept means for the true values behind a grade, how the verdict behaves as evidence narrows,
 and when a rejection is definite. Each theorem restates its frozen statement in
 `JSG.Statements` under the same name, and CI's Comparator run checks that it proves exactly
-that statement. They need no helper lemma.
+that statement. They need no helper lemma. The last part proves `narrows_unknown`, the one
+theorem `statements-v6` added.
 -/
 
 namespace JSG
@@ -66,5 +67,10 @@ theorem definitelyFails_spec (θ : ι → ENNReal) (g : Grade ι) :
     unfold verdict at hrej
     split_ifs at hrej with hall
     exact hall hlo
+
+/-! ## statements-v6 -/
+
+theorem narrows_unknown (g : Grade ι) : Narrows g (fun _ => Bound.unknown) :=
+  fun _ => ⟨zero_le, le_top⟩
 
 end JSG
