@@ -1923,4 +1923,28 @@ theorem definitelyFails_spec_witness :
   · have := h (k 0) (fun _ => ⟨le_rfl, zero_le⟩)
     simp [verdict, k, Bound.known] at this
 
+/-! ## statements-v6
+
+Controls for the theorem added in `statements-v6`, in the same style, with v5's fixtures `k` and
+`unk`. -/
+
+/-- Mutant: the unknown at the bottom of the order, [0, 0], in `Bound.unknown`'s place. It is
+    the defect DEFECTS.md records as "Unknown sits below every value": SCp1's order puts ⊥ below
+    every value, and SirusSC's `Q.leq` lets ⊥ pass any bound. It is v4's `bottomUnknown` before
+    the cast, and the gamers' `unknownZero` (`JSG.Tests.Gamers`). -/
+def bottomBound : Bound := Bound.known 0
+
+/-! ## narrows_unknown -/
+
+/-- `bottomBound` in the unknown's place: the known 1 doesn't narrow it, since its upper end, 1,
+    is above 0. -/
+theorem narrows_unknown_mutant : ¬ ∀ g : Grade Unit, Narrows g (fun _ => bottomBound) := by
+  intro h
+  have := (h (k 1) ()).2
+  norm_num [bottomBound, k, Bound.known] at this
+
+/-- Witness for `narrows_unknown` (the known 1): it narrows the unknown. The theorem has no
+    hypotheses, so that is all it needs. -/
+theorem narrows_unknown_witness : Narrows (k 1) unk := fun _ => ⟨zero_le, le_top⟩
+
 end JSG.Tests.Mutants

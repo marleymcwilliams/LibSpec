@@ -382,4 +382,17 @@ theorem definitelyFails_spec (θ : ι → ENNReal) (g : Grade ι) :
 -- a test that counts every rejected grade as a definite failure. Under θ = 1 it counts the
 -- unknown, though the known 1 narrows the unknown and is accepted.
 
+/-! ## statements-v6
+
+Section 17 was added for `statements-v6` (guide/CHANGELOG.md); nothing above it changed. -/
+
+/-! ## 17. What the unknown is (guide/STATEMENTS_REVIEW.md, the gamers' candidate 1) -/
+
+/-- Every grade narrows the grade that is unknown on every axis: the unknown, [0, ∞], knows
+    least, so any evidence narrows it. With `verdict_sound`, an axis left unknown rejects
+    under any finite threshold. -/
+theorem narrows_unknown (g : Grade ι) : Narrows g (fun _ => Bound.unknown) := by sorry
+-- Mutant: an unknown at the bottom of the order, [0, 0], as SCp1's order puts ⊥ below every
+-- value and SirusSC's `Q.leq` lets ⊥ pass any bound. The known 1 doesn't narrow it.
+
 end JSG
