@@ -2,6 +2,15 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-11-23
+
+### Independent readings of the ordinal core's statements
+- **Decided: what each comparison abstracts.** `combine` for `combine_comm`, `combine_assoc`, `interchange`, `accept_bounds_truth` and `combine_respects_narrowing`. `verdict` for `verdict_sound`, `verdict_complete`, `no_flip` and `narrowing_keeps_accept`. `DefinitelyFails` for `definitelyFails_spec`. Every other definition stays fixed. In `interchange`, `seqComp` and `parComp` are both `combine`, so both become the abstracted combination.
+- **Syntax fixes:** none. Each second formalization type-checked as its subagent wrote it: nine after `import JSG.Defs`, and `combine_respects_narrowing`'s as a file of its own, since it repeats its definitions word for word.
+- **Decided: the passages.** Each subagent got the whole of what the layer map's Source column names: JSG V §2 with the preamble's definitions of its macros, SIRUS §1.2–1.3, or SIRUS §1.4. For C, D and G, it got ROADMAP's Milestone 5 bullet, verbatim. Where a source makes several claims, the prompt named the one to formalize in the source's words: commutativity, associativity and the lax interchange law in JSG V §2, when a decision must be REJECT and when it must be ACCEPT in SIRUS §1.2–1.3, §1.4's Homomorphism rule, and the first or second half of D's bullet.
+- **The PR** has the prompts and the subagents' full answers, and STATEMENTS_REVIEW.md's new section the results.
+- **To undo:** revert the PR.
+
 ## 2026-11-22
 
 ### Gamers and a kill matrix for the ordinal core
