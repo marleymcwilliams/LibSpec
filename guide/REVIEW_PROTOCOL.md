@@ -1,10 +1,10 @@
 # Statement review protocol
 
-A named reviewer follows this protocol to check that the openai/math release's challenges state their paper's claim ([ROADMAP.md](ROADMAP.md), Phase 8). Each review gives a verdict, and the verdicts are what can make the pilot's `statement_fidelity` axis known ([EXECUTABLE_GATE.md](EXECUTABLE_GATE.md), §3).
+A named reviewer follows this protocol to check that the openai/math release's challenges state their paper's claim ([ROADMAP.md](ROADMAP.md), Phase 8), and that LibSpec's own frozen statements state their source's ([below](#libspecs-own-statements)). Each review gives a verdict, and the verdicts are what can make the pilot's `statement_fidelity` axis known ([EXECUTABLE_GATE.md](EXECUTABLE_GATE.md), §3).
 
 **Why it's needed.** Comparator checks a proof against its challenge's statement, but not that the statement says what the paper claims. The release's `lean/formalization.yaml` records its review as `unchecked`. So today `statement_fidelity` is unknown for every manuscript, and no manuscript can be accepted.
 
-**How it differs from [STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md).** That file supports Marley's review of LibSpec's own frozen statements, before each `statements-v*` tag: each statement beside its source in the corpus, with the mutant that shows it can fail and the witness where it holds. Its result is a tag, and nothing in it is a verdict on someone else's work. This protocol is for the release's challenges, which LibSpec doesn't own. A reviewer compares them with their paper's claim, and the verdict becomes evidence in the pilot's report. In both, whether a statement says what its source means rests on a person's reading. Lean checks STATEMENTS_REVIEW's mutants and witnesses, not that.
+**How it differs from [STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md).** That file supports Marley's review of LibSpec's own frozen statements, before each `statements-v*` tag: each statement beside its source in the corpus, with the mutant that shows it can fail and the witness where it holds. Its result is a tag, and nothing in it is a verdict on someone else's work. This protocol began with the release's challenges, which LibSpec doesn't own. A reviewer compares them with their paper's claim, and the verdict becomes evidence in the pilot's report. In both, whether a statement says what its source means rests on a person's reading. Lean checks STATEMENTS_REVIEW's mutants and witnesses, not that.
 
 ## Named reviewers
 
@@ -15,6 +15,10 @@ Only a review by someone on this list counts. Marley adds each reviewer, by GitH
 | `marleymcwilliams` | 2026-11-08 |
 
 Reviews are published under the reviewer's GitHub identity: each is a GitHub issue the reviewer files (step 3), and the report names them. So taking part needs their consent, given before they're added here.
+
+Two rules bind every review, as Marley decided on 2026-11-11:
+- **Nobody reviews their own statements.** A named reviewer doesn't review a statement they wrote, or one whose source they wrote. For LibSpec's own statements, that rules out Marley, the corpus's author, who also owns them.
+- **A model's review never counts.** A model can raise a lead for a named reviewer, and nothing more.
 
 ## What a review covers
 
@@ -75,6 +79,14 @@ When two named reviewers give different verdicts on the same manuscript at the s
 ## A lighter first pass
 
 A lighter first pass for deep results waits for step 4's times.
+
+## LibSpec's own statements
+
+The protocol covers LibSpec's frozen statements too, in `lean/JSG/Statements.lean`. Marley's review before each tag, with [STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md), gives a tag; a named reviewer's review under this protocol gives a verdict. Each step applies as written, with these in place of the release's:
+- **What a review covers:** a row of the [layer map](LAYER_MAP.md), with every frozen theorem it names, as a manuscript's review covers all its challenges.
+- **The claim:** what the row's source claims, where its Source column points. For the four analysis results restated after the corpus was corrected, `dwell_lower_bound`, `cvar_tail_to_level`, `kl_fisher_local` and `dro_envelope`, it's the corrected claim that [DEFECTS.md](DEFECTS.md) records, or the literature's theorem, not the corpus. For `statements-v5`'s four gap statements, which have no source in the corpus, it's their description under Milestone 5 in [ROADMAP.md](ROADMAP.md).
+- **The definitions read:** those in `lean/JSG/Defs.lean` that the theorems use.
+- **The record:** the row and the `statements-v*` tag read, in place of the manuscript's folder and the release's commit.
 
 ## Risks that bear on the protocol
 
