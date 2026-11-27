@@ -1,8 +1,9 @@
 import JSG.Defs
 
 /-!
-Controls for the frozen statements in `JSG.Statements` (ROADMAP, Phase 2). For each
-theorem, and for the two definitions that carry a `Mutant:` line:
+Controls for the frozen statements in `JSG.Statements` (Phase 2 of the roadmap, at
+https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#phase-2-freeze-the-statements).
+For each theorem, and for the two definitions that carry a `Mutant:` line:
 
 * a **mutant**: the plausible wrong implementation named in `Statements.lean`, with a
   proof that it violates the statement;
@@ -80,10 +81,11 @@ theorem interchange_mutant : ¬ Interchange jsgVSeq (parComp budget) := by
   have := congrArg (fun g => (g ()).hi) (hc (k 1) (k 0) (k 0) (k 1))
   simp [jsgVSeq, parComp, combine, combineAxis, budget, k, Bound.known] at this
 
-/-- Mutant: SCp2's operator pair, a real defect (ROADMAP, Milestone 1 notes). Sequence is
-    its ⋆, + on every axis (SirusSC's `Q.sequential`); parallel composition is its ⊎, max
-    on floors (`Q.hetero_join`). On a floor axis with a = 1, b = 0, c = 0, d = 1,
-    parallel-of-sequences grades max(1 + 0, 0 + 1) = 1 and sequence-of-parallels 2. -/
+/-- Mutant: SCp2's operator pair, a real defect (the roadmap's Milestone 1 notes, at
+    https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#phases-35-the-three-proof-milestones).
+    Sequence is its ⋆, + on every axis (SirusSC's `Q.sequential`); parallel composition is
+    its ⊎, max on floors (`Q.hetero_join`). On a floor axis with a = 1, b = 0, c = 0,
+    d = 1, parallel-of-sequences grades max(1 + 0, 0 + 1) = 1 and sequence-of-parallels 2. -/
 def scp2Seq {ι : Type} (g h : Grade ι) : Grade ι := fun i => combineAxis .budget (g i) (h i)
 
 theorem interchange_scp2_mutant : ¬ Interchange scp2Seq (parComp floor) := by
@@ -298,9 +300,9 @@ theorem charge_chatter_mutant :
   have := hc 1 1
   simp [chargeMerged] at this
 
-/-- Mutant: SCp2's frontier debit (§5), a real defect (ROADMAP, Milestone 1 notes). It
-    folds jump prices with max, so repeats aren't double-charged: [v, -v] costs A‖v‖,
-    not 2A‖v‖. -/
+/-- Mutant: SCp2's frontier debit (§5), a real defect (guide/DEFECTS.md, where SCp2 and
+    MDmaster disagree on the frontier debit). It folds jump prices with max, so repeats
+    aren't double-charged: [v, -v] costs A‖v‖, not 2A‖v‖. -/
 noncomputable def chargeMaxFold {E : Type} [NormedAddCommGroup E] (A : ENNReal)
     (jumps : List E) : ENNReal :=
   A * (jumps.map (fun v => (‖v‖₊ : ENNReal))).foldl max 0

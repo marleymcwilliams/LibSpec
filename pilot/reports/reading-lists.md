@@ -2,7 +2,7 @@
 
 # Reading lists for Phase 8's challenges
 
-openai/math at `7ef5c0c`, read as text. For each challenge of Phase 8's step 4 ([ROADMAP.md](../../guide/ROADMAP.md)): its challenge file and the release's own files that it imports, at any depth, and what each of them declares.
+openai/math at `7ef5c0c`, read as text. For each challenge of Phase 8's step 4 ([guide/README.md](../../guide/README.md#reviews)): its challenge file and the release's own files that it imports, at any depth, and what each of them declares.
 
 **It's where a reviewer starts, never a check.** Text can't see instances found by type-class search, notation, macros or opened names, and it can't tell which of a file's declarations the statement really uses. So a reviewer still follows names by eye, and reads any package named below that's outside the checkout ([REVIEW_PROTOCOL.md](../../guide/REVIEW_PROTOCOL.md), "What to read").
 

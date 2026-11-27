@@ -8,7 +8,7 @@ Tightens: it only adds a statement. `narrows_unknown`, that every grade narrows 
 
 ## statements-v5
 
-Tightens: it only adds statements. Four theorems for Milestone 5's candidates C, D and G, and the four definitions they use, go in a new section 16 of `lean/JSG/Defs.lean` and `lean/JSG/Statements.lean` (guide/ROADMAP.md, Milestone 5; QUEUE.md, Q16). No `statements-v1`–`v4` definition or statement changes, so the 34 proofs of Milestones 1–4 stand as they are. Milestone 5 proved the four (#127).
+Tightens: it only adds statements. Four theorems for Milestone 5's candidates C, D and G, and the four definitions they use, go in a new section 16 of `lean/JSG/Defs.lean` and `lean/JSG/Statements.lean` ([guide/ROADMAP.md, Milestone 5](https://github.com/marleymcwilliams/LibSpec/blob/statements-v5/guide/ROADMAP.md#milestone-5-the-cores-gap-statements); QUEUE.md, Q16). No `statements-v1`–`v4` definition or statement changes, so the 34 proofs of Milestones 1–4 stand as they are. Milestone 5 proved the four (#127).
 
 - **C, what an accept means:** `accept_bounds_truth`, on floors and budgets alike. Its hypotheses are that each stage's grade encloses its true values (`Encloses`), and that true values compose no worse than `combine` assumes (`ComposesNoWorse`).
 - **D, the information order** (`Narrows`): `combine_respects_narrowing` and `narrowing_keeps_accept`, a theorem for each half, since their hypotheses differ.

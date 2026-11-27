@@ -1,7 +1,8 @@
 name: Pilot shards
 
-# Phase 7's trusted Comparator runs on the openai/math release (guide/ROADMAP.md, Phase 7;
-# guide/EXECUTABLE_GATE.md §4), in two jobs:
+# Phase 7's trusted Comparator runs on the openai/math release (guide/EXECUTABLE_GATE.md §4;
+# Phase 7 at https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#phase-7-the-openaimath-pilot-at-full-scale),
+# in two jobs:
 # - fetch, untrusted: runs the release's own lakefile, through `lake update`, and uploads the
 #   tree it leaves as one artifact.
 # - shard, trusted, one per shard, each on a fresh runner: fetches the release at the pin

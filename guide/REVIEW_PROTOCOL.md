@@ -1,6 +1,6 @@
 # Statement review protocol
 
-A named reviewer follows this protocol to check that the openai/math release's challenges state their paper's claim ([ROADMAP.md](ROADMAP.md), Phase 8), and that LibSpec's own frozen statements state their source's ([below](#libspecs-own-statements)). Each review gives a verdict, and the verdicts are what can make the pilot's `statement_fidelity` axis known ([EXECUTABLE_GATE.md](EXECUTABLE_GATE.md), §3).
+A named reviewer follows this protocol to check that the openai/math release's challenges state their paper's claim ([README.md](README.md#reviews), Phase 8), and that LibSpec's own frozen statements state their source's ([below](#libspecs-own-statements)). Each review gives a verdict, and the verdicts are what can make the pilot's `statement_fidelity` axis known ([EXECUTABLE_GATE.md](EXECUTABLE_GATE.md), §3).
 
 **Why it's needed.** Comparator checks a proof against its challenge's statement, but not that the statement says what the paper claims. The release's `lean/formalization.yaml` records its review as `unchecked`. So today `statement_fidelity` is unknown for every manuscript, and no manuscript can be accepted.
 
@@ -37,7 +37,7 @@ So a challenge that states only part of the claim, or a companion result, is nev
 
 1. **The manuscript's top-line claim,** under `preprints/` at the pinned commit. The challenges have to state this claim, not only lemmas on the way to it, so it's the reference the rest is compared with.
 2. **Every challenge linked to the manuscript,** `lean/ComparatorChallenges/<name>.lean` at the same commit. They're the statements Comparator checks a proof against, and so the statements whose meaning a review can vouch for.
-3. **Every definition those challenges use that isn't Mathlib's,** wherever the release defines it. A challenge's own definitions can hide what it claims: a theorem that reads like the paper's can say something else through a definition it names. So the reviewer reads them, not just the theorems. For the eight challenges of Phase 8's step 4 ([ROADMAP.md](ROADMAP.md)), [pilot/reports/reading-lists.md](../pilot/reports/reading-lists.md) lists each challenge file and the release's files it imports, with what each declares. It's where to start, not a check: text can't see instances or notation, so the reviewer still follows names by eye, and reads any package it names outside the checkout.
+3. **Every definition those challenges use that isn't Mathlib's,** wherever the release defines it. A challenge's own definitions can hide what it claims: a theorem that reads like the paper's can say something else through a definition it names. So the reviewer reads them, not just the theorems. For the eight challenges of Phase 8's step 4 ([README.md](README.md#reviews)), [pilot/reports/reading-lists.md](../pilot/reports/reading-lists.md) lists each challenge file and the release's files it imports, with what each declares. It's where to start, not a check: text can't see instances or notation, so the reviewer still follows names by eye, and reads any package it names outside the checkout.
 
 ## What to check
 
@@ -84,13 +84,13 @@ A lighter first pass for deep results waits for step 4's times.
 
 The protocol covers LibSpec's frozen statements too, in `lean/JSG/Statements.lean`. Marley's review before each tag, with [STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md), gives a tag; a named reviewer's review under this protocol gives a verdict. Each step applies as written, with these in place of the release's:
 - **What a review covers:** a row of the [layer map](LAYER_MAP.md), with every frozen theorem it names, as a manuscript's review covers all its challenges.
-- **The claim:** what the row's source claims, where its Source column points. For the four analysis results restated after the corpus was corrected, `dwell_lower_bound`, `cvar_tail_to_level`, `kl_fisher_local` and `dro_envelope`, it's the corrected claim that [DEFECTS.md](DEFECTS.md) records, or the literature's theorem, not the corpus. For `statements-v5`'s four gap statements, which have no source in the corpus, it's their description under Milestone 5 in [ROADMAP.md](ROADMAP.md).
+- **The claim:** what the row's source claims, where its Source column points. For the four analysis results restated after the corpus was corrected, `dwell_lower_bound`, `cvar_tail_to_level`, `kl_fisher_local` and `dro_envelope`, it's the corrected claim that [DEFECTS.md](DEFECTS.md) records, or the literature's theorem, not the corpus. For `statements-v5`'s four gap statements, which have no source in the corpus, it's their description under Milestone 5 in [ROADMAP.md](https://github.com/marleymcwilliams/LibSpec/blob/statements-v5/guide/ROADMAP.md#milestone-5-the-cores-gap-statements).
 - **The definitions read:** those in `lean/JSG/Defs.lean` that the theorems use.
 - **The record:** the row and the `statements-v*` tag read, in place of the manuscript's folder and the release's commit.
 
 ## Risks that bear on the protocol
 
-From the roadmap's Phase 8 risks:
+From [the roadmap's Phase 8 risks](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#phase-8-statement-review):
 - **Deep results take long to review.** Each review records how long it took, and step 4 measures it before a lighter pass is considered.
 - **A verdict is a human judgement.** Two reviewers can disagree, and the rule above keeps the axis unknown until they agree.
 - **A challenge's own definitions can hide what it claims.** That's why the protocol makes the reviewer read them, and record which ones they read.

@@ -2,7 +2,7 @@
 
 This takes a fresh machine through building everything, running the checks, and reading off what is proved and what isn't. Each step says what you should see.
 
-**Which version.** It describes `main`: 39 frozen theorems, all proved. v1.0, the tag `v1.0`, had the first 26. `statements-v4` added eight more, which Milestone 4 proved ([the executable gate](guide/EXECUTABLE_GATE.md)). v1.1, the tag `v1.1` at `6f2ffae`, has all 34 proved and adds the pilot. `statements-v5` added four more, which Milestone 5 proved ([the roadmap](guide/ROADMAP.md#milestone-5-the-cores-gap-statements)). `statements-v6` added one more, proved in the same PR ([the changelog](guide/CHANGELOG.md#statements-v6)). Where v1.0 or v1.1 differs, the step says so. The pilot in step 6 is what v1.1 adds.
+**Which version.** It describes `main`: 39 frozen theorems, all proved. v1.0, the tag `v1.0`, had the first 26. `statements-v4` added eight more, which Milestone 4 proved ([the executable gate](guide/EXECUTABLE_GATE.md)). v1.1, the tag `v1.1` at `6f2ffae`, has all 34 proved and adds the pilot. `statements-v5` added four more, which Milestone 5 proved ([the changelog](guide/CHANGELOG.md#statements-v5)). `statements-v6` added one more, proved in the same PR ([the changelog](guide/CHANGELOG.md#statements-v6)). Where v1.0 or v1.1 differs, the step says so. The pilot in step 6 is what v1.1 adds.
 
 ## What you need
 
@@ -216,7 +216,7 @@ grep -hE '^[^ ]+ (unit|sample|result): ' pilot-logs/*.log
 
 - **[The layer map](guide/LAYER_MAP.md):** every component, with its status, its limits, and a pointer to its Lean theorem or to the reason it's out of scope.
 - **[The pilot's report](pilot/reports/catalogue.md):** every manuscript's verdict, and the evidence it's missing.
-- **The milestone notes:** [Milestone 1](guide/MILESTONE_1.md), [Milestone 2](guide/MILESTONE_2.md), [Milestone 3](guide/MILESTONE_3.md), [Milestone 4](guide/MILESTONE_4.md) and [Milestone 5](guide/MILESTONE_5.md). Each has a plain-English explanation of every proof, the gate record, and a closing note on what is proved and what it doesn't show.
+- **[What is proved](guide/README.md#what-is-proved):** what each milestone proved, and what its closing note says the proofs don't show.
 - **[The changelog](guide/CHANGELOG.md):** each statements version, and whether it tightened or weakened the statements. Its [`statements-v5` entry](guide/CHANGELOG.md#statements-v5) lists what v5 adds.
 
 ## Full-strength runs

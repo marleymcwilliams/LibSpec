@@ -1,103 +1,134 @@
-# The guide, and a map of the repository
+# Where LibSpec stands, and where things live
 
-LibSpec states a calculus of graded evidence in Lean, proves it, and runs it as an executable gate on real claims. This page maps every file outside `archive/` and says what to read first. The repository's own [README](../README.md) says what is proved, and [REPRODUCE.md](../REPRODUCE.md) says how to check it.
+This is the page an agent reads after [CLAUDE.md](../CLAUDE.md), and each fact on it has this page as its one home unless its line links elsewhere.
 
-## Reading order
+## What is proved
 
-**For a person new to the project:**
-1. [README](../README.md): what LibSpec is, and what is proved and what isn't.
-2. [ROADMAP.md](ROADMAP.md): the phases, each with its gate, and where the work stands.
-3. [GLOSSARY.md](GLOSSARY.md): the canonical terms, and the four core objects they name.
-4. [LAYER_MAP.md](LAYER_MAP.md): every component of the corpus, what justifies it, and its status.
-5. [EXECUTABLE_GATE.md](EXECUTABLE_GATE.md): the twins, the harness and the openai/math pilot.
-6. The milestone notes, [MILESTONE_1.md](MILESTONE_1.md) to [MILESTONE_5.md](MILESTONE_5.md), for what each proof shows and doesn't.
-7. [`pilot/reports/catalogue.md`](../pilot/reports/catalogue.md), for the gate's verdict on a real release.
-
-Then, as needed: [DEFECTS.md](DEFECTS.md) for what the corpus gets wrong, [SOURCES.md](SOURCES.md) for where each part came from, and [STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md) for why each statement says what it says.
-
-**For an agent starting a session:**
-1. [CLAUDE.md](../CLAUDE.md): the rules, which win over everything else.
-2. This page, then [CONVENTIONS.md](CONVENTIONS.md): how things are named.
-3. [QUEUE.md](QUEUE.md): the open questions, and the answers already given.
-4. [LOG.md](LOG.md), from the top: the latest decisions.
-5. [ROADMAP.md](ROADMAP.md): the current phase and its gate.
-6. Only then, the files the session's target needs. Before touching a statement or a check, read [LAYER_MAP.md](LAYER_MAP.md) and CLAUDE.md's list of what the human merges.
-
-## The guide
+- **The statements:** 39 frozen theorems in `lean/JSG/Statements.lean`, frozen in `statements-v1` to `statements-v6`, each version before its proofs.
+- **All 39 are proved.** No statement was changed to make a proof go through.
+- **Comparator** checks each proof against its frozen statement, allowing only `propext`, `Classical.choice` and `Quot.sound`: in CI on every build, and at full strength, with nanoda and the full sandbox, by hand ([the latest](../REPRODUCE.md#full-strength-runs)).
+- **Controls:** each theorem has a mutant, a plausible wrong version proved to fail it, and a witness, an instance proved to satisfy it.
+- **Twins:** the harness runs `statements-v4`'s twins, and differential tests check another implementation against them ([REPRODUCE.md, step 5](../REPRODUCE.md#5-the-harness-and-the-differential-tests)).
+- **Conformance is not correctness:** CI and Lean show that the proofs conform to the statements, never that a statement, threshold, model or value is right, which stays a signed human decision.
 
 | File | What it holds |
 | --- | --- |
-| [README.md](README.md) | This map |
-| [MASTER_GUIDE.md](MASTER_GUIDE.md) | The canon's purpose and reading rules, and an index to the four files below |
-| [GLOSSARY.md](GLOSSARY.md) | The canonical terms, each with one home, and the core objects (v2) they name |
-| [LAYER_MAP.md](LAYER_MAP.md) | Every component: its layer, status, pointer and source; and what each statements version adds |
-| [DEFECTS.md](DEFECTS.md) | The corpus's known defects, and their fixes |
-| [SOURCES.md](SOURCES.md) | The corpus's lineage, and what each source is canonical for |
-| [ROADMAP.md](ROADMAP.md) | The phases and their gates, the master guide's checklist, and how a session runs |
-| [CONVENTIONS.md](CONVENTIONS.md) | How files, branches, pull requests, theorems and tags are named |
-| [EXECUTABLE_GATE.md](EXECUTABLE_GATE.md) | The executable gate: the twins, the harness, the pilot, where things run, and its decisions |
-| [STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md) | Each statement beside its source, with its mutant and witness |
-| [REVIEW_PROTOCOL.md](REVIEW_PROTOCOL.md) | How a named reviewer checks that a manuscript's challenges state its claim, and the verdicts (Phase 8) |
-| [MILESTONE_1.md](MILESTONE_1.md)–[MILESTONE_5.md](MILESTONE_5.md) | Each milestone's proofs, its gate record and its closing note |
-| [CHANGELOG.md](CHANGELOG.md) | What each statements version changed, and whether it tightens or weakens |
-| [QUEUE.md](QUEUE.md) | Questions waiting for the human, at most three open, and the answers given |
-| [LOG.md](LOG.md) | Every reversible decision, by date, newest first |
-| [IDEAS.md](IDEAS.md) | The parking lot: ideas kept out of the current work |
-| [decisions/](decisions/) | The human's decision brief and records: [DECISION_BRIEF.md](decisions/DECISION_BRIEF.md), [RAILS.md](decisions/RAILS.md) |
+| [LAYER_MAP.md](LAYER_MAP.md) | Each component's layer, status, limits, checks and pointer; what each statements version adds; where the sources are |
+| [STATEMENTS_REVIEW.md](STATEMENTS_REVIEW.md) | Each frozen theorem beside its source, with its mutant, that mutant's origin, and its witness |
+| [CHANGELOG.md](CHANGELOG.md) | Whether each statements version tightens or weakens; so far each has only added |
 
-Some of it is the human's alone. The milestone notes' closing notes are in the human's words and stay as written, `decisions/` changes only in pull requests the human merges, and LOG entries are added, never rewritten. [CLAUDE.md](../CLAUDE.md) lists everything else the human merges.
+**The milestones,** from Marley's closing notes, each of which also lists "That the statements say what I mean": the rule above.
 
-## The Lean library, `lean/`
+1. **Algebraic core.** Proved: order, grouping and interchange don't change a grade; the verdict is sound and complete; residual checking on one budget axis; `no_flip` for noninterfering graders; JSG IV's capped fold check can never fail, a proved defect. Not shown: anything about a running system; that any real grader is noninterfering; calibration beyond the test sets. [Note](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/MILESTONE_1.md#closing-note)
+2. **Obligations, Loader, charge, policy.** Proved: Loaders keep their invariant and terminate, the concrete one keeping L1–L10; charge adds up, chattering costs double; expiry only tightens; passes and leases are sound and complete. Not shown: that the cryptography holds; that stages run in JSG V's order; what a stopped run means; the must-fail gate on real histories. [Note](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/MILESTONE_2.md#closing-note)
+3. **Analysis layer.** Proved: CVaR tail to level, with C₀ = 1; the corrected dwell bound; the local KL–Fisher bound in whitened coordinates; the DRO envelope identity for the dual value. Not shown: the rest of PDE Lemma 9.1; that crossings can't pile up in finite time; KL–Fisher in raw coordinates, where it fails; strong duality; estimates from data. [Note](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/MILESTONE_3.md#closing-note)
+4. **Executable twins.** Proved: each twin, computing exactly in `WithTop ℚ≥0`, agrees with its frozen definition, so the earlier theorems hold of the twins too. Not shown: infinitely many axes; the obligation and Loader twins (Q11); that the code which runs the twins is correct, since the compiler is trusted, not proved. [Note](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/MILESTONE_4.md#closing-note)
+5. **The core's gap statements.** Proved: given enclosure, and composition no worse than `combine` assumes, an accept bounds the truth by θ; more evidence can't hurt; a rejection is definite exactly when every narrowing rejects. Not shown: enclosure itself, or that true values compose so; more than two stages; that the pilot's report makes this split. [Note](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/MILESTONE_5.md#closing-note)
 
-| File | What it holds |
-| --- | --- |
-| `lakefile.toml`, `lean-toolchain`, `lake-manifest.json` | The build: Lean and Mathlib v4.34.1. The statements check covers all three |
-| `JSG/Defs.lean` | **Frozen.** The definitions the statements use |
-| `JSG/Statements.lean` | **Frozen.** The theorem statements, each `sorry`, with its mutant named in a comment |
-| `JSG/Proofs/Milestone1.lean`–`Milestone4.lean` | The proofs, one file per milestone, each restating its frozen theorems |
-| `JSG/Lemmas/KLFisher.lean`, `JSG/Lemmas/Twins.lean` | Helper lemmas for Milestones 3 and 4 |
-| `JSG/Solution.lean` | Imports every proof file: Comparator's solution |
-| `JSG/Tests/Mutants.lean` | Each theorem's mutant, proved to violate it, and its witness |
-| `JSG/Tests/Calibration.lean` | The must-pass and must-fail sets, and `verdict_calibrated` |
-| `JSG/Tests/ConcreteLoader.lean` | The concrete Loader, built as a `Loader` |
-| `JSG/Tests/Smoke.lean`, `JSG/Tests/Differential.lean` | Phase 0's smoke test, and the harness's differential tests |
-| `JSG/Tests/Comparator/` | Comparator's self-test: a challenge, its solution, and a mutant it must reject |
-| `JSG/Tests.lean`, `JSG.lean` | Roots: every test file, and the whole library |
-| `JSG/Harness/` and `JSG/Harness.lean` | The executable gate's harness: the report, JSON, the corpus, the mutants, and `run` |
-| `JSG/Harness/examples/` | Example inputs and their expected reports |
-| `JSG/Pilot/` and `JSG/Pilot.lean` | The pilot: raw records to grades (`Core`), the generated data (`Sample`, `Catalogue`), their proofs (`Calibration`, `CatalogueCalibration`) and the report's words (`Words`) |
-| `Gate.lean` | The harness's command line: `lake env lean --run Gate.lean …` |
-| `AxiomAudit.lean` | The axiom audit, over every proof, lemma, test, harness and pilot module |
-| `ComparatorTargets.lean` | Lists the theorems a Comparator config must name |
+`statements-v6`'s `narrows_unknown` was proved in #134, outside any milestone ([STATEMENTS_REVIEW.md §39](STATEMENTS_REVIEW.md#39-narrows_unknown-restated-copy)).
 
-## Everything else
+## The pilot
+
+- **The release:** [openai/math](https://github.com/openai/math) at `7ef5c0c`, 724 manuscripts.
+- **The verdicts,** with the evidence each is missing: [`pilot/reports/catalogue.md`](../pilot/reports/catalogue.md).
+- **Comparator's results,** from trusted shard runs on GitHub Actions: [`pilot/data/comparator-results.json`](../pilot/data/comparator-results.json). What those runs still trust: [EXECUTABLE_GATE.md §4](EXECUTABLE_GATE.md#4-where-things-run).
+- **None is accepted.** Three were withdrawn by their authors. For the others, that's about missing evidence, not a finding against the mathematics: no named reviewer has checked any statement against its paper, and independent review and novelty are unknown for all of them.
+- **An acceptance by Comparator** means both kernels accept the proof of the statement Comparator exported, not that the statement says what the paper claims.
+- **`main` holds v1.1's results.** The reruns since v1.1 wait for the results PR, in [Next](#next).
+- **To check or rerun it:** [REPRODUCE.md, step 6](../REPRODUCE.md#6-the-pilot-the-gate-on-a-real-release).
+
+## Reviews
+
+- **The protocol** is [REVIEW_PROTOCOL.md](REVIEW_PROTOCOL.md). Its named reviewers are Marley alone.
+- **openai/math's manuscripts** can be reviewed now, with Marley as the reviewer. Phase 8's open steps ([its text](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#phase-8-statement-review)):
+  2. `Raw` gains the verdict and its sentence, so a mismatch counts as evidence that fails; today `Raw.fidelityBy` holds only a name.
+  3. Each review is a GitHub issue form, which a collector reads into `pilot/data/`, counting only a named reviewer who made the issue's last edit.
+  4. Review seven manuscripts, timing each: `CHALLENGES` in `pilot/reading_list.py`, with [their reading lists](../pilot/reports/reading-lists.md).
+  5. Calibrate with a synthetic challenge subtly weaker than its paper's claim, whose review must not count as faithful.
+- **LibSpec's own statements** have no eligible reviewer. Nobody reviews their own statements, and that rules out Marley. So their `statement_fidelity` stays unknown, and the self-grading report is blocked.
+- **Re-planning Phase 8** belongs to the roadmap step, in [Next](#next).
+
+## Next
+
+Delete an item when it's done; never tick it.
+
+1. **The trim, PRs 2 to 5:** CLAUDE.md's "Start here" and the logs; the archive's links; the archive's removal; the long references, with a word budget.
+2. **The results PR** for the Comparator reruns since v1.1, then the v1.2 release.
+3. **The UI,** in its own repository, reading LibSpec's data at a pinned tag.
+4. **The roadmap step,** which Marley plans:
+   - re-plan Phase 8 ([its text](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#phase-8-statement-review));
+   - a monthly scheduled full-strength Comparator run, because the sandbox leans on the runner's Linux kernel, which GitHub changes without notice;
+   - the Navier–Stokes regularity spine, which the master guide's checklist planned as a research notebook outside the guide's dependency graph ([the checklist](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#the-master-guides-checklist));
+   - the ACT→JSG compiler's adequacy theorem ([Phase 6's option](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#phase-6-guide-v1-then-choose));
+   - Phase 9's sources ([its text](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#phase-9-more-sources)).
+
+**Deferred, no date:**
+- Phase 10's obligation and Loader twins, deferred on 2026-11-13 because they have no consumer ([its text](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#phase-10-the-obligation-and-loader-twins)).
+- The master guide's three other open items ([the checklist](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#the-master-guides-checklist)): freeze the glossary with one rename pass; make CI fail on a `b3:…` placeholder, an unsigned must-fail removal or a theorem without a mutant; recover the SIRUS\_game runtime note and remove MDmaster's SIRUS-algorithm sections.
+
+## A milestone's gate
+
+CLAUDE.md's "Definition of done" holds for each theorem. A milestone also needs:
+- Comparator listing none of its theorems as not yet proved;
+- every must-pass control accepted;
+- its layer-map rows set to Proved, the guide's text naming each Lean theorem;
+- a short note in Marley's words: what is now proved, and what it does not show.
+
+Where Marley's closing note for a milestone goes will be decided when the next milestone is planned.
+
+While one is open, a red build on `main` is fixed before any new work, and a theorem that resists three sessions is marked Open in the layer map, with one line on why.
+
+## Where things live
 
 | Path | What it holds |
 | --- | --- |
-| [README.md](../README.md), [REPRODUCE.md](../REPRODUCE.md) | What is proved, and how to check it yourself |
-| [CLAUDE.md](../CLAUDE.md) | The working rules for Claude Code |
-| `.claude/settings.json` | Claude Code's deny rules: the statements, their definitions, `archive/`, tags, and pushes to `main`. To lift one once, run the command yourself, or delete its line in your working copy and `git restore` it afterwards |
-| `.github/pull_request_template.md` | The sections of every PR's description |
-| `.gitattributes`, `.gitignore` | LF line endings everywhere, the archive kept byte for byte; build output, Python bytecode and BLT's job logs ignored |
-| `.github/workflows/ci.yml` | CI: the build with leanchecker, `scripts/check.sh`, the differential tests and Comparator |
-| `.github/workflows/comparator-full.yml` | The full-strength Comparator run, by hand: nanoda and the full sandbox |
-| `.github/workflows/pilot-comparator.yml` | Comparator on a few of the release's challenges, as measurements only |
-| `.github/workflows/pilot-shards.yml` | Phase 7's trusted Comparator runs, by shard: an untrusted job that runs the release's lakefile, and trusted jobs that rebuild its tree from the pin and check against it |
-| `scripts/check.sh` | The build, the forbidden-token scan, the axiom audit, the statements check and the archive check |
-| `scripts/archive-check.sh`, `scripts/test-archive-check.sh` | The check that `archive/` is the tree it's frozen at, and the test that it has teeth |
-| `scripts/blt-build.sbatch` | A sample SLURM job for BLT: LibSpec's own `lake build` on a compute node |
-| `scripts/comparator.sh`, `scripts/comparator-full.sh`, `scripts/build-comparator-tools.sh` | Comparator, everyday and full-strength, and the tools it needs |
-| `scripts/differential.sh`, `scripts/sirusc_adapter.py` | The differential tests, and the adapter that runs SirusSC's code from `archive/` |
-| `scripts/pilot-comparator.sh` | The pilot's measurement runs |
-| `scripts/pilot-release.sh`, `scripts/pilot-fetch.sh` | The release at the pin, and its `lake update`, in the untrusted job |
-| `scripts/pilot_deps.py`, `scripts/pilot_tree.py` | The trusted job's rebuild of the release's dependencies, and the comparison with the untrusted tree |
-| `scripts/pilot-shard.sh`, `scripts/pilot_shard.py` | The trusted job's Comparator runs on a shard, and their results |
-| `scripts/pilot-unit-end.sh` | Records how a challenge's unit ended, and its memory peak, from systemd and the kernel |
-| `scripts/sandbox-check.sh` | Proves Comparator's landrun sandbox is in force, and the frozen build outputs unwritable |
-| `scripts/pilot-reports.sh` | CI's check that the pilot's reports are what `Gate.lean` prints from their data |
-| `scripts/pilot-trusted-lib.sh`, `scripts/pilot_resolve.lean` | The frozen outputs' read-only mounts outside `.lake`, and Lean's own resolution of the exports' modules |
-| `scripts/test-pilot-shard.sh`, `scripts/test_shard_results.py` | The self-test of the shard runs: every outcome, with a fake comparator, and the results collector's rules |
-| `pilot/collect.py`, `pilot/to_lean.py`, `pilot/imports.py`, `pilot/plan_shards.py`, `pilot/shard_results.py` | The pilot's collector, its Lean generator, the import-graph reader, the shard plan, and the collector of the trusted results |
-| `pilot/data/` | Collected facts: `sample.json`, `catalogue.json`, `comparator-results.json` (trusted), `comparator-measurements.json` (#83's, untrusted), `shards.json`, `shard-plan.json` |
-| `pilot/reports/` | The generated reports: `first-sample.md`, `catalogue.md` |
-| `archive/` | **Read-only.** The original corpus, committed once. [SOURCES.md](SOURCES.md) says what each part is |
+| [README.md](../README.md) | The front door |
+| [REPRODUCE.md](../REPRODUCE.md) | Building and checking everything; the full-strength runs |
+| `.claude/settings.json` | Deny rules and commit identity |
+| `.github/` | `CODEOWNERS`, the paths only Marley merges; the PR template; workflows: `ci.yml`, `comparator-full.yml`, `pilot-shards.yml` (trusted), `pilot-comparator.yml` (measurements) |
+| `lean/JSG/Defs.lean`, `lean/JSG/Statements.lean` | **Frozen.** CI fails if either differs from the latest `statements-v*` tag |
+| `lean/lakefile.toml`, `lean-toolchain`, `lake-manifest.json` | Lean and Mathlib v4.34.1, under the statements check; the default target globs `JSG.*`, pilot included |
+| `lean/JSG/Proofs/` | One file per milestone, restating its frozen theorems; `lean/JSG/Solution.lean` imports them all |
+| `lean/JSG/Lemmas/` | Helper lemmas |
+| `lean/JSG/Tests/` | Mutants and witnesses (`Mutants.lean`), must-pass and must-fail sets (`Calibration.lean`), differential tests, Comparator's self-test; `lean/JSG/Tests.lean` imports them all |
+| `lean/JSG/Harness/`, `lean/Gate.lean` | The harness: report, JSON, corpus, executable mutants; `Gate.lean` runs it and prints the pilot's reports |
+| `lean/JSG/Pilot/` | Records to grades (`Core`), generated data, their proofs, the report's words (`Words`) |
+| `lean/AxiomAudit.lean`, `lean/ComparatorTargets.lean` | The axiom audit; the theorems Comparator must check |
+| `pilot/` | Collectors, generators, data and reports: [Generated files](#generated-files) |
+| `scripts/` | `check.sh` (build, token scan, axiom audit, statements, CODEOWNERS, archive, pilot-Python and link checks); Comparator, differential and pilot-shard runs; `blt-build.sbatch`, a sample BLT job |
+| [GLOSSARY.md](GLOSSARY.md) | Canonical terms, each defined once, and the core objects |
+| [DEFECTS.md](DEFECTS.md) | The corpus's known defects, and their fixes |
+| [CONVENTIONS.md](CONVENTIONS.md) | Naming, and how the project is described outward |
+| [EXECUTABLE_GATE.md](EXECUTABLE_GATE.md) | Twins, differential tests, the pilot, where things run (runners and BLT, §4), decisions |
+| [QUEUE.md](QUEUE.md) | Questions for Marley, at most three open |
+| [LOG.md](LOG.md) | Reversible decisions, newest first, added and never rewritten |
+| [IDEAS.md](IDEAS.md) | The parking lot |
+| [decisions/RAILS.md](decisions/RAILS.md) | Marley's signed decision on the normative rails |
+| `archive/` | **Read-only.** The source corpus: [LAYER_MAP.md](LAYER_MAP.md#where-the-sources-are) |
+
+## Generated files
+
+Regenerate these; never edit them by hand. Don't open the big ones (`catalogue.json`, `comparator-results.json`, `shards.json`, `Catalogue.lean`) to learn something: read their generator or the report instead. Run commands in bash, from the repository root.
+
+| File | Command |
+| --- | --- |
+| `pilot/data/catalogue.json` | `python3 pilot/collect.py --all --cache pilot-cache --comparator pilot/data/comparator-results.json > pilot/data/catalogue.json` |
+| `pilot/data/sample.json` | `python3 pilot/collect.py 005 008 009 012 --folder F > pilot/data/sample.json`, a `--folder` per withdrawn manuscript |
+| `pilot/data/comparator-results.json` | `python3 pilot/shard_results.py --logs pilot-logs EVERY_RUN_ID... > pilot/data/comparator-results.json` |
+| `pilot/data/comparator-measurements.json` | None: #83's untrusted run, recorded once |
+| `pilot/data/shards.json` | `python3 pilot/imports.py LEAN_DIR pilot/data/catalogue.json > pilot/data/shards.json` |
+| `pilot/data/shard-plan.json` | `python3 pilot/plan_shards.py pilot/data/shards.json > pilot/data/shard-plan.json` |
+| `pilot/data/reading-lists.json` | `python3 pilot/reading_list.py LEAN_DIR pilot/data/catalogue.json lean/lake-manifest.json > pilot/data/reading-lists.json` |
+| `lean/JSG/Pilot/Catalogue.lean` | `python3 pilot/to_lean.py pilot/data/catalogue.json --comparator pilot/data/comparator-results.json --name Catalogue > lean/JSG/Pilot/Catalogue.lean` |
+| `lean/JSG/Pilot/Sample.lean` | `python3 pilot/to_lean.py pilot/data/sample.json --comparator pilot/data/comparator-measurements.json > lean/JSG/Pilot/Sample.lean` |
+| `pilot/reports/catalogue.md` | `cd lean && lake env lean --run Gate.lean pilot catalogue > ../pilot/reports/catalogue.md` |
+| `pilot/reports/first-sample.md` | `cd lean && lake env lean --run Gate.lean pilot > ../pilot/reports/first-sample.md` |
+| `pilot/reports/reading-lists.md` | `python3 pilot/reading_list.py --report pilot/data/reading-lists.json > pilot/reports/reading-lists.md` |
+
+`LEAN_DIR` is the release's `lean/` at the pin, checked out as files only (`pilot/imports.py`). CI's `scripts/pilot-reports.sh` checks the two `Gate.lean` reports.
+
+## Paths that live only at a tag or commit
+
+- **The rule:** a path cited in a frozen file resolves at the statements tag named in that section's header, not at `v1.1`.
+- **Today's case:** `lean/JSG/Statements.lean` and `lean/JSG/Defs.lean` name `guide/ROADMAP.md` in section 16's header, which says the section was added for `statements-v5`, and that file now lives only in history. Read it with `git show statements-v5:guide/ROADMAP.md`, at its "Milestone 5" section ([on GitHub](https://github.com/marleymcwilliams/LibSpec/blob/statements-v5/guide/ROADMAP.md#milestone-5-the-cores-gap-statements)).
+- **Any file trim PR 1 deleted** reads with `git show 3b481d5e951bb30300195598e9dada5a753ab61c:<path>`.

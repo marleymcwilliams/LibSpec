@@ -6,9 +6,8 @@ How files, branches, pull requests and theorems are named in LibSpec, and how th
 
 | What | Form | Examples |
 | --- | --- | --- |
-| Guide documents | `UPPER_SNAKE.md`, in `guide/` | `ROADMAP.md`, `LAYER_MAP.md`, `EXECUTABLE_GATE.md` |
-| Milestone notes | `MILESTONE_<N>.md`, one per milestone | `MILESTONE_4.md` |
-| Decision briefs and records | `guide/decisions/`, which you own | `RAILS.md`, `DECISION_BRIEF.md` |
+| Guide documents | `UPPER_SNAKE.md`, in `guide/` | `LAYER_MAP.md`, `EXECUTABLE_GATE.md` |
+| Decision briefs and records | `guide/decisions/`, which you own | `RAILS.md` |
 | Lean modules | `UpperCamel.lean`, one directory per layer, and a root file of the same name that imports every module in it | `JSG/Pilot/Core.lean`, imported by `JSG/Pilot.lean` |
 | Proof files | `JSG/Proofs/Milestone<N>.lean`, restating each frozen theorem under its exact name | `Milestone3.lean` |
 | Helper lemmas | `JSG/Lemmas/<Topic>.lean`, never in a proof file | `KLFisher.lean`, `Twins.lean` |
@@ -97,13 +96,13 @@ Its sources:
 - the release is openai/math at commit `7ef5c0c`, and its 724 manuscripts are in [catalogue.md](../pilot/reports/catalogue.md);
 - the 406, the none and the 12 are in [comparator-results.json](../pilot/data/comparator-results.json);
 - the two checkers are Lean's kernel and nanoda, and the sandbox is Comparator's landrun sandbox ([EXECUTABLE_GATE.md](EXECUTABLE_GATE.md) §4);
-- the next phase is Phase 8 in [ROADMAP.md](ROADMAP.md).
+- the next phase is Phase 8 in [README.md](README.md#reviews).
 
 **For engineers:**
 
 > It's guarded acceptance and guarded rejection from conformity assessment, with the zone between them left undecided. Accept only when the whole uncertainty interval is inside the limit, reject outright only when it's wholly outside, and report anything between as indeterminate.
 
-Its sources: both terms are from JCGM 106:2012, opened on 2026-11-14, which treats rules with two outcomes only. The undecided zone is a lead from ISO 14253-1:2017, which nobody here has read. In LibSpec, a report already tells evidence that fails from evidence that's unknown (`Release.why` in `lean/JSG/Pilot/Core.lean`). Candidate G, planned for `statements-v5` (Milestone 5 in [ROADMAP.md](ROADMAP.md)), would prove that a failure is final.
+Its sources: both terms are from JCGM 106:2012, opened on 2026-11-14, which treats rules with two outcomes only. The undecided zone is a lead from ISO 14253-1:2017, which nobody here has read. In LibSpec, a report already tells evidence that fails from evidence that's unknown (`Release.why` in `lean/JSG/Pilot/Core.lean`). Candidate G, planned for `statements-v5` (Milestone 5 in [ROADMAP.md](https://github.com/marleymcwilliams/LibSpec/blob/statements-v5/guide/ROADMAP.md#milestone-5-the-cores-gap-statements)), would prove that a failure is final.
 
 **Proof points:**
 

@@ -1,6 +1,6 @@
 # Glossary
 
-The canon's terms, each defined once, and the four core objects they name. The reading rules are in [MASTER_GUIDE.md](MASTER_GUIDE.md), and [README.md](README.md) maps the rest of the guide.
+The canon's terms, each defined once, and the four core objects they name. Two rules govern them. **One home per concept:** each term is defined once, in this glossary, and other documents link to it and never restate it. **Retired terms stay as aliases:** old documents keep reading correctly, and new text uses only canonical terms. [README.md](README.md) says where the rest of the guide lives.
 
 ## Canonical glossary
 
