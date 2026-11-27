@@ -2,6 +2,14 @@
 
 Decisions Claude Code made without asking, because they are reversible and don't change what a statement means (CLAUDE.md, "When to ask the human"). Newest first. Each entry says what was decided, why, and how to undo it.
 
+## 2026-11-26
+
+### CI's token is read-only
+- **Decided:** `.github/workflows/ci.yml` now has a top-level `permissions:` block with `contents: read`, between `on:` and `jobs:`, as `comparator-full.yml` and the two pilot workflows have.
+- **Why:** a read-only token limits what any step could do with it, and nothing in CI needs more. There's no push, comment, release or `gh` call in the workflow, in the scripts it runs, or in `leanprover/lean-action@v1`'s `action.yml` and its 12 scripts. It's a reversible change to CI that makes a check stronger, so it was Claude Code's call.
+- **To undo:** delete the block.
+- **The rest of the PR** (GitHub through the LibSpec app, CLAUDE.md's rules, the deny rules and the BLT access lines) is Marley's request, and the PR's description covers it.
+
 ## 2026-11-23
 
 ### Independent readings of the ordinal core's statements
