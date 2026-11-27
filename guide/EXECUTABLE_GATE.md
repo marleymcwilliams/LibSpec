@@ -431,7 +431,7 @@ Reading the release's lakefile, freezing what came through LibSpec's tooling, an
 **Lewis & Clark's BLT cluster, for heavy builds, if its OS can run current Lean.**
 - **It can.** It runs Ubuntu 20.04 and SLURM, as you've confirmed. Its documentation ([About the cluster](https://watzek.github.io/BLTdocs/about-the-cluster.html)) is out of date: it still says "The cluster runs the CentOS Linux operating system, version 7.4", with Sun Grid Engine and a 25 GB quota per user. It has 144 cores and 1,500 GB of memory across one login node and three workers.
 - **Lean:** Ubuntu 20.04 ships glibc 2.31, and Lean's x86-64 Linux releases need glibc 2.26 or later (Lean reference, [Supported platforms](https://lean-lang.org/doc/reference/4.33.1/platforms/)).
-- **Access:** SSH needs MFA, so Claude Code doesn't use BLT until you have a login it can use without MFA.
+- **Access:** set by the BLT rule in [CLAUDE.md](../CLAUDE.md), under "How to work".
 - **Jobs** go through SLURM to the compute nodes, never the login node. `scripts/blt-build.sbatch` is a sample: it asks for cores with `--cpus-per-task` and memory with `--mem`, sets `LEAN_NUM_THREADS` to `$SLURM_CPUS_PER_TASK`, and runs `lake exe cache get` and `lake build` in LibSpec's `lean/`.
   - **Lean** goes in your home directory on Mayo.
   - **The compute nodes reach the internet,** so Mathlib's cache downloads there.

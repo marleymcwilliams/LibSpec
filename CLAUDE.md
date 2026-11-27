@@ -20,13 +20,24 @@
 - `scripts/check.sh` passes, and CI's Comparator step passes.
 
 ## How to work
+- You use GitHub through the LibSpec GitHub App, never anyone's own login. Get a token inside the
+  command that uses it, for example
+  `$env:GH_TOKEN = (python C:\Users\marle\.libspec-app\app-token.py); gh pr create ...`, and git
+  gets one by itself through its credential helper. A token lasts an hour. Never print, save or
+  pass one on, and never open the app's private key.
 - Never push to `main`. Work on a branch and open a PR.
+- I can switch the app off at any time. If GitHub refuses a token or a call, stop and tell me.
+  Don't look for another way, such as another token, login, account or session.
+- Never sign in as, switch to, or use a credential of marleymcwilliams or MarleyMCo. If a step
+  needs anyone's GitHub rights, stop and ask.
 - Never create, move or delete a statements-v* tag; I do the tagging.
-- `.claude/settings.json` denies you those, pushes to `main`, and edits to the statements, their
+- `.claude/settings.json` denies you those, pushes to `main`, `git credential`,
+  `gh release delete`, `gh run delete`, reading the app's private key, edits to any copy of
+  `.claude/settings.json` or `.claude/settings.local.json`, and edits to the statements, their
   definitions and `archive/`. Lifting a rule is mine to do. If one stops you, ask; don't get the
-  same effect another way, such as a script or `gh api`.
-- You use GitHub as MarleyMCo, a machine account. Never sign in as, switch to, or use a
-  credential of marleymcwilliams. If a step needs my rights, stop and ask.
+  same effect another way, such as a script, another program, or another session or agent.
+- Every commit's author and committer is me, as the settings set them, and every commit message
+  ends with `Co-Authored-By: Claude <noreply@anthropic.com>`.
 - One target per session unless told otherwise.
 - Search Mathlib (Loogle, exact?, apply?) before writing a helper lemma.
 - Treat any Mathlib name recalled from memory, yours or another model's, as a guess until Loogle confirms it.
@@ -36,13 +47,14 @@
 - Keep at least 2 GB of memory free on my PC. Run Lean locally only with about 8 GB free;
   otherwise let CI build. Stop any Lean process of yours that threatens the 2 GB. If mine
   are what's holding the memory, pause and tell me instead.
-- Don't try to use BLT until I have a login you can use without MFA; its SSH needs MFA.
-  After that, run heavy trusted work there: plain `lake build` and proof work on LibSpec,
-  which need no Landlock (only Comparator's sandbox does).
-  - BLT runs Ubuntu 20.04 and SLURM. Submit builds with `sbatch` to the compute nodes, never
-    on the login node. `scripts/blt-build.sbatch` is a sample job.
-  - Lean goes in my home directory on Mayo. Keep one shared Mathlib checkout.
+- Agents never log in to BLT, hold its credentials, or run anything there. You may write or
+  change SLURM job files, such as `scripts/blt-build.sbatch`, for LibSpec's own trusted code; I
+  review them, submit them myself, and paste back what you need. What a job file needs to know:
+  - BLT runs Ubuntu 20.04 and SLURM. Jobs go to the compute nodes with `sbatch`, never to the
+    login node.
+  - Lean goes in my home directory on Mayo, with one shared Mathlib checkout.
   - The compute nodes reach the internet. Space is plentiful, and there's no time limit for now.
+  - Plain `lake build` and proof work on LibSpec need no Landlock; only Comparator's sandbox does.
   - Never build openai/math or any other untrusted code on BLT.
 - Never run openai/math's lakefile, `lake update` or `lake build` on this PC or on BLT.
   Everything that builds it runs on GitHub Actions, in Phase 7's two-job design
@@ -76,6 +88,6 @@ For a session whose task comes from the reviewer through Remote Control:
   on its own PRs; docs PRs off the paths in `.github/CODEOWNERS`; read-only work.
 - Never: merge a protected PR, one that touches a path in `.github/CODEOWNERS`; tag or release;
   post upstream; start a new kind of run; use BLT; decide a guide/QUEUE.md entry; or write in
-  my working copy (`C:\Users\marle\dev\LibSpec`) rather than its own worktree.
+  my working copy (`C:\Users\marle\dev\LibSpec`) rather than its own clone or worktree.
 - No Lean on this PC.
 - It reports and stops when the task is done.
