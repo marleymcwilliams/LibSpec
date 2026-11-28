@@ -1,5 +1,11 @@
 # Working rules for this repo
 
+## Start here
+- Read `guide/README.md` next: what is proved, what comes next, where each thing lives, and how
+  to read a path that a frozen file cites but `main` no longer holds.
+- Then read only what your target needs. Look up entries in `guide/LOG.md` and `guide/QUEUE.md`
+  when your target touches them; don't read either from the top.
+
 ## Roles
 - The human owns `lean/JSG/Statements.lean` and `lean/JSG/Defs.lean`, the definitions it uses.
   Never edit them. If a statement looks wrong or unprovable, stop and explain why.
@@ -63,6 +69,13 @@
   `gh pr create --body-file` doesn't apply the template for you.
 - End every session with: files changed, theorems closed, ideas added to guide/IDEAS.md.
 
+## Docs
+- Each fact has one home. Other files link to it rather than restate it.
+- Add no Markdown file to the repo unless I ask for one.
+- When an item on a list of work is done, delete it; don't tick it.
+- A `guide/LOG.md` entry records a decision, not a PR's work, in the form `guide/CONVENTIONS.md`
+  gives under "The guide's records".
+
 ## When to ask the human
 - Decide it yourself and log it in guide/LOG.md if it is reversible and doesn't change
   what a statement means: layout, tactics, CI, wording, which lemma or mutant.
@@ -72,7 +85,8 @@
 - Queue it in guide/QUEUE.md if it changes a statement's meaning, a Norm-layer value, or
   anything frozen. Each entry: question, recommended answer, what breaks if wrong,
   whether it can be undone. At most three open entries; never block on one.
-- Reviewer notes follow the same rule: apply and log the reversible ones, queue the rest.
+- Reviewer notes follow the same rule: apply the reversible ones, queue the rest, and list both
+  in the PR's description.
 - "Not yet" is a valid answer: if no current statement depends on a decision, defer it
   to the milestone that needs it.
 - You may merge your own PR once CI is green if it touches no path in `.github/CODEOWNERS`,

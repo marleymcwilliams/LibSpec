@@ -64,8 +64,8 @@ Only `JSG.lean`, the library's root, imports `JSG.Statements`. Proof files impor
 
 ## The guide's records
 
-- **[LOG.md](LOG.md):** a `## <date>` heading per day, newest first, and under it a `### <what was decided> (#<PR>)` entry per change, in bullets.
-- **[QUEUE.md](QUEUE.md):** `### Q<N>. <the question>?`, with a recommended answer, what breaks if it's wrong, and whether it can be undone. At most three are open, and an answered entry moves under `## Answered`, with your answer.
+- **[LOG.md](LOG.md):** a `## <date>` heading per day, newest first. Under it, one `### <what was decided> (#<PR>)` entry per decision, with at most four one-sentence bullets: **Decided**, **Why**, **To undo** and, if needed, one more. If the PR has no number yet when you write the entry, open the PR, then add the number in a second commit.
+- **[QUEUE.md](QUEUE.md):** an open question is a `### Q<N>. <the question>?` entry under `## Open`, with the four parts CLAUDE.md's "When to ask the human" lists. Once it's answered, it becomes one line under `## Answered`: its number and question in bold, then the date and what was decided, in at most 40 words, then a permanent link to the full entry at the commit your branch started from. Numbers are never reused.
 - **[IDEAS.md](IDEAS.md):** a `## Found while <doing what>` section per piece of work, with one bold lead-in per idea.
 - **[CHANGELOG.md](CHANGELOG.md):** a section per statements version, saying for each change whether it tightens or weakens.
 
@@ -107,5 +107,5 @@ Its sources: both terms are from JCGM 106:2012, opened on 2026-11-14, which trea
 **Proof points:**
 
 - **Every proof that fit within the limits was checked by two independent kernels, with public, hashed logs.** The 125 job logs are assets of the v1.1 release, and the results file holds each one's SHA-256 ([REPRODUCE.md](../REPRODUCE.md), "Check the kept logs").
-- **Two problems found in the tools were reported upstream.** Both on 2026-11-08: a new issue, lean4#16347, and our data added to an existing one, lean4#16290 ([LOG.md](LOG.md)).
+- **Two problems found in the tools were reported upstream.** Both on 2026-11-08: a new issue, lean4#16347, and our data added to an existing one, lean4#16290 ([LOG.md](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/LOG.md#marleys-two-upstream-posts-on-lean4-recorded-from-a-read-only-reading)).
 - **Every claim's report says what's missing.** Each of the 724 manuscripts gets one of six reports, naming the axes that hold it back ([catalogue.md](../pilot/reports/catalogue.md)).
