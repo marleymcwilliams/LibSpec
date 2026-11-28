@@ -50,7 +50,7 @@ This is the page an agent reads after [CLAUDE.md](../CLAUDE.md), and each fact o
 
 ## Next
 
-1. **The trim, PRs 3 to 5:** the archive's links; the archive's removal; the long references, with a word budget.
+1. **The trim, PRs 4 and 5:** the archive's removal; the long references, with a word budget.
 2. **The results PR** for the Comparator reruns since v1.1, then the v1.2 release.
 3. **The UI,** in its own repository, reading LibSpec's data at a pinned tag.
 4. **The roadmap step,** which Marley plans:
@@ -130,3 +130,4 @@ Regenerate these; never edit them by hand. Don't open the big ones (`catalogue.j
 - **The rule:** a path cited in a frozen file resolves at the statements tag that added the citing section (`statements-v1` for sections 1 to 7; the file's "added for" notes name the rest), not at `v1.1`.
 - **Today's case:** section 16's header in `lean/JSG/Statements.lean` and `lean/JSG/Defs.lean` names `guide/ROADMAP.md`, which `main` no longer holds. Read it with `git show statements-v5:guide/ROADMAP.md`, at its "Milestone 5" section ([on GitHub](https://github.com/marleymcwilliams/LibSpec/blob/statements-v5/guide/ROADMAP.md#milestone-5-the-cores-gap-statements)).
 - **Any file trim PR 1 deleted** reads with `git show 3b481d5e951bb30300195598e9dada5a753ab61c:<path>`.
+- **Permanent links** follow the rules in [`scripts/check-links.py`](../scripts/check-links.py).

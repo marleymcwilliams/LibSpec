@@ -490,7 +490,7 @@ theorem cvar_tail_to_level_mutant :
       ∀ ε, cvar μ α X ≤ ε → μ {ω | ε ≤ X ω} ≤ α
 ```
 
-**Source.** `archive/DissipativePDEs.pdf`, §9.2: Lemma 9.1 (CVaR→CKN constant) and the note "Why C₀ = 1 is universal"; §9.3, Step 1.
+**Source.** [`archive/DissipativePDEs.pdf`](https://github.com/marleymcwilliams/LibSpec/blob/v1.1/archive/DissipativePDEs.pdf), §9.2: Lemma 9.1 (CVaR→CKN constant) and the note "Why C₀ = 1 is universal"; §9.3, Step 1.
 
 **What the source gets wrong, and the correction.**
 - **The note's argument is too weak.** It says μ{X > τ} > α implies CVaR₁₋α(X) ≥ τ, and concludes that CVaR ≤ ε forces μ{X > ε} ≤ α. But the contrapositive of what it says covers only CVaR < ε. The conclusion is still true, because μ{X > τ} > α in fact forces CVaR > τ. By continuity from below, some level s > τ still has μ{X > s} > α, and then every level t gives t + E[(X − t)₊]/α ≥ s. That's the proof.
@@ -535,7 +535,7 @@ theorem kl_fisher_local_mutant : ¬ KLFisherRaw
 
 With `H 0 = 1`, `KLFisherRaw` is `kl_fisher_local` at the coin, `κ θ ^ 2 / 1` standing for `‖κ θ‖ ^ 2`.
 
-**Source.** `archive/Buckshot_Roulette/JSGI.tex`: the setup (line 1063), Theorem 2, "FIM-invariant local equivalence" (`thm:FIMbound`, lines 1069–1081), and the remark "Tight constants" (`rem:constants`, lines 1095–1097). The code is `archive/Reach/jsg-lab/src/jsg/stats/fisher.py`.
+**Source.** [`archive/Buckshot_Roulette/JSGI.tex`](https://github.com/marleymcwilliams/LibSpec/blob/v1.1/archive/Buckshot_Roulette/JSGI.tex): the setup (line 1063), Theorem 2, "FIM-invariant local equivalence" (`thm:FIMbound`, lines 1069–1081), and the remark "Tight constants" (`rem:constants`, lines 1095–1097). The code is [`archive/Reach/jsg-lab/src/jsg/stats/fisher.py`](https://github.com/marleymcwilliams/LibSpec/blob/v1.1/archive/Reach/jsg-lab/src/jsg/stats/fisher.py).
 
 **What the source gets wrong or leaves vague, and the correction.**
 - **Which norms?** The theorem writes ‖κ‖\_{F⁻¹} but never says which norm ‖θ‖ ≤ r and the Hessian-Lipschitz constant use. In raw coordinates it's false; that's the mutant. The paper means Fisher norms:
@@ -587,7 +587,7 @@ def TiltEnvelope : Prop :=
 theorem dro_envelope_mutant : ¬ TiltEnvelope
 ```
 
-**Source.** `archive/Buckshot_Roulette/JSGII.tex`, in "DRO Closure": the KL dual (lines 679–681), Theorem "Strong duality & uniqueness of η\*" (`thm:duality-uniq`, line 699) and Theorem "ρ-sensitivity & envelope identity" (`thm:rho-sense`, lines 728–740). The 5% finite-difference check that relies on it is at lines 177, 562–567, 629–630, 769 and 781–784. The code is `archive/Reach/jsg-lab/src/jsg/dro/soft_transport.py`.
+**Source.** [`archive/Buckshot_Roulette/JSGII.tex`](https://github.com/marleymcwilliams/LibSpec/blob/v1.1/archive/Buckshot_Roulette/JSGII.tex), in "DRO Closure": the KL dual (lines 679–681), Theorem "Strong duality & uniqueness of η\*" (`thm:duality-uniq`, line 699) and Theorem "ρ-sensitivity & envelope identity" (`thm:rho-sense`, lines 728–740). The 5% finite-difference check that relies on it is at lines 177, 562–567, 629–630, 769 and 781–784. The code is [`archive/Reach/jsg-lab/src/jsg/dro/soft_transport.py`](https://github.com/marleymcwilliams/LibSpec/blob/v1.1/archive/Reach/jsg-lab/src/jsg/dro/soft_transport.py).
 
 **What the source gets wrong, and the correction.**
 - **The KL dual is wrong.** It reads inf over η > 0 of ηρ + (1/η) log E[e^{ηℓ}], which uses η as the multiplier in ηρ and as the tilt in e^{ηℓ}. The units show it: a tilt has units 1/[ℓ], so ηρ isn't a loss. The right dual, which follows from the Donsker–Varadhan formula, is inf over η > 0 of ηρ + η log E[e^{ℓ/η}], with η the multiplier. For a Gaussian loss of variance σ², the source's formula gives inf η(ρ + σ²/2) = 0, but the worst-case mean is σ√(2ρ).
@@ -1079,7 +1079,7 @@ The mutants and the gamers test what a statement rules out. This section reads w
 - **A back-translation.** A subagent got the frozen statement, with its name replaced by `T`, and the definitions it uses from `Defs.lean`, with every docstring and comment removed. It wrote in plain words what `T` claims and what it leaves out. Each answer is compared with the theorem's docstring and with its source.
 - **A second formalization.** Another subagent got only the source and the same definitions, and wrote its own Lean statement. All ten type-checked as written. `lean/JSG/Tests/Readings.lean` states each, and its frozen statement, as a predicate on the definition the theorem constrains: `combine`, `verdict` or `DefinitelyFails`, with every other definition fixed. It proves the two equivalent, or gives a definition for each direction where neither implies the other.
 
-**The sources.** For the first six theorems, the passage the layer map's Source column names, read from `archive/` as data. JSG V §2, "The Algebra of Acceptance" (`archive/Buckshot_Roulette/JSGV.tex`), went with the preamble's definitions of the macros it uses. The SIRUS spec's §1.2–1.4 are in `archive/Markdown/SIRUS_SPEC_MASTER.md`. C, D and G have no source in the corpus, so their subagents got [ROADMAP.md](https://github.com/marleymcwilliams/LibSpec/blob/statements-v5/guide/ROADMAP.md#milestone-5-the-cores-gap-statements)'s Milestone 5 bullet, verbatim, which was written knowing their statements. Where one source makes several claims, the prompt named the one to formalize in the source's words, such as "the passage's claim that its aggregation operators are commutative".
+**The sources.** For the first six theorems, the passage the layer map's Source column names, read from `archive/` as data. JSG V §2, "The Algebra of Acceptance" ([`archive/Buckshot_Roulette/JSGV.tex`](https://github.com/marleymcwilliams/LibSpec/blob/v1.1/archive/Buckshot_Roulette/JSGV.tex)), went with the preamble's definitions of the macros it uses. The SIRUS spec's §1.2–1.4 are in [`archive/Markdown/SIRUS_SPEC_MASTER.md`](https://github.com/marleymcwilliams/LibSpec/blob/v1.1/archive/Markdown/SIRUS_SPEC_MASTER.md). C, D and G have no source in the corpus, so their subagents got [ROADMAP.md](https://github.com/marleymcwilliams/LibSpec/blob/statements-v5/guide/ROADMAP.md#milestone-5-the-cores-gap-statements)'s Milestone 5 bullet, verbatim, which was written knowing their statements. Where one source makes several claims, the prompt named the one to formalize in the source's words, such as "the passage's claim that its aggregation operators are commutative".
 
 Both checks produce leads, never fidelity: by the hardening plan's decision 2, a model's review never counts toward `statement_fidelity`, and these subagents share a model with whoever drafted the statements, so a match is weak evidence.
 
