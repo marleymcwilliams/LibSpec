@@ -19,8 +19,8 @@ This is the page an agent reads after [CLAUDE.md](../CLAUDE.md), and each fact o
 
 **The milestones,** from Marley's closing notes, each of which also lists "That the statements say what I mean": the rule above.
 
-1. **Algebraic core.** Proved: order, grouping and interchange don't change a grade; the verdict is sound and complete; residual checking on one budget axis; `no_flip` for noninterfering graders; JSG IV's capped fold check can never fail, a proved defect. Not shown: anything about a running system; that any real grader is noninterfering; calibration beyond the test sets. [Note](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/MILESTONE_1.md#closing-note)
-2. **Obligations, Loader, charge, policy.** Proved: Loaders keep their invariant and terminate, the concrete one keeping L1–L10; charge adds up, chattering costs double; expiry only tightens; passes and leases are sound and complete. Not shown: that the cryptography holds; that stages run in JSG V's order; what a stopped run means; the must-fail gate on real histories. [Note](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/MILESTONE_2.md#closing-note)
+1. **Algebraic core.** Proved: order, grouping and interchange don't change a grade; the verdict is sound, and complete for point evidence; residual checking on one budget axis; `no_flip` for noninterfering graders; JSG IV's capped fold check can never fail, a proved defect. Not shown: anything about a running system; that any real grader is noninterfering; calibration beyond the test sets. [Note](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/MILESTONE_1.md#closing-note)
+2. **Obligations, Loader, charge, policy.** Proved: Loaders keep their invariant and terminate, the concrete one keeping L1–L10; charge adds up, chattering costs double; expiry only tightens; passes and leases are sound and complete. Not shown: that the cryptography holds; that stages run in JSG V's order; what a stopped run means; completeness for every passing window; the must-fail gate on real histories. [Note](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/MILESTONE_2.md#closing-note)
 3. **Analysis layer.** Proved: CVaR tail to level, with C₀ = 1; the corrected dwell bound; the local KL–Fisher bound in whitened coordinates; the DRO envelope identity for the dual value. Not shown: the rest of PDE Lemma 9.1; that crossings can't pile up in finite time; KL–Fisher in raw coordinates, where it fails; strong duality; estimates from data. [Note](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/MILESTONE_3.md#closing-note)
 4. **Executable twins.** Proved: each twin, computing exactly in `WithTop ℚ≥0`, agrees with its frozen definition, so the earlier theorems hold of the twins too. Not shown: infinitely many axes; the obligation and Loader twins (Q11); that the code which runs the twins is correct, since the compiler is trusted, not proved. [Note](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/MILESTONE_4.md#closing-note)
 5. **The core's gap statements.** Proved: given enclosure, and composition no worse than `combine` assumes, an accept bounds the truth by θ; more evidence can't hurt; a rejection is definite exactly when every narrowing rejects. Not shown: enclosure itself, or that true values compose so; more than two stages; that the pilot's report makes this split. [Note](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/MILESTONE_5.md#closing-note)
@@ -50,9 +50,7 @@ This is the page an agent reads after [CLAUDE.md](../CLAUDE.md), and each fact o
 
 ## Next
 
-Delete an item when it's done; never tick it.
-
-1. **The trim, PRs 2 to 5:** CLAUDE.md's "Start here" and the logs; the archive's links; the archive's removal; the long references, with a word budget.
+1. **The trim, PRs 3 to 5:** the archive's links; the archive's removal; the long references, with a word budget.
 2. **The results PR** for the Comparator reruns since v1.1, then the v1.2 release.
 3. **The UI,** in its own repository, reading LibSpec's data at a pinned tag.
 4. **The roadmap step,** which Marley plans:
@@ -129,6 +127,6 @@ Regenerate these; never edit them by hand. Don't open the big ones (`catalogue.j
 
 ## Paths that live only at a tag or commit
 
-- **The rule:** a path cited in a frozen file resolves at the statements tag named in that section's header, not at `v1.1`.
-- **Today's case:** `lean/JSG/Statements.lean` and `lean/JSG/Defs.lean` name `guide/ROADMAP.md` in section 16's header, which says the section was added for `statements-v5`, and that file now lives only in history. Read it with `git show statements-v5:guide/ROADMAP.md`, at its "Milestone 5" section ([on GitHub](https://github.com/marleymcwilliams/LibSpec/blob/statements-v5/guide/ROADMAP.md#milestone-5-the-cores-gap-statements)).
+- **The rule:** a path cited in a frozen file resolves at the statements tag that added the citing section (`statements-v1` for sections 1 to 7; the file's "added for" notes name the rest), not at `v1.1`.
+- **Today's case:** section 16's header in `lean/JSG/Statements.lean` and `lean/JSG/Defs.lean` names `guide/ROADMAP.md`, which `main` no longer holds. Read it with `git show statements-v5:guide/ROADMAP.md`, at its "Milestone 5" section ([on GitHub](https://github.com/marleymcwilliams/LibSpec/blob/statements-v5/guide/ROADMAP.md#milestone-5-the-cores-gap-statements)).
 - **Any file trim PR 1 deleted** reads with `git show 3b481d5e951bb30300195598e9dada5a753ab61c:<path>`.
