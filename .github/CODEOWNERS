@@ -12,8 +12,8 @@
 /lean/lake-manifest.json @marleymcwilliams
 /lean/lakefile.toml @marleymcwilliams
 
-# "archive/ is read-only."
-/archive/ @marleymcwilliams
+# "fixtures/ is read-only."
+/fixtures/ @marleymcwilliams
 
 # The rules and what enforces them: CLAUDE.md, the deny rules in .claude/ ("Lifting a rule is
 # mine to do"), how every file is stored (.gitattributes), the checks in scripts/, the workflows

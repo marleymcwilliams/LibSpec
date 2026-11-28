@@ -1,2 +1,3 @@
 * text=auto eol=lf
-archive/** -text
+# Kept byte for byte as at v1.1, so the CRLF that ends q.py stays (scripts/archive-check.sh).
+fixtures/sirusc/** -text

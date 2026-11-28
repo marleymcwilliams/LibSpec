@@ -14,14 +14,14 @@
   checks each one against its frozen statement. Helper lemmas go in `lean/JSG/Lemmas/`, never
   in a proof file. `lean/JSG/Tests.lean` imports every test file. The axiom audit sweeps
   Proofs/, Lemmas/ and Tests/ and fails on any file that these two roots don't reach.
-- `archive/` is read-only.
+- `fixtures/` is read-only.
 
 ## Definition of done
 - `lake build` passes with no errors, and no warnings in files you touched.
 - No `sorry`, `admit`, `axiom`, or native evaluation (`native_decide`, `decide +native`).
 - `#print axioms` on each target shows only propext, Classical.choice, Quot.sound.
 - Every theorem has a named mutant, and `JSG/Tests/Mutants.lean` proves the mutant violates it.
-  Prefer mutants taken from real defects in archive/ over invented ones.
+  Prefer mutants taken from real defects in archive/, at the v1.1 tag, over invented ones.
 - Every theorem also has a witness instance in `JSG/Tests/` where it holds.
 - `scripts/check.sh` passes, and CI's Comparator step passes.
 

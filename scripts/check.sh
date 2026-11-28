@@ -114,7 +114,7 @@ step "CODEOWNERS gives Marley the statements' files and itself (scripts/codeowne
   "${covered[@]}" .github/CODEOWNERS || fail=1
 bash "$root/scripts/test-codeowners-check.sh" || fail=1
 
-step "archive/ unchanged (scripts/archive-check.sh), and that check has teeth"
+step "No archive/, and SirusSC's files in fixtures/sirusc/ as at v1.1 (scripts/archive-check.sh), and that check has teeth"
 bash "$root/scripts/archive-check.sh" || fail=1
 bash "$root/scripts/test-archive-check.sh" || fail=1
 

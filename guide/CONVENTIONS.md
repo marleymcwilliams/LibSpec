@@ -19,8 +19,6 @@ How files, branches, pull requests and theorems are named in LibSpec, and how th
 | Collected data | `pilot/data/<name>.json`, with camelCase keys, naming its source, commit and license | `catalogue.json`, `shards.json` |
 | Reports | `pilot/reports/<name>.md`, generated, never edited by hand | `catalogue.md` |
 
-`archive/` is read-only: nothing in it is renamed, moved or edited.
-
 ## Branches
 
 `<area>/<topic>`, in kebab-case, one branch per pull request. `main` is never pushed to.
@@ -33,7 +31,6 @@ How files, branches, pull requests and theorems are named in LibSpec, and how th
 | `check/`, `ci/` | the checks, and the workflows that run them | `check/audit-pilot`, `ci/comparator-full` |
 | `harness/`, `pilot/` | the executable gate's harness and pilot | `pilot/catalogue` |
 | `guide/`, `docs/` | the guide, and other documentation | `guide/milestone-4-gate` |
-| `archive/` | adding to the archive, never changing it | `archive/old-repos` |
 | `throwaway/` | a branch that shows a check bites, closed unmerged and deleted | `throwaway/audit-pilot-bites` |
 
 ## Pull requests
