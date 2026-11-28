@@ -126,8 +126,9 @@ for t in test_collect.py test_reading_list.py test_shard_results.py; do
   "${PYTHON:-python3}" -B "$root/scripts/$t" || fail=1
 done
 
-step "Links in the Markdown, outside archive/ (scripts/check-links.py)"
+step "Links, relative ones in the Markdown and permanent ones in every file, outside archive/ (scripts/check-links.py), and that check has teeth"
 "${PYTHON:-python3}" "$root/scripts/check-links.py" "$root" || fail=1
+bash "$root/scripts/test-check-links.sh" || fail=1
 
 echo
 if [ "$fail" -ne 0 ]; then echo "check.sh: FAILED"; else echo "check.sh: passed"; fi
