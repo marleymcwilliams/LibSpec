@@ -1,4 +1,5 @@
-"""The shard plan for Phase 7's trusted Comparator runs (guide/ROADMAP.md, Phase 7).
+"""The shard plan for Phase 7's trusted Comparator runs (Phase 7 at
+https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#phase-7-the-openaimath-pilot-at-full-scale).
 
 usage: python3 pilot/plan_shards.py pilot/data/shards.json > pilot/data/shard-plan.json
 

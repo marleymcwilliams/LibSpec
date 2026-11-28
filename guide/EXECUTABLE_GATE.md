@@ -177,6 +177,7 @@ Real manuscripts join it once their unknown axes are resolved, the first candida
 - `comparator-full.yml` has shown that the full sandbox works there: Linux 7.0, a systemd user manager and Landlock, on a fresh VM for every run.
 - The pilot would run Comparator on each release challenge the same way. Their toolchain is `leanprover/lean4:v4.34.1`, the same as ours, so the same tools apply.
 - A hosted runner has 4 cores, 16 GB of memory and a 6-hour job limit. It had 86 GB of free disk, and 104 GB once the pilot's workflow removed preinstalled toolchains. The release's library is 163,096 Lean modules, with several large dependencies (PrimeNumberTheoremAnd, Carleson and others). Some challenges may exceed those limits, so the pilot should measure them on a few before scaling.
+- LibSpec is public, so its minutes cost nothing, and GitHub's free plan runs up to 20 jobs at once.
 
 **Measured on four challenges** ([run 40916190535](https://github.com/marleymcwilliams/LibSpec/actions/runs/40916190535), #83). Comparator accepted all four, with both nanoda and Lean's kernel, but the run isn't trusted (below), so these are measurements:
 
@@ -437,7 +438,8 @@ Reading the release's lakefile, freezing what came through LibSpec's tooling, an
   - **The compute nodes reach the internet,** so Mathlib's cache downloads there.
   - **Space is plentiful,** and there's no time limit for now.
 - **What it takes:** heavy trusted builds, LibSpec's own or Mathlib-scale experiments, and the data work.
-- **Comparator's sandbox:** Ubuntu 20.04's original 5.4 kernel predates Landlock, which landrun needs, and whether BLT's kernel has it is unknown. [ROADMAP.md](ROADMAP.md)'s "What the phases draw on" lists the three commands that settle it.
+- **Comparator's sandbox:** Ubuntu 20.04's original 5.4 kernel predates Landlock, which landrun needs: Landlock arrived in Linux 5.13. Its hardware-enablement kernel, 5.15, builds Landlock in, but Ubuntu's change that enables it at boot went into 22.04's kernel, and there's no sign it reached 20.04's. So whether BLT's kernel has it is unknown. Three commands on BLT settle it: `uname -r`; `cat /sys/kernel/security/lsm`, which lists `landlock` if it's on; and `dmesg | grep landlock`.
+- **Ubuntu 20.04 left standard support in May 2025.** That's a reason to keep BLT to trusted work.
 
 Even with Landlock, it shouldn't build the release's Lean code, for two reasons:
 - **It would run untrusted code.** Building a Lean library runs that library's code: its macros, elaborators and `initialize` blocks. That would be untrusted code on a shared machine.

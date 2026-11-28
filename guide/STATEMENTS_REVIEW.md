@@ -52,7 +52,7 @@ What the copy doesn't show is a set-level implementation failing `expiry_tighten
 
 Both hold for every `Loader` by construction. Building one requires proving `inv_step` and `progress`, and the two theorems only lift those fields from one step to whole runs. Their mutants are step relations that can't be built as Loaders. So the theorems can't catch a wrong Loader; they can only catch a wrong idea of what a Loader must prove.
 
-**A concrete Loader (L1–L10) is still owed.** When Milestone 2 proves these theorems, its milestone note must say so. ROADMAP's Milestone 2 now carries that reminder. `statements-v2` states one, `LoaderStep`, with its own two theorems; see [statements-v2](#statements-v2).
+**A concrete Loader (L1–L10) is still owed.** When Milestone 2 proves these theorems, its milestone note must say so. [ROADMAP's Milestone 2](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#phases-35-the-three-proof-milestones) now carries that reminder. `statements-v2` states one, `LoaderStep`, with its own two theorems; see [statements-v2](#statements-v2).
 
 ## Side by side
 
@@ -791,9 +791,9 @@ Several witnesses use their mutant's counterexample, so the same input separates
 
 ## statements-v5
 
-Review support for the `statements-v5` proposal, read the same way as above. Its four theorems are in section 16 of `lean/JSG/Statements.lean`, their definitions in the same section of `lean/JSG/Defs.lean`, and their controls in the "statements-v5" part of `lean/JSG/Tests/Mutants.lean`, which still imports only the definitions. [Milestone 5](MILESTONE_5.md) proved all four. Two of the mutants are v1's, and the other two rest on readings of `archive/`, not on quotes, and say so.
+Review support for the `statements-v5` proposal, read the same way as above. Its four theorems are in section 16 of `lean/JSG/Statements.lean`, their definitions in the same section of `lean/JSG/Defs.lean`, and their controls in the "statements-v5" part of `lean/JSG/Tests/Mutants.lean`, which still imports only the definitions. [Milestone 5](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/MILESTONE_5.md) proved all four. Two of the mutants are v1's, and the other two rest on readings of `archive/`, not on quotes, and say so.
 
-**Scope** ([Q16](QUEUE.md)). v5 states Milestone 5's candidates C, D and G about the ordinal core, the part of the model the pilot uses ([ROADMAP.md](ROADMAP.md#milestone-5-the-cores-gap-statements)). None of the 34 frozen theorems ties a grade to the true values behind it, says how the verdict behaves as evidence narrows, or tells a definite rejection from one that only lacks evidence. D has two halves with different hypotheses, so it's two theorems, and v5 adds four. They use four new definitions:
+**Scope** ([Q16](QUEUE.md)). v5 states Milestone 5's candidates C, D and G about the ordinal core, the part of the model the pilot uses ([ROADMAP.md](https://github.com/marleymcwilliams/LibSpec/blob/statements-v5/guide/ROADMAP.md#milestone-5-the-cores-gap-statements)). None of the 34 frozen theorems ties a grade to the true values behind it, says how the verdict behaves as evidence narrows, or tells a definite rejection from one that only lacks evidence. D has two halves with different hypotheses, so it's two theorems, and v5 adds four. They use four new definitions:
 - **`Narrows g' g`:** on every axis, g′'s interval lies inside g's, so g′ knows at least as much.
 - **`Encloses g x`:** each axis's interval contains that axis's value.
 - **`ComposesNoWorse`:** a composite's true value is at most the larger of its parts' on a floor, and at most their sum on a budget.
@@ -963,7 +963,7 @@ The known 1 narrows the unknown, [0, ∞], but not [0, 0], since its upper end, 
 
 ## Gamers and the kill matrix: the ordinal core
 
-Mutants show that a statement can fail. This section tests the other direction, for the ten theorems of the ordinal core, which decision 0 hardens ([ROADMAP.md](ROADMAP.md#after-milestone-4-grading-real-claims)): `combine_comm`, `combine_assoc`, `interchange`, `verdict_sound`, `verdict_complete`, `no_flip`, `accept_bounds_truth`, `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`.
+Mutants show that a statement can fail. This section tests the other direction, for the ten theorems of the ordinal core, which decision 0 hardens ([ROADMAP.md](https://github.com/marleymcwilliams/LibSpec/blob/3b481d5e951bb30300195598e9dada5a753ab61c/guide/ROADMAP.md#after-milestone-4-grading-real-claims)): `combine_comm`, `combine_assoc`, `interchange`, `verdict_sound`, `verdict_complete`, `no_flip`, `accept_bounds_truth`, `combine_respects_narrowing`, `narrowing_keeps_accept` and `definitelyFails_spec`.
 - **A gamer** is a definition that satisfies every restated copy, yet does what a passage of `archive/` says the model must not.
 - **A survivor** is a first-order mutant that no theorem kills: behaviour no statement pins down.
 
@@ -1079,7 +1079,7 @@ The mutants and the gamers test what a statement rules out. This section reads w
 - **A back-translation.** A subagent got the frozen statement, with its name replaced by `T`, and the definitions it uses from `Defs.lean`, with every docstring and comment removed. It wrote in plain words what `T` claims and what it leaves out. Each answer is compared with the theorem's docstring and with its source.
 - **A second formalization.** Another subagent got only the source and the same definitions, and wrote its own Lean statement. All ten type-checked as written. `lean/JSG/Tests/Readings.lean` states each, and its frozen statement, as a predicate on the definition the theorem constrains: `combine`, `verdict` or `DefinitelyFails`, with every other definition fixed. It proves the two equivalent, or gives a definition for each direction where neither implies the other.
 
-**The sources.** For the first six theorems, the passage the layer map's Source column names, read from `archive/` as data. JSG V §2, "The Algebra of Acceptance" (`archive/Buckshot_Roulette/JSGV.tex`), went with the preamble's definitions of the macros it uses. The SIRUS spec's §1.2–1.4 are in `archive/Markdown/SIRUS_SPEC_MASTER.md`. C, D and G have no source in the corpus, so their subagents got [ROADMAP.md](ROADMAP.md#milestone-5-the-cores-gap-statements)'s Milestone 5 bullet, verbatim, which was written knowing their statements. Where one source makes several claims, the prompt named the one to formalize in the source's words, such as "the passage's claim that its aggregation operators are commutative".
+**The sources.** For the first six theorems, the passage the layer map's Source column names, read from `archive/` as data. JSG V §2, "The Algebra of Acceptance" (`archive/Buckshot_Roulette/JSGV.tex`), went with the preamble's definitions of the macros it uses. The SIRUS spec's §1.2–1.4 are in `archive/Markdown/SIRUS_SPEC_MASTER.md`. C, D and G have no source in the corpus, so their subagents got [ROADMAP.md](https://github.com/marleymcwilliams/LibSpec/blob/statements-v5/guide/ROADMAP.md#milestone-5-the-cores-gap-statements)'s Milestone 5 bullet, verbatim, which was written knowing their statements. Where one source makes several claims, the prompt named the one to formalize in the source's words, such as "the passage's claim that its aggregation operators are commutative".
 
 Both checks produce leads, never fidelity: by the hardening plan's decision 2, a model's review never counts toward `statement_fidelity`, and these subagents share a model with whoever drafted the statements, so a match is weak evidence.
 

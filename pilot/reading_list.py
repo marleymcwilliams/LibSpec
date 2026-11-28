@@ -1,4 +1,4 @@
-"""Reading lists for the challenges of Phase 8's step 4 (guide/ROADMAP.md): route B of the
+"""Reading lists for the challenges of Phase 8's step 4 (guide/README.md, "Reviews"): route B of the
 reviewer's scope plan of 2026-11-14, which Marley approved on 2026-11-18.
 
 usage: python3 pilot/reading_list.py LEAN_DIR DATA MANIFEST > pilot/data/reading-lists.json
@@ -45,7 +45,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from imports import COMMIT, header_imports  # noqa: E402
 
 REPOSITORY = "https://github.com/openai/math"
-# Phase 8's step 4 in guide/ROADMAP.md: the challenges of the seven manuscripts the review
+# Phase 8's step 4 (guide/README.md, "Reviews"): the challenges of the seven manuscripts the review
 # protocol is piloted on.
 CHALLENGES = ["Catalan", "JointDickman", "DeligneDrinfeld", "BogomolovPopInjectivity",
               "SubexponentialSAT", "LocalSmoothing", "BallPacking", "BallPackingNecessity"]
@@ -449,8 +449,8 @@ def report(data, names_only_past=None):
         "# Reading lists for Phase 8's challenges",
         "",
         f"openai/math at `{src['commit'][:7]}`, read as text. For each challenge of Phase 8's "
-        "step 4 ([ROADMAP.md](../../guide/ROADMAP.md)): its challenge file and the release's "
-        "own files that it imports, at any depth, and what each of them declares.",
+        "step 4 ([guide/README.md](../../guide/README.md#reviews)): its challenge file and the "
+        "release's own files that it imports, at any depth, and what each of them declares.",
         "",
         "**It's where a reviewer starts, never a check.** Text can't see instances found by "
         "type-class search, notation, macros or opened names, and it can't tell which of a "
