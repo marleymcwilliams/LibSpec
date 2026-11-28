@@ -4,8 +4,9 @@ usage: python3 scripts/sirusc_adapter.py CORPUS > ANSWERS
 
 Reads the corpus that `Gate.lean corpus` writes, and answers each vector that SirusSC has
 code for, by calling that code: `specchain/algebra/q_prime.py` and `specchain/algebra/q.py`,
-loaded in place from archive/. The files are read, never changed, and no bytecode is
-written beside them. SirusSC's bottom, an absent reading, stands for the unknown [0, inf].
+loaded from fixtures/sirusc/, where they are byte for byte as at v1.1. The files are read,
+never changed, and no bytecode is written beside them. SirusSC's bottom, an absent reading,
+stands for the unknown [0, inf].
 
 - combine: `Interval.join` on floor axes and `Interval.plus` on budget axes.
 - verdict: `Q.leq` of the upper ends against the thresholds.
@@ -21,10 +22,10 @@ import pathlib
 import sys
 from fractions import Fraction
 
-sys.dont_write_bytecode = True  # archive/ is read-only
+sys.dont_write_bytecode = True  # fixtures/ is read-only
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-ALGEBRA = ROOT / "archive" / "SirusSC" / "specchain" / "algebra"
+ALGEBRA = ROOT / "fixtures" / "sirusc"
 
 
 def load(name):

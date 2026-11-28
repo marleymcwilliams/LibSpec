@@ -49,7 +49,7 @@ So `statements-v4` adds an executable twin for each definition in the first five
 **Built** (#72, #74–#78). The harness, the corpus and the negative controls are in `lean/JSG/Harness/` and `lean/JSG/Tests/Differential.lean`, and `scripts/differential.sh` runs the differential tests in CI ([REPRODUCE.md](../REPRODUCE.md), step 5). What follows is the design, with what each part became.
 
 The executable twins become the oracle. Any other implementation reads the same JSON test vectors and must print the same verdicts. Candidates:
-- SirusSC's Python `specchain` (`Q`, `QPrime`, the loader), read in place from `archive/`;
+- SirusSC's Python `specchain` (`Q`, `QPrime`, the loader);
 - jsg-lab's checks, where they overlap;
 - any future implementation.
 
